@@ -13,7 +13,8 @@ public class ApplicationHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-//    private JobOffer jobOffer;
+    @OneToOne
+    private JobOffer jobOffer;
     private LocalDate applicationDate;
 
 
@@ -29,8 +30,8 @@ public class ApplicationHistory {
     public ApplicationHistory() {
     }
 
-    public ApplicationHistory(LocalDate applicationDate) {
-//        this.jobOffer = jobOffer;
+    public ApplicationHistory(LocalDate applicationDate, JobOffer jobOffer) {
+        this.jobOffer = jobOffer;
         this.applicationDate = applicationDate;
     }
 
@@ -38,13 +39,13 @@ public class ApplicationHistory {
         return id;
     }
 
-//    public JobOffer getJobOffer() {
-//        return jobOffer;
-//    }
-//
-//    public void setJobOffer(JobOffer jobOffer) {
-//        this.jobOffer = jobOffer;
-//    }
+    public JobOffer getJobOffer() {
+        return jobOffer;
+    }
+
+    public void setJobOffer(JobOffer jobOffer) {
+        this.jobOffer = jobOffer;
+    }
 
     public LocalDate getApplicationDate() {
         return applicationDate;

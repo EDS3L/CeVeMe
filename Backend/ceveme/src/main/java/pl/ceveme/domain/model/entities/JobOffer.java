@@ -25,12 +25,16 @@ public class JobOffer {
     @Embedded
     private Location location;
 
+    @Lob
     private String requirements;
 
+    @Lob
     private String niceToHave;
 
+    @Lob
     private String responsibilities;
 
+    @Lob
     private String benefits;
 
     private LocalDate dateAdded;
