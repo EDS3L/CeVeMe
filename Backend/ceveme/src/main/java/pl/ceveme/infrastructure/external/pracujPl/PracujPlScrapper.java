@@ -1,9 +1,8 @@
+// pl/ceveme/infrastructure/external/pracujPl/PracujPlScrapper.java
 package pl.ceveme.infrastructure.external.pracujPl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.io.IOException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -13,127 +12,69 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import pl.ceveme.domain.model.entities.JobOffer;
 import pl.ceveme.domain.repositories.JobOfferRepository;
-import pl.ceveme.infrastructure.external.HttpClientWrapper;
+import pl.ceveme.infrastructure.external.common.AbstractJobScraper;
+import pl.ceveme.infrastructure.external.common.HttpClient;
 
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
 @Component
-public class PracujPlScrapper {
-    private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36";
-    private static final int REQUEST_DELAY_MS = 1000;
+public class PracujPlScrapper extends AbstractJobScraper {
+    private static final Logger log = LoggerFactory.getLogger(PracujPlScrapper.class);
 
-    private final HttpClientWrapper httpClient;
-    private final ObjectMapper objectMapper;
-    private final JobOfferRepository jobOfferRepository;
-    Logger logger = LoggerFactory.getLogger(PracujPlScrapper.class);
-
-    public PracujPlScrapper(HttpClientWrapper httpClient, JobOfferRepository jobOfferRepository) {
-        this.httpClient = httpClient;
-        this.jobOfferRepository = jobOfferRepository;
-        this.objectMapper = new ObjectMapper();
+    public PracujPlScrapper(HttpClient httpClient, ObjectMapper objectMapper, JobOfferRepository jobOfferRepository) {
+        super(httpClient, objectMapper, jobOfferRepository);
     }
 
-    public List<JobOffer> createJobs(String baseUrl) {
-        List<String> jobUrls = extractJobUrls(baseUrl);
-        List<JobOffer> jobOfferList = new ArrayList<>();
-        logger.info("List size: {}", jobUrls.size());
-        List<String> repositoriesUrls = jobOfferRepository.findAll().stream().map(JobOffer::getLink).toList();
-        for (int page = 0; page < jobUrls.size(); page++) {
-            String currentPage = jobUrls.get(page);
-            try {
-                if (repositoriesUrls.contains(currentPage)) {
-                    logger.info("This is a duplicate link: {}", currentPage);
-                    continue;
-                }
-                String content = httpClient.fetchContent(jobUrls.get(page));
-                JobOffer jobOffer = JobOfferPracujPlMapper.mapToJobOffer(extractJobData(content), jobUrls.get(page));
-                jobOfferList.add(jobOffer);
-                assert jobOffer != null;
-                jobOfferRepository.save(jobOffer);
-                logger.info("Current page {}", page);
-                Thread.sleep(REQUEST_DELAY_MS);
+    public List<JobOffer> createJobs() throws IOException {
+        List<String> urls = extractJobUrls();
+        return processUrls(urls);
+    }
 
-            } catch (java.io.IOException | InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-
+    private List<String> extractJobUrls() throws IOException {
+        List<String> all = new ArrayList<>();
+        String BASE_URL = "https://www.pracuj.pl/praca/ostatnich%2024h;p,1";
+//        String BASE_URL = "https://www.pracuj.pl/praca/ostatnich%2024h;p,1?et=19"; 3 trony na test
+        int max = extractPageNumber(BASE_URL);
+        log.info("Total page on Pracuj Pl {}", max);
+        for (int p = 1; p <= max; p++) {
+            String url = p == 1 ? BASE_URL : BASE_URL + "?" + "pn=" + p;
+            log.info("Current page: {}", p);
+            Document doc = fetchDocument(url);
+            Elements links = doc.select("a[class*=tiles_cnb3rfy]");
+            links.forEach(e -> {
+                String href = e.attr("href");
+                if (!href.isBlank()) all.add(href);
+            });
+            delay();
         }
-        return jobOfferList;
+        return all;
     }
 
-    private JsonNode extractJobData(String data) throws JsonProcessingException {
-
-        Document doc = Jsoup.parse(data);
+    @Override
+    protected JobOffer extractJobData(String url) throws Exception {
+        String raw = httpClient.fetchContent(url);
+        Document doc = Jsoup.parse(raw);
         Element script = doc.selectFirst("script#job-schema-org[type=application/ld+json]");
-        if (script == null) {
-            logger.error("Failed export data from script!");
-            return null;
-        }
+        if (script == null) return null;
 
-        String json = script.dataNodes().getFirst().getWholeData();
-        return objectMapper.readTree(json);
+        JsonNode json = objectMapper.readTree(script.dataNodes()
+                .getFirst()
+                .getWholeData());
+        Element wrapper = doc.selectFirst("li[data-test*=sections-benefit-employment-type-name] div[class*=tchzayo]");
+        String experience = (wrapper != null && !wrapper.text()
+                .isBlank()) ? wrapper.text() : null;
+        log.info("Data extracted {} from {}", json, url);
 
-    }
-
-
-    private List<String> extractJobUrls(String baseUrl) throws IOException {
-        List<String> allUrls = new ArrayList<>();
-        int maxPages = extractPageNumber(baseUrl);
-
-        for (int page = 1; page < maxPages; page++) {
-            try {
-                String pageUrl = buildPageUrl(baseUrl, page);
-                List<String> pageUrls = extractUrlsFromPage(pageUrl);
-                allUrls.addAll(pageUrls);
-
-                logger.info("Extracted {} URLs from page {}", pageUrls.size(), page);
-                Thread.sleep(REQUEST_DELAY_MS);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new RuntimeException("Scraping interrupted", e);
-            } catch (Exception e) {
-                logger.warn("Failed to scrap page {}: {}", page, e.getMessage());
-            }
-        }
-        return allUrls;
-    }
-
-    private String buildPageUrl(String baseUrl, int pageNumber) {
-        if (pageNumber == 1) {
-            return baseUrl;
-        }
-        return baseUrl + (baseUrl.contains("?") ? "&" : "?") + "pn=" + pageNumber;
-    }
-
-    private List<String> extractUrlsFromPage(String pageUrl) throws IOException {
-        try {
-            Document doc = Jsoup.connect(pageUrl).userAgent(USER_AGENT).get();
-            Elements jobLinks = doc.select("a[class*=tiles_cnb3rfy]");
-
-            return jobLinks.stream().map(element -> element.attr("href")).filter(href -> !href.isEmpty()).toList();
-
-        } catch (IOException | java.io.IOException e) {
-            logger.error("Failed to fetch page: {}", pageUrl, e);
-            return Collections.emptyList();
-        }
+        return JobOfferPracujPlMapper.mapToJobOffer(json, url, experience);
     }
 
     private int extractPageNumber(String pageUrl) throws IOException {
-        try {
-            Document doc = Jsoup.connect(pageUrl).userAgent(USER_AGENT).get();
-            Elements el = doc.select("button[class*=listing_n19df7xb]");
-
-            return Integer.parseInt(Objects.requireNonNull(el.last()).text());
-
-        } catch (IOException e) {
-            logger.error("Failed to fetch number of page: {}", pageUrl, e);
-            return 0;
-        } catch (java.io.IOException e) {
-            throw new RuntimeException(e);
-        }
+        Document doc = fetchDocument(pageUrl);
+        Elements btn = doc.select("button[class*=listing_n19df7xb]");
+        return Integer.parseInt(Objects.requireNonNull(btn.last())
+                .text());
     }
-
 }

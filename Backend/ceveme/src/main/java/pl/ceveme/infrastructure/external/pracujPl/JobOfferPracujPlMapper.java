@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public class JobOfferPracujPlMapper {
 
-    public static JobOffer mapToJobOffer(JsonNode node, String sourceUrl) {
+    public static JobOffer mapToJobOffer(JsonNode node, String sourceUrl, String experienceLevel) {
         if (node == null) return null;
 
         String title = getString(node, "title");
@@ -28,9 +28,9 @@ public class JobOfferPracujPlMapper {
         }
         String requirements = getString(node, "experienceRequirements");
         String niceToHave = "";
+        String employmentType = getString(node,"employmentType");
         String responsibilities = getString(node, "responsibilities");
         String benefits = getString(node, "jobBenefits");
-
         LocalDate dateAdded = parseDate(getString(node, "datePosted"));
         LocalDate dateEnding = parseDate(getString(node, "validThrough"));
 
@@ -44,12 +44,14 @@ public class JobOfferPracujPlMapper {
             location = new Location(city, street);
         }
 
-        return new JobOffer(sourceUrl, title, company, salary, location, requirements, niceToHave, responsibilities, benefits, dateAdded, dateEnding);
+        return new JobOffer(sourceUrl, title, company, salary, location, requirements, niceToHave, responsibilities, benefits, experienceLevel, employmentType, dateAdded, dateEnding);
     }
 
     private static String getString(JsonNode node, String field) {
         return node.hasNonNull(field) ? node.get(field).asText() : null;
     }
+
+
 
     private static LocalDate parseDate(String isoDate) {
         if (isoDate == null || isoDate.isEmpty()) return null;

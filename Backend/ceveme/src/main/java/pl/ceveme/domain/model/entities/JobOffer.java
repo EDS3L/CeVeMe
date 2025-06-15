@@ -37,6 +37,10 @@ public class JobOffer {
     @Lob
     private String benefits;
 
+    private String experienceLevel;
+
+    private String employmentType;
+
     private LocalDate dateAdded;
 
     private LocalDate dateEnding;
@@ -44,7 +48,7 @@ public class JobOffer {
     public JobOffer() {
     }
 
-    public JobOffer(String link, String title, String company, String salary, Location location, String requirements, String niceToHave, String responsibilities, String benefits, LocalDate dateAdded, LocalDate dateEnding) {
+    public JobOffer(String link, String title, String company, String salary, Location location, String requirements, String niceToHave, String responsibilities, String benefits, String experienceLevel, String employmentType, LocalDate dateAdded, LocalDate dateEnding) {
         this.link = link;
         this.title = title;
         this.company = company;
@@ -54,6 +58,8 @@ public class JobOffer {
         this.niceToHave = niceToHave;
         this.responsibilities = responsibilities;
         this.benefits = benefits;
+        this.experienceLevel = experienceLevel;
+        this.employmentType = employmentType;
         this.dateAdded = dateAdded;
         this.dateEnding = dateEnding;
     }
@@ -132,6 +138,22 @@ public class JobOffer {
 
     public void setBenefits(String benefits) {
         this.benefits = benefits;
+    }
+
+    public String getExperienceLevel() {
+        return experienceLevel;
+    }
+
+    public void setExperienceLevel(String experienceLevel) {
+        this.experienceLevel = experienceLevel;
+    }
+
+    public String getEmploymentType() {
+        return employmentType;
+    }
+
+    public void setEmploymentType(String employmentType) {
+        this.employmentType = employmentType;
     }
 
     public LocalDate getDateAdded() {
