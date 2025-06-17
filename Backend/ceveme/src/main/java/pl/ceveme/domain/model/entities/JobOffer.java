@@ -171,4 +171,10 @@ public class JobOffer {
     public void setDateEnding(LocalDate dateEnding) {
         this.dateEnding = dateEnding;
     }
+
+    @Override
+    public String toString() {
+        return super.toString();
+    }
+
 }

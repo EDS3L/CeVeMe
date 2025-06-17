@@ -45,6 +45,9 @@ public class TheProtocolItJobMapper {
         LocalDate dateAdded = parseDateTime(getString(publicationDetailsNode, "dateOfInitialPublicationUtc"));
         LocalDate dateEnding = parseDateTime(getString(publicationDetailsNode, "archivizationDateUtc"));
 
+        String niceToHave = extractNiceToHave(offerNode);
+        String benefits = extractBenefits(offerNode);
+
         return new JobOffer(
                 offerLink,
                 title,
@@ -52,27 +55,84 @@ public class TheProtocolItJobMapper {
                 salary,
                 location,
                 requirements,
-                null,
+                niceToHave,
                 responsibilities,
-                null,
+                benefits,
                 experience,
                 employmentType,
+
                 dateAdded,
                 dateEnding
         );
     }
 
-    private static String extractSalary(JsonNode employmentNode) {
-        JsonNode contractsNode = employmentNode.path("typesOfContracts");
-        if (contractsNode.isArray() && !contractsNode.isEmpty()) {
-            JsonNode firstContract = contractsNode.get(0);
-            JsonNode salaryNode = firstContract.path("salary");
-            if (!salaryNode.isMissingNode() && !salaryNode.isNull()) {
-                //todo: dodać wyciągania salaryy
-                return null;
-            }
+    private static String extractNiceToHave(JsonNode oferNode) {
+        JsonNode textSections = oferNode.path("textSections");
+        if(!textSections.isArray()) {
+            return null;
+        }
+
+        for (JsonNode section : textSections) {
+            String sectionType = section.path("type").asText("");
+                if ("requirements-optional".equals(sectionType)) {
+                    JsonNode elementsNode = section.path("elements");
+                    if(elementsNode.isArray() && !elementsNode.isEmpty()) {
+                        StringBuilder stringBuilder = new StringBuilder();
+                        for (int i = 0; i < elementsNode.size(); i++) {
+                            String niceToHave = elementsNode.get(i).asText("");
+                            if(!niceToHave.isEmpty()) {
+                                if(!stringBuilder.isEmpty()) {
+                                    stringBuilder.append(", ");
+                                }
+                                stringBuilder.append(niceToHave);
+                            }
+                        }
+                        return !stringBuilder.isEmpty() ? stringBuilder.toString() : null;
+                    }
+                }
+
         }
         return null;
+    }
+
+    private static String extractSalary(JsonNode employmentNode) {
+        JsonNode contractsNode = employmentNode.path("typesOfContracts");
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (int i = 0; i <contractsNode.size(); i++) {
+            JsonNode contract = contractsNode.get(i);
+            JsonNode salaryNode = contract.path("salary");
+
+            if(!salaryNode.isMissingNode() && !salaryNode.isNull()) {
+                if(!stringBuilder.isEmpty()) {
+                    stringBuilder.append(" | ");
+                }
+
+                String contractName = contract.path("name").asText("");
+                if(!contractName.isEmpty()) {
+                    stringBuilder.append(contractName).append(": ");
+                }
+
+                String from = salaryNode.path("from").asText("");
+                String to = salaryNode.path("to").asText("");
+                String currency = salaryNode.path("currencyCode").asText("");
+
+                if(!from.isEmpty() && !to.isEmpty()) {
+                    stringBuilder.append(from).append("-").append(to);
+                } else if(!from.isEmpty()) {
+                    stringBuilder.append("od ").append(from);
+                } else if(!to.isEmpty()) {
+                    stringBuilder.append("do ").append(to);
+                }
+
+                if(!currency.isEmpty()) {
+                    stringBuilder.append(" ").append(currency);
+                }
+
+            }
+        }
+
+        return !stringBuilder.isEmpty() ? stringBuilder.toString() : null;
     }
 
     private static Location extractLocation(JsonNode workplacesNode) {
@@ -148,6 +208,41 @@ public class TheProtocolItJobMapper {
             }
         }
         return null;
+    }
+
+    private static String extractBenefits(JsonNode jobOfferNode) {
+        JsonNode sectionsNode = jobOfferNode.path("jsonSections");
+        if(!sectionsNode.isArray()) {
+            return  null;
+        }
+
+        StringBuilder benefitsBuilder = new StringBuilder();
+
+        for(JsonNode section : sectionsNode) {
+            String sectionType = section.path("sectionType").asText("");
+
+            if("benefits".equals(sectionType)) {
+                JsonNode modelNode = section.path("model");
+                JsonNode itemsNode = modelNode.path("items");
+
+                if(itemsNode.isArray() && !itemsNode.isEmpty()) {
+                    for (int i = 0; i < itemsNode.size(); i++) {
+                        JsonNode benefit = itemsNode.get(i);
+                        String benefitName = benefit.path("name").asText("");
+
+                        if(!benefitName.isEmpty()) {
+                            if(!benefitsBuilder.isEmpty()) {
+                                benefitsBuilder.append(", ");
+                            }
+                            benefitsBuilder.append(benefitName);
+                        }
+                    }
+                }
+
+            break;
+            }
+        }
+        return !benefitsBuilder.isEmpty() ? benefitsBuilder.toString() : null;
     }
 
     private static String extractEmploymentType(JsonNode employmentNode) {

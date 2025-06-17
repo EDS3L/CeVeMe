@@ -49,6 +49,7 @@ public class TheProtocolItScrapper extends AbstractJobScraper {
                 TimeUnit.MILLISECONDS.sleep(1000);
                 JsonNode page = fetchPageJson(BASE_URL +  p);
                 all.addAll(parseJobLinks(page));
+                delay();
             } catch (Exception e) {
                 log.warn("Failed add jobs to list {}", e.getMessage());
             }
@@ -103,7 +104,7 @@ public class TheProtocolItScrapper extends AbstractJobScraper {
         JsonNode data = parseJson(doc, "script[id*=__NEXT_DATA__]");
 
 
-        log.info("Extracted data {} from {}",data,url);
+        log.info("Extracted data {} from {}",TheProtocolItJobMapper.mapToJobOffer(data,url).toString(),url);
         return TheProtocolItJobMapper.mapToJobOffer(data,url);
 
     }

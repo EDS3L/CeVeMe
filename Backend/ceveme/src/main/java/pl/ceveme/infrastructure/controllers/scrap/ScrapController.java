@@ -6,8 +6,10 @@ import pl.ceveme.application.dto.scrap.ScrapResponse;
 import pl.ceveme.application.usecase.scrap.ScrapBulldogJobUseCase;
 import pl.ceveme.application.usecase.scrap.ScrapJustJoinItUseCase;
 import pl.ceveme.application.usecase.scrap.ScrapPracujPlUseCase;
+import pl.ceveme.application.usecase.scrap.ScrapTheProtocolIT;
 import pl.ceveme.domain.model.entities.JobOffer;
 import pl.ceveme.infrastructure.external.bulldogJob.BulldogJobScrapper;
+import pl.ceveme.infrastructure.external.rocketJobs.RocketJobsScrapper;
 import pl.ceveme.infrastructure.external.theProtocolIt.TheProtocolItScrapper;
 
 import java.util.List;
@@ -18,14 +20,15 @@ public class ScrapController {
     private final ScrapJustJoinItUseCase scrapJustJoinItUseCase;
     private final ScrapPracujPlUseCase scrapPracujPlUseCase;
     private final ScrapBulldogJobUseCase scrapBulldogJobUseCase;
-    private final TheProtocolItScrapper theProtocolItScrapper;
+    private final ScrapTheProtocolIT scrapProtocolItUseCase;
+    private final RocketJobsScrapper rocketJobsScrapper;
 
-
-    public ScrapController(ScrapJustJoinItUseCase scrapJustJoinItUseCase, ScrapPracujPlUseCase scrapPracujPlUseCase, ScrapBulldogJobUseCase scrapBulldogJobUseCase, TheProtocolItScrapper theProtocolItScrapper) {
+    public ScrapController(ScrapJustJoinItUseCase scrapJustJoinItUseCase, ScrapPracujPlUseCase scrapPracujPlUseCase, ScrapBulldogJobUseCase scrapBulldogJobUseCase, ScrapTheProtocolIT scrapProtocolItUseCase, RocketJobsScrapper rocketJobsScrapper) {
         this.scrapJustJoinItUseCase = scrapJustJoinItUseCase;
         this.scrapPracujPlUseCase = scrapPracujPlUseCase;
         this.scrapBulldogJobUseCase = scrapBulldogJobUseCase;
-        this.theProtocolItScrapper = theProtocolItScrapper;
+        this.scrapProtocolItUseCase = scrapProtocolItUseCase;
+        this.rocketJobsScrapper = rocketJobsScrapper;
     }
 
     @GetMapping("/justJointIt")
@@ -59,13 +62,25 @@ public class ScrapController {
     }
 
     @GetMapping("/theProtocolIt")
-    public ResponseEntity<List<String>> thrProtocolIt() {
+    public ResponseEntity<ScrapResponse> thrProtocolIt() {
         try {
-            return ResponseEntity.ok(theProtocolItScrapper.fetchAllJobLinks());
+            return ResponseEntity.ok(scrapProtocolItUseCase.execute());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(new ScrapResponse(null, "Scrap failed!"));
+        }
+    }
+
+    @GetMapping("/rocketJobs")
+    public ResponseEntity<List<JobOffer>> rocketJobs() {
+        try {
+            return ResponseEntity.ok(rocketJobsScrapper.createJobs());
         } catch (Exception e) {
 //            return ResponseEntity.badRequest()
 //                    .body(new ScrapResponse(null, "Scrap failed!"));
             return null;
         }
     }
+
+
 }

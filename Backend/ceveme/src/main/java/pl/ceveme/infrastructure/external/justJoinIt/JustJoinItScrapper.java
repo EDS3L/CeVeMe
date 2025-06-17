@@ -12,6 +12,7 @@ import pl.ceveme.domain.repositories.JobOfferRepository;
 import pl.ceveme.infrastructure.external.common.AbstractJobScraper;
 import pl.ceveme.infrastructure.external.common.HttpClient;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -31,10 +32,7 @@ public class JustJoinItScrapper extends AbstractJobScraper {
 
     public List<JobOffer> createJobs() {
         try {
-            JsonNode first = objectMapper.readTree(httpClient.fetchContentJJI(String.format(API_URL, 1)));
-            int pages = first.path("meta")
-                    .path("totalPages")
-                    .asInt();
+            int pages = totalPageNumber();
             log.info("Total pages {}", pages);
             List<String> all = new ArrayList<>();
             for (int p = 1; p <= pages; p++) {
@@ -89,5 +87,17 @@ public class JustJoinItScrapper extends AbstractJobScraper {
                         .text())
                 .findFirst()
                 .orElse(null);
+    }
+
+    private int totalPageNumber() {
+        try {
+            JsonNode first = objectMapper.readTree(httpClient.fetchContentJJI(String.format(API_URL, 1)));
+            return first.path("meta")
+                    .path("totalPages")
+                    .asInt();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }
