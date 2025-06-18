@@ -2,6 +2,7 @@ package pl.ceveme.infrastructure.external.justJoinIt;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.hc.core5.http.ParseException;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
@@ -38,20 +39,23 @@ public class JustJoinItScrapper extends AbstractJobScraper {
             for (int p = 1; p <= pages; p++) {
                 log.info("Currnet page {}", p);
                 JsonNode page = objectMapper.readTree(httpClient.fetchContentJJI(String.format(API_URL, p)));
-                // to trzeba jakos przekmini
-                StreamSupport.stream(page.path("data")
-                                .spliterator(), false)
-                        .map(n -> n.path("slug")
-                                .asText(null))
-                        .filter(s -> s != null && !s.isBlank())
-                        .map(s -> JOB_URL + s)
-                        .forEach(all::add);
+                extractLinks(page,all);
                 delay();
             }
             return processUrls(all);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void extractLinks(JsonNode node, List<String> allUrls) {
+        StreamSupport.stream(node.path("data")
+                        .spliterator(), false)
+                .map(n -> n.path("slug")
+                        .asText(null))
+                .filter(s -> s != null && !s.isBlank())
+                .map(s -> JOB_URL + s)
+                .forEach(allUrls::add);
     }
 
     @Override
@@ -95,7 +99,7 @@ public class JustJoinItScrapper extends AbstractJobScraper {
             return first.path("meta")
                     .path("totalPages")
                     .asInt();
-        } catch (IOException e) {
+        } catch (IOException | ParseException e) {
             throw new RuntimeException(e);
         }
 

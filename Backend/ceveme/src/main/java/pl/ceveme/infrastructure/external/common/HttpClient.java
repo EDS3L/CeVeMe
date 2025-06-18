@@ -6,6 +6,7 @@ import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.http.HttpHeaders;
+import org.apache.hc.core5.http.ParseException;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.util.TimeValue;
 import org.springframework.stereotype.Component;
@@ -28,10 +29,12 @@ public class HttpClient implements AutoCloseable {
         try (CloseableHttpResponse response = client.execute(request)) {
             validateResponse(response);
             return extractContent(response);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    public String fetchContentJJI(String url) throws IOException {
+    public String fetchContentJJI(String url) throws IOException, ParseException {
         HttpGet request = createHttpGetJJI(url);
 
         try (CloseableHttpResponse response = client.execute(request)) {
@@ -76,11 +79,8 @@ public class HttpClient implements AutoCloseable {
         }
     }
 
-    private String extractContent(CloseableHttpResponse response) throws IOException {
-        byte[] responseBytes = EntityUtils.toByteArray(response.getEntity());
-        String content = new String(responseBytes, "Windows-1250");
-        return new String(content.getBytes("windows-1250"), StandardCharsets.UTF_8);
-    }
+    private String extractContent(CloseableHttpResponse response) throws IOException, ParseException {
+        return EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);    }
 
 
     @Override

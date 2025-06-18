@@ -83,12 +83,50 @@ public abstract class AbstractJobScraper {
                 .map(JobOffer::getLink)
                 .toList();
 
+
         return urls.stream()
                 .filter(Objects::nonNull)
                 .peek(url -> {
                     if (existing.contains(url)) {
                         logger.info("Deleted: {}", url);
                     }
+                })
+                .filter(url -> !existing.contains(url))
+                .map(this::safeExtractAndSave)
+                .filter(Objects::nonNull)
+                .toList();
+    }
+
+    protected List<JobOffer> processUrlsNoFluffJobs(List<String> urls) {
+        logger.info("All extracted urls NOFLUFF {}", urls.size());
+        List<String> existing = jobOfferRepository.findAll()
+                .stream()
+                .map(JobOffer::getLink)
+                .map(e -> {
+                    int lastIndex = e.lastIndexOf('-');
+                    return e.substring(0, lastIndex);
+                })
+                .toList();
+
+        existing.stream().forEach(System.out::println);
+
+        
+        
+        String urlAfterCut = "";        https://nofluffjobs.com/pl/job/professional-services-engineer-mend-io
+
+
+        return urls.stream()
+                .filter(Objects::nonNull)
+                .peek(url -> {
+                    int lastIndex = url.lastIndexOf('-');
+                    urlAfterCut = url.substring(0,lastIndex);
+                    if (existing.contains(urlAfterCut)) {
+                        logger.info("Deleted from NoFluff: {}", url);
+                    }
+                })
+                .map(e -> {
+                    int lastIndex = e.lastIndexOf('-');
+                    return e.substring(0, lastIndex);
                 })
                 .filter(url -> !existing.contains(url))
                 .map(this::safeExtractAndSave)

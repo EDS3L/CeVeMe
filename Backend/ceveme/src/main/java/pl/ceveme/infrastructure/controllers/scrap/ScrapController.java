@@ -1,16 +1,13 @@
 package pl.ceveme.infrastructure.controllers.scrap;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import pl.ceveme.application.dto.scrap.ScrapResponse;
-import pl.ceveme.application.usecase.scrap.ScrapBulldogJobUseCase;
-import pl.ceveme.application.usecase.scrap.ScrapJustJoinItUseCase;
-import pl.ceveme.application.usecase.scrap.ScrapPracujPlUseCase;
-import pl.ceveme.application.usecase.scrap.ScrapTheProtocolIT;
+import pl.ceveme.application.usecase.scrap.*;
 import pl.ceveme.domain.model.entities.JobOffer;
-import pl.ceveme.infrastructure.external.bulldogJob.BulldogJobScrapper;
-import pl.ceveme.infrastructure.external.rocketJobs.RocketJobsScrapper;
-import pl.ceveme.infrastructure.external.theProtocolIt.TheProtocolItScrapper;
+import pl.ceveme.infrastructure.external.nofluffjobs.NoFluffJobsScrapper;
 
 import java.util.List;
 
@@ -21,14 +18,17 @@ public class ScrapController {
     private final ScrapPracujPlUseCase scrapPracujPlUseCase;
     private final ScrapBulldogJobUseCase scrapBulldogJobUseCase;
     private final ScrapTheProtocolIT scrapProtocolItUseCase;
-    private final RocketJobsScrapper rocketJobsScrapper;
+    private final ScrapRocketJobs scrapRocketJobs;
+    private final NoFluffJobsScrapper scrapper;
 
-    public ScrapController(ScrapJustJoinItUseCase scrapJustJoinItUseCase, ScrapPracujPlUseCase scrapPracujPlUseCase, ScrapBulldogJobUseCase scrapBulldogJobUseCase, ScrapTheProtocolIT scrapProtocolItUseCase, RocketJobsScrapper rocketJobsScrapper) {
+
+    public ScrapController(ScrapJustJoinItUseCase scrapJustJoinItUseCase, ScrapPracujPlUseCase scrapPracujPlUseCase, ScrapBulldogJobUseCase scrapBulldogJobUseCase, ScrapTheProtocolIT scrapProtocolItUseCase, ScrapRocketJobs scrapRocketJobs, NoFluffJobsScrapper scrapper) {
         this.scrapJustJoinItUseCase = scrapJustJoinItUseCase;
         this.scrapPracujPlUseCase = scrapPracujPlUseCase;
         this.scrapBulldogJobUseCase = scrapBulldogJobUseCase;
         this.scrapProtocolItUseCase = scrapProtocolItUseCase;
-        this.rocketJobsScrapper = rocketJobsScrapper;
+        this.scrapRocketJobs = scrapRocketJobs;
+        this.scrapper = scrapper;
     }
 
     @GetMapping("/justJointIt")
@@ -72,9 +72,20 @@ public class ScrapController {
     }
 
     @GetMapping("/rocketJobs")
-    public ResponseEntity<List<JobOffer>> rocketJobs() {
+    public ResponseEntity<ScrapResponse> rocketJobs() {
         try {
-            return ResponseEntity.ok(rocketJobsScrapper.createJobs());
+            return ResponseEntity.ok(scrapRocketJobs.execute());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(new ScrapResponse(null, "Scrap failed!"));
+
+        }
+    }
+
+    @GetMapping("/nofluffjobs")
+    public ResponseEntity<List<JobOffer>> noFluffJobs() {
+        try {
+            return ResponseEntity.ok(scrapper.createJobs());
         } catch (Exception e) {
 //            return ResponseEntity.badRequest()
 //                    .body(new ScrapResponse(null, "Scrap failed!"));

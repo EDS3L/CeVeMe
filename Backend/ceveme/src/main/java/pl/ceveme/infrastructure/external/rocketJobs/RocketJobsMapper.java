@@ -8,7 +8,7 @@ import java.time.LocalDate;
 
 public class RocketJobsMapper {
 
-    public static JobOffer mapToOffer(JsonNode node) {
+    public static JobOffer mapToOffer(JsonNode node, String link,String salary, String requirements, String exp, String employmentType) {
         if (node == null) return null;
         JsonNode hiringOrganisation = node.get("hiringOrganization"); //company
         String title = getString(node, "title");
@@ -27,7 +27,7 @@ public class RocketJobsMapper {
         LocalDate dateAdded = parseDate(getString(node, "datePosted"));
         LocalDate dateEnding = parseDate(getString(node, "validThrough"));
 
-        return new JobOffer(null, title, company, null, location, null, niceToHave, responsibilities, null, null, null, dateAdded, dateEnding);
+        return new JobOffer(link, title, company, salary, location, requirements, niceToHave, responsibilities, null, exp, employmentType, dateAdded, dateEnding);
     }
 
     private static String getString(JsonNode node, String field) {
