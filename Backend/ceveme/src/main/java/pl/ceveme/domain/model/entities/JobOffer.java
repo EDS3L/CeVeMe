@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import pl.ceveme.domain.model.vo.Location;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 @Entity
 @Table(name = "jobOffers")
@@ -175,6 +176,24 @@ public class JobOffer {
     @Override
     public String toString() {
         return super.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        JobOffer jobOffer = (JobOffer) o;
+        return Objects.equals(company, jobOffer.company) &&
+                Objects.equals(dateEnding, jobOffer.dateEnding) &&
+                Objects.equals(dateAdded, jobOffer.dateAdded) &&
+                Objects.equals(niceToHave, jobOffer.niceToHave) &&
+                Objects.equals(responsibilities, jobOffer.responsibilities) &&
+                Objects.equals(title, jobOffer.title);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(company, dateEnding, dateAdded, niceToHave, responsibilities, title);
     }
 
 }

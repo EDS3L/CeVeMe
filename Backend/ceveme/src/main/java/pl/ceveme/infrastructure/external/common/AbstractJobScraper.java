@@ -98,47 +98,53 @@ public abstract class AbstractJobScraper {
     }
 
     protected List<JobOffer> processUrlsNoFluffJobs(List<String> urls) {
-        logger.info("All extracted urls NOFLUFF {}", urls.size());
-        List<String> existing = jobOfferRepository.findAll()
+        logger.info("All extracted urls for NoFluffJobs {}", urls.size());
+
+        List<String> existingLinks = jobOfferRepository.findAll()
                 .stream()
                 .map(JobOffer::getLink)
-                .map(e -> {
-                    int lastIndex = e.lastIndexOf('-');
-                    return e.substring(0, lastIndex);
-                })
                 .toList();
 
-        existing.stream().forEach(System.out::println);
-
-        
-        
-        String urlAfterCut = "";        https://nofluffjobs.com/pl/job/professional-services-engineer-mend-io
-
+        List<JobOffer> existingOffers = jobOfferRepository.findAll();
 
         return urls.stream()
                 .filter(Objects::nonNull)
                 .peek(url -> {
-                    int lastIndex = url.lastIndexOf('-');
-                    urlAfterCut = url.substring(0,lastIndex);
-                    if (existing.contains(urlAfterCut)) {
-                        logger.info("Deleted from NoFluff: {}", url);
+                    if (existingLinks.contains(url)) {
+                        logger.info("URL already exists: {}", url);
                     }
                 })
-                .map(e -> {
-                    int lastIndex = e.lastIndexOf('-');
-                    return e.substring(0, lastIndex);
-                })
-                .filter(url -> !existing.contains(url))
+                .filter(url -> !existingLinks.contains(url))
                 .map(this::safeExtractAndSave)
                 .filter(Objects::nonNull)
+                .filter(newOffer -> {
+                    boolean isDuplicate = existingOffers.contains(newOffer);
+
+                    if (isDuplicate) {
+                        logger.info("Duplicate offer found for: {} at {}", newOffer.getTitle(), newOffer.getCompany());
+                        return false;
+                    }
+
+                    existingOffers.add(newOffer);
+                    return true;
+                })
                 .toList();
     }
 
     private JobOffer safeExtractAndSave(String url) {
         try {
-            JobOffer o = extractJobData(url);
+            JobOffer offer = extractJobData(url);
             delay();
-            return jobOfferRepository.save(o);
+
+            List<JobOffer> existingOffers = jobOfferRepository.findAll();
+            boolean isDuplicate = existingOffers.contains(offer);
+
+            if (isDuplicate) {
+                logger.info("Duplicate detected before save for: {} at {}", offer.getTitle(), offer.getCompany());
+                return null;
+            }
+
+            return jobOfferRepository.save(offer);
         } catch (Exception e) {
             logger.warn("Failed to process {}", url, e);
             return null;
