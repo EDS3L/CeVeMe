@@ -8,6 +8,7 @@ import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import pl.ceveme.application.dto.scrap.JobOfferDTO;
 import pl.ceveme.domain.model.entities.JobOffer;
 import pl.ceveme.domain.repositories.JobOfferRepository;
 import pl.ceveme.infrastructure.external.common.AbstractJobScraper;
@@ -39,7 +40,7 @@ public class JustJoinItScrapper extends AbstractJobScraper {
             for (int p = 1; p <= pages; p++) {
                 log.info("Currnet page {}", p);
                 JsonNode page = objectMapper.readTree(httpClient.fetchContentJJI(String.format(API_URL, p)));
-                extractLinks(page,all);
+                extractLinks(page, all);
                 delay();
             }
             return processUrls(all);
@@ -56,6 +57,12 @@ public class JustJoinItScrapper extends AbstractJobScraper {
                 .filter(s -> s != null && !s.isBlank())
                 .map(s -> JOB_URL + s)
                 .forEach(allUrls::add);
+    }
+
+    public JobOfferDTO getJobDetails(String url) {
+        JobOffer jobOffer = extractJobData(url);
+
+        return new JobOfferDTO(jobOffer.getTitle(), jobOffer.getCompany(), jobOffer.getRequirements(), jobOffer.getCompany(), jobOffer.getResponsibilities(), jobOffer.getExperienceLevel(), "Scrap successful");
     }
 
     @Override
@@ -77,7 +84,7 @@ public class JustJoinItScrapper extends AbstractJobScraper {
                         .text())
                 .orElse(null);
 
-        log.info("Data extracted {} from {} ", json,link);
+        log.info("Data extracted {} from {} ", json, link);
         return JobOfferJustJoinItMapper.mapToOffer(json, link, tech, exp, salary, empType);
     }
 

@@ -1,18 +1,17 @@
 package pl.ceveme.application.usecase.scrap;
 
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import pl.ceveme.application.dto.scrap.ScrapResponse;
-import pl.ceveme.infrastructure.external.rocketJobs.RocketJobsScrapper;
+import pl.ceveme.infrastructure.external.theProtocolIt.TheProtocolItScrapper;
 
 import java.io.IOException;
 
 @Service
-public class ScrapRocketJobs {
+public class ScrapTheProtocolITUseCase {
 
-    private final RocketJobsScrapper scrapper;
+    private final TheProtocolItScrapper scrapper;
 
-    public ScrapRocketJobs(RocketJobsScrapper scrapper) {
+    public ScrapTheProtocolITUseCase(TheProtocolItScrapper scrapper) {
         this.scrapper = scrapper;
     }
 

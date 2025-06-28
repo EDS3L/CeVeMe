@@ -57,7 +57,7 @@ public class RocketJobsScrapper extends AbstractJobScraper {
             int totalPage = totalPageNumber();
             log.info("Total pages Rocket Jobs {}", totalPage);
             List<String> allUrls = new ArrayList<>();
-            for (int i = 1; i <= 5; i++) {
+            for (int i = 1; i <= totalPage; i++) {
                 log.info("Currnet page Rocket Jobs {}", i);
                 JsonNode page = objectMapper.readTree(httpClient.fetchContentJJI(String.format(API_URL, i)));
                 extractLinks(page, allUrls);
