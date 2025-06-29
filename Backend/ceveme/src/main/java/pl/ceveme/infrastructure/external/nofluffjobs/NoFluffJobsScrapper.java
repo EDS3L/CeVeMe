@@ -7,6 +7,7 @@ import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import pl.ceveme.application.dto.scrap.JobOfferDTO;
 import pl.ceveme.domain.model.entities.JobOffer;
 import pl.ceveme.domain.repositories.JobOfferRepository;
 import pl.ceveme.infrastructure.external.common.AbstractJobScraper;
@@ -39,6 +40,10 @@ public class NoFluffJobsScrapper extends AbstractJobScraper {
                 .filter(t -> !t.isBlank())
                 .distinct()
                 .collect(Collectors.joining(", "));
+    }
+    public JobOfferDTO getJobDetails(String url) {
+        JobOffer jobOffer = extractJobData(url);
+        return new JobOfferDTO(jobOffer.getTitle(), jobOffer.getCompany(), jobOffer.getRequirements(), jobOffer.getCompany(), jobOffer.getResponsibilities(), jobOffer.getExperienceLevel(), "Scrap successful");
     }
 
     public static LocalDate extractOfferValidUntil(Document doc) {

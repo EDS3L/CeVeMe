@@ -1,7 +1,4 @@
-// pl/ceveme/infrastructure/external/bulldogJob/BulldogJobScrapper.java
 package pl.ceveme.infrastructure.external.bulldogJob;
-
-
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,6 +8,7 @@ import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import pl.ceveme.application.dto.scrap.JobOfferDTO;
 import pl.ceveme.domain.model.entities.JobOffer;
 import pl.ceveme.domain.repositories.JobOfferRepository;
 import pl.ceveme.infrastructure.external.common.AbstractJobScraper;
@@ -38,6 +36,11 @@ public class BulldogJobScrapper extends AbstractJobScraper {
     public List<JobOffer> createJobs() throws IOException {
         List<String> urls = fetchAllJobLinks();
         return processUrls(urls);
+    }
+
+    public JobOfferDTO getJobDetails(String url) throws Exception {
+        JobOffer jobOffer = extractJobData(url);
+        return new JobOfferDTO(jobOffer.getTitle(), jobOffer.getCompany(), jobOffer.getRequirements(), jobOffer.getCompany(), jobOffer.getResponsibilities(), jobOffer.getExperienceLevel(), "Scrap successful");
     }
 
     private List<String> fetchAllJobLinks() throws IOException {

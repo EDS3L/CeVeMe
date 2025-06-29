@@ -61,7 +61,6 @@ public class JustJoinItScrapper extends AbstractJobScraper {
 
     public JobOfferDTO getJobDetails(String url) {
         JobOffer jobOffer = extractJobData(url);
-
         return new JobOfferDTO(jobOffer.getTitle(), jobOffer.getCompany(), jobOffer.getRequirements(), jobOffer.getCompany(), jobOffer.getResponsibilities(), jobOffer.getExperienceLevel(), "Scrap successful");
     }
 
