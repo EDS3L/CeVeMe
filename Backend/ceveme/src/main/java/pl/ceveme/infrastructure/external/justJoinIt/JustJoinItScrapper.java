@@ -8,7 +8,7 @@ import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import pl.ceveme.application.dto.scrap.JobOfferDTO;
+import pl.ceveme.application.dto.scrap.JobOfferRequest;
 import pl.ceveme.domain.model.entities.JobOffer;
 import pl.ceveme.domain.repositories.JobOfferRepository;
 import pl.ceveme.infrastructure.external.common.AbstractJobScraper;
@@ -59,9 +59,9 @@ public class JustJoinItScrapper extends AbstractJobScraper {
                 .forEach(allUrls::add);
     }
 
-    public JobOfferDTO getJobDetails(String url) {
+    public JobOfferRequest getJobDetails(String url) {
         JobOffer jobOffer = extractJobData(url);
-        return new JobOfferDTO(jobOffer.getTitle(), jobOffer.getCompany(), jobOffer.getRequirements(), jobOffer.getCompany(), jobOffer.getResponsibilities(), jobOffer.getExperienceLevel(), "Scrap successful");
+        return new JobOfferRequest(jobOffer.getTitle(), jobOffer.getCompany(), jobOffer.getRequirements(), jobOffer.getCompany(), jobOffer.getResponsibilities(), jobOffer.getExperienceLevel(), "Scrap successful");
     }
 
     @Override

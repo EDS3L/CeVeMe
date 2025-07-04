@@ -26,7 +26,7 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ApplicationHistory> applicationHistoryList;
 
-    @OneToOne
+    @OneToOne(mappedBy = "user",cascade = CascadeType.ALL, orphanRemoval = true)
     private EmploymentInfo employmentInfo;
 
     private boolean isActive;

@@ -6,7 +6,7 @@ import org.apache.hc.core5.http.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import pl.ceveme.application.dto.scrap.JobOfferDTO;
+import pl.ceveme.application.dto.scrap.JobOfferRequest;
 import pl.ceveme.domain.model.entities.JobOffer;
 import pl.ceveme.domain.repositories.JobOfferRepository;
 import pl.ceveme.infrastructure.external.common.AbstractJobScraper;
@@ -40,10 +40,10 @@ public class SolidJobsScrapper extends AbstractJobScraper {
         }
     }
 
-    public JobOfferDTO getJobDetails(String url) throws Exception {
+    public JobOfferRequest getJobDetails(String url) throws Exception {
         String finalUrl = url.replaceAll("https://solid.jobs/offer/", BASE_API_URL + "/");
         JobOffer jobOffer = extractJobData(finalUrl);
-        return new JobOfferDTO(jobOffer.getTitle(), jobOffer.getCompany(), jobOffer.getRequirements(), jobOffer.getCompany(), jobOffer.getResponsibilities(), jobOffer.getExperienceLevel(), "Scrap successful");
+        return new JobOfferRequest(jobOffer.getTitle(), jobOffer.getCompany(), jobOffer.getRequirements(), jobOffer.getCompany(), jobOffer.getResponsibilities(), jobOffer.getExperienceLevel(), "Scrap successful");
     }
 
     private List<String> fetchJobOfferLinks() throws IOException, ParseException {

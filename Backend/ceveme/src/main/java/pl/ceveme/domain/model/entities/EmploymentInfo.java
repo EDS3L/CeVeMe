@@ -33,7 +33,7 @@ public class EmploymentInfo {
     public EmploymentInfo() {
     }
 
-    public EmploymentInfo(List<Language> languages, List<Certificate> certificates, List<Experience> experiences, List<Course> courses, List<Skill> skills ) {
+    public EmploymentInfo(List<Language> languages, List<Certificate> certificates, List<Experience> experiences, List<Course> courses, List<Skill> skills) {
         this.languages = languages;
         this.certificates = certificates;
         this.experiences = experiences;
@@ -77,14 +77,6 @@ public class EmploymentInfo {
         this.courses = courses;
     }
 
-    public List<Skill> getSoftSkills() {
-        return skills;
-    }
-
-    public void setSoftSkills(List<Skill> skills) {
-        this.skills = skills;
-    }
-
     public List<Skill> getSkills() {
         return skills;
     }
@@ -93,5 +85,11 @@ public class EmploymentInfo {
         this.skills = skills;
     }
 
+    public User getUser() {
+        return user;
+    }
 
+    public void setUser(User user) {
+        this.user = user;
+    }
 }

@@ -2,8 +2,6 @@ package pl.ceveme.domain.model.entities;
 
 import jakarta.persistence.*;
 
-import java.lang.reflect.Type;
-
 @Entity
 @Table(name = "Skills")
 public class Skill {
@@ -47,15 +45,14 @@ public class Skill {
         this.type = type;
     }
 
-    public enum Type {
-        SOFT, TECHNICAL
-    }
-
     public EmploymentInfo getEmploymentInfo() {
         return employmentInfo;
     }
-
     public void setEmploymentInfo(EmploymentInfo employmentInfo) {
         this.employmentInfo = employmentInfo;
+    }
+
+    public enum Type {
+        SOFT, TECHNICAL
     }
 }
