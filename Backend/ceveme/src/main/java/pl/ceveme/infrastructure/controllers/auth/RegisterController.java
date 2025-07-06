@@ -1,7 +1,6 @@
 package pl.ceveme.infrastructure.controllers.auth;
 
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,16 +23,11 @@ public class RegisterController {
 
     @PostMapping("/register")
     public ResponseEntity<RegisterUserResponse> login(@RequestBody RegisterUserRequest request) {
-        try {
-            RegisterUserResponse response = registerUserUseCase.register(request);
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new RegisterUserResponse(null, null, null, "Invalid credentials"));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new RegisterUserResponse(null, null,null, "An error occurred"));
-        }
+
+        RegisterUserResponse response = registerUserUseCase.register(request);
+        return ResponseEntity.ok(response);
+
     }
+
 }
 

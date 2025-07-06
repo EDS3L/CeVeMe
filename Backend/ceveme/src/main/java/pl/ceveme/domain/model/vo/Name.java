@@ -9,18 +9,14 @@ public record Name(String name) {
 
 
     public Name {
-        try {
-            validate(name);
-        } catch (IllegalFormatException e) {
-            throw new IllegalArgumentException("Invalid name: " + e.getMessage(), e);
-        }
+        validate(name);
     }
 
     private static void validate(String name) {
         if (name == null || name.isEmpty()) {
             throw new IllegalArgumentException("Name cannot be null or empty");
         }
-        if (name.length() < 2) {
+        if (name.length() < 3) {
             throw new IllegalArgumentException("Name must be at least 2 characters long");
         }
         if (!name.matches("[a-zA-Z]*")) {

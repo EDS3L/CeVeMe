@@ -92,4 +92,29 @@ public class EmploymentInfo {
     public void setUser(User user) {
         this.user = user;
     }
+
+    public void addCertificate(Certificate certificate) {
+        this.certificates.add(certificate);
+        certificate.setEmploymentInfo(this);
+    }
+
+    public void addCourse(Course course) {
+        this.courses.add(course);
+        course.setEmploymentInfo(this);
+    }
+
+    public void addExperience(Experience experience) {
+        this.experiences.add(experience);
+        experience.setEmploymentInfo(this);
+    }
+
+    public void addLanguage(Language language) {
+        this.languages.add(language);
+        language.setEmploymentInfo(this);
+    }
+
+    public void addSkill(Skill skill) {
+        this.skills.add(skill);
+        skill.setEmploymentInfo(this);
+    }
 }

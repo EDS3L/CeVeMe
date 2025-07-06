@@ -1,122 +1,90 @@
 package pl.ceveme.application.mapper;
 
+import org.mapstruct.*;
 import pl.ceveme.application.dto.employmentInfo.*;
 import pl.ceveme.domain.model.entities.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-public final class EmploymentInfoMapper {
+@Mapper(componentModel = "spring")
+public interface EmploymentInfoMapper {
 
-    private EmploymentInfoMapper() {
-    }
+    @Mapping(target = "languages", source = "languages")
+    @Mapping(target = "certificates", source = "certificates")
+    @Mapping(target = "experiences", source = "experiences")
+    @Mapping(target = "courses", source = "courses")
+    @Mapping(target = "skills", source = "skills")
+    EmploymentInfo toEntity(EmploymentInfoRequest dto);
 
-    public static EmploymentInfo toEntity(EmploymentInfoRequest dto) {
+    @Mapping(target = "languages", source = "languages")
+    @Mapping(target = "certificates", source = "certificates")
+    @Mapping(target = "experiences", source = "experiences")
+    @Mapping(target = "courses", source = "courses")
+    @Mapping(target = "skills", source = "skills")
+    EmploymentInfoResponse toResponse(EmploymentInfo entity);
 
-        EmploymentInfo info = new EmploymentInfo();
+    @Mapping(target = "employmentInfo", ignore = true)
+    Language toEntity(LanguageDto dto);
 
-        if (dto.languages() != null) {
-            List<Language> langs = dto.languages()
-                    .stream()
-                    .map(EmploymentInfoMapper::toEntity)
-                    .peek(l -> l.setEmploymentInfo(info))
-                    .collect(Collectors.toList());
-            info.setLanguages(langs);
+    @Mapping(target = "employmentInfo", ignore = true)
+    Certificate toEntity(CertificateDto dto);
+
+    @Mapping(target = "employmentInfo", ignore = true)
+    Experience toEntity(ExperienceDto dto);
+
+    @Mapping(target = "employmentInfo", ignore = true)
+    Course toEntity(CourseDto dto);
+
+    @Mapping(target = "employmentInfo", ignore = true)
+    @Mapping(target = "type", source = "type", qualifiedByName = "stringToSkillType")
+    Skill toEntity(SkillDto dto);
+
+    LanguageDto toDto(Language entity);
+    CertificateDto toDto(Certificate entity);
+    ExperienceDto toDto(Experience entity);
+    CourseDto toDto(Course entity);
+    SkillDto toDto(Skill entity);
+
+    List<Language> toLanguageEntityList(List<LanguageDto> dtoList);
+    List<Certificate> toCertificateEntityList(List<CertificateDto> dtoList);
+    List<Experience> toExperienceEntityList(List<ExperienceDto> dtoList);
+    List<Course> toCourseEntityList(List<CourseDto> dtoList);
+    List<Skill> toSkillEntityList(List<SkillDto> dtoList);
+
+    List<LanguageDto> toLanguageDtoList(List<Language> entityList);
+    List<CertificateDto> toCertificateDtoList(List<Certificate> entityList);
+    List<ExperienceDto> toExperienceDtoList(List<Experience> entityList);
+    List<CourseDto> toCourseDtoList(List<Course> entityList);
+    List<SkillDto> toSkillDtoList(List<Skill> entityList);
+
+    @Named("stringToSkillType")
+    default Skill.Type stringToSkillType(Object type) {
+        if (type == null) {
+            return null;
         }
-        if (dto.certificates() != null) {
-            List<Certificate> certs = dto.certificates()
-                    .stream()
-                    .map(EmploymentInfoMapper::toEntity)
-                    .peek(c -> c.setEmploymentInfo(info))
-                    .collect(Collectors.toList());
-            info.setCertificates(certs);
+        return Skill.Type.valueOf(String.valueOf(type));
+    }
+
+    default EmploymentInfoResponse toResponse(EmploymentInfo entity, String message) {
+        return toResponse(entity);
+    }
+
+    @AfterMapping
+    default void setEmploymentInfoRelations(@MappingTarget EmploymentInfo employmentInfo) {
+        if (employmentInfo.getLanguages() != null) {
+            employmentInfo.getLanguages().forEach(lang -> lang.setEmploymentInfo(employmentInfo));
         }
-        if (dto.experiences() != null) {
-            List<Experience> exps = dto.experiences()
-                    .stream()
-                    .map(EmploymentInfoMapper::toEntity)
-                    .peek(e -> e.setEmploymentInfo(info))
-                    .collect(Collectors.toList());
-            info.setExperiences(exps);
+        if (employmentInfo.getCertificates() != null) {
+            employmentInfo.getCertificates().forEach(cert -> cert.setEmploymentInfo(employmentInfo));
         }
-        if (dto.courses() != null) {
-            List<Course> courses = dto.courses()
-                    .stream()
-                    .map(EmploymentInfoMapper::toEntity)
-                    .peek(c -> c.setEmploymentInfo(info))
-                    .collect(Collectors.toList());
-            info.setCourses(courses);
+        if (employmentInfo.getExperiences() != null) {
+            employmentInfo.getExperiences().forEach(exp -> exp.setEmploymentInfo(employmentInfo));
         }
-        if (dto.skills() != null) {
-            List<Skill> skills = dto.skills()
-                    .stream()
-                    .map(EmploymentInfoMapper::toEntity)
-                    .peek(s -> s.setEmploymentInfo(info))
-                    .collect(Collectors.toList());
-            info.setSkills(skills);
+        if (employmentInfo.getCourses() != null) {
+            employmentInfo.getCourses().forEach(course -> course.setEmploymentInfo(employmentInfo));
         }
-        return info;
-    }
-
-    public static EmploymentInfoResponse toResponse(EmploymentInfo entity, String message) {
-        return new EmploymentInfoResponse(
-                entity.getLanguages() == null ? null :
-                        entity.getLanguages().stream().map(EmploymentInfoMapper::toDto).toList(),
-
-                entity.getCertificates() == null ? null :
-                        entity.getCertificates().stream().map(EmploymentInfoMapper::toDto).toList(),
-
-                entity.getExperiences() == null ? null :
-                        entity.getExperiences().stream().map(EmploymentInfoMapper::toDto).toList(),
-
-                entity.getCourses() == null ? null :
-                        entity.getCourses().stream().map(EmploymentInfoMapper::toDto).toList(),
-
-                entity.getSkills() == null ? null :
-                        entity.getSkills().stream().map(EmploymentInfoMapper::toDto).toList(),
-
-                message
-        );
-    }
-
-    private static Language toEntity(LanguageDto d) {
-        return new Language(d.name(), d.level());
-    }
-
-    private static LanguageDto toDto(Language l) {
-        return new LanguageDto(l.getName(), l.getLevel());
-    }
-
-    private static Certificate toEntity(CertificateDto d) {
-        return new Certificate(d.name(), d.dateOfCertificate());
-    }
-
-    private static CertificateDto toDto(Certificate c) {
-        return new CertificateDto(c.getName(), c.getDateOfCertificate());
-    }
-
-    private static Experience toEntity(ExperienceDto d) {
-        return new Experience(d.companyName(), d.startingDate(), d.endDate(), d.currently(), d.positionName(), d.jobDescription(), d.jobAchievements());
-    }
-
-    private static ExperienceDto toDto(Experience e) {
-        return new ExperienceDto(e.getCompanyName(), e.getStartingDate(), e.getEndDate(), e.getCurrently(), e.getPositionName(), e.getJobDescription(), e.getJobAchievements());
-    }
-
-    private static Course toEntity(CourseDto d) {
-        return new Course(d.courseName(), d.dateOfCourse(), d.courseDescription());
-    }
-
-    private static CourseDto toDto(Course c) {
-        return new CourseDto(c.getCourseName(), c.getDateOfCourse(), c.getCourseDescription());
-    }
-
-    private static Skill toEntity(SkillDto d) {
-        return new Skill(d.name(), Skill.Type.valueOf(d.type()));
-    }
-
-    private static SkillDto toDto(Skill s) {
-        return new SkillDto(s.getName(), s.getType()
-                .name());
+        if (employmentInfo.getSkills() != null) {
+            employmentInfo.getSkills().forEach(skill -> skill.setEmploymentInfo(employmentInfo));
+        }
     }
 }

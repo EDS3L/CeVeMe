@@ -2,17 +2,11 @@ package pl.ceveme.domain.model.vo;
 
 import jakarta.persistence.Embeddable;
 
-import java.util.IllegalFormatException;
-
 @Embeddable
 public record Password(String password) {
 
     public Password {
-        try {
-            validate(password);
-        } catch (IllegalFormatException e) {
-            throw new IllegalArgumentException("Invalid password: " + e.getMessage(), e);
-        }
+        validate(password);
     }
 
     private static void validate(String password) {
@@ -24,6 +18,9 @@ public record Password(String password) {
         }
         if (!password.matches(".*[A-Z].*")) {
             throw new IllegalArgumentException("Password must contain at least one uppercase letter.");
+        }
+        if (!password.matches(".*[a-z].*")) {
+            throw new IllegalArgumentException("Password must contain at least one lowercase letter.");
         }
         if (!password.matches(".*[0-9].*")) {
             throw new IllegalArgumentException("Password must contain at least one digit.");

@@ -8,7 +8,6 @@ public record Email(String email) {
 
     public Email {
         validate(email);
-
     }
 
 

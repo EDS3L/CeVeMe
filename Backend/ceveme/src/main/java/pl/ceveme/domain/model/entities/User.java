@@ -148,4 +148,44 @@ public class User {
     public void setActive(boolean active) {
         isActive = active;
     }
+
+    public void addCertificate(Certificate certificate) {
+        if (this.employmentInfo == null) {
+            this.employmentInfo = new EmploymentInfo();
+            this.employmentInfo.setUser(this);
+        }
+        this.employmentInfo.addCertificate(certificate);
+    }
+
+    public void addCourse(Course course) {
+        if (this.employmentInfo == null) {
+            this.employmentInfo = new EmploymentInfo();
+            this.employmentInfo.setUser(this);
+        }
+        this.employmentInfo.addCourse(course);
+    }
+
+    public void addExperience(Experience experience) {
+        if (this.employmentInfo == null) {
+            this.employmentInfo = new EmploymentInfo();
+            this.employmentInfo.setUser(this);
+        }
+        this.employmentInfo.addExperience(experience);
+    }
+
+    public void addLanguage(Language language) {
+        if (this.employmentInfo == null) {
+            this.employmentInfo = new EmploymentInfo();
+            this.employmentInfo.setUser(this);
+        }
+        this.employmentInfo.addLanguage(language);
+    }
+
+    public void addSkill(Skill skill) {
+        if (this.employmentInfo == null) {
+            this.employmentInfo = new EmploymentInfo();
+            this.employmentInfo.setUser(this);
+        }
+        this.employmentInfo.addSkill(skill);
+    }
 }

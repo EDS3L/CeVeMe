@@ -1,8 +1,9 @@
-package pl.ceveme.application.dto.employmentInfo;
+package pl.ceveme.application.dto.course;
 
 import java.time.LocalDate;
 
-public record CourseDto(
+public record CourseRequest(
+        String email,
         String courseName,
         LocalDate dateOfCourse,
         String courseDescription

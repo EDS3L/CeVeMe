@@ -6,10 +6,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.ceveme.application.dto.scrap.ScrapResponse;
 import pl.ceveme.application.usecase.scrap.*;
-import pl.ceveme.domain.model.entities.JobOffer;
-import pl.ceveme.infrastructure.external.solidJobs.SolidJobsScrapper;
 
-import java.util.List;
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/scrap")
@@ -34,75 +32,51 @@ public class ScrapController {
 
     @GetMapping("/justJointIt")
     public ResponseEntity<ScrapResponse> justJoinIt() {
-        try {
-            return ResponseEntity.ok(scrapJustJoinItUseCase.execute());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body(new ScrapResponse(null, "Scrap failed!"));
-        }
+
+        return ResponseEntity.ok(scrapJustJoinItUseCase.execute());
+
     }
 
     @GetMapping("/pracujPl")
-    public ResponseEntity<ScrapResponse> pracujPl() {
-        try {
-            return ResponseEntity.ok(scrapPracujPlUseCase.execute());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body(new ScrapResponse(null, "Scrap failed!"));
-        }
+    public ResponseEntity<ScrapResponse> pracujPl() throws IOException {
+
+        return ResponseEntity.ok(scrapPracujPlUseCase.execute());
+
     }
 
     @GetMapping("/bulldogJob")
-    public ResponseEntity<ScrapResponse> bulldogJob() {
-        try {
-            return ResponseEntity.ok(scrapBulldogJobUseCase.execute());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body(new ScrapResponse(null, "Scrap failed!"));
-        }
+    public ResponseEntity<ScrapResponse> bulldogJob() throws IOException {
+        return ResponseEntity.ok(scrapBulldogJobUseCase.execute());
+
     }
 
     @GetMapping("/theProtocolIt")
-    public ResponseEntity<ScrapResponse> thrProtocolIt() {
-        try {
-            return ResponseEntity.ok(scrapProtocolItUseCase.execute());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body(new ScrapResponse(null, "Scrap failed!"));
-        }
+    public ResponseEntity<ScrapResponse> thrProtocolIt() throws IOException {
+
+        return ResponseEntity.ok(scrapProtocolItUseCase.execute());
+
     }
 
     @GetMapping("/rocketJobs")
-    public ResponseEntity<ScrapResponse> rocketJobs() {
-        try {
-            return ResponseEntity.ok(scrapRocketJobsUseCase.execute());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body(new ScrapResponse(null, "Scrap failed!"));
+    public ResponseEntity<ScrapResponse> rocketJobs() throws IOException {
 
-        }
+        return ResponseEntity.ok(scrapRocketJobsUseCase.execute());
+
     }
 
     @GetMapping("/nofluffjobs")
-    public ResponseEntity<ScrapResponse> noFluffJobs() {
-        try {
-            return ResponseEntity.ok(scrapNoFluffJobsUseCase.execute());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body(new ScrapResponse(null, "Scrap failed!"));
+    public ResponseEntity<ScrapResponse> noFluffJobs() throws IOException {
 
-        }
+        return ResponseEntity.ok(scrapNoFluffJobsUseCase.execute());
+
     }
 
 
     @GetMapping("/solidJobs")
-    public ResponseEntity<ScrapResponse> SolidJobs() {
-        try {
-            return ResponseEntity.ok(scrapSolidJobsUseCase.execute());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body(new ScrapResponse(null, "Scrap failed!"));
-        }
+    public ResponseEntity<ScrapResponse> SolidJobs() throws Exception {
+
+        return ResponseEntity.ok(scrapSolidJobsUseCase.execute());
+
     }
 
 

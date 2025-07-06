@@ -15,14 +15,12 @@ import pl.ceveme.domain.repositories.*;
 @Service
 public class CreateEmploymentInfoUseCase {
 
-    private static final Logger log = LoggerFactory.getLogger(CreateEmploymentInfoUseCase.class);
-
     private final UserRepository userRepository;
-    private final EmploymentInfoRepository employmentInfoRepository;
+    private final EmploymentInfoMapper mapper;
 
-    public CreateEmploymentInfoUseCase(UserRepository userRepository, EmploymentInfoRepository employmentInfoRepository) {
+    public CreateEmploymentInfoUseCase(UserRepository userRepository, EmploymentInfoMapper mapper) {
         this.userRepository = userRepository;
-        this.employmentInfoRepository = employmentInfoRepository;
+        this.mapper = mapper;
     }
 
     @Transactional
@@ -31,7 +29,7 @@ public class CreateEmploymentInfoUseCase {
         User user = userRepository.findByEmail(new Email(request.email()))
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        EmploymentInfo info = EmploymentInfoMapper.toEntity(request);
+        EmploymentInfo info = mapper.toEntity(request);
 
         user.setEmploymentInfo(info);
         info.setUser(user);
@@ -40,7 +38,7 @@ public class CreateEmploymentInfoUseCase {
 
 
 
-        return EmploymentInfoMapper.toResponse(info, "Successful create your");
+        return mapper.toResponse(info, "Successful create your");
     }
 
 

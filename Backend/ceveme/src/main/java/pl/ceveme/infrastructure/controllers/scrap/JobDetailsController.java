@@ -39,75 +39,57 @@ public class JobDetailsController {
 
     @GetMapping("/justJoinIt")
     public JobOfferRequest justJoinIt(@RequestParam String url) {
-        try {
-            return ResponseEntity.ok(justJoinItScrapper.getJobDetails(url))
-                    .getBody();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new JobOfferRequest(null,null,null,null,null,null,"Failed to get job details"))
-                    .getBody();
-        }
+        return ResponseEntity.ok(justJoinItScrapper.getJobDetails(url))
+                .getBody();
+
     }
 
     @GetMapping("/bullDogJob")
-    public JobOfferRequest bullDogJob(@RequestParam String url) {
-        try {
-            return ResponseEntity.ok(bulldogJobScrapper.getJobDetails(url))
-                    .getBody();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new JobOfferRequest(null,null,null,null,null,null,"Failed to get job details"))
-                    .getBody();
-        }
+    public JobOfferRequest bullDogJob(@RequestParam String url) throws Exception {
+
+        return ResponseEntity.ok(bulldogJobScrapper.getJobDetails(url))
+                .getBody();
+
     }
+
     @GetMapping("/noFluffJobs")
     public JobOfferRequest noFluffJobs(@RequestParam String url) {
-        try {
-            return ResponseEntity.ok(noFluffJobsScrapper.getJobDetails(url))
-                    .getBody();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new JobOfferRequest(null,null,null,null,null,null,"Failed to get job details"))
-                    .getBody();
-        }
+
+        return ResponseEntity.ok(noFluffJobsScrapper.getJobDetails(url))
+                .getBody();
+
     }
+
     @GetMapping("/pracujPl")
-    public JobOfferRequest pracujPl(@RequestParam String url) {
-        try {
-            return ResponseEntity.ok(pracujPlScrapper.getJobDetails(url))
-                    .getBody();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new JobOfferRequest(null,null,null,null,null,null,"Failed to get job details"))
-                    .getBody();
-        }
+    public JobOfferRequest pracujPl(@RequestParam String url) throws Exception {
+
+        return ResponseEntity.ok(pracujPlScrapper.getJobDetails(url))
+                .getBody();
+
     }
+
     @GetMapping("/rocketJobs")
-    public JobOfferRequest rocketJobs(@RequestParam String url) {
-        try {
-            return ResponseEntity.ok(rocketJobsScrapper.getJobDetails(url))
-                    .getBody();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new JobOfferRequest(null,null,null,null,null,null,"Failed to get job details"))
-                    .getBody();
-        }
+    public JobOfferRequest rocketJobs(@RequestParam String url) throws Exception {
+
+        return ResponseEntity.ok(rocketJobsScrapper.getJobDetails(url))
+                .getBody();
+
     }
+
     @GetMapping("/solidJobs")
-    public JobOfferRequest solidJobs(@RequestParam String url) {
-        try {
-            return ResponseEntity.ok(solidJobsScrapper.getJobDetails(url))
-                    .getBody();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new JobOfferRequest(null,null,null,null,null,null,"Failed to get job details"))
-                    .getBody();
-        }
+    public JobOfferRequest solidJobs(@RequestParam String url) throws Exception {
+
+        return ResponseEntity.ok(solidJobsScrapper.getJobDetails(url))
+                .getBody();
+
     }
 
     @GetMapping("/theProtocolIt")
-    public JobOfferRequest theProtocolIt(@RequestParam String url) {
-        try {
-            return ResponseEntity.ok(theProtocolItScrapper.getJobDetails(url))
-                    .getBody();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new JobOfferRequest(null,null,null,null,null,null,"Failed to get job details"))
-                    .getBody();
-        }
+    public JobOfferRequest theProtocolIt(@RequestParam String url) throws Exception {
+
+        return ResponseEntity.ok(theProtocolItScrapper.getJobDetails(url))
+                .getBody();
+
     }
 
 

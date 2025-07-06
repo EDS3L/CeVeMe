@@ -1,8 +1,9 @@
-package pl.ceveme.application.dto.employmentInfo;
+package pl.ceveme.application.dto.experience;
 
 import java.util.Date;
 
-public record ExperienceDto(
+public record ExperienceRequest(
+        String email,
         String companyName,
         Date startingDate,
         Date endDate,
