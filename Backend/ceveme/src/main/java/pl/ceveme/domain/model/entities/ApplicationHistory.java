@@ -26,7 +26,6 @@ public class ApplicationHistory {
     @OneToOne
     private Cv cv;
 
-
     public ApplicationHistory() {
     }
 

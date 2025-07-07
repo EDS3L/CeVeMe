@@ -1,7 +1,10 @@
 package pl.ceveme.domain.model.entities;
 
 import jakarta.persistence.*;
-import pl.ceveme.domain.model.vo.*;
+import pl.ceveme.domain.model.vo.Email;
+import pl.ceveme.domain.model.vo.Name;
+import pl.ceveme.domain.model.vo.PhoneNumber;
+import pl.ceveme.domain.model.vo.Surname;
 
 import java.util.List;
 
@@ -13,11 +16,15 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Embedded private Name name;
-    @Embedded private Surname surname;
-    @Embedded private PhoneNumber phoneNumber;
+    @Embedded
+    private Name name;
+    @Embedded
+    private Surname surname;
+    @Embedded
+    private PhoneNumber phoneNumber;
     @Column(unique = true)
-    @Embedded private Email email;
+    @Embedded
+    private Email email;
     private String password;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -26,7 +33,7 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ApplicationHistory> applicationHistoryList;
 
-    @OneToOne(mappedBy = "user",cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private EmploymentInfo employmentInfo;
 
     private boolean isActive;
@@ -47,8 +54,8 @@ public class User {
         this.isActive = isActive;
     }
 
-    public static User createNewUser(Name name, Surname surname,PhoneNumber phoneNumber,String password, Email email, List<Cv> cvList, List<ApplicationHistory> applicationHistoryList, EmploymentInfo employmentInfo ) {
-        return new User(name,surname,phoneNumber,email, password,cvList,applicationHistoryList,employmentInfo,false);
+    public static User createNewUser(Name name, Surname surname, PhoneNumber phoneNumber, String password, Email email, List<Cv> cvList, List<ApplicationHistory> applicationHistoryList, EmploymentInfo employmentInfo) {
+        return new User(name, surname, phoneNumber, email, password, cvList, applicationHistoryList, employmentInfo, false);
     }
 
     public void changePassword(String password) {
@@ -70,7 +77,6 @@ public class User {
     public void changePhoneNumber(PhoneNumber phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
-
 
 
     public long getId() {

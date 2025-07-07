@@ -6,12 +6,11 @@ import org.springframework.stereotype.Service;
 import pl.ceveme.application.dto.certificate.CertificateRequest;
 import pl.ceveme.application.dto.certificate.CertificateResponse;
 import pl.ceveme.domain.model.entities.Certificate;
-import pl.ceveme.domain.model.entities.EmploymentInfo;
 import pl.ceveme.domain.model.entities.User;
 import pl.ceveme.domain.model.vo.Email;
 import pl.ceveme.domain.repositories.UserRepository;
 
-import java.util.List;
+import java.util.Date;
 
 @Service
 public class CreateCertificateUseCase {

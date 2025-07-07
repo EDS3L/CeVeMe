@@ -2,6 +2,7 @@ package pl.ceveme.domain.model.entities;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -13,19 +14,19 @@ public class EmploymentInfo {
     private long id;
 
     @OneToMany(mappedBy = "employmentInfo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Language> languages;
+    private List<Language> languages = new ArrayList<>();
 
     @OneToMany(mappedBy = "employmentInfo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Certificate> certificates;
+    private List<Certificate> certificates = new ArrayList<>();
 
     @OneToMany(mappedBy = "employmentInfo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Experience> experiences;
+    private List<Experience> experiences = new ArrayList<>();
 
     @OneToMany(mappedBy = "employmentInfo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Course> courses;
+    private List<Course> courses = new ArrayList<>();
 
     @OneToMany(mappedBy = "employmentInfo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Skill> skills;
+    private List<Skill> skills = new ArrayList<>();
 
     @OneToOne
     private User user;
