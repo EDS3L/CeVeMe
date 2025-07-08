@@ -25,7 +25,6 @@ public class CreateEmploymentInfoUseCase {
 
     @Transactional
     public EmploymentInfoResponse execute(EmploymentInfoRequest request) {
-
         User user = userRepository.findByEmail(new Email(request.email()))
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
@@ -36,9 +35,7 @@ public class CreateEmploymentInfoUseCase {
 
         userRepository.save(user);
 
-
-
-        return mapper.toResponse(info, "Successful create your");
+        return mapper.toResponse(info, "Successful create your infos");
     }
 
 

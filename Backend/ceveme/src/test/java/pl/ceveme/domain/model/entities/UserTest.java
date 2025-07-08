@@ -1,7 +1,11 @@
 package pl.ceveme.domain.model.entities;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import pl.ceveme.domain.model.vo.*;
+import pl.ceveme.domain.repositories.UserRepository;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -10,11 +14,13 @@ import java.util.List;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.when;
 
-
 class UserTest {
 
+
+
+
     @Test
-    void createNewUser() {
+    void should_createUser_when_valuesAreCorrect() {
         //given
         Name name = new Name("Mateusz");
         Surname surname = new Surname("Kowalski");
@@ -44,7 +50,7 @@ class UserTest {
     }
 
     @Test
-    void changePassword() {
+    void should_changePassword_when_passwordIsCorrect() {
         //given
         User user = new User();
         Password password = new Password("Start1234!");
@@ -56,7 +62,7 @@ class UserTest {
     }
 
     @Test
-    void changeName() {
+    void should_changeName_when_nameIsCorrect() {
         //given
         User user = new User();
         Name name = new Name("Tomasz");
@@ -68,8 +74,10 @@ class UserTest {
         assertThat(user.getName()).isEqualTo(name2);
     }
 
+
+
     @Test
-    void changeSurname() {
+    void should_changeSurname_when_surnameIsCorrect() {
         User user = new User();
         Surname name = new Surname("Start");
         user.setSurname(name);
@@ -81,7 +89,7 @@ class UserTest {
     }
 
     @Test
-    void changeEmail() {
+    void should_changeEmail_when_emailIsCorrect() {
         User user = new User();
         Email email = new Email("Start@wp.pl");
         user.setEmail(email);
@@ -93,7 +101,7 @@ class UserTest {
     }
 
     @Test
-    void changePhoneNumber() {
+    void should_changePhoneNumber_when_phoneNumberIsCorrect() {
         //given
         User user = new User();
         PhoneNumber phoneNumber = new PhoneNumber("+48786165293");
@@ -106,22 +114,67 @@ class UserTest {
     }
 
     @Test
-    void addCertificate() {
+    void should_addCertificate_when_certificateIsCorrect() {
+        // given
+        EmploymentInfo employmentInfo = new EmploymentInfo();
+        Certificate certificate = new Certificate();
+        //when
+        employmentInfo.addCertificate(certificate);
+
+        // then
+
+        assertThat(employmentInfo.getCertificates().getFirst()).isEqualTo(certificate);
     }
 
     @Test
-    void addCourse() {
+    void should_addCourse_when_courseIsCorrect() {
+        // given
+        EmploymentInfo employmentInfo = new EmploymentInfo();
+        Course course = new Course();
+        //when
+        employmentInfo.addCourse(course);
+
+        // then
+
+        assertThat(employmentInfo.getCourses().getFirst()).isEqualTo(course);
     }
 
     @Test
-    void addExperience() {
+    void should_addExperience_when_experienceIsCorrect() {
+        // given
+        EmploymentInfo employmentInfo = new EmploymentInfo();
+        Experience experience = new Experience();
+        //when
+        employmentInfo.addExperience(experience);
+
+        // then
+
+        assertThat(employmentInfo.getExperiences().getFirst()).isEqualTo(experience);
     }
 
     @Test
-    void addLanguage() {
+    void should_addLanguage_when_languageIsCorrect() {
+        // given
+        EmploymentInfo employmentInfo = new EmploymentInfo();
+        Language language = new Language();
+        //when
+        employmentInfo.addLanguage(language);
+
+        // then
+
+        assertThat(employmentInfo.getLanguages().getFirst()).isEqualTo(language);
     }
 
     @Test
-    void addSkill() {
+    void should_addSkill_when_skillIsCorrect() {
+        // given
+        EmploymentInfo employmentInfo = new EmploymentInfo();
+        Skill skill = new Skill();
+        //when
+        employmentInfo.addSkill(skill);
+
+        // then
+
+        assertThat(employmentInfo.getSkills().getFirst()).isEqualTo(skill);
     }
 }

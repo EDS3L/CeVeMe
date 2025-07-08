@@ -10,4 +10,4 @@ public record EmploymentInfoRequest(
         List<CourseDto> courses,
         List<SkillDto> skills,
         String email) {
-}
+    }

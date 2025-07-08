@@ -2,6 +2,7 @@ package pl.ceveme.domain.model.entities;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -13,8 +14,8 @@ public class Experience {
     private long id;
 
     private String companyName;
-    private Date startingDate;
-    private Date endDate;
+    private LocalDate startingDate;
+    private LocalDate endDate;
     private Boolean currently;
     private String positionName;
     private String jobDescription;
@@ -27,7 +28,7 @@ public class Experience {
     public Experience() {
     }
 
-    public Experience(String companyName, Date startingDate, Date endDate, Boolean currently, String positionName, String jobDescription, String jobAchievements) {
+    public Experience(String companyName, LocalDate startingDate, LocalDate endDate, Boolean currently, String positionName, String jobDescription, String jobAchievements) {
         this.companyName = companyName;
         this.startingDate = startingDate;
         this.endDate = endDate;
@@ -49,19 +50,19 @@ public class Experience {
         this.companyName = companyName;
     }
 
-    public Date getStartingDate() {
+    public LocalDate getStartingDate() {
         return startingDate;
     }
 
-    public void setStartingDate(Date startingDate) {
+    public void setStartingDate(LocalDate startingDate) {
         this.startingDate = startingDate;
     }
 
-    public Date getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 

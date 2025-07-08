@@ -9,6 +9,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface EmploymentInfoMapper {
 
+    @Mapping(target = "user", ignore = true)
     @Mapping(target = "languages", source = "languages")
     @Mapping(target = "certificates", source = "certificates")
     @Mapping(target = "experiences", source = "experiences")
