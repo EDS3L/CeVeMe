@@ -12,6 +12,7 @@ import pl.ceveme.domain.model.entities.User;
 import pl.ceveme.domain.model.vo.Email;
 import pl.ceveme.domain.repositories.UserRepository;
 
+import java.time.LocalDate;
 import java.time.Year;
 import java.util.Calendar;
 import java.util.Date;
@@ -37,7 +38,7 @@ class CreateCertificateUseCaseTest {
         // given
         Calendar calendar = Calendar.getInstance();
         calendar.set(2003,Calendar.JANUARY, 12);
-        Date date = calendar.getTime();
+        LocalDate date = LocalDate.now();
         Email email = new Email("test@wp.pl");
 
         EmploymentInfo employmentInfo = new EmploymentInfo();
@@ -66,7 +67,7 @@ class CreateCertificateUseCaseTest {
         // given
         Calendar calendar = Calendar.getInstance();
         calendar.set(2003,Calendar.JANUARY, 12);
-        Date date = calendar.getTime();
+        LocalDate date = LocalDate.now();
         Email email = new Email("test@wp.pl");
 
         EmploymentInfo employmentInfo = new EmploymentInfo();
