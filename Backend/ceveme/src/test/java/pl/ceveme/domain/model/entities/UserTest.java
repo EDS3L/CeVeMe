@@ -68,7 +68,7 @@ class UserTest {
         Name name = new Name("Tomasz");
         user.setName(name);
         //when
-        Name name2 = new Name("Tomaszz");
+        Name name2 = new Name("Adam");
         user.changeName(name2);
         //then
         assertThat(user.getName()).isEqualTo(name2);
