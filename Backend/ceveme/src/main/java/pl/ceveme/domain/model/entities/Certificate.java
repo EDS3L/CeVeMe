@@ -3,6 +3,7 @@ package pl.ceveme.domain.model.entities;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -14,7 +15,7 @@ public class Certificate {
     private long id;
 
     private String name;
-    private Date dateOfCertificate;
+    private LocalDate dateOfCertificate;
 
     @ManyToOne
     @JoinColumn(name = "employment_info_id")
@@ -23,7 +24,7 @@ public class Certificate {
     public Certificate() {
     }
 
-    public Certificate(String name, Date dateOfCertificate) {
+    public Certificate(String name, LocalDate dateOfCertificate) {
         this.name = name;
         this.dateOfCertificate = dateOfCertificate;
     }
@@ -40,11 +41,11 @@ public class Certificate {
         this.name = name;
     }
 
-    public Date getDateOfCertificate() {
+    public LocalDate getDateOfCertificate() {
         return dateOfCertificate;
     }
 
-    public void setDateOfCertificate(Date dateOfCertificate) {
+    public void setDateOfCertificate(LocalDate dateOfCertificate) {
         this.dateOfCertificate = dateOfCertificate;
     }
 
