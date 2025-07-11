@@ -6,13 +6,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import pl.ceveme.application.dto.scrap.JobOfferRequest;
-import pl.ceveme.infrastructure.external.bulldogJob.BulldogJobScrapper;
-import pl.ceveme.infrastructure.external.justJoinIt.JustJoinItScrapper;
-import pl.ceveme.infrastructure.external.nofluffjobs.NoFluffJobsScrapper;
-import pl.ceveme.infrastructure.external.pracujPl.PracujPlScrapper;
-import pl.ceveme.infrastructure.external.rocketJobs.RocketJobsScrapper;
-import pl.ceveme.infrastructure.external.solidJobs.SolidJobsScrapper;
-import pl.ceveme.infrastructure.external.theProtocolIt.TheProtocolItScrapper;
+import pl.ceveme.infrastructure.external.scrap.bulldogJob.BulldogJobScrapper;
+import pl.ceveme.infrastructure.external.scrap.justJoinIt.JustJoinItScrapper;
+import pl.ceveme.infrastructure.external.scrap.nofluffjobs.NoFluffJobsScrapper;
+import pl.ceveme.infrastructure.external.scrap.pracujPl.PracujPlScrapper;
+import pl.ceveme.infrastructure.external.scrap.rocketJobs.RocketJobsScrapper;
+import pl.ceveme.infrastructure.external.scrap.solidJobs.SolidJobsScrapper;
+import pl.ceveme.infrastructure.external.scrap.theProtocolIt.TheProtocolItScrapper;
 
 @RestController
 @RequestMapping("/api/jobDetails")

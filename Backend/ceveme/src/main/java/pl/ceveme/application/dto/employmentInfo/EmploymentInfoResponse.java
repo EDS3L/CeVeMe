@@ -8,6 +8,8 @@ public record EmploymentInfoResponse(
         List<CertificateDto> certificates,
         List<ExperienceDto> experiences,
         List<CourseDto> courses,
-        List<SkillDto> skills
+        List<SkillDto> skills,
+        List<PortfolioItemsDto> portfolioItems,
+        List<LinkDto> links
 ) {
 }

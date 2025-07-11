@@ -30,7 +30,7 @@ public class RegisterUserUseCase {
         if(userRepository.existsByEmail(email)) throw new IllegalArgumentException("Email already exists!");
 
 
-        User user = User.createNewUser(name,surname,phoneNumber,bCryptPasswordEncoderAdapter.encode(password),email,null,null,null);
+        User user = User.createNewUser(name,surname,phoneNumber,bCryptPasswordEncoderAdapter.encode(password),email,null,null,null,null);
 
         userRepository.save(user);
 

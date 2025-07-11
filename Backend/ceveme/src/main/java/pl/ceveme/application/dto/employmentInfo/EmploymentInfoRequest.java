@@ -9,5 +9,8 @@ public record EmploymentInfoRequest(
         List<ExperienceDto> experiences,
         List<CourseDto> courses,
         List<SkillDto> skills,
-        String email) {
+        List<PortfolioItemsDto> portfolioItems,
+        List<LinkDto> links,
+        String email
+        ) {
     }

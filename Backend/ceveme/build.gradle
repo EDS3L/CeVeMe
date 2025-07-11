@@ -31,7 +31,9 @@ dependencies {
 	implementation 'org.jsoup:jsoup:1.20.1'
 	implementation 'org.apache.httpcomponents.client5:httpclient5:5.5'
 	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+	implementation("com.google.genai:google-genai:1.0.0")
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'

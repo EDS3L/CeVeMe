@@ -2,7 +2,7 @@ package pl.ceveme.application.usecase.scrap;
 
 import org.springframework.stereotype.Service;
 import pl.ceveme.application.dto.scrap.ScrapResponse;
-import pl.ceveme.infrastructure.external.rocketJobs.RocketJobsScrapper;
+import pl.ceveme.infrastructure.external.scrap.rocketJobs.RocketJobsScrapper;
 
 import java.io.IOException;
 

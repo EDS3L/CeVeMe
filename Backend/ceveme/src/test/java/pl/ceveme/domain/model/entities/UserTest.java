@@ -27,13 +27,14 @@ class UserTest {
         PhoneNumber phoneNumber = new PhoneNumber("+48696144222");
         String password = "Start1234!";
         Email email = new Email("mmm@wp.pl");
+        String image = "awfawfaw";
         List<Cv> cvList = new ArrayList<>();
         cvList.add(new Cv("asd", LocalDate.now(),new JobOffer(),new User(),new ApplicationHistory()));
         List<ApplicationHistory> applicationHistoryList = new ArrayList<>();
         applicationHistoryList.add(new ApplicationHistory(LocalDate.now(),new JobOffer()));
         EmploymentInfo employmentInfo = new EmploymentInfo();
         //when
-        User user = User.createNewUser(name,surname,phoneNumber,password,email,cvList,applicationHistoryList,employmentInfo);
+        User user = User.createNewUser(name,surname,phoneNumber,password,email,image,cvList,applicationHistoryList,employmentInfo);
         //then
 
         assertThat(user).isNotNull();
@@ -41,6 +42,7 @@ class UserTest {
         assertThat(user.getSurname()).isEqualTo(surname);
         assertThat(user.getPhoneNumber()).isEqualTo(phoneNumber);
         assertThat(user.getEmail()).isEqualTo(email);
+        assertThat(user.getImage()).isEqualTo(image);
         assertThat(user.getCvList()).isEqualTo(cvList);
         assertThat(user.getApplicationHistoryList()).isEqualTo(applicationHistoryList);
         assertThat(user.getEmploymentInfo()).isEqualTo(employmentInfo);

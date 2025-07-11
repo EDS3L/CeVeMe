@@ -2,8 +2,8 @@ package pl.ceveme.application.usecase.employmentInfo;
 
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
-import pl.ceveme.application.dto.course.CourseRequest;
-import pl.ceveme.application.dto.course.CourseResponse;
+import pl.ceveme.application.dto.entity.course.CourseRequest;
+import pl.ceveme.application.dto.entity.course.CourseResponse;
 import pl.ceveme.domain.model.entities.Course;
 import pl.ceveme.domain.model.entities.User;
 import pl.ceveme.domain.model.vo.Email;

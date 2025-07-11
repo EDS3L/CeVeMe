@@ -1,6 +1,7 @@
 package pl.ceveme.application.dto.language;
 
 import org.junit.jupiter.api.Test;
+import pl.ceveme.application.dto.entity.language.LanguageRequest;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;

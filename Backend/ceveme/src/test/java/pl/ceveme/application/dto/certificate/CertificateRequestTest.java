@@ -1,11 +1,10 @@
 package pl.ceveme.application.dto.certificate;
 
 import org.junit.jupiter.api.Test;
+import pl.ceveme.application.dto.entity.certificate.CertificateRequest;
 import pl.ceveme.domain.model.vo.Email;
 
 import java.time.LocalDate;
-import java.util.Calendar;
-import java.util.Date;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;

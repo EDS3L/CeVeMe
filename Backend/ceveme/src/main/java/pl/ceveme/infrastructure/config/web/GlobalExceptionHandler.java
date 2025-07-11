@@ -6,8 +6,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 import pl.ceveme.application.dto.exception.ApiError;
 
 import java.io.IOException;
@@ -43,6 +46,42 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ApiError> handleNoResourceFoundException(Exception ex, HttpServletRequest request) {
+        logger.error(" No resource found exception: {}", ex.getMessage(), ex);
+        ApiError error = new ApiError(
+                "No Resource_Found",
+                "An no resource found exception" ,
+                Instant.now(),
+                request.getRequestURI()
+        );
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiError> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex, HttpServletRequest request) {
+        logger.warn("Malformed JSON request: {}", ex.getMessage());
+        ApiError error = new ApiError(
+                "MALFORMED_JSON",
+                "Request body is invalid or missing required fields.",
+                Instant.now(),
+                request.getRequestURI()
+        );
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    public ResponseEntity<ApiError> handleHttpMediaTypeNotSupportedException(Exception ex , HttpServletRequest request) {
+        logger.error(" Media Type Not Supported ");
+        ApiError error = new ApiError(
+                "HttpMediaTypeNotSupportedException",
+                "Media type not supported",
+                Instant.now(),
+                request.getRequestURI()
+        );
+        return new ResponseEntity<>(error, HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+    }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGenericException(Exception ex, HttpServletRequest request) {

@@ -2,7 +2,7 @@ package pl.ceveme.application.usecase.scrap;
 
 import org.springframework.stereotype.Service;
 import pl.ceveme.application.dto.scrap.ScrapResponse;
-import pl.ceveme.infrastructure.external.solidJobs.SolidJobsScrapper;
+import pl.ceveme.infrastructure.external.scrap.solidJobs.SolidJobsScrapper;
 
 @Service
 public class ScrapSolidJobsUseCase {

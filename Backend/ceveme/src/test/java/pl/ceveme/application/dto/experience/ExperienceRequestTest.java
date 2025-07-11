@@ -1,6 +1,7 @@
 package pl.ceveme.application.dto.experience;
 
 import org.junit.jupiter.api.Test;
+import pl.ceveme.application.dto.entity.experience.ExperienceRequest;
 
 import java.time.LocalDate;
 

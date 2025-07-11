@@ -3,14 +3,12 @@ package pl.ceveme.application.usecase.employmentInfo;
 
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
-import pl.ceveme.application.dto.certificate.CertificateRequest;
-import pl.ceveme.application.dto.certificate.CertificateResponse;
+import pl.ceveme.application.dto.entity.certificate.CertificateRequest;
+import pl.ceveme.application.dto.entity.certificate.CertificateResponse;
 import pl.ceveme.domain.model.entities.Certificate;
 import pl.ceveme.domain.model.entities.User;
 import pl.ceveme.domain.model.vo.Email;
 import pl.ceveme.domain.repositories.UserRepository;
-
-import java.util.Date;
 
 @Service
 public class CreateCertificateUseCase {

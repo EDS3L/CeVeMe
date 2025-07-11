@@ -2,8 +2,8 @@ package pl.ceveme.application.usecase.employmentInfo;
 
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
-import pl.ceveme.application.dto.language.LanguageRequest;
-import pl.ceveme.application.dto.language.LanguageResponse;
+import pl.ceveme.application.dto.entity.language.LanguageRequest;
+import pl.ceveme.application.dto.entity.language.LanguageResponse;
 import pl.ceveme.domain.model.entities.Language;
 import pl.ceveme.domain.model.entities.User;
 import pl.ceveme.domain.model.vo.Email;

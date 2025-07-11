@@ -5,17 +5,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import pl.ceveme.application.dto.certificate.CertificateRequest;
-import pl.ceveme.application.dto.certificate.CertificateResponse;
+import pl.ceveme.application.dto.entity.certificate.CertificateRequest;
+import pl.ceveme.application.dto.entity.certificate.CertificateResponse;
 import pl.ceveme.domain.model.entities.EmploymentInfo;
 import pl.ceveme.domain.model.entities.User;
 import pl.ceveme.domain.model.vo.Email;
 import pl.ceveme.domain.repositories.UserRepository;
 
 import java.time.LocalDate;
-import java.time.Year;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;

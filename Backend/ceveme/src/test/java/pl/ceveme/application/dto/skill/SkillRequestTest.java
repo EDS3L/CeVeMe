@@ -1,6 +1,7 @@
 package pl.ceveme.application.dto.skill;
 
 import org.junit.jupiter.api.Test;
+import pl.ceveme.application.dto.entity.skill.SkillRequest;
 import pl.ceveme.domain.model.entities.Skill;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;

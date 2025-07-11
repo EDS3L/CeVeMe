@@ -26,6 +26,7 @@ public class User {
     @Embedded
     private Email email;
     private String password;
+    private String image;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Cv> cvList;
@@ -42,10 +43,11 @@ public class User {
     public User() {
     }
 
-    public User(Name name, Surname surname, PhoneNumber phoneNumber, Email email, String password, List<Cv> cvList, List<ApplicationHistory> applicationHistoryList, EmploymentInfo employmentInfo, boolean isActive) {
+    public User(Name name, Surname surname, PhoneNumber phoneNumber, Email email, String image, String password, List<Cv> cvList, List<ApplicationHistory> applicationHistoryList, EmploymentInfo employmentInfo, boolean isActive) {
         this.name = name;
         this.surname = surname;
         this.phoneNumber = phoneNumber;
+        this.image = image;
         this.email = email;
         this.password = password;
         this.cvList = cvList;
@@ -54,8 +56,8 @@ public class User {
         this.isActive = isActive;
     }
 
-    public static User createNewUser(Name name, Surname surname, PhoneNumber phoneNumber, String password, Email email, List<Cv> cvList, List<ApplicationHistory> applicationHistoryList, EmploymentInfo employmentInfo) {
-        return new User(name, surname, phoneNumber, email, password, cvList, applicationHistoryList, employmentInfo, false);
+    public static User createNewUser(Name name, Surname surname, PhoneNumber phoneNumber, String password, Email email, String image, List<Cv> cvList, List<ApplicationHistory> applicationHistoryList, EmploymentInfo employmentInfo) {
+        return new User(name, surname, phoneNumber, email, image, password, cvList, applicationHistoryList, employmentInfo, false);
     }
 
     public void changePassword(String password) {
@@ -135,6 +137,14 @@ public class User {
         return applicationHistoryList;
     }
 
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
     public void setApplicationHistoryList(List<ApplicationHistory> applicationHistoryList) {
         this.applicationHistoryList = applicationHistoryList;
     }
@@ -161,6 +171,22 @@ public class User {
             this.employmentInfo.setUser(this);
         }
         this.employmentInfo.addCertificate(certificate);
+    }
+
+    public void addPortfolioItems(PortfolioItem portfolioItem) {
+        if(this.employmentInfo == null) {
+            this.employmentInfo = new EmploymentInfo();
+            this.employmentInfo.setUser(this);
+        }
+        this.employmentInfo.addPortfolioItem(portfolioItem);
+    }
+
+    public void addLinks(Link link) {
+        if(this.employmentInfo == null) {
+            this.employmentInfo = new EmploymentInfo();
+            this.employmentInfo.setUser(this);
+        }
+        this.employmentInfo.addLink(link);
     }
 
     public void addCourse(Course course) {
@@ -193,5 +219,15 @@ public class User {
             this.employmentInfo.setUser(this);
         }
         this.employmentInfo.addSkill(skill);
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "name=" + name +
+                ", surname=" + surname +
+                ", phoneNumber=" + phoneNumber +
+                ", email=" + email +
+                '}';
     }
 }

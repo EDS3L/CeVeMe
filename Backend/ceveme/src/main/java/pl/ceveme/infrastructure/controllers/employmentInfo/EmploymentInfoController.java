@@ -4,18 +4,22 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pl.ceveme.application.dto.certificate.CertificateRequest;
-import pl.ceveme.application.dto.certificate.CertificateResponse;
-import pl.ceveme.application.dto.course.CourseRequest;
-import pl.ceveme.application.dto.course.CourseResponse;
+import pl.ceveme.application.dto.entity.certificate.CertificateRequest;
+import pl.ceveme.application.dto.entity.certificate.CertificateResponse;
+import pl.ceveme.application.dto.entity.course.CourseRequest;
+import pl.ceveme.application.dto.entity.course.CourseResponse;
 import pl.ceveme.application.dto.employmentInfo.EmploymentInfoRequest;
 import pl.ceveme.application.dto.employmentInfo.EmploymentInfoResponse;
-import pl.ceveme.application.dto.experience.ExperienceRequest;
-import pl.ceveme.application.dto.experience.ExperienceResponse;
-import pl.ceveme.application.dto.language.LanguageRequest;
-import pl.ceveme.application.dto.language.LanguageResponse;
-import pl.ceveme.application.dto.skill.SkillRequest;
-import pl.ceveme.application.dto.skill.SkillResponse;
+import pl.ceveme.application.dto.entity.experience.ExperienceRequest;
+import pl.ceveme.application.dto.entity.experience.ExperienceResponse;
+import pl.ceveme.application.dto.entity.language.LanguageRequest;
+import pl.ceveme.application.dto.entity.language.LanguageResponse;
+import pl.ceveme.application.dto.entity.link.LinkRequest;
+import pl.ceveme.application.dto.entity.link.LinkResponse;
+import pl.ceveme.application.dto.entity.portfolioItems.PortfolioItemsRequest;
+import pl.ceveme.application.dto.entity.portfolioItems.PortfolioItemsResponse;
+import pl.ceveme.application.dto.entity.skill.SkillRequest;
+import pl.ceveme.application.dto.entity.skill.SkillResponse;
 import pl.ceveme.application.usecase.employmentInfo.*;
 
 @RestController
@@ -29,8 +33,11 @@ public class EmploymentInfoController {
     private final CreateLanguageUseCase createLanguageUseCase;
     private final CreateSkillUseCase createSkillUseCase;
     private final GetEmploymentInfoUseCase getEmploymentInfoUseCase;
+    private final CreatePortfolioItemUseCase createPortfolioItemUseCase;
+    private final CreateLinkUseCase createLinkUseCase;
 
-    public EmploymentInfoController(CreateEmploymentInfoUseCase employmentInfoUseCase, CreateCertificateUseCase createCertificateUseCase, CreateCourseUseCase createCourseUseCase, CreateExperienceUseCase createExperienceUseCase, CreateLanguageUseCase createLanguageUseCase, CreateSkillUseCase createSkillUseCase, GetEmploymentInfoUseCase getEmploymentInfoUseCase) {
+
+    public EmploymentInfoController(CreateEmploymentInfoUseCase employmentInfoUseCase, CreateCertificateUseCase createCertificateUseCase, CreateCourseUseCase createCourseUseCase, CreateExperienceUseCase createExperienceUseCase, CreateLanguageUseCase createLanguageUseCase, CreateSkillUseCase createSkillUseCase, GetEmploymentInfoUseCase getEmploymentInfoUseCase, CreatePortfolioItemUseCase createPortfolioItemUseCase, CreateLinkUseCase createLinkUseCase) {
         this.employmentInfoUseCase = employmentInfoUseCase;
         this.createCertificateUseCase = createCertificateUseCase;
         this.createCourseUseCase = createCourseUseCase;
@@ -38,6 +45,8 @@ public class EmploymentInfoController {
         this.createLanguageUseCase = createLanguageUseCase;
         this.createSkillUseCase = createSkillUseCase;
         this.getEmploymentInfoUseCase = getEmploymentInfoUseCase;
+        this.createPortfolioItemUseCase = createPortfolioItemUseCase;
+        this.createLinkUseCase = createLinkUseCase;
     }
 
     @PostMapping("/create")
@@ -73,6 +82,18 @@ public class EmploymentInfoController {
     @PostMapping("/skill")
     public ResponseEntity<SkillResponse> createSkill(@Valid @RequestBody SkillRequest request) {
         SkillResponse response = createSkillUseCase.execute(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PostMapping("/portfolioItem")
+    public ResponseEntity<PortfolioItemsResponse> createPortfolioItem(@Valid @RequestBody PortfolioItemsRequest request) {
+        PortfolioItemsResponse response = createPortfolioItemUseCase.execute(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PostMapping("/link")
+    public ResponseEntity<LinkResponse> createLink(@Valid @RequestBody LinkRequest request) {
+        LinkResponse response = createLinkUseCase.execute(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

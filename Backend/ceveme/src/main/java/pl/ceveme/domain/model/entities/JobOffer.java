@@ -175,7 +175,18 @@ public class JobOffer {
 
     @Override
     public String toString() {
-        return super.toString();
+        return "JobOffer{" +
+                "employmentType='" + employmentType + '\'' +
+                ", experienceLevel='" + experienceLevel + '\'' +
+                ", benefits='" + benefits + '\'' +
+                ", responsibilities='" + responsibilities + '\'' +
+                ", niceToHave='" + niceToHave + '\'' +
+                ", requirements='" + requirements + '\'' +
+                ", location=" + location +
+                ", salary='" + salary + '\'' +
+                ", company='" + company + '\'' +
+                ", title='" + title + '\'' +
+                '}';
     }
 
     @Override
@@ -195,5 +206,6 @@ public class JobOffer {
     public int hashCode() {
         return Objects.hash(company, dateEnding, dateAdded, niceToHave, responsibilities, title);
     }
+
 
 }

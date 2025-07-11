@@ -2,8 +2,8 @@ package pl.ceveme.application.usecase.employmentInfo;
 
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
-import pl.ceveme.application.dto.experience.ExperienceRequest;
-import pl.ceveme.application.dto.experience.ExperienceResponse;
+import pl.ceveme.application.dto.entity.experience.ExperienceRequest;
+import pl.ceveme.application.dto.entity.experience.ExperienceResponse;
 import pl.ceveme.domain.model.entities.Experience;
 import pl.ceveme.domain.model.entities.User;
 import pl.ceveme.domain.model.vo.Email;

@@ -1,6 +1,7 @@
 package pl.ceveme.application.dto.course;
 
 import org.junit.jupiter.api.Test;
+import pl.ceveme.application.dto.entity.course.CourseRequest;
 
 import java.time.LocalDate;
 

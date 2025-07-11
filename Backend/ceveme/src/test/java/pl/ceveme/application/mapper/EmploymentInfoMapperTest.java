@@ -5,6 +5,7 @@ import org.mockito.Mock;
 import pl.ceveme.application.dto.employmentInfo.*;
 import pl.ceveme.domain.model.entities.EmploymentInfo;
 import pl.ceveme.domain.model.entities.Language;
+import pl.ceveme.domain.model.entities.PortfolioItem;
 import pl.ceveme.domain.model.entities.Skill;
 
 import java.time.LocalDate;
@@ -30,6 +31,8 @@ class EmploymentInfoMapperTest {
         ExperienceDto experienceDto = new ExperienceDto("DeveloperHouse", LocalDate.of(2019,1,1), LocalDate.of(2020,1,1),false,"Developer","I make job good","Make website work");
         CourseDto courseDto = new CourseDto("Spring Boot", LocalDate.of(2020,5,5), "description");
         SkillDto skillDto = new SkillDto("Early bird", Skill.Type.SOFT);
+        PortfolioItemsDto portfolioItem = new PortfolioItemsDto("Projekt ABC", "Zajefajny projekt");
+        LinkDto link = new LinkDto("github", "https://github.com/ceveme");
 
         EmploymentInfoRequest request = new EmploymentInfoRequest(
                 List.of(languageDto),
@@ -37,6 +40,8 @@ class EmploymentInfoMapperTest {
                 List.of(experienceDto),
                 List.of(courseDto),
                 List.of(skillDto),
+                List.of(portfolioItem),
+                List.of(link),
                 "test@wp.pl"
         );
         // when
@@ -75,7 +80,7 @@ class EmploymentInfoMapperTest {
     @Test
     void should_createEmptyList_when_valueIsEmpty() {
         // given
-        EmploymentInfoRequest request = new EmploymentInfoRequest(null,null,null,null,null,"test@wp.pl");
+        EmploymentInfoRequest request = new EmploymentInfoRequest(null,null,null,null,null,null,null,"test@wp.pl");
 
         //when
 
