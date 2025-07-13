@@ -33,6 +33,7 @@ class EmploymentInfoMapperTest {
         SkillDto skillDto = new SkillDto("Early bird", Skill.Type.SOFT);
         PortfolioItemsDto portfolioItem = new PortfolioItemsDto("Projekt ABC", "Zajefajny projekt");
         LinkDto link = new LinkDto("github", "https://github.com/ceveme");
+        EducationDto educations = new EducationDto("AEH", "Specjalista", "Wyższa", LocalDate.of(2023,12,12), LocalDate.of(2024,12,12),false);
 
         EmploymentInfoRequest request = new EmploymentInfoRequest(
                 List.of(languageDto),
@@ -42,6 +43,7 @@ class EmploymentInfoMapperTest {
                 List.of(skillDto),
                 List.of(portfolioItem),
                 List.of(link),
+                List.of(educations),
                 "test@wp.pl"
         );
         // when
@@ -80,7 +82,7 @@ class EmploymentInfoMapperTest {
     @Test
     void should_createEmptyList_when_valueIsEmpty() {
         // given
-        EmploymentInfoRequest request = new EmploymentInfoRequest(null,null,null,null,null,null,null,"test@wp.pl");
+        EmploymentInfoRequest request = new EmploymentInfoRequest(null,null,null,null,null,null,null,null,"test@wp.pl");
 
         //when
 

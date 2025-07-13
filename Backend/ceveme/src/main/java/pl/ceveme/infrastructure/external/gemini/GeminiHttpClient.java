@@ -2,20 +2,18 @@ package pl.ceveme.infrastructure.external.gemini;
 
 import com.google.genai.Client;
 import com.google.genai.types.GenerateContentResponse;
-import org.checkerframework.checker.units.qual.C;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Service;
 
 @Service
-public class HttpFetchAi {
+public class GeminiHttpClient {
 
     private final Client client;
 
     @Value("${MODEL}")
     private String model;
 
-    public HttpFetchAi(Client client) {
+    public GeminiHttpClient(Client client) {
         this.client = client;
     }
 

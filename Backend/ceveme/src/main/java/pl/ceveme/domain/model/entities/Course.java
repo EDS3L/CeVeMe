@@ -14,6 +14,7 @@ public class Course {
 
     private String courseName;
     private LocalDate dateOfCourse;
+    @Lob
     private String courseDescription;
 
     @ManyToOne

@@ -221,6 +221,14 @@ public class User {
         this.employmentInfo.addSkill(skill);
     }
 
+    public void addEducation(Education education) {
+        if (this.employmentInfo == null) {
+            this.employmentInfo = new EmploymentInfo();
+            this.employmentInfo.setUser(this);
+        }
+        this.employmentInfo.addEducation(education);
+    }
+
     @Override
     public String toString() {
         return "User{" +

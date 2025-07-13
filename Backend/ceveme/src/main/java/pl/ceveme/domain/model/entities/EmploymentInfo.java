@@ -34,13 +34,16 @@ public class EmploymentInfo {
     @OneToMany(mappedBy = "employmentInfo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Link> links = new ArrayList<>();
 
+    @OneToMany(mappedBy = "employmentInfo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Education> educations = new ArrayList<>();
+
     @OneToOne
     private User user;
 
     public EmploymentInfo() {
     }
 
-    public EmploymentInfo(List<Language> languages, List<Certificate> certificates, List<Experience> experiences, List<Course> courses, List<Skill> skills, List<PortfolioItem> portfolioItems, List<Link> links) {
+    public EmploymentInfo(List<Language> languages, List<Certificate> certificates, List<Experience> experiences, List<Course> courses, List<Skill> skills, List<PortfolioItem> portfolioItems, List<Link> links, List<Education> educations) {
         this.languages = languages;
         this.certificates = certificates;
         this.experiences = experiences;
@@ -48,6 +51,7 @@ public class EmploymentInfo {
         this.skills = skills;
         this.portfolioItems = portfolioItems;
         this.links = links;
+        this.educations = educations;
     }
 
     public long getId() {
@@ -102,6 +106,14 @@ public class EmploymentInfo {
         this.user = user;
     }
 
+    public List<Education> getEducations() {
+        return educations;
+    }
+
+    public void setEducations(List<Education> educations) {
+        this.educations = educations;
+    }
+
     public List<Link> getLinks() {
         return links;
     }
@@ -151,6 +163,11 @@ public class EmploymentInfo {
     public void addSkill(Skill skill) {
         this.skills.add(skill);
         skill.setEmploymentInfo(this);
+    }
+
+    public void addEducation(Education education) {
+        this.educations.add(education);
+        education.setEmploymentInfo(this);
     }
 
     @Override

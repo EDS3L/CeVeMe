@@ -2,18 +2,18 @@ package pl.ceveme.application.usecase.gemini;
 
 import org.springframework.stereotype.Service;
 import pl.ceveme.application.dto.gemini.GeminiRequest;
-import pl.ceveme.infrastructure.external.gemini.GeminiAi;
+import pl.ceveme.infrastructure.external.gemini.GeminiService;
 
 @Service
 public class GeminiResponseUseCase {
 
-    private final GeminiAi geminiAi;
+    private final GeminiService geminiService;
 
-    public GeminiResponseUseCase(GeminiAi geminiAi) {
-        this.geminiAi = geminiAi;
+    public GeminiResponseUseCase(GeminiService geminiService) {
+        this.geminiService = geminiService;
     }
 
     public String execute(GeminiRequest request) {
-        return geminiAi.response(request);
+        return geminiService.response(request);
     }
 }

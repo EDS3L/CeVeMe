@@ -45,11 +45,12 @@ class CreateEmploymentInfoUseCaseTest {
         List<SkillDto> skills  = new ArrayList<>();
         List<PortfolioItemsDto> portfolioItems = new ArrayList<>();
         List<LinkDto> links = new ArrayList<>();
+        List<EducationDto> educations = new ArrayList<>();
         User user = new User();
         Email email = new Email("Start@wp.pl");
         EmploymentInfo employmentInfo = new EmploymentInfo();
-        EmploymentInfoRequest employmentInfoRequest = new EmploymentInfoRequest(languages,certificates,experiences,courses,skills,portfolioItems,links,email.email());
-        EmploymentInfoResponse expectedResponse = new EmploymentInfoResponse(languages,certificates,experiences,courses,skills,portfolioItems, links);
+        EmploymentInfoRequest employmentInfoRequest = new EmploymentInfoRequest(languages,certificates,experiences,courses,skills,portfolioItems,links,educations,email.email());
+        EmploymentInfoResponse expectedResponse = new EmploymentInfoResponse(languages,certificates,experiences,courses,skills,portfolioItems, educations,links);
 
 
         // when
@@ -81,8 +82,9 @@ class CreateEmploymentInfoUseCaseTest {
         List<SkillDto> skills  = new ArrayList<>();
         List<PortfolioItemsDto> portfolioItems = new ArrayList<>();
         List<LinkDto> links = new ArrayList<>();
+        List<EducationDto> educations = new ArrayList<>();
         String email = "test@wp.pl";
-        EmploymentInfoRequest employmentInfoRequest = new EmploymentInfoRequest(languages,certificates,experiences,courses,skills,portfolioItems,links,email);
+        EmploymentInfoRequest employmentInfoRequest = new EmploymentInfoRequest(languages,certificates,experiences,courses,skills,portfolioItems,links,educations,email);
         when(userRepository.findByEmail(new Email(email))).thenReturn(Optional.empty());
 
 

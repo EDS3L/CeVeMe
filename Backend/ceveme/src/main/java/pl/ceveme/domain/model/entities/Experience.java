@@ -18,7 +18,9 @@ public class Experience {
     private LocalDate endDate;
     private Boolean currently;
     private String positionName;
+    @Lob
     private String jobDescription;
+    @Lob
     private String jobAchievements;
 
     @ManyToOne

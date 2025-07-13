@@ -10,6 +10,7 @@ public record EmploymentInfoResponse(
         List<CourseDto> courses,
         List<SkillDto> skills,
         List<PortfolioItemsDto> portfolioItems,
+        List<EducationDto> educations,
         List<LinkDto> links
 ) {
 }

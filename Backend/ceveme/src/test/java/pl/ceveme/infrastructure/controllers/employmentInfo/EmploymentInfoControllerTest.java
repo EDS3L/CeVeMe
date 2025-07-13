@@ -88,8 +88,9 @@ class EmploymentInfoControllerTest {
     @Test
     void should_createEmploymentInfo_when_valueIsCorrect() throws Exception {
         // Given
-        EmploymentInfoRequest request = new EmploymentInfoRequest(Collections.emptyList(),Collections.emptyList(),Collections.emptyList(),Collections.emptyList(),Collections.emptyList(),Collections.emptyList(),Collections.emptyList(),"mta1007@wp.pl");
+        EmploymentInfoRequest request = new EmploymentInfoRequest(Collections.emptyList(),Collections.emptyList(),Collections.emptyList(),Collections.emptyList(),Collections.emptyList(),Collections.emptyList(),Collections.emptyList(),Collections.emptyList(),"mta1007@wp.pl");
         EmploymentInfoResponse response = new EmploymentInfoResponse(
+                Collections.emptyList(),
                 Collections.emptyList(),
                 Collections.emptyList(),
                 Collections.emptyList(),
@@ -113,6 +114,7 @@ class EmploymentInfoControllerTest {
         // Given
         String userEmail = "mta1997@wp.pl";
         EmploymentInfoResponse expectedResponse = new EmploymentInfoResponse(
+                Collections.emptyList(),
                 Collections.emptyList(),
                 Collections.emptyList(),
                 Collections.emptyList(),
@@ -274,7 +276,7 @@ class EmploymentInfoControllerTest {
     @Test
     void should_returnUnsupportedMediaType_when_contentTypeIsInvalid() throws Exception {
         // Given
-        EmploymentInfoRequest request = new EmploymentInfoRequest(Collections.emptyList(),Collections.emptyList(),Collections.emptyList(),Collections.emptyList(),Collections.emptyList(),Collections.emptyList(),Collections.emptyList(),"mta1007@wp.pl");
+        EmploymentInfoRequest request = new EmploymentInfoRequest(Collections.emptyList(),Collections.emptyList(),Collections.emptyList(),Collections.emptyList(),Collections.emptyList(),Collections.emptyList(),Collections.emptyList(),Collections.emptyList(),"mta1007@wp.pl");
 
         // When & Then
         mockMvc.perform(post("/api/employmentInfo/create")

@@ -17,6 +17,7 @@ public interface EmploymentInfoMapper {
     @Mapping(target = "skills", source = "skills")
     @Mapping(target = "portfolioItems", source = "portfolioItems")
     @Mapping(target = "links", source = "links")
+    @Mapping(target = "educations", source = "educations")
     EmploymentInfo toEntity(EmploymentInfoRequest dto);
 
     @Mapping(target = "languages", source = "languages")
@@ -26,7 +27,7 @@ public interface EmploymentInfoMapper {
     @Mapping(target = "skills", source = "skills")
     @Mapping(target = "portfolioItems", source = "portfolioItems")
     @Mapping(target = "links", source = "links")
-
+    @Mapping(target = "educations", source = "educations")
     EmploymentInfoResponse toResponse(EmploymentInfo entity);
 
     @Mapping(target = "employmentInfo", ignore = true)
@@ -48,6 +49,9 @@ public interface EmploymentInfoMapper {
     Link toEntity(LinkDto dto);
 
     @Mapping(target = "employmentInfo", ignore = true)
+    Education toEntity(EducationDto dto);
+
+    @Mapping(target = "employmentInfo", ignore = true)
     @Mapping(target = "type", source = "type", qualifiedByName = "stringToSkillType")
     Skill toEntity(SkillDto dto);
 
@@ -58,7 +62,7 @@ public interface EmploymentInfoMapper {
     SkillDto toDto(Skill entity);
     PortfolioItemsDto toDto(PortfolioItem entity);
     LinkDto toDto(Link entity);
-
+    EducationDto toDto(Education entity);
 
     List<Language> toLanguageEntityList(List<LanguageDto> dtoList);
     List<Certificate> toCertificateEntityList(List<CertificateDto> dtoList);
@@ -67,6 +71,7 @@ public interface EmploymentInfoMapper {
     List<Skill> toSkillEntityList(List<SkillDto> dtoList);
     List<PortfolioItem> toPortfolioItemsList(List<PortfolioItemsDto> dtoList);
     List<Link> toLinkList(List<LinkDto> dtoList);
+    List<Education> toEducationList(List<EducationDto> dtoList);
 
     List<LanguageDto> toLanguageDtoList(List<Language> entityList);
     List<CertificateDto> toCertificateDtoList(List<Certificate> entityList);
@@ -75,6 +80,7 @@ public interface EmploymentInfoMapper {
     List<SkillDto> toSkillDtoList(List<Skill> entityList);
     List<PortfolioItemsDto> toPortfolioItemsDtoList(List<PortfolioItem> entityList);
     List<LinkDto> toLinkDtoList(List<Link> entityList);
+    List<EducationDto> toEducationDtoList(List<Education> entityList);
 
 
     @Named("stringToSkillType")
@@ -111,6 +117,9 @@ public interface EmploymentInfoMapper {
         }
         if (employmentInfo.getLinks() != null) {
             employmentInfo.getLinks().forEach(link -> link.setEmploymentInfo(employmentInfo));
+        }
+        if (employmentInfo.getEducations() != null) {
+            employmentInfo.getEducations().forEach(education -> education.setEmploymentInfo(employmentInfo));
         }
     }
 }
