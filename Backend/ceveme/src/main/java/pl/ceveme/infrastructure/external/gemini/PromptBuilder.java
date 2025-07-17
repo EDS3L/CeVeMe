@@ -66,7 +66,7 @@ public class PromptBuilder {
                   ]
                 }
               ],
-              "projects": [
+              "portfolio": [
                 {
                   "name": "",
                   "period": "YYYY-MM - YYYY-MM",
@@ -276,7 +276,7 @@ public class PromptBuilder {
                   ]
                 }
               ],
-              "projects": [
+              "portfolio": [
                 {
                   "name": "",
                   "period": "YYYY-MM - YYYY-MM",

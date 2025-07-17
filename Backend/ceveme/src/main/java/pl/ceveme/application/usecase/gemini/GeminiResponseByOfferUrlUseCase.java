@@ -3,6 +3,7 @@ package pl.ceveme.application.usecase.gemini;
 import org.springframework.stereotype.Service;
 import pl.ceveme.application.dto.gemini.GeminiExistOfferRequest;
 import pl.ceveme.application.dto.gemini.GeminiLinkRequest;
+import pl.ceveme.application.dto.gemini.GeminiResponse;
 import pl.ceveme.infrastructure.external.gemini.GeminiService;
 
 @Service
@@ -14,7 +15,7 @@ public class GeminiResponseByOfferUrlUseCase {
         this.geminiService = geminiService;
     }
 
-    public String execute(GeminiLinkRequest request) throws Exception {
+    public GeminiResponse execute(GeminiLinkRequest request) throws Exception {
         return geminiService.responseByLink(request);
     }
 }

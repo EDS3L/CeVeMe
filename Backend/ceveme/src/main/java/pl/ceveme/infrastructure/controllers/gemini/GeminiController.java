@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.ceveme.application.dto.gemini.GeminiExistOfferRequest;
 import pl.ceveme.application.dto.gemini.GeminiLinkRequest;
+import pl.ceveme.application.dto.gemini.GeminiResponse;
 import pl.ceveme.application.usecase.gemini.GeminiResponseByOfferUrlUseCase;
 import pl.ceveme.application.usecase.gemini.GeminiResponseExistOfferUseCase;
 
@@ -23,12 +24,12 @@ public class GeminiController {
     }
 
     @PostMapping("/geminiExistOffer")
-    public String gemini(@RequestBody GeminiExistOfferRequest request) throws JsonProcessingException {
+    public GeminiResponse gemini(@RequestBody GeminiExistOfferRequest request) throws JsonProcessingException {
         return geminiResponseExistOfferUseCase.execute(request);
     }
 
     @PostMapping("/geminiByLink")
-    public String gemini(@RequestBody GeminiLinkRequest request) throws Exception {
+    public GeminiResponse gemini(@RequestBody GeminiLinkRequest request) throws Exception {
         return geminiResponseByOfferUrlUseCase.execute(request);
     }
 }
