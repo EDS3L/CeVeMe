@@ -2,12 +2,12 @@ package pl.ceveme.infrastructure.controllers.auth;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pl.ceveme.application.dto.auth.LoginUserRequest;
-import pl.ceveme.application.dto.auth.LoginUserResponse;
-import pl.ceveme.application.dto.auth.RegisterUserRequest;
-import pl.ceveme.application.dto.auth.RegisterUserResponse;
+import pl.ceveme.application.dto.auth.*;
+import pl.ceveme.application.usecase.auth.ActiveUserUseCase;
 import pl.ceveme.application.usecase.auth.LoginUserUseCase;
 import pl.ceveme.application.usecase.auth.RegisterUserUseCase;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -16,11 +16,12 @@ public class AuthController {
 
     private final LoginUserUseCase loginUserUseCase;
     private final RegisterUserUseCase registerUserUseCase;
+    private final ActiveUserUseCase activeUserUseCase;
 
-
-    public AuthController(LoginUserUseCase loginUserUseCase, RegisterUserUseCase registerUserUseCase) {
+    public AuthController(LoginUserUseCase loginUserUseCase, RegisterUserUseCase registerUserUseCase, ActiveUserUseCase activeUserUseCase) {
         this.loginUserUseCase = loginUserUseCase;
         this.registerUserUseCase = registerUserUseCase;
+        this.activeUserUseCase = activeUserUseCase;
     }
 
     @PostMapping("/login")
@@ -37,5 +38,17 @@ public class AuthController {
         RegisterUserResponse response = registerUserUseCase.register(request);
         return ResponseEntity.ok(response);
 
+    }
+
+    @PostMapping("/active/user/{uuid}")
+    public ResponseEntity<ActiveUserResponse> activateUser(@PathVariable String uuid) {
+        try {
+            UUID parsedUuid = UUID.fromString(uuid);
+            ActiveUserRequest request = new ActiveUserRequest(parsedUuid);
+            ActiveUserResponse response = activeUserUseCase.execute(request);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new ActiveUserResponse(null, "Invalid UUID format"));
+        }
     }
 }

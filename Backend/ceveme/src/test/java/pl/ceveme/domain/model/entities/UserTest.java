@@ -6,17 +6,23 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.ceveme.domain.model.vo.*;
 import pl.ceveme.domain.repositories.UserRepository;
+import pl.ceveme.infrastructure.adapter.security.BCryptPasswordEncoderAdapter;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class UserTest {
 
 
+    @Mock
+    BCryptPasswordEncoderAdapter bCryptPasswordEncoderAdapter;
 
 
     @Test
@@ -52,15 +58,45 @@ class UserTest {
     }
 
     @Test
-    void should_changePassword_when_passwordIsCorrect() {
-        //given
+    void should_changePassword_when_requestIsValid() {
+        // GIVEN (Arrange)
+        String currentPasswordPlainText = "Start1234!";
+        String newPasswordPlainText = "NewPassword567!";
+        String hashedCurrentPassword = "hashed_password_abc";
+        String hashedNewPassword = "hashed_password_xyz";
+
         User user = new User();
-        Password password = new Password("Start1234!");
-        user.setPassword(password.password());
-        //when
-        user.changePassword("newPasswd555!");
-        //then
-        assertThat(user.getPassword()).isEqualTo("newPasswd555!");
+        user.setPassword(hashedCurrentPassword);
+
+        when(bCryptPasswordEncoderAdapter.matches(currentPasswordPlainText, hashedCurrentPassword)).thenReturn(true);
+        when(bCryptPasswordEncoderAdapter.matches(newPasswordPlainText, hashedCurrentPassword)).thenReturn(false);
+        when(bCryptPasswordEncoderAdapter.encode(any(Password.class))).thenReturn(hashedNewPassword);
+
+        // WHEN
+        user.changePassword(currentPasswordPlainText, newPasswordPlainText, bCryptPasswordEncoderAdapter);
+
+        // THEN
+        assertThat(user.getPassword()).isEqualTo(hashedNewPassword);
+    }
+
+    @Test
+    void should_throwException_when_currentPasswordIsIncorrect() {
+        // GIVEN
+        String currentPasswordPlainText = "WrongPassword!";
+        String newPasswordPlainText = "NewPassword567!";
+        String hashedCurrentPassword = "hashed_password_abc";
+
+        User user = new User();
+        user.setPassword(hashedCurrentPassword);
+
+        when(bCryptPasswordEncoderAdapter.matches(currentPasswordPlainText, hashedCurrentPassword)).thenReturn(false);
+
+        // WHEN & THEN
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            user.changePassword(currentPasswordPlainText, newPasswordPlainText, bCryptPasswordEncoderAdapter);
+        });
+
+        assertThat(exception.getMessage()).isEqualTo("Incorrect current password");
     }
 
     @Test
