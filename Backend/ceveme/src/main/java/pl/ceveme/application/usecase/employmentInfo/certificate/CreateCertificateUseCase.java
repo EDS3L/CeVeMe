@@ -1,4 +1,4 @@
-package pl.ceveme.application.usecase.employmentInfo;
+package pl.ceveme.application.usecase.employmentInfo.certificate;
 
 
 import jakarta.transaction.Transactional;

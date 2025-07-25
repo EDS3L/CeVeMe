@@ -10,5 +10,5 @@ import java.util.UUID;
 @Repository
 public interface ActivationTokenRepository extends JpaRepository<ActivationToken, Long> {
 
-    Optional<ActivationToken> findByUuid(UUID uuid);
+    Optional<ActivationToken> findByUuid(String uuid);
 }

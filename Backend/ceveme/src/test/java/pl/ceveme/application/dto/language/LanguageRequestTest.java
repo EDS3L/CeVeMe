@@ -16,7 +16,7 @@ class LanguageRequestTest {
         String level = "B2";
 
         // when
-        LanguageRequest request = new LanguageRequest(email, name, level);
+        LanguageRequest request = new LanguageRequest(1L,email, name, level);
 
         // then
         assertEquals(email, request.email());
@@ -33,7 +33,7 @@ class LanguageRequestTest {
 
         // when & then
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> new LanguageRequest(email, name, level));
+                () -> new LanguageRequest(1L,email, name, level));
         assertThat(ex.getMessage()).isEqualTo("Language cannot be null!");
     }
 
@@ -45,7 +45,7 @@ class LanguageRequestTest {
 
         // when & then
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> new LanguageRequest(email, null, level));
+                () -> new LanguageRequest(1L,email, null, level));
         assertThat(ex.getMessage()).isEqualTo("Language cannot be null!");
     }
 
@@ -58,7 +58,7 @@ class LanguageRequestTest {
 
         // when & then
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> new LanguageRequest(email, name, level));
+                () -> new LanguageRequest(1L,email, name, level));
         assertThat(ex.getMessage()).isEqualTo("Language level must not be blank");
     }
 
@@ -70,7 +70,7 @@ class LanguageRequestTest {
 
         // when & then
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> new LanguageRequest(email, name, null));
+                () -> new LanguageRequest(1L,email, name, null));
         assertThat(ex.getMessage()).isEqualTo("Language level must not be blank");
     }
 
@@ -83,7 +83,7 @@ class LanguageRequestTest {
 
         // when & then
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> new LanguageRequest(email, name, level));
+                () -> new LanguageRequest(1L,email, name, level));
         assertThat(ex.getMessage()).startsWith("Unsupported language level");
     }
 }

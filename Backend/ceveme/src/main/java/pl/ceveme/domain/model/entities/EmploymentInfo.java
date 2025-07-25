@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Table(name = "employmentInfos")
@@ -144,6 +145,21 @@ public class EmploymentInfo {
         this.certificates.add(certificate);
         certificate.setEmploymentInfo(this);
     }
+
+    public void removeCertificate(Certificate certificate) {
+        if (!certificates.contains(certificate)) {
+            throw new IllegalArgumentException("Certificate not found in employment info");
+        }
+        certificates.remove(certificate);
+        certificate.setEmploymentInfo(null);
+    }
+
+    public Optional<Certificate> getCertificateById(Long id) {
+        return certificates.stream()
+                .filter(c -> c.getId() == id)
+                .findFirst();
+    }
+
 
     public void addCourse(Course course) {
         this.courses.add(course);

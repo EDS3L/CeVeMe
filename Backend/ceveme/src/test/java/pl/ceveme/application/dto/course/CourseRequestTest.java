@@ -19,7 +19,7 @@ class CourseRequestTest {
         String courseDescription = "course about java!";
 
         // when
-        CourseRequest courseRequest = new CourseRequest(email, courseName, dateOfCourse, courseDescription);
+        CourseRequest courseRequest = new CourseRequest(1L,email, courseName, dateOfCourse, courseDescription);
 
         // then
         assertThat(courseRequest).isNotNull();
@@ -38,7 +38,7 @@ class CourseRequestTest {
 
         // when & then
 
-        final IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new CourseRequest(email, courseName, dateOfCourse, courseDescription));
+        final IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new CourseRequest(1L,email, courseName, dateOfCourse, courseDescription));
         assertThat(ex.getMessage()).isEqualTo("Name of certificate is null!");
 
     }
@@ -53,7 +53,7 @@ class CourseRequestTest {
 
         // when & then
 
-        final IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new CourseRequest(email, courseName, dateOfCourse, courseDescription));
+        final IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new CourseRequest(1L,email, courseName, dateOfCourse, courseDescription));
         assertThat(ex.getMessage()).isEqualTo("Date of certificate is null");
     }
 
@@ -67,7 +67,7 @@ class CourseRequestTest {
 
         // when & then
 
-        final IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new CourseRequest(email, courseName, dateOfCourse, courseDescription));
+        final IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new CourseRequest(1L,email, courseName, dateOfCourse, courseDescription));
         assertThat(ex.getMessage()).isEqualTo("Date cannot be after " + LocalDate.now());
     }
 
@@ -81,7 +81,7 @@ class CourseRequestTest {
 
         // when & then
 
-        final IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new CourseRequest(email, courseName, dateOfCourse, courseDescription));
+        final IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new CourseRequest(1L,email, courseName, dateOfCourse, courseDescription));
         assertThat(ex.getMessage()).isEqualTo("Course description is null!");
     }
 

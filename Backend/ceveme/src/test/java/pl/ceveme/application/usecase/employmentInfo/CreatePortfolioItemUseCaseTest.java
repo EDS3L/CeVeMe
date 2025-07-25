@@ -43,7 +43,7 @@ class CreatePortfolioItemUseCaseTest {
 
         when(userRepository.findByEmail(new Email(email))).thenReturn(Optional.of(user));
 
-        PortfolioItemsRequest request = new PortfolioItemsRequest(email, title, description);
+        PortfolioItemsRequest request = new PortfolioItemsRequest(1L,email, title, description);
 
         // when
         PortfolioItemsResponse response = useCase.execute(request);
@@ -61,7 +61,7 @@ class CreatePortfolioItemUseCaseTest {
         String email = "nonexistent@example.com";
         when(userRepository.findByEmail(new Email(email))).thenReturn(Optional.empty());
 
-        PortfolioItemsRequest request = new PortfolioItemsRequest(email, "title", "desc");
+        PortfolioItemsRequest request = new PortfolioItemsRequest(1L,email, "title", "desc");
 
         // when & then
         assertThrows(RuntimeException.class, () -> useCase.execute(request));

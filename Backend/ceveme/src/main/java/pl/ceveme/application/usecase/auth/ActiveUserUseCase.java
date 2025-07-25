@@ -2,6 +2,8 @@ package pl.ceveme.application.usecase.auth;
 
 
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import pl.ceveme.application.dto.auth.ActiveUserRequest;
 import pl.ceveme.application.dto.auth.ActiveUserResponse;
@@ -10,9 +12,12 @@ import pl.ceveme.domain.model.entities.User;
 import pl.ceveme.domain.repositories.ActivationTokenRepository;
 import pl.ceveme.domain.repositories.UserRepository;
 
+import java.util.UUID;
+
 @Service
 public class ActiveUserUseCase {
 
+    private static final Logger log = LoggerFactory.getLogger(ActiveUserUseCase.class);
     private final ActivationTokenRepository activationTokenRepository;
     private final UserRepository userRepository;
 

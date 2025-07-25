@@ -37,7 +37,7 @@ class CreateSkillUseCaseTest {
         User user = new User();
         when(userRepository.findByEmail(new Email(email))).thenReturn(Optional.of(user));
 
-        SkillRequest request = new SkillRequest(email,skillName, Skill.Type.TECHNICAL);
+        SkillRequest request = new SkillRequest(1L,email,skillName, Skill.Type.TECHNICAL);
 
         // when
 
@@ -57,7 +57,7 @@ class CreateSkillUseCaseTest {
         String email = "test@wp.pl";
         when(userRepository.findByEmail(new Email(email))).thenReturn(Optional.empty());
 
-        SkillRequest request = new SkillRequest(email,"java", Skill.Type.TECHNICAL);
+        SkillRequest request = new SkillRequest(1L,email,"java", Skill.Type.TECHNICAL);
 
         // when & then
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {

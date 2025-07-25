@@ -36,11 +36,13 @@ class ActiveUserUseCaseTest {
         String uuid = "test-uuid";
         Email email = new Email("test@example.com");
         User user = new User();
+        user.setEmail(email);
         ActivationToken token = new ActivationToken(LocalDate.now().plusWeeks(2));
+        token.setUser(user);
+        when(activationTokenRepository.findByUuid(uuid)).thenReturn(Optional.of(token));
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
 
-        when(activationTokenRepository.findByUUID(UUID.randomUUID())).thenReturn(Optional.of(token));
-
-        ActiveUserRequest request = new ActiveUserRequest(UUID.randomUUID());
+        ActiveUserRequest request = new ActiveUserRequest(uuid);
         ActiveUserResponse response = useCase.execute(request);
 
         assertTrue(user.isActive());
@@ -54,9 +56,9 @@ class ActiveUserUseCaseTest {
     void shouldThrowExceptionWhenTokenNotFound() {
         String uuid = "invalid-uuid";
 
-        when(activationTokenRepository.findByUUID(UUID.randomUUID())).thenReturn(Optional.empty());
+        when(activationTokenRepository.findByUuid(uuid)).thenReturn(Optional.empty());
 
-        ActiveUserRequest request = new ActiveUserRequest(UUID.randomUUID());
+        ActiveUserRequest request = new ActiveUserRequest(uuid);
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             useCase.execute(request);

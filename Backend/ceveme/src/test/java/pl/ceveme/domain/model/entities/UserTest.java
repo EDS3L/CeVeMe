@@ -1,5 +1,6 @@
 package pl.ceveme.domain.model.entities;
 
+import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -39,8 +40,9 @@ class UserTest {
         List<ApplicationHistory> applicationHistoryList = new ArrayList<>();
         applicationHistoryList.add(new ApplicationHistory(LocalDate.now(),new JobOffer()));
         EmploymentInfo employmentInfo = new EmploymentInfo();
+        ActivationToken activationToken = new ActivationToken(LocalDate.now().plusWeeks(2));
         //when
-        User user = User.createNewUser(name,surname,phoneNumber,password,email,image,cvList,applicationHistoryList,employmentInfo);
+        User user = User.createNewUser(name,surname,phoneNumber,password,email,image,cvList,applicationHistoryList,employmentInfo,activationToken);
         //then
 
         assertThat(user).isNotNull();

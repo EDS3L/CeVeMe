@@ -40,7 +40,7 @@ class CreateCourseUseCaseTest {
         User user = new User();
         user.setEmploymentInfo(employmentInfo);
 
-        CourseRequest request = new CourseRequest(email1.email(),courseName,dateOfCourse,courseDescription);
+        CourseRequest request = new CourseRequest(1L,email1.email(),courseName,dateOfCourse,courseDescription);
 
         // when
         when(userRepository.findByEmail(email1)).thenReturn(Optional.of(user));

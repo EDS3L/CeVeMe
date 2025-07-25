@@ -16,7 +16,7 @@ class SkillRequestTest {
         String skillName = "java";
 
         // when
-        SkillRequest request = new SkillRequest(email,skillName, Skill.Type.SOFT);
+        SkillRequest request = new SkillRequest(1L, email,skillName, Skill.Type.SOFT);
 
 
         // then
@@ -30,7 +30,7 @@ class SkillRequestTest {
         String email = "test@wp.pl";
         String skillName = "";
         // when & then
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new SkillRequest(email,skillName,Skill.Type.SOFT));
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new SkillRequest(1L,email,skillName,Skill.Type.SOFT));
         assertThat(ex.getMessage()).isEqualTo("Skill name cannot be null!");
     }
 

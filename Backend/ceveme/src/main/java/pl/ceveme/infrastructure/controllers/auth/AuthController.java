@@ -42,13 +42,8 @@ public class AuthController {
 
     @PostMapping("/active/user/{uuid}")
     public ResponseEntity<ActiveUserResponse> activateUser(@PathVariable String uuid) {
-        try {
-            UUID parsedUuid = UUID.fromString(uuid);
-            ActiveUserRequest request = new ActiveUserRequest(parsedUuid);
+            ActiveUserRequest request = new ActiveUserRequest(uuid);
             ActiveUserResponse response = activeUserUseCase.execute(request);
             return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(new ActiveUserResponse(null, "Invalid UUID format"));
-        }
     }
 }

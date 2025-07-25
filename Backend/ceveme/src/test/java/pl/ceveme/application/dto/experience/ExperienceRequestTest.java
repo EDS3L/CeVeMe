@@ -26,7 +26,7 @@ class ExperienceRequestTest {
 
         // when
 
-        ExperienceRequest request = new ExperienceRequest("test@wp.pl",companyName,startingDate,endDate,currently,positionName,jobDescription,jobAchievement);
+        ExperienceRequest request = new ExperienceRequest(1L,"test@wp.pl",companyName,startingDate,endDate,currently,positionName,jobDescription,jobAchievement);
 
         // then
 
@@ -54,7 +54,7 @@ class ExperienceRequestTest {
         String jobAchievement = "30% boost";
         // when & then
 
-        final IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new ExperienceRequest("test@wp.pl",companyName,startingDate,endDate,currently,positionName,jobDescription,jobAchievement));
+        final IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new ExperienceRequest(1L,"test@wp.pl",companyName,startingDate,endDate,currently,positionName,jobDescription,jobAchievement));
         assertThat(ex.getMessage()).isEqualTo("Company name cannot be null!");
     }
 
@@ -70,7 +70,7 @@ class ExperienceRequestTest {
         String jobAchievement = "30% boost";
         // when & then
 
-        final IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new ExperienceRequest("test@wp.pl",companyName,startingDate,endDate,currently,positionName,jobDescription,jobAchievement));
+        final IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new ExperienceRequest(1L,"test@wp.pl",companyName,startingDate,endDate,currently,positionName,jobDescription,jobAchievement));
         assertThat(ex.getMessage()).isEqualTo("Position name name cannot be null!");
     }
 
@@ -86,7 +86,7 @@ class ExperienceRequestTest {
         String jobAchievement = "30% boost";
         // when & then
 
-        final IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new ExperienceRequest("test@wp.pl",companyName,startingDate,endDate,currently,positionName,jobDescription,jobAchievement));
+        final IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new ExperienceRequest(1L,"test@wp.pl",companyName,startingDate,endDate,currently,positionName,jobDescription,jobAchievement));
         assertThat(ex.getMessage()).isEqualTo("Job description cannot be null!");
     }
 
@@ -102,7 +102,7 @@ class ExperienceRequestTest {
         String jobAchievement = "";
         // when & then
 
-        final IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new ExperienceRequest("test@wp.pl",companyName,startingDate,endDate,currently,positionName,jobDescription,jobAchievement));
+        final IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new ExperienceRequest(1L,"test@wp.pl",companyName,startingDate,endDate,currently,positionName,jobDescription,jobAchievement));
         assertThat(ex.getMessage()).isEqualTo("Job achievements cannot be null!");
     }
     @Test
@@ -117,7 +117,7 @@ class ExperienceRequestTest {
         String jobAchievement = "30% boost";
         // when & then
 
-        final IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new ExperienceRequest("test@wp.pl",companyName,startingDate,endDate,currently,positionName,jobDescription,jobAchievement));
+        final IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new ExperienceRequest(1L,"test@wp.pl",companyName,startingDate,endDate,currently,positionName,jobDescription,jobAchievement));
         assertThat(ex.getMessage()).isEqualTo("Company name cannot be null!");
     }
     @Test
@@ -133,7 +133,7 @@ class ExperienceRequestTest {
 
         // when & then
 
-        final IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new ExperienceRequest("test@wp.pl",companyName,startingDate,endDate,currently,positionName,jobDescription,jobAchievement));
+        final IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new ExperienceRequest(1L,"test@wp.pl",companyName,startingDate,endDate,currently,positionName,jobDescription,jobAchievement));
         assertThat(ex.getMessage()).isEqualTo("End date cannot be present when still working!");
     }
 

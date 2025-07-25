@@ -3,6 +3,7 @@ package pl.ceveme.application.dto.entity.education;
 import java.time.LocalDate;
 
 public record EducationRequest(
+        Long id,
         String email,
         String schoolName,
         String degree,

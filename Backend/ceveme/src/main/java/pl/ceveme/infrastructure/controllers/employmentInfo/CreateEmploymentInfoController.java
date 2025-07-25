@@ -23,10 +23,11 @@ import pl.ceveme.application.dto.entity.portfolioItems.PortfolioItemsResponse;
 import pl.ceveme.application.dto.entity.skill.SkillRequest;
 import pl.ceveme.application.dto.entity.skill.SkillResponse;
 import pl.ceveme.application.usecase.employmentInfo.*;
+import pl.ceveme.application.usecase.employmentInfo.certificate.CreateCertificateUseCase;
 
 @RestController
-@RequestMapping("/api/employmentInfo")
-public class EmploymentInfoController {
+@RequestMapping("/api/employmentInfo/create")
+public class CreateEmploymentInfoController {
 
     private final CreateEmploymentInfoUseCase employmentInfoUseCase;
     private final CreateCertificateUseCase createCertificateUseCase;
@@ -40,7 +41,7 @@ public class EmploymentInfoController {
     private final CreateEducationUseCase createEducationUseCase;
 
 
-    public EmploymentInfoController(CreateEmploymentInfoUseCase employmentInfoUseCase, CreateCertificateUseCase createCertificateUseCase, CreateCourseUseCase createCourseUseCase, CreateExperienceUseCase createExperienceUseCase, CreateLanguageUseCase createLanguageUseCase, CreateSkillUseCase createSkillUseCase, GetEmploymentInfoUseCase getEmploymentInfoUseCase, CreatePortfolioItemUseCase createPortfolioItemUseCase, CreateLinkUseCase createLinkUseCase, CreateEducationUseCase createEducationUseCase) {
+    public CreateEmploymentInfoController(CreateEmploymentInfoUseCase employmentInfoUseCase, CreateCertificateUseCase createCertificateUseCase, CreateCourseUseCase createCourseUseCase, CreateExperienceUseCase createExperienceUseCase, CreateLanguageUseCase createLanguageUseCase, CreateSkillUseCase createSkillUseCase, GetEmploymentInfoUseCase getEmploymentInfoUseCase, CreatePortfolioItemUseCase createPortfolioItemUseCase, CreateLinkUseCase createLinkUseCase, CreateEducationUseCase createEducationUseCase) {
         this.employmentInfoUseCase = employmentInfoUseCase;
         this.createCertificateUseCase = createCertificateUseCase;
         this.createCourseUseCase = createCourseUseCase;

@@ -4,7 +4,7 @@ import pl.ceveme.domain.model.entities.Skill;
 
 import java.util.EnumSet;
 
-public record PortfolioItemsRequest(String email, String title, String description) {
+public record PortfolioItemsRequest(Long id, String email, String title, String description) {
 
     public PortfolioItemsRequest {
         validate(title, description);

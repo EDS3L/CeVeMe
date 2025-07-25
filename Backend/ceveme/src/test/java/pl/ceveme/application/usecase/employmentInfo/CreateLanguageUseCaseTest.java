@@ -37,7 +37,7 @@ class CreateLanguageUseCaseTest {
         User user = new User();
         when(userRepository.findByEmail(new Email(email))).thenReturn(Optional.of(user));
 
-        LanguageRequest request = new LanguageRequest(email,languageName,lvl);
+        LanguageRequest request = new LanguageRequest(1L,email,languageName,lvl);
 
         // when
 
@@ -57,7 +57,7 @@ class CreateLanguageUseCaseTest {
         String email = "test@wp.pl";
         when(userRepository.findByEmail(new Email(email))).thenReturn(Optional.empty());
 
-        LanguageRequest request = new LanguageRequest(email, "German", "B2");
+        LanguageRequest request = new LanguageRequest(1L,email, "German", "B2");
 
         // when & then
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {

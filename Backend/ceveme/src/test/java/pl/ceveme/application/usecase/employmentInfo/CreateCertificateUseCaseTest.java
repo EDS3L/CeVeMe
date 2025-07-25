@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.ceveme.application.dto.entity.certificate.CertificateRequest;
 import pl.ceveme.application.dto.entity.certificate.CertificateResponse;
+import pl.ceveme.application.usecase.employmentInfo.certificate.CreateCertificateUseCase;
 import pl.ceveme.domain.model.entities.EmploymentInfo;
 import pl.ceveme.domain.model.entities.User;
 import pl.ceveme.domain.model.vo.Email;
@@ -42,7 +43,7 @@ class CreateCertificateUseCaseTest {
         EmploymentInfo employmentInfo = new EmploymentInfo();
         User user = new User();
         user.setEmploymentInfo(employmentInfo);
-        CertificateRequest request = new CertificateRequest(email.email(), "java8", date);
+        CertificateRequest request = new CertificateRequest(1L,email.email(), "java8", date);
 
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
 
@@ -72,7 +73,7 @@ class CreateCertificateUseCaseTest {
         User user = new User();
         when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
         user.setEmploymentInfo(employmentInfo);
-        CertificateRequest request = new CertificateRequest(email.email(), "Java8", date);
+        CertificateRequest request = new CertificateRequest(1L,email.email(), "Java8", date);
 
 
         // when & then

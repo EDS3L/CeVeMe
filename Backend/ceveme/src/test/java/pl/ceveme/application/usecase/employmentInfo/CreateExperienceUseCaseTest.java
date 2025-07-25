@@ -33,6 +33,7 @@ class CreateExperienceUseCaseTest {
         String email = "test@wp.pl";
 
         ExperienceRequest request = new ExperienceRequest(
+                1L,
                 email,
                 "Sweet gallery",
                 LocalDate.of(2023,1,1),
@@ -65,6 +66,7 @@ class CreateExperienceUseCaseTest {
         String email = "test@wp.pl";
 
         ExperienceRequest request = new ExperienceRequest(
+                1L,
                 email,
                 "Sweet gallery",
                 LocalDate.of(2023,1,1),

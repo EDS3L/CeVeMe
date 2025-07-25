@@ -6,6 +6,7 @@ import java.util.EnumSet;
 import java.util.Optional;
 
 public record SkillRequest(
+        Long id,
         String email,
         String name,
         Skill.Type type

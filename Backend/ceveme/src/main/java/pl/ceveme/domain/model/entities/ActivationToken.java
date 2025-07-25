@@ -18,7 +18,7 @@ public class ActivationToken {
 
     @NotNull
     @Column(unique = true)
-    private UUID uuid = UUID.randomUUID();
+    private String uuid = UUID.randomUUID() + "";
 
     private LocalDate expirationDate;
 
@@ -29,7 +29,7 @@ public class ActivationToken {
     }
 
     public ActivationToken(LocalDate expirationDate) {
-        this.uuid = UUID.randomUUID();
+        this.uuid = UUID.randomUUID() + "";
         this.expirationDate = expirationDate;
     }
 
@@ -41,11 +41,11 @@ public class ActivationToken {
         this.id = id;
     }
 
-    public UUID getUuid() {
+    public String getUuid() {
         return uuid;
     }
 
-    public void setUuid(UUID uuid) {
+    public void setUuid(String uuid) {
         this.uuid = uuid;
     }
 

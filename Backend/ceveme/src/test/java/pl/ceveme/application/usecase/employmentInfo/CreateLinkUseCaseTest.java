@@ -43,7 +43,7 @@ class CreateLinkUseCaseTest {
 
         when(userRepository.findByEmail(new Email(email))).thenReturn(Optional.of(user));
 
-        LinkRequest request = new LinkRequest(email, title, linkUrl);
+        LinkRequest request = new LinkRequest(1L,email, title, linkUrl);
 
         // when
         LinkResponse response = useCase.execute(request);
@@ -61,7 +61,7 @@ class CreateLinkUseCaseTest {
         String email = "nonexistent@example.com";
         when(userRepository.findByEmail(new Email(email))).thenReturn(Optional.empty());
 
-        LinkRequest request = new LinkRequest(email, "title", "https://example.com");
+        LinkRequest request = new LinkRequest(1L,email, "title", "https://example.com");
 
         // when & then
         assertThrows(RuntimeException.class, () -> useCase.execute(request));

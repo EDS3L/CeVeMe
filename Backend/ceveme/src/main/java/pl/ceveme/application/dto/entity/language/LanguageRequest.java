@@ -3,6 +3,7 @@ package pl.ceveme.application.dto.entity.language;
 import java.util.Set;
 
 public record LanguageRequest(
+        Long id,
         String email,
         String name,
         String level

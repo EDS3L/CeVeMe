@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 
 public record ExperienceRequest(
+        Long id,
         String email,
         String companyName,
         LocalDate startingDate,

@@ -29,6 +29,11 @@ public class Certificate {
         this.dateOfCertificate = dateOfCertificate;
     }
 
+    public void update(String name, LocalDate dateOfCertificate) {
+        this.name = name;
+        this.dateOfCertificate = dateOfCertificate;
+    }
+
     public long getId() {
         return id;
     }
@@ -43,6 +48,10 @@ public class Certificate {
 
     public LocalDate getDateOfCertificate() {
         return dateOfCertificate;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public void setDateOfCertificate(LocalDate dateOfCertificate) {

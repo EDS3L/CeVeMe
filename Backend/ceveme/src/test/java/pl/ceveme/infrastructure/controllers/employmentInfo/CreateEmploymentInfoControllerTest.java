@@ -7,7 +7,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -30,6 +29,7 @@ import pl.ceveme.application.dto.entity.portfolioItems.PortfolioItemsResponse;
 import pl.ceveme.application.dto.entity.skill.SkillRequest;
 import pl.ceveme.application.dto.entity.skill.SkillResponse;
 import pl.ceveme.application.usecase.employmentInfo.*;
+import pl.ceveme.application.usecase.employmentInfo.certificate.CreateCertificateUseCase;
 import pl.ceveme.domain.model.entities.Skill;
 
 import java.time.LocalDate;
@@ -43,7 +43,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @WithMockUser
-class EmploymentInfoControllerTest {
+class CreateEmploymentInfoControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -134,7 +134,7 @@ class EmploymentInfoControllerTest {
     @Test
     void should_createSkill_when_valueIsCorrect() throws Exception {
         // Given
-        SkillRequest request = new SkillRequest("test@example.com", "Java", Skill.Type.TECHNICAL);
+        SkillRequest request = new SkillRequest(1L,"test@example.com", "Java", Skill.Type.TECHNICAL);
         SkillResponse response = new SkillResponse("Java", Skill.Type.TECHNICAL, "Skill added successfully");
         given(createSkillUseCase.execute(request)).willReturn(response);
 
@@ -150,6 +150,7 @@ class EmploymentInfoControllerTest {
     void should_createExperience_when_valueIsCorrect() throws Exception {
         // Given
         ExperienceRequest request = new ExperienceRequest(
+                1L,
                 "test@example.com",
                 "Google",
                 LocalDate.of(2020, 1, 15),
@@ -174,6 +175,7 @@ class EmploymentInfoControllerTest {
     void should_createCourse_when_valueIsCorrect() throws Exception {
         // Given
         CourseRequest request = new CourseRequest(
+                1L,
                 "test@example.com",
                 "Advanced Spring Boot",
                 LocalDate.of(2023, 5, 20),
@@ -194,6 +196,7 @@ class EmploymentInfoControllerTest {
     void should_createCertificate_when_valueIsCorrect() throws Exception {
         // Given
         CertificateRequest request = new CertificateRequest(
+                1L,
                 "test@example.com",
                 "Oracle Certified Professional, Java SE 11 Developer",
                 LocalDate.of(2022, 8, 10)
@@ -212,7 +215,7 @@ class EmploymentInfoControllerTest {
     @Test
     void should_createLanguage_when_valueIsCorrect() throws Exception {
         // Given
-        LanguageRequest request = new LanguageRequest("test@example.com", "English", "C1");
+        LanguageRequest request = new LanguageRequest(1L,"test@example.com", "English", "C1");
         LanguageResponse response = new LanguageResponse("English", "C1", "Language added successfully");
         given(createLanguageUseCase.execute(request)).willReturn(response);
 
@@ -227,7 +230,7 @@ class EmploymentInfoControllerTest {
     @Test
     void should_createLink_when_valueIsCorrect() throws Exception {
         // Given
-        LinkRequest request = new LinkRequest("test@example.com", "GitHub Profile", "https://github.com/johndoe");
+        LinkRequest request = new LinkRequest(1L,"test@example.com", "GitHub Profile", "https://github.com/johndoe");
         LinkResponse response = new LinkResponse("GitHub Profile", "https://github.com/johndoe", "Link added successfully");
         given(createLinkUseCase.execute(request)).willReturn(response);
 
@@ -242,7 +245,7 @@ class EmploymentInfoControllerTest {
     @Test
     void should_createPortfolioItem_when_valueIsCorrect() throws Exception {
         // Given
-        PortfolioItemsRequest request = new PortfolioItemsRequest("test@example.com", "Personal Website", "A personal portfolio website built with React.");
+        PortfolioItemsRequest request = new PortfolioItemsRequest(1L,"test@example.com", "Personal Website", "A personal portfolio website built with React.");
         PortfolioItemsResponse response = new PortfolioItemsResponse("Personal Website", "A personal portfolio website built with React.", "Portfolio item added successfully");
         given(createPortfolioItemUseCase.execute(request)).willReturn(response);
 
