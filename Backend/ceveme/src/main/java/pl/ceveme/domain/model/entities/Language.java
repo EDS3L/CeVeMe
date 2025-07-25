@@ -24,6 +24,11 @@ public class Language {
         this.level = level;
     }
 
+    public void update(String name, String level) {
+        this.name = name;
+        this.level = level;
+    }
+
     public long getId() {
         return id;
     }

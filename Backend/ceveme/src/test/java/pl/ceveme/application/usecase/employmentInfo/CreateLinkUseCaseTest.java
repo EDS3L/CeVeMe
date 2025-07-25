@@ -2,14 +2,12 @@ package pl.ceveme.application.usecase.employmentInfo;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.ceveme.application.dto.entity.link.LinkRequest;
 import pl.ceveme.application.dto.entity.link.LinkResponse;
-import pl.ceveme.domain.model.entities.EmploymentInfo;
-import pl.ceveme.domain.model.entities.Link;
+import pl.ceveme.application.usecase.employmentInfo.link.CreateLinkUseCase;
 import pl.ceveme.domain.model.entities.User;
 import pl.ceveme.domain.model.vo.Email;
 import pl.ceveme.domain.repositories.EmploymentInfoRepository;

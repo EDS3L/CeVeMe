@@ -160,6 +160,90 @@ public class EmploymentInfo {
                 .findFirst();
     }
 
+    public void removeCourse(Course course) {
+        if (!courses.contains(course)) {
+            throw new IllegalArgumentException("Course not found in employment info");
+        }
+        courses.remove(course);
+        course.setEmploymentInfo(null);
+    }
+
+    public Optional<Course> getCourseById(Long id) {
+        return courses.stream().filter(c -> c.getId() == id).findFirst();
+    }
+
+    public void removeExperience(Experience experience) {
+        if (!experiences.contains(experience)) {
+            throw new IllegalArgumentException("Experience not found in employment info");
+        }
+        experiences.remove(experience);
+        experience.setEmploymentInfo(null);
+    }
+
+    public Optional<Experience> getExperienceById(Long id) {
+        return experiences.stream().filter(e -> e.getId() == id).findFirst();
+    }
+
+    public void removeLanguage(Language language) {
+        if (!languages.contains(language)) {
+            throw new IllegalArgumentException("Language not found in employment info");
+        }
+        languages.remove(language);
+        language.setEmploymentInfo(null);
+    }
+
+    public Optional<Language> getLanguageById(Long id) {
+        return languages.stream().filter(l -> l.getId() == id).findFirst();
+    }
+
+    public void removeEducation(Education education) {
+        if (!educations.contains(education)) {
+            throw new IllegalArgumentException("Education not found in employment info");
+        }
+        educations.remove(education);
+        education.setEmploymentInfo(null);
+    }
+
+    public Optional<Education> getEducationById(Long id) {
+        return educations.stream().filter(e -> e.getId() == id).findFirst();
+    }
+
+    public void removeLink(Link link) {
+        if (!links.contains(link)) {
+            throw new IllegalArgumentException("Link not found in employment info");
+        }
+        links.remove(link);
+        link.setEmploymentInfo(null);
+    }
+
+    public Optional<Link> getLinkById(Long id) {
+        return links.stream().filter(l -> l.getId() == id).findFirst();
+    }
+
+    public void removePortfolioItem(PortfolioItem item) {
+        if (!portfolioItems.contains(item)) {
+            throw new IllegalArgumentException("Portfolio item not found in employment info");
+        }
+        portfolioItems.remove(item);
+        item.setEmploymentInfo(null);
+    }
+
+    public Optional<PortfolioItem> getPortfolioItemById(Long id) {
+        return portfolioItems.stream().filter(p -> p.getId() == id).findFirst();
+    }
+
+    public void removeSkill(Skill skill) {
+        if (!skills.contains(skill)) {
+            throw new IllegalArgumentException("Skill not found in employment info");
+        }
+        skills.remove(skill);
+        skill.setEmploymentInfo(null);
+    }
+
+    public Optional<Skill> getSkillById(Long id) {
+        return skills.stream().filter(s -> s.getId() == id).findFirst();
+    }
+
 
     public void addCourse(Course course) {
         this.courses.add(course);

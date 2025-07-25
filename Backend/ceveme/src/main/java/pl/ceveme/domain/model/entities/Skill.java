@@ -25,6 +25,11 @@ public class Skill {
         this.type = type;
     }
 
+    public void update(String name, Type type) {
+        this.name = name;
+        this.type = type;
+    }
+
     public long getId() {
         return id;
     }

@@ -30,6 +30,12 @@ public class Course {
         this.courseDescription = courseDescription;
     }
 
+    public void update(String courseName, LocalDate dateOfCourse, String courseDescription) {
+        this.courseName = courseName;
+        this.dateOfCourse = dateOfCourse;
+        this.courseDescription = courseDescription;
+    }
+
     public long getId() {
         return id;
     }

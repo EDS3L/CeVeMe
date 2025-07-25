@@ -2,14 +2,12 @@ package pl.ceveme.application.usecase.employmentInfo;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.ceveme.application.dto.entity.portfolioItems.PortfolioItemsRequest;
 import pl.ceveme.application.dto.entity.portfolioItems.PortfolioItemsResponse;
-import pl.ceveme.domain.model.entities.EmploymentInfo;
-import pl.ceveme.domain.model.entities.PortfolioItem;
+import pl.ceveme.application.usecase.employmentInfo.portfolio.CreatePortfolioItemUseCase;
 import pl.ceveme.domain.model.entities.User;
 import pl.ceveme.domain.model.vo.Email;
 import pl.ceveme.domain.repositories.EmploymentInfoRepository;

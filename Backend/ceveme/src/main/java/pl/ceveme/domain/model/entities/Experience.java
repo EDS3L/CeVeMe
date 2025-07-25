@@ -40,6 +40,16 @@ public class Experience {
         this.jobAchievements = jobAchievements;
     }
 
+    public void update(String companyName, LocalDate startingDate, LocalDate endDate, Boolean currently, String positionName, String jobDescription, String jobAchievements) {
+        this.companyName = companyName;
+        this.startingDate = startingDate;
+        this.endDate = endDate;
+        this.currently = currently;
+        this.positionName = positionName;
+        this.jobDescription = jobDescription;
+        this.jobAchievements = jobAchievements;
+    }
+
     public long getId() {
         return id;
     }

@@ -30,6 +30,12 @@ import pl.ceveme.application.dto.entity.skill.SkillRequest;
 import pl.ceveme.application.dto.entity.skill.SkillResponse;
 import pl.ceveme.application.usecase.employmentInfo.*;
 import pl.ceveme.application.usecase.employmentInfo.certificate.CreateCertificateUseCase;
+import pl.ceveme.application.usecase.employmentInfo.course.CreateCourseUseCase;
+import pl.ceveme.application.usecase.employmentInfo.experience.CreateExperienceUseCase;
+import pl.ceveme.application.usecase.employmentInfo.language.CreateLanguageUseCase;
+import pl.ceveme.application.usecase.employmentInfo.link.CreateLinkUseCase;
+import pl.ceveme.application.usecase.employmentInfo.portfolio.CreatePortfolioItemUseCase;
+import pl.ceveme.application.usecase.employmentInfo.skill.CreateSkillUseCase;
 import pl.ceveme.domain.model.entities.Skill;
 
 import java.time.LocalDate;

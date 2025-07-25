@@ -1,4 +1,4 @@
-package pl.ceveme.application.usecase.employmentInfo;
+package pl.ceveme.application.usecase.employmentInfo.course;
 
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
