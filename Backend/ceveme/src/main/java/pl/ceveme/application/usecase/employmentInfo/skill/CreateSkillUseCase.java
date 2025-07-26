@@ -23,10 +23,17 @@ public class CreateSkillUseCase {
         User user = userRepository.findByEmail(new Email(request.email()))
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        user.addSkill(new Skill(request.name(), request.type()));
+        user.addSkill(new Skill(
+                request.name(),
+                request.type()
+        ));
 
         userRepository.save(user);
 
-        return new SkillResponse(request.name(), request.type(), "Addition of skill successfully completed");
+        return new SkillResponse(
+                request.name(),
+                request.type(),
+                "Addition of skill successfully completed"
+        );
     }
 }

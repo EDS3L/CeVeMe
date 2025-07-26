@@ -10,7 +10,6 @@ import pl.ceveme.domain.model.vo.Email;
 import pl.ceveme.domain.repositories.UserRepository;
 
 @Service
-
 public class CreateLanguageUseCase {
 
     private final UserRepository userRepository;
@@ -24,10 +23,17 @@ public class CreateLanguageUseCase {
         User user = userRepository.findByEmail(new Email(request.email()))
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        user.addLanguage(new Language(request.name(), request.level()));
+        user.addLanguage(new Language(
+                request.name(),
+                request.level()
+        ));
 
         userRepository.save(user);
 
-        return new LanguageResponse(request.name(), request.level(), "Addition of language successfully completed");
+        return new LanguageResponse(
+                request.name(),
+                request.level(),
+                "Addition of language successfully completed"
+        );
     }
 }

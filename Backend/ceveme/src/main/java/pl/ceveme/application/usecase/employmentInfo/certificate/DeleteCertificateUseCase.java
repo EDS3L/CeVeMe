@@ -2,6 +2,7 @@ package pl.ceveme.application.usecase.employmentInfo.certificate;
 
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import pl.ceveme.application.dto.entity.DeleteEntityRequest;
 import pl.ceveme.application.dto.entity.certificate.CertificateResponse;
 import pl.ceveme.domain.model.entities.Certificate;
 import pl.ceveme.domain.model.entities.EmploymentInfo;
@@ -17,11 +18,11 @@ public class DeleteCertificateUseCase {
     }
 
     @Transactional
-    public CertificateResponse execute(Long certificateId, Long employmentInfoId) {
-        EmploymentInfo info = employmentInfoRepository.findById(employmentInfoId)
+    public CertificateResponse execute(DeleteEntityRequest request) {
+        EmploymentInfo info = employmentInfoRepository.findById(request.employmentInfoId())
                 .orElseThrow(() -> new IllegalArgumentException("EmploymentInfo not found"));
 
-        Certificate certificate = info.getCertificateById(certificateId)
+        Certificate certificate = info.getCertificateById(request.itemId())
                 .orElseThrow(() -> new IllegalArgumentException("Certificate not found"));
 
         info.removeCertificate(certificate);

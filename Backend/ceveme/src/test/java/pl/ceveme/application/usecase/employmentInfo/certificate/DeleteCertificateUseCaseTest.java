@@ -5,6 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import pl.ceveme.application.dto.entity.DeleteEntityRequest;
 import pl.ceveme.application.dto.entity.certificate.CertificateResponse;
 import pl.ceveme.application.usecase.employmentInfo.certificate.DeleteCertificateUseCase;
 import pl.ceveme.domain.model.entities.Certificate;
@@ -40,7 +41,7 @@ class DeleteCertificateUseCaseTest {
         when(employmentInfoRepository.findById(infoId)).thenReturn(Optional.of(info));
 
         // when
-        CertificateResponse response = deleteCertificateUseCase.execute(certId, infoId);
+        CertificateResponse response = deleteCertificateUseCase.execute(new DeleteEntityRequest(certId, infoId));
 
         // then
         assertThat(response.name()).isEqualTo("To delete");
@@ -58,7 +59,7 @@ class DeleteCertificateUseCaseTest {
 
         // when & then
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> deleteCertificateUseCase.execute(certId, infoId));
+                () -> deleteCertificateUseCase.execute(new DeleteEntityRequest(certId, infoId)));
 
         assertThat(ex.getMessage()).isEqualTo("Certificate not found");
     }
@@ -66,11 +67,13 @@ class DeleteCertificateUseCaseTest {
     @Test
     void should_throwException_when_employmentInfoNotFound() {
         // given
+        Long certId = 999L;
+        Long infoId = 1L;
         when(employmentInfoRepository.findById(1L)).thenReturn(Optional.empty());
 
         // when & then
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> deleteCertificateUseCase.execute(123L, 1L));
+                () -> deleteCertificateUseCase.execute(new DeleteEntityRequest(certId, infoId)));
 
         assertThat(ex.getMessage()).isEqualTo("EmploymentInfo not found");
     }

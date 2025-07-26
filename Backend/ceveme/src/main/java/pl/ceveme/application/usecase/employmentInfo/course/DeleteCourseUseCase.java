@@ -2,6 +2,7 @@ package pl.ceveme.application.usecase.employmentInfo.course;
 
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import pl.ceveme.application.dto.entity.DeleteEntityRequest;
 import pl.ceveme.application.dto.entity.course.CourseResponse;
 import pl.ceveme.domain.model.entities.Course;
 import pl.ceveme.domain.model.entities.EmploymentInfo;
@@ -17,11 +18,11 @@ public class DeleteCourseUseCase {
     }
 
     @Transactional
-    public CourseResponse execute(Long courseId, Long employmentInfoId) {
-        EmploymentInfo info = employmentInfoRepository.findById(employmentInfoId)
+    public CourseResponse execute(DeleteEntityRequest request) {
+        EmploymentInfo info = employmentInfoRepository.findById(request.employmentInfoId())
                 .orElseThrow(() -> new IllegalArgumentException("EmploymentInfo not found"));
 
-        Course course = info.getCourseById(courseId)
+        Course course = info.getCourseById(request.itemId())
                 .orElseThrow(() -> new IllegalArgumentException("Course not found"));
 
         info.removeCourse(course);

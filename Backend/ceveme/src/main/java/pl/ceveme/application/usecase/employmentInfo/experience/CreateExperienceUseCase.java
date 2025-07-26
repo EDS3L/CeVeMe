@@ -27,6 +27,10 @@ public class CreateExperienceUseCase {
 
         userRepository.save(user);
 
-        return new ExperienceResponse(request.companyName(), request.positionName(), "Addition of experience successfully completed");
+        return new ExperienceResponse(
+                request.companyName(),
+                request.positionName(),
+                "Addition of experience successfully completed"
+        );
     }
 }

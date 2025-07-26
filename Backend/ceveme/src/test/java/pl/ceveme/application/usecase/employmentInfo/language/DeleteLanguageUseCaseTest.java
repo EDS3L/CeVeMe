@@ -1,4 +1,4 @@
-package pl.ceveme.application.usecase.employmentInfo.course;
+package pl.ceveme.application.usecase.employmentInfo.language;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -6,12 +6,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.ceveme.application.dto.entity.DeleteEntityRequest;
-import pl.ceveme.application.dto.entity.course.CourseResponse;
-import pl.ceveme.domain.model.entities.Course;
+import pl.ceveme.application.dto.entity.language.LanguageResponse;
 import pl.ceveme.domain.model.entities.EmploymentInfo;
+import pl.ceveme.domain.model.entities.Language;
 import pl.ceveme.domain.repositories.EmploymentInfoRepository;
 
-import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,38 +18,38 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class DeleteCourseUseCaseTest {
+class DeleteLanguageUseCaseTest {
 
     @Mock
     private EmploymentInfoRepository employmentInfoRepository;
 
     @InjectMocks
-    private DeleteCourseUseCase deleteCourseUseCase;
+    private DeleteLanguageUseCase deleteLanguageUseCase;
 
     @Test
-    void should_deleteCourse_when_exists() {
+    void should_deleteLanguage_when_exists() {
         // given
-        Long courseId = 123L;
+        Long languageId = 123L;
         Long infoId = 1L;
-        Course course = createCourseWithId(courseId, "To delete", "Organizer", LocalDate.now().minusYears(1));
+        Language language = createLanguageWithId(languageId, "To delete", "Level");
 
         EmploymentInfo info = new EmploymentInfo();
-        info.addCourse(course);
+        info.addLanguage(language);
 
         when(employmentInfoRepository.findById(infoId)).thenReturn(Optional.of(info));
 
         // when
-        CourseResponse response = deleteCourseUseCase.execute(new DeleteEntityRequest(courseId, infoId));
+        LanguageResponse response = deleteLanguageUseCase.execute(new DeleteEntityRequest(languageId, infoId));
 
         // then
-        assertThat(response.courseName()).isEqualTo("To delete");
-        assertThat(response.message()).isEqualTo("Course deleted successfully");
+        assertThat(response.name()).isEqualTo("To delete");
+        assertThat(response.message()).isEqualTo("Language deleted successfully");
     }
 
     @Test
-    void should_throwException_when_courseNotFound() {
+    void should_throwException_when_languageNotFound() {
         // given
-        Long courseId = 999L;
+        Long languageId = 999L;
         Long infoId = 1L;
         EmploymentInfo info = new EmploymentInfo();
 
@@ -58,35 +57,35 @@ class DeleteCourseUseCaseTest {
 
         // when & then
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> deleteCourseUseCase.execute(new DeleteEntityRequest(courseId, infoId)));
+                () -> deleteLanguageUseCase.execute(new DeleteEntityRequest(languageId, infoId)));
 
-        assertThat(ex.getMessage()).isEqualTo("Course not found");
+        assertThat(ex.getMessage()).isEqualTo("Language not found");
     }
 
     @Test
     void should_throwException_when_employmentInfoNotFound() {
         // given
-        Long courseId = 999L;
+        Long languageId = 999L;
         Long infoId = 1L;
         when(employmentInfoRepository.findById(1L)).thenReturn(Optional.empty());
 
         // when & then
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> deleteCourseUseCase.execute(new DeleteEntityRequest(courseId, infoId)));
+                () -> deleteLanguageUseCase.execute(new DeleteEntityRequest(languageId, infoId)));
 
         assertThat(ex.getMessage()).isEqualTo("EmploymentInfo not found");
     }
 
     // helper for test
-    private Course createCourseWithId(Long id, String name, String organizer, LocalDate date) {
-        Course course = new Course(name, date, "Description");
+    private Language createLanguageWithId(Long id, String languageName, String level) {
+        Language language = new Language(languageName, level);
         try {
-            java.lang.reflect.Field field = Course.class.getDeclaredField("id");
+            java.lang.reflect.Field field = Language.class.getDeclaredField("id");
             field.setAccessible(true);
-            field.set(course, id);
+            field.set(language, id);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return course;
+        return language;
     }
 }

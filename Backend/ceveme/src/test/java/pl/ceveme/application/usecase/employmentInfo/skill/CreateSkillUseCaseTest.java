@@ -1,4 +1,4 @@
-package pl.ceveme.application.usecase.employmentInfo;
+package pl.ceveme.application.usecase.employmentInfo.skill;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -7,7 +7,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.ceveme.application.dto.entity.skill.SkillRequest;
 import pl.ceveme.application.dto.entity.skill.SkillResponse;
-import pl.ceveme.application.usecase.employmentInfo.skill.CreateSkillUseCase;
 import pl.ceveme.domain.model.entities.Skill;
 import pl.ceveme.domain.model.entities.User;
 import pl.ceveme.domain.model.vo.Email;

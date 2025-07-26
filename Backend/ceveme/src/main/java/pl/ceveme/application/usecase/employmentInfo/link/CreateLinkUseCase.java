@@ -23,11 +23,17 @@ public class CreateLinkUseCase {
         User user = userRepository.findByEmail(new Email(request.email()))
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        user.addLinks(new Link(request.title(), request.link()));
+        user.addLinks(new Link(
+                request.title(),
+                request.link()
+        ));
 
         userRepository.save(user);
 
-        return new LinkResponse(request.title(), request.link(), "Addition of link successfully completed");
-
+        return new LinkResponse(
+                request.title(),
+                request.link(),
+                "Addition of link successfully completed"
+        );
     }
 }

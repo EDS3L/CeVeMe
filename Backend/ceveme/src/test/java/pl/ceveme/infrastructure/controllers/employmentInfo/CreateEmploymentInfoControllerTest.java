@@ -108,7 +108,7 @@ class CreateEmploymentInfoControllerTest {
         given(createEmploymentInfoUseCase.execute(request)).willReturn(response);
 
         // When & Then
-        mockMvc.perform(post("/api/employmentInfo/create")
+        mockMvc.perform(post("/api/employmentInfo/create/create")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -132,7 +132,7 @@ class CreateEmploymentInfoControllerTest {
         given(getEmploymentInfoUseCase.execute(userEmail)).willReturn(expectedResponse);
 
         // When & Then
-        mockMvc.perform(get("/api/employmentInfo/{email}", userEmail))
+        mockMvc.perform(get("/api/employmentInfo/create/{email}", userEmail))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(expectedResponse)));
     }
@@ -145,7 +145,7 @@ class CreateEmploymentInfoControllerTest {
         given(createSkillUseCase.execute(request)).willReturn(response);
 
         // When & Then
-        mockMvc.perform(post("/api/employmentInfo/skill")
+        mockMvc.perform(post("/api/employmentInfo/create/skill")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -170,7 +170,7 @@ class CreateEmploymentInfoControllerTest {
         given(createExperienceUseCase.execute(request)).willReturn(response);
 
         // When & Then
-        mockMvc.perform(post("/api/employmentInfo/experience")
+        mockMvc.perform(post("/api/employmentInfo/create/experience")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -191,7 +191,7 @@ class CreateEmploymentInfoControllerTest {
         given(createCourseUseCase.execute(request)).willReturn(response);
 
         // When & Then
-        mockMvc.perform(post("/api/employmentInfo/course")
+        mockMvc.perform(post("/api/employmentInfo/create/course")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -211,7 +211,7 @@ class CreateEmploymentInfoControllerTest {
         given(createCertificateUseCase.execute(request)).willReturn(response);
 
         // When & Then
-        mockMvc.perform(post("/api/employmentInfo/certificate")
+        mockMvc.perform(post("/api/employmentInfo/create/certificate")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -226,7 +226,7 @@ class CreateEmploymentInfoControllerTest {
         given(createLanguageUseCase.execute(request)).willReturn(response);
 
         // When & Then
-        mockMvc.perform(post("/api/employmentInfo/language")
+        mockMvc.perform(post("/api/employmentInfo/create/language")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -241,7 +241,7 @@ class CreateEmploymentInfoControllerTest {
         given(createLinkUseCase.execute(request)).willReturn(response);
 
         // When & Then
-        mockMvc.perform(post("/api/employmentInfo/link")
+        mockMvc.perform(post("/api/employmentInfo/create/link")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -256,7 +256,7 @@ class CreateEmploymentInfoControllerTest {
         given(createPortfolioItemUseCase.execute(request)).willReturn(response);
 
         // When & Then
-        mockMvc.perform(post("/api/employmentInfo/portfolioItem")
+        mockMvc.perform(post("/api/employmentInfo/create/portfolioItem")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -269,7 +269,7 @@ class CreateEmploymentInfoControllerTest {
         String invalidJson = "{}";
 
         // When & Then
-        mockMvc.perform(post("/api/employmentInfo/certificate")
+        mockMvc.perform(post("/api/employmentInfo/create/certificate")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(invalidJson))
                 .andExpect(status().isBadRequest());
@@ -278,7 +278,7 @@ class CreateEmploymentInfoControllerTest {
     @Test
     void should_returnNotFound_when_pathVariableIsEmpty() throws Exception {
         // When & Then
-        mockMvc.perform(get("/api/employmentInfo/"))
+        mockMvc.perform(get("/api/employmentInfo/create"))
                 .andExpect(status().isNotFound());
     }
 
@@ -288,7 +288,7 @@ class CreateEmploymentInfoControllerTest {
         EmploymentInfoRequest request = new EmploymentInfoRequest(Collections.emptyList(),Collections.emptyList(),Collections.emptyList(),Collections.emptyList(),Collections.emptyList(),Collections.emptyList(),Collections.emptyList(),Collections.emptyList(),"mta1007@wp.pl");
 
         // When & Then
-        mockMvc.perform(post("/api/employmentInfo/create")
+        mockMvc.perform(post("/api/employmentInfo/create/create")
                         .contentType(MediaType.TEXT_PLAIN)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isUnsupportedMediaType());
@@ -297,7 +297,7 @@ class CreateEmploymentInfoControllerTest {
     @Test
     void should_returnBadRequest_when_requestBodyIsEmpty() throws Exception {
         // When & Then
-        mockMvc.perform(post("/api/employmentInfo/create")
+        mockMvc.perform(post("/api/employmentInfo/create/create")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(""))
                 .andExpect(status().isBadRequest());

@@ -23,10 +23,17 @@ public class CreatePortfolioItemUseCase {
         User user = userRepository.findByEmail(new Email(request.email()))
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        user.addPortfolioItems(new PortfolioItem(request.title(),request.description()));
+        user.addPortfolioItems(new PortfolioItem(
+                request.title(),
+                request.description()
+        ));
 
         userRepository.save(user);
 
-        return new PortfolioItemsResponse(request.title(), request.description(), "Addition of portfolio successfully completed");
+        return new PortfolioItemsResponse(
+                request.title(),
+                request.description(),
+                "Addition of portfolio item successfully completed"
+        );
     }
 }
