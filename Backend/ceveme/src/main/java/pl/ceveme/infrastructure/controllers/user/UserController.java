@@ -1,10 +1,15 @@
 // pl/ceveme/infrastructure/controllers/user/UserController.java
 package pl.ceveme.infrastructure.controllers.user;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import pl.ceveme.application.dto.cloud.UploadFileResponse;
 import pl.ceveme.application.dto.user.*;
 import pl.ceveme.application.usecase.user.*;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/users")
@@ -15,17 +20,15 @@ public class UserController {
     private final ChangeUserSurnameUseCase changeUserSurnameUseCase;
     private final ChangeUserPhoneNumberUseCase changeUserPhoneNumberUseCase;
     private final ChangeUserEmailUseCase changeUserEmailUseCase;
+    private final UploadProfileImageUseCase uploadProfileImageUseCase;
 
-    public UserController(ChangeUsersPasswordUseCase changeUsersPasswordUseCase,
-                          ChangeUserNameUseCase changeUserNameUseCase,
-                          ChangeUserSurnameUseCase changeUserSurnameUseCase,
-                          ChangeUserPhoneNumberUseCase changeUserPhoneNumberUseCase,
-                          ChangeUserEmailUseCase changeUserEmailUseCase) {
+    public UserController(ChangeUsersPasswordUseCase changeUsersPasswordUseCase, ChangeUserNameUseCase changeUserNameUseCase, ChangeUserSurnameUseCase changeUserSurnameUseCase, ChangeUserPhoneNumberUseCase changeUserPhoneNumberUseCase, ChangeUserEmailUseCase changeUserEmailUseCase, UploadProfileImageUseCase uploadProfileImageUseCase) {
         this.changeUsersPasswordUseCase = changeUsersPasswordUseCase;
         this.changeUserNameUseCase = changeUserNameUseCase;
         this.changeUserSurnameUseCase = changeUserSurnameUseCase;
         this.changeUserPhoneNumberUseCase = changeUserPhoneNumberUseCase;
         this.changeUserEmailUseCase = changeUserEmailUseCase;
+        this.uploadProfileImageUseCase = uploadProfileImageUseCase;
     }
 
     @PatchMapping("/{userId}/password")
@@ -57,4 +60,11 @@ public class UserController {
         UpdateUserResponse response = changeUserEmailUseCase.execute(userId, request.email());
         return ResponseEntity.ok(response);
     }
+
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<UploadFileResponse> uploadProfilePhoto(@RequestParam MultipartFile multipartFile, @RequestParam String email) throws IOException {
+        UploadFileResponse response = uploadProfileImageUseCase.execute(multipartFile,email);
+        return ResponseEntity.ok(response);
+    }
+
 }
