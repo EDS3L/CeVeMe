@@ -1,5 +1,6 @@
 package pl.ceveme.application.usecase.jobOffer;
 
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import pl.ceveme.domain.model.entities.JobOffer;
 import pl.ceveme.domain.services.jobOffer.JobOfferService;
@@ -15,7 +16,7 @@ public class GetJobOffersPerPageUseCase {
         this.jobOfferService = jobOfferService;
     }
 
-    public List<JobOffer> execute(int countLimit) {
-        return jobOfferService.getJobOfferListPerPage(countLimit);
+    public Page<JobOffer> execute(int countLimit) {
+        return jobOfferService.getJobOffersPage(countLimit);
     }
 }

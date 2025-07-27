@@ -1,5 +1,6 @@
 package pl.ceveme.infrastructure.controllers.jobOffer;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,7 +22,7 @@ public class JobOfferController {
     }
 
     @GetMapping("/getJobs")
-    public ResponseEntity<List<JobOffer>> jobOffersList(@RequestParam int countLimit) {
-        return ResponseEntity.ok(getJobOffersPerPageUseCase.execute(countLimit));
+    public ResponseEntity<Page<JobOffer>> jobOffersList(@RequestParam int pageNumber) {
+        return ResponseEntity.ok(getJobOffersPerPageUseCase.execute(pageNumber));
     }
 }
