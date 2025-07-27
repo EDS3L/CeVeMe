@@ -21,14 +21,16 @@ public class UserController {
     private final ChangeUserPhoneNumberUseCase changeUserPhoneNumberUseCase;
     private final ChangeUserEmailUseCase changeUserEmailUseCase;
     private final UploadProfileImageUseCase uploadProfileImageUseCase;
+    private final UploadCvFileUseCase uploadCvFileUseCase;
 
-    public UserController(ChangeUsersPasswordUseCase changeUsersPasswordUseCase, ChangeUserNameUseCase changeUserNameUseCase, ChangeUserSurnameUseCase changeUserSurnameUseCase, ChangeUserPhoneNumberUseCase changeUserPhoneNumberUseCase, ChangeUserEmailUseCase changeUserEmailUseCase, UploadProfileImageUseCase uploadProfileImageUseCase) {
+    public UserController(ChangeUsersPasswordUseCase changeUsersPasswordUseCase, ChangeUserNameUseCase changeUserNameUseCase, ChangeUserSurnameUseCase changeUserSurnameUseCase, ChangeUserPhoneNumberUseCase changeUserPhoneNumberUseCase, ChangeUserEmailUseCase changeUserEmailUseCase, UploadProfileImageUseCase uploadProfileImageUseCase, UploadCvFileUseCase uploadCvFileUseCase) {
         this.changeUsersPasswordUseCase = changeUsersPasswordUseCase;
         this.changeUserNameUseCase = changeUserNameUseCase;
         this.changeUserSurnameUseCase = changeUserSurnameUseCase;
         this.changeUserPhoneNumberUseCase = changeUserPhoneNumberUseCase;
         this.changeUserEmailUseCase = changeUserEmailUseCase;
         this.uploadProfileImageUseCase = uploadProfileImageUseCase;
+        this.uploadCvFileUseCase = uploadCvFileUseCase;
     }
 
     @PatchMapping("/{userId}/password")
@@ -61,9 +63,15 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/upload/profileImage", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<UploadFileResponse> uploadProfilePhoto(@RequestParam MultipartFile multipartFile, @RequestParam String email) throws IOException {
         UploadFileResponse response = uploadProfileImageUseCase.execute(multipartFile,email);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping(value = "/upload/cvFile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<UploadFileResponse> uploadCvFile(@RequestParam MultipartFile multipartFile, @RequestParam String email) throws IOException {
+        UploadFileResponse response = uploadCvFileUseCase.execute(multipartFile,email);
         return ResponseEntity.ok(response);
     }
 
