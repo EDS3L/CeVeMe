@@ -1,4 +1,3 @@
-// pl/ceveme/infrastructure/controllers/user/UserController.java
 package pl.ceveme.infrastructure.controllers.user;
 
 import org.springframework.http.MediaType;
@@ -70,8 +69,8 @@ public class UserController {
     }
 
     @PostMapping(value = "/upload/cvFile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<UploadFileResponse> uploadCvFile(@RequestParam MultipartFile multipartFile, @RequestParam String email) throws IOException {
-        UploadFileResponse response = uploadCvFileUseCase.execute(multipartFile,email);
+    public ResponseEntity<UploadFileResponse> uploadCvFile(@RequestParam MultipartFile multipartFile, @RequestParam String email, @RequestParam Long jobOfferId) throws IOException {
+        UploadFileResponse response = uploadCvFileUseCase.execute(multipartFile,email,jobOfferId);
         return ResponseEntity.ok(response);
     }
 
