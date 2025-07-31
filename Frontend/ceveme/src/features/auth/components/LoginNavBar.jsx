@@ -28,7 +28,7 @@ function HomeNavBar() {
           isVisible ? 'translate-y-0' : '-translate-y-full'
         }`}
       >
-        <div className="flex items-center justify-between px-6 md:px-12 h-full">
+        <div className="grid grid-cols-3 grid-rows-1 gap-4 items-center justify-between px-6 md:px-12 h-full">
           <div className="flex items-center space-x-4">
             <div className="w-10 h-10 rounded-lg bg-gradient-to-r from-[var(--color-kraft)] to-[var(--color-manilla)] flex items-center justify-center">
               <span className="text-[var(--color-basewhite)] font-bold text-lg">
@@ -40,7 +40,7 @@ function HomeNavBar() {
             </span>
           </div>
 
-          <div className="hidden md:flex items-center space-x-6">
+          <div className="hidden md:flex items-center space-x-6 ">
             <Link
               to="/info"
               className="text-[var(--color-clouddark)] hover:text-[var(--color-slatedark)] transition-colors duration-200 font-bold"
@@ -62,16 +62,12 @@ function HomeNavBar() {
           </div>
 
           <div className="hidden md:flex items-center space-x-4">
-            <Link to={'/auth/login'}>
-              <button className="border-2 border-[var(--color-bookcloth)] text-[var(--color-slatedark)] px-4 py-2 rounded-xl transition-colors duration-200 hover:bg-gray-50">
-                Sign in
-              </button>
-            </Link>
-            <Link to={'/auth/register'}>
-              <button className="bg-[var(--color-bookcloth)] text-[var(--color-basewhite)] px-4 py-2 rounded-xl hover:bg-[var(--color-kraft)] transition-colors duration-200">
-                Sign up
-              </button>
-            </Link>
+            <button className="border-2 border-[var(--color-bookcloth)] text-[var(--color-slatedark)] px-4 py-2 rounded-xl transition-colors duration-200">
+              Sign in
+            </button>
+            <button className="bg-[var(--color-bookcloth)] text-[var(--color-basewhite)] px-4 py-2 rounded-xl hover:bg-[var(--color-kraft)] transition-colors duration-200">
+              Sign up
+            </button>
           </div>
 
           <div className="flex md:hidden items-center space-x-4">

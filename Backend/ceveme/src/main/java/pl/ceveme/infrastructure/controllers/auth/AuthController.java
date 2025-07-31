@@ -1,5 +1,9 @@
 package pl.ceveme.infrastructure.controllers.auth;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.ceveme.application.dto.auth.*;
@@ -14,6 +18,7 @@ import java.util.UUID;
 public class AuthController {
 
 
+    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
     private final LoginUserUseCase loginUserUseCase;
     private final RegisterUserUseCase registerUserUseCase;
     private final ActiveUserUseCase activeUserUseCase;
@@ -25,10 +30,19 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginUserResponse> login(@RequestBody LoginUserRequest loginUserRequest) {
+    public ResponseEntity<LoginUserResponse> login(@RequestBody LoginUserRequest loginUserRequest, HttpServletResponse servletResponse) {
 
             LoginUserResponse response = loginUserUseCase.login(loginUserRequest);
-            return ResponseEntity.ok(response);
+            Cookie cookie = new Cookie("jwt", response.token());
+            cookie.setHttpOnly(true);
+            cookie.setSecure(false);
+            cookie.setPath("/jwt");
+
+
+            servletResponse.addCookie(cookie);
+
+            log.info("cookie {}", cookie);
+            return ResponseEntity.ok(new LoginUserResponse(response.userId(),null, response.message()));
 
     }
 
