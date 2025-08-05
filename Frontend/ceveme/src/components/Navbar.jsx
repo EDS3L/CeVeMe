@@ -34,10 +34,10 @@ function Navbar() {
 
           <div className="hidden md:flex items-center space-x-6">
             <Link
-              to="/info"
+              to="/cv"
               className="text-[var(--color-clouddark)] hover:text-[var(--color-slatedark)] transition-colors duration-200 font-bold"
             >
-              Info
+              CV
             </Link>
             <Link
               to="/demo"
@@ -196,7 +196,7 @@ function Navbar() {
               className="text-[var(--color-clouddark)] hover:text-[var(--color-slatedark)] transition-colors duration-200 font-bold py-2"
               onClick={() => setIsMenuOpen(false)}
             >
-              Info
+              CV
             </Link>
             <Link
               to="/demo"

@@ -4,22 +4,24 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import pl.ceveme.application.dto.gemini.GeminiResponse;
+import pl.ceveme.application.dto.gemini.cvStructure.*;
 
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.List;
 
 public interface GeminiMapper {
 
 
     default String cleanJsonResponse(String aiResponse) {
-        if (aiResponse == null || aiResponse.trim().isEmpty()) {
+        if (aiResponse == null || aiResponse.trim()
+                .isEmpty()) {
             throw new IllegalArgumentException("AI response is empty");
         }
 
-        String cleaned = aiResponse.trim();
-
-        cleaned = cleaned.replaceAll("^```json\\s*", "");
-        cleaned = cleaned.replaceAll("^```\\s*", "");
-        cleaned = cleaned.replaceAll("\\s*```$", "");
+        String cleaned = aiResponse.trim()
+                .replaceAll("^```json\\s*", "")
+                .replaceAll("^```\\s*", "")
+                .replaceAll("\\s*```$", "");
 
         int firstBrace = cleaned.indexOf('{');
         int lastBrace = cleaned.lastIndexOf('}');
@@ -27,94 +29,45 @@ public interface GeminiMapper {
         if (firstBrace != -1 && lastBrace != -1 && firstBrace < lastBrace) {
             cleaned = cleaned.substring(firstBrace, lastBrace + 1);
         }
-
         return cleaned.trim();
     }
 
-    default GeminiResponse parseJsonManually(String jsonString, ObjectMapper objectMapper) throws JsonProcessingException {
-        JsonNode node = objectMapper.readTree(jsonString);
+    default GeminiResponse parseJson(String json, ObjectMapper mapper) throws JsonProcessingException {
 
-        return new GeminiResponse(
-                getNodeAsString(node, "summary"),
-                getNodeAsString(node, "personalData"),
-                getNodeAsString(node, "education"),
-                getNodeAsString(node, "skills"),
-                getNodeAsString(node, "experience"),
-                getNodeAsString(node, "portfolio"),
-                getNodeAsString(node, "certificates"),
-                getNodeAsString(node, "gdprClause")
-        );
+        JsonNode root = mapper.readTree(json);
+
+        String summary = root.path("summary")
+                .asText();
+        String headline = root.path("headline")
+                .asText();
+        PersonalData personalData = mapper.treeToValue(root.path("personalData"), PersonalData.class);
+
+        List<Educations> education = mapArray(root.path("education"), Educations.class, mapper);
+        List<Skills> skills = mapArray(root.path("skills"), Skills.class, mapper);
+        List<Experience> experience = mapArray(root.path("experience"), Experience.class, mapper);
+        List<Portfolio> portfolio = mapArray(root.path("portfolio"), Portfolio.class, mapper);
+        List<Certificate> certificates = mapArray(root.path("certificates"), Certificate.class, mapper);
+        List<Language> languages = mapArray(root.path("languages"), Language.class, mapper);
+
+        String gdprClause = root.path("gdprClause")
+                .asText();
+
+        return new GeminiResponse(summary, headline, personalData, education, skills, experience, portfolio, certificates, languages, gdprClause);
     }
 
-    private String getNodeAsString(JsonNode node, String fieldName) {
-        JsonNode fieldNode = node.get(fieldName);
-
-        if (fieldNode == null || fieldNode.isNull()) {
-            return "";
+    /* ---------- GENERYCZNE MAPOWANIE TABLICY ---------- */
+    private <T> List<T> mapArray(JsonNode node, Class<T> clazz, ObjectMapper mapper) throws JsonProcessingException {
+        List<T> result = new ArrayList<>();
+        if (node == null || node.isMissingNode() || node.isNull()) {
+            return result;                   // zwracamy pustą listę, nigdy null
         }
-
-        if (fieldNode.isTextual()) {
-            return fieldNode.asText();
+        if (node.isArray()) {
+            for (JsonNode item : node) {
+                result.add(mapper.treeToValue(item, clazz));
+            }
+        } else {                             // pojedynczy obiekt też przyjmujemy
+            result.add(mapper.treeToValue(node, clazz));
         }
-
-        if (fieldNode.isObject() || fieldNode.isArray()) {
-            return formatJsonNode(fieldNode);
-        }
-
-        return fieldNode.asText();
-    }
-
-    private String formatJsonNode(JsonNode node) {
-        try {
-            if (node.isObject()) {
-                return formatJsonObject(node);
-            } else if (node.isArray()) {
-                return formatJsonArray(node);
-            }
-            return node.toString();
-        } catch (Exception e) {
-            return node.toString();
-        }
-    }
-
-    private String formatJsonObject(JsonNode objectNode) {
-        StringBuilder sb = new StringBuilder();
-        objectNode.fields().forEachRemaining(entry -> {
-            String key = entry.getKey();
-            JsonNode value = entry.getValue();
-
-            if (sb.length() > 0) {
-                sb.append("\n");
-            }
-
-            if (value.isTextual()) {
-                sb.append(key).append(": ").append(value.asText());
-            } else if (value.isObject() || value.isArray()) {
-                sb.append(key).append(": ").append(formatJsonNode(value));
-            } else {
-                sb.append(key).append(": ").append(value.asText());
-            }
-        });
-        return sb.toString();
-    }
-
-    private String formatJsonArray(JsonNode arrayNode) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < arrayNode.size(); i++) {
-            JsonNode item = arrayNode.get(i);
-
-            if (sb.length() > 0) {
-                sb.append("\n");
-            }
-
-            if (item.isTextual()) {
-                sb.append("• ").append(item.asText());
-            } else if (item.isObject()) {
-                sb.append("• ").append(formatJsonObject(item));
-            } else {
-                sb.append("• ").append(item.asText());
-            }
-        }
-        return sb.toString();
+        return result;
     }
 }

@@ -34,14 +34,13 @@ public class AuthController {
 
             LoginUserResponse response = loginUserUseCase.login(loginUserRequest);
             Cookie cookie = new Cookie("jwt", response.token());
-            cookie.setHttpOnly(true);
+            cookie.setHttpOnly(false);
             cookie.setSecure(false);
-            cookie.setPath("/jwt");
+            cookie.setPath("/");
 
 
             servletResponse.addCookie(cookie);
 
-            log.info("cookie {}", cookie);
             return ResponseEntity.ok(new LoginUserResponse(response.userId(),null, response.message()));
 
     }
