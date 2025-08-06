@@ -1,4 +1,4 @@
 package pl.ceveme.application.dto.gemini.cvStructure;
 
-public record Headline(String title) {
+public record Headline(String headline) {
 }

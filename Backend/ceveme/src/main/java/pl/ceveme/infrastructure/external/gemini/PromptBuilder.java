@@ -13,7 +13,7 @@ public class PromptBuilder {
                → Wygeneruj perfekcyjnie dopasowane CV w **czystym obiekcie JSON** (PL), zoptymalizowane pod ATS.
 
                # ZASADY KLUCZOWE
-               1. **Less is More** – używaj tylko danych z `CANDIDATE_DATA`, które odpowiadają `JOB_OFFER`.
+               1. **Less is More** – używaj tylko danych z `CANDIDATE_DATA`, które odpowiadają `JOB_OFFER`. Wyjątkiem jest educations, zwróc cały.
                2. **Zero Hallucination** – nie dopisuj informacji spoza wejścia.
                3. **STAR + liczby** – każdy bullet zawiera konkretną miarę (% / PLN / wielkość zespołu).
                4. **Mirroring** – kopiuj słowa kluczowe z oferty.
@@ -28,7 +28,7 @@ public class PromptBuilder {
                13. **Summary ≤ 600 zzs** (~ 90 słów).
                14. **Sekcje opcjonalne** – portfolio | volunteering | awards | publications | references tylko gdy wspierają ofertę.
                15. **Klauzula RODO** – polska.
-               16. **MUST-HAVE** – pole "headline": { "title": "" }.
+               16. **MUST-HAVE** – pole "headline": "".
 
                # DANE WEJŚCIOWE
                ## 1. JOB_OFFER
@@ -116,12 +116,13 @@ public class PromptBuilder {
                • **summary** – 3-4 zdania: rola + lata dośw., tech z oferty, liczby, dopasowanie do celów firmy.  
                • **experience** – wyłącznie osiągnięcia (STAR); odrzuć stare / nieistotne.  
                • **skills** – najpierw słowa kluczowe z oferty, dedup.  
-               • **portfolio** – tylko jeśli wzmacnia trafność.  
+               • **portfolio** – tylko jeśli wzmacnia trafność.
+               • **educations** – zawsze zwracaj; jest to obowiązkowe.
 
                ---
                ### Najważniejsze
                • Zwrot **tylko obiekt JSON**.  
-               • Pole **headline.title** nie może być puste.  
+               • Pole **headline** nie może być puste.  
                • **Less is More** → filtrować dane wg wymagań.  
                • **STAR + liczby w bulletach**.  
                • Chronologia odwrotna & limity objętości.
@@ -136,7 +137,7 @@ public class PromptBuilder {
                → Wygeneruj perfekcyjnie dopasowane CV w **czystym obiekcie JSON** (PL), zoptymalizowane pod ATS.
 
                # ZASADY KLUCZOWE
-               1. **Less is More** – używaj tylko danych z `CANDIDATE_DATA`, które odpowiadają `JOB_OFFER`.
+               1. **Less is More** – używaj tylko danych z `CANDIDATE_DATA`, które odpowiadają `JOB_OFFER`. Wyjątkiem jest educations, zwróć cały.
                2. **Zero Hallucination** – nie dopisuj informacji spoza wejścia.
                3. **STAR + liczby** – każdy bullet zawiera konkretną miarę (% / PLN / wielkość zespołu).
                4. **Mirroring** – kopiuj słowa kluczowe z oferty.
@@ -151,7 +152,7 @@ public class PromptBuilder {
                13. **Summary ≤ 600 zzs** (~ 90 słów).
                14. **Sekcje opcjonalne** – portfolio | volunteering | awards | publications | references tylko gdy wspierają ofertę.
                15. **Klauzula RODO** – polska.
-               16. **MUST-HAVE** – pole "headline": { "title": "" }. PAMIĘTAJ O TYM!!!!!!! W JSON
+               16. **MUST-HAVE** – pole "headline": "".
 
                # DANE WEJŚCIOWE
                ## 1. JOB_OFFER
@@ -240,12 +241,14 @@ public class PromptBuilder {
                • **summary** – 3-4 zdania: rola + lata dośw., tech z oferty, liczby, dopasowanie do celów firmy.  
                • **experience** – wyłącznie osiągnięcia (STAR); odrzuć stare / nieistotne.  
                • **skills** – najpierw słowa kluczowe z oferty, dedup.  
-               • **portfolio** – tylko jeśli wzmacnia trafność.  
+               • **portfolio** – tylko jeśli wzmacnia trafność.
+               • **educations** – zawsze zwracaj; jest to obowiązkowe.
+               
 
                ---
                ### Najważniejsze
                • Zwrot **tylko obiekt JSON**.  
-               • Pole **headline.title** nie może być puste.  
+               • Pole **headline** nie może być puste.  
                • **Less is More** → filtrować dane wg wymagań.  
                • **STAR + liczby w bulletach**.  
                • Chronologia odwrotna & limity objętości.
