@@ -1,9 +1,6 @@
-// src/components/SidebarEditor.jsx
 import React, { useState } from 'react';
 import { produce } from 'immer';
 import {
-  Plus,
-  X,
   User,
   Briefcase,
   FileText,
@@ -14,6 +11,11 @@ import {
 } from 'lucide-react';
 import EditableText from './EditableText';
 import CollapsibleSection from './CollapsibleSection';
+import ExperienceSection from '../sections/ExperienceSection';
+import SkillsSection from '../sections/SkillsSection';
+import EducationSection from '../sections/EducationSection';
+import PortfolioSection from '../sections/PortfolioSection';
+import CertificatesSection from '../sections/CertificatesSection';
 
 export default function SidebarEditor({ cvData, onDataChange }) {
   const [openSections, setOpenSections] = useState({
@@ -78,6 +80,7 @@ export default function SidebarEditor({ cvData, onDataChange }) {
               placeholder={placeholder}
             />
           ))}
+          {/* Linki */}
           <div className="pt-2">
             <h4 className="text-sm font-semibold mb-2">Linki</h4>
             {cvData.personalData?.links?.map((link, i) => (
@@ -112,7 +115,7 @@ export default function SidebarEditor({ cvData, onDataChange }) {
                   }
                   className="text-red-500 p-1 rounded hover:bg-red-50"
                 >
-                  <X className="w-4 h-4" />
+                  ✕
                 </button>
               </div>
             ))}
@@ -126,7 +129,7 @@ export default function SidebarEditor({ cvData, onDataChange }) {
               }
               className="text-indigo-600 hover:underline flex items-center gap-1 text-sm"
             >
-              <Plus className="w-4 h-4" /> Dodaj link
+              + Dodaj link
             </button>
           </div>
         </div>
@@ -151,384 +154,40 @@ export default function SidebarEditor({ cvData, onDataChange }) {
         />
       </CollapsibleSection>
 
-      {/* Doświadczenie */}
-      <CollapsibleSection
-        title="Doświadczenie"
-        icon={Briefcase}
+      <ExperienceSection
+        experience={cvData.experience}
+        updateData={updateData}
         isOpen={openSections.experience}
         onToggle={() => toggleSection('experience')}
-      >
-        <div className="space-y-4">
-          {cvData.experience?.map((exp, i) => (
-            <div key={i} className="p-3 border rounded relative">
-              <button
-                onClick={() =>
-                  updateData((d) => {
-                    d.experience.splice(i, 1);
-                  })
-                }
-                className="absolute top-2 right-2 text-red-500"
-              >
-                <X className="w-4 h-4" />
-              </button>
-              <EditableText
-                value={exp.title}
-                onChange={(v) =>
-                  updateData((d) => {
-                    d.experience[i].title = v;
-                  })
-                }
-                placeholder="Stanowisko"
-                className="font-semibold mb-1"
-              />
-              <EditableText
-                value={exp.company}
-                onChange={(v) =>
-                  updateData((d) => {
-                    d.experience[i].company = v;
-                  })
-                }
-                placeholder="Firma"
-                className="mb-1"
-              />
-              <EditableText
-                value={exp.period}
-                onChange={(v) =>
-                  updateData((d) => {
-                    d.experience[i].period = v;
-                  })
-                }
-                placeholder="Okres (np. 2022 – obecnie)"
-                className="mb-2"
-              />
-              <div>
-                <h4 className="text-sm font-medium mb-1">Osiągnięcia</h4>
-                {exp.achievements?.map((ach, j) => (
-                  <div key={j} className="flex items-start gap-2 mb-1">
-                    <textarea
-                      value={ach.description}
-                      onChange={(e) =>
-                        updateData((d) => {
-                          d.experience[i].achievements[j].description =
-                            e.target.value;
-                        })
-                      }
-                      placeholder="Opis osiągnięcia..."
-                      className="flex-1 p-2 text-sm border rounded resize-none"
-                      rows={2}
-                    />
-                    <button
-                      onClick={() =>
-                        updateData((d) => {
-                          d.experience[i].achievements.splice(j, 1);
-                        })
-                      }
-                      className="text-red-500 p-1 rounded hover:bg-red-50 mt-1"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                ))}
-                <button
-                  onClick={() =>
-                    updateData((d) => {
-                      d.experience[i].achievements =
-                        d.experience[i].achievements || [];
-                      d.experience[i].achievements.push({ description: '' });
-                    })
-                  }
-                  className="flex items-center gap-1 text-indigo-600 hover:underline text-sm"
-                >
-                  <Plus className="w-4 h-4" /> Dodaj osiągnięcie
-                </button>
-              </div>
-            </div>
-          ))}
-          <button
-            onClick={() =>
-              updateData((d) => {
-                d.experience = d.experience || [];
-                d.experience.push({
-                  title: '',
-                  company: '',
-                  period: '',
-                  achievements: [],
-                });
-              })
-            }
-            className="flex items-center gap-1 text-indigo-600 hover:underline text-sm"
-          >
-            <Plus className="w-4 h-4" /> Dodaj doświadczenie
-          </button>
-        </div>
-      </CollapsibleSection>
+      />
 
-      {/* Umiejętności */}
-      <CollapsibleSection
-        title="Umiejętności"
-        icon={Code}
+      <SkillsSection
+        skills={cvData.skills}
+        updateData={updateData}
         isOpen={openSections.skills}
         onToggle={() => toggleSection('skills')}
-      >
-        <div className="space-y-4">
-          {cvData.skills?.map((grp, i) => (
-            <div key={i} className="p-3 border rounded relative">
-              <button
-                onClick={() =>
-                  updateData((d) => {
-                    d.skills.splice(i, 1);
-                  })
-                }
-                className="absolute top-2 right-2 text-red-500"
-              >
-                <X className="w-4 h-4" />
-              </button>
-              <EditableText
-                value={grp.category}
-                onChange={(v) =>
-                  updateData((d) => {
-                    d.skills[i].category = v;
-                  })
-                }
-                placeholder="Kategoria"
-                className="font-semibold mb-1"
-              />
-              {grp.items?.map((item, j) => (
-                <div key={j} className="flex items-center gap-2 mb-1">
-                  <input
-                    type="text"
-                    value={item.name}
-                    onChange={(e) =>
-                      updateData((d) => {
-                        d.skills[i].items[j].name = e.target.value;
-                      })
-                    }
-                    placeholder="Umiejętność"
-                    className="flex-1 p-1 text-sm border rounded"
-                  />
-                  <button
-                    onClick={() =>
-                      updateData((d) => {
-                        d.skills[i].items.splice(j, 1);
-                      })
-                    }
-                    className="text-red-500 p-1 rounded hover:bg-red-50"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
-              <button
-                onClick={() =>
-                  updateData((d) => {
-                    d.skills[i].items = d.skills[i].items || [];
-                    d.skills[i].items.push({ name: '' });
-                  })
-                }
-                className="flex items-center gap-1 text-indigo-600 hover:underline text-sm"
-              >
-                <Plus className="w-4 h-4" /> Dodaj umiejętność
-              </button>
-            </div>
-          ))}
-          <button
-            onClick={() =>
-              updateData((d) => {
-                d.skills = d.skills || [];
-                d.skills.push({ category: '', items: [] });
-              })
-            }
-            className="flex items-center gap-1 text-indigo-600 hover:underline text-sm"
-          >
-            <Plus className="w-4 h-4" /> Dodaj kategorię
-          </button>
-        </div>
-      </CollapsibleSection>
+      />
 
-      {/* Edukacja */}
-      <CollapsibleSection
-        title="Edukacja"
-        icon={GraduationCap}
+      <EducationSection
+        education={cvData.educations || cvData.education}
+        updateData={updateData}
         isOpen={openSections.education}
         onToggle={() => toggleSection('education')}
-      >
-        <div className="space-y-4">
-          {cvData.education?.map((edu, i) => (
-            <div key={i} className="p-3 border rounded relative">
-              <button
-                onClick={() =>
-                  updateData((d) => {
-                    d.education.splice(i, 1);
-                  })
-                }
-                className="absolute top-2 right-2 text-red-500"
-              >
-                <X className="w-4 h-4" />
-              </button>
-              <EditableText
-                value={edu.degree}
-                onChange={(v) =>
-                  updateData((d) => {
-                    d.education[i].degree = v;
-                  })
-                }
-                placeholder="Stopień/specjalność"
-                className="font-semibold mb-1"
-              />
-              <EditableText
-                value={edu.institution}
-                onChange={(v) =>
-                  updateData((d) => {
-                    d.education[i].institution = v;
-                  })
-                }
-                placeholder="Uczelnia/instytucja"
-                className="mb-1"
-              />
-              <EditableText
-                value={edu.period}
-                onChange={(v) =>
-                  updateData((d) => {
-                    d.education[i].period = v;
-                  })
-                }
-                placeholder="Okres (np. 2018–2022)"
-              />
-            </div>
-          ))}
-          <button
-            onClick={() =>
-              updateData((d) => {
-                d.education = d.education || [];
-                d.education.push({ degree: '', institution: '', period: '' });
-              })
-            }
-            className="flex items-center gap-1 text-indigo-600 hover:underline text-sm"
-          >
-            <Plus className="w-4 h-4" /> Dodaj edukację
-          </button>
-        </div>
-      </CollapsibleSection>
+      />
 
-      {/* Portfolio/Projekty */}
-      <CollapsibleSection
-        title="Portfolio/Projekty"
-        icon={Globe}
+      <PortfolioSection
+        portfolio={cvData.portfolio}
+        updateData={updateData}
         isOpen={openSections.portfolio}
         onToggle={() => toggleSection('portfolio')}
-      >
-        <div className="space-y-4">
-          {cvData.portfolio?.map((item, i) => (
-            <div key={i} className="p-3 border rounded relative">
-              <button
-                onClick={() =>
-                  updateData((d) => {
-                    d.portfolio.splice(i, 1);
-                  })
-                }
-                className="absolute top-2 right-2 text-red-500"
-              >
-                <X className="w-4 h-4" />
-              </button>
-              <EditableText
-                value={item.title}
-                onChange={(v) =>
-                  updateData((d) => {
-                    d.portfolio[i].title = v;
-                  })
-                }
-                placeholder="Tytuł projektu"
-                className="font-semibold mb-1"
-              />
-              <EditableText
-                value={item.url}
-                onChange={(v) =>
-                  updateData((d) => {
-                    d.portfolio[i].url = v;
-                  })
-                }
-                placeholder="URL projektu"
-              />
-            </div>
-          ))}
-          <button
-            onClick={() =>
-              updateData((d) => {
-                d.portfolio = d.portfolio || [];
-                d.portfolio.push({ title: '', url: '' });
-              })
-            }
-            className="flex items-center gap-1 text-indigo-600 hover:underline text-sm"
-          >
-            <Plus className="w-4 h-4" /> Dodaj projekt
-          </button>
-        </div>
-      </CollapsibleSection>
+      />
 
-      {/* Certyfikaty */}
-      <CollapsibleSection
-        title="Certyfikaty"
-        icon={Award}
+      <CertificatesSection
+        certificates={cvData.certificates}
+        updateData={updateData}
         isOpen={openSections.certificates}
         onToggle={() => toggleSection('certificates')}
-      >
-        <div className="space-y-4">
-          {cvData.certificates?.map((cert, i) => (
-            <div key={i} className="p-3 border rounded relative">
-              <button
-                onClick={() =>
-                  updateData((d) => {
-                    d.certificates.splice(i, 1);
-                  })
-                }
-                className="absolute top-2 right-2 text-red-500"
-              >
-                <X className="w-4 h-4" />
-              </button>
-              <EditableText
-                value={cert.name}
-                onChange={(v) =>
-                  updateData((d) => {
-                    d.certificates[i].name = v;
-                  })
-                }
-                placeholder="Nazwa certyfikatu"
-                className="font-semibold mb-1"
-              />
-              <EditableText
-                value={cert.issuer}
-                onChange={(v) =>
-                  updateData((d) => {
-                    d.certificates[i].issuer = v;
-                  })
-                }
-                placeholder="Wystawca"
-                className="mb-1"
-              />
-              <EditableText
-                value={cert.date}
-                onChange={(v) =>
-                  updateData((d) => {
-                    d.certificates[i].date = v;
-                  })
-                }
-                placeholder="Data (np. 2023-05)"
-              />
-            </div>
-          ))}
-          <button
-            onClick={() =>
-              updateData((d) => {
-                d.certificates = d.certificates || [];
-                d.certificates.push({ name: '', issuer: '', date: '' });
-              })
-            }
-            className="flex items-center gap-1 text-indigo-600 hover:underline text-sm"
-          >
-            <Plus className="w-4 h-4" /> Dodaj certyfikat
-          </button>
-        </div>
-      </CollapsibleSection>
+      />
     </aside>
   );
 }

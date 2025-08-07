@@ -12,7 +12,6 @@ class ApiService {
         },
         withCredentials: true,
       });
-
       return response.data;
     } catch (error) {
       console.error('Error during CV generation:', error);
