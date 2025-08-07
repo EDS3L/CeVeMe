@@ -23,7 +23,7 @@ const RoutersConfig = {
   },
   cv: {
     path: '/cv',
-    component: React.lazy(() => import('../features/cv/pages/Cv')),
+    component: React.lazy(() => import('../features/cv/pages/CvEditorPage')),
     requiredRole: null,
   },
 };

@@ -133,7 +133,7 @@ public class PromptBuilder {
     public static String createPrompt(DataLinkContainer dataLinkContainer) {
         return """
                # ROLA
-               Ekspert HR światowej klasy & Architekt CV  
+               Ekspert HR światowej klasy & Architekt CV
                → Wygeneruj perfekcyjnie dopasowane CV w **czystym obiekcie JSON** (PL), zoptymalizowane pod ATS.
 
                # ZASADY KLUCZOWE
