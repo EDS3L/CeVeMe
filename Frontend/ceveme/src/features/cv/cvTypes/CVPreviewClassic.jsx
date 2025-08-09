@@ -1,5 +1,48 @@
 import React from 'react';
 
+const ACCENT = '#0f766e'; // teal-700
+const MUTED = '#475569';
+const PAD = 4; // mm — ciaśniej, pełniejsza karta
+
+// Uniwersalna lista z okrągłym markerem (kropką)
+const BulletList = ({ items }) => {
+  const data = (items || []).filter(Boolean);
+  if (!data.length) return null;
+
+  return (
+    <ul style={{ listStyle: 'none', padding: 0, margin: '1.2mm 0 0 0' }}>
+      {data.map((text, i) => (
+        <li
+          key={i}
+          style={{
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: '2.5mm',
+            marginBottom: '0.9mm',
+          }}
+        >
+          <span
+            aria-hidden
+            style={{
+              width: '2.2mm',
+              height: '2.2mm',
+              borderRadius: '50%',
+              background: ACCENT,
+              marginTop: '1.4mm',
+              flex: '0 0 2.2mm',
+            }}
+          />
+          <span
+            style={{ fontSize: '10pt', lineHeight: 1.45, color: '#0f172a' }}
+          >
+            {text}
+          </span>
+        </li>
+      ))}
+    </ul>
+  );
+};
+
 const CVPreviewClassic = React.forwardRef(({ cvData }, ref) => {
   if (!cvData) return null;
 
@@ -7,227 +50,333 @@ const CVPreviewClassic = React.forwardRef(({ cvData }, ref) => {
     headline,
     personalData,
     summary,
-    experience,
-    skills,
+    experience = [],
+    skills = [],
     education,
     educations,
-    portfolio,
-    certificates,
+    portfolio = [],
+    certificates = [],
   } = cvData;
 
-  const educationList = educations || education || [];
-  const portfolioList = portfolio || [];
-  const experienceList = experience || [];
-  const certificatesList = certificates || [];
+  const educationList = (educations || education || []).filter(
+    (e) => e?.visible !== false
+  );
+  const experienceList = (experience || []).filter((e) => e?.visible !== false);
+  const portfolioList = (portfolio || []).filter((p) => p?.visible !== false);
+  const certificatesList = (certificates || []).filter(
+    (c) => c?.visible !== false
+  );
 
   return (
     <div
       ref={ref}
-      className="w-full bg-white text-gray-900 p-6 text-sm leading-tight"
       style={{
-        minHeight: '297mm',
-        maxWidth: '210mm',
-        fontSize: '11px',
-        lineHeight: '1.4',
+        width: '100%',
+        boxSizing: 'border-box',
+        fontFamily:
+          'Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif',
+        color: '#0f172a',
+        padding: `${PAD}mm`,
       }}
     >
-      {/* Nagłówek */}
-      <div className="mb-3 border-b border-gray-300 pb-2">
-        <h1
-          className="text-2xl font-bold mb-1"
-          style={{ fontSize: '24px', marginBottom: '4px' }}
-        >
+      {/* Header */}
+      <div
+        style={{
+          marginBottom: '4.5mm',
+          borderBottom: '0.4mm solid #e2e8f0',
+          paddingBottom: '2mm',
+        }}
+      >
+        <div style={{ fontSize: '17pt', fontWeight: 800, lineHeight: 1.15 }}>
+          {personalData?.name}
+        </div>
+        <div style={{ fontSize: '10pt', color: MUTED, marginTop: '0.8mm' }}>
           {headline}
-        </h1>
-        <p className="text-gray-600 text-xs" style={{ fontSize: '11px' }}>
-          {personalData?.name} | {personalData?.email} |{' '}
-          {personalData?.phoneNumber}
-          {personalData?.city && ` | ${personalData.city}`}
-        </p>
+        </div>
+        <div style={{ fontSize: '9pt', color: MUTED, marginTop: '1mm' }}>
+          {[personalData?.email, personalData?.phoneNumber, personalData?.city]
+            .filter(Boolean)
+            .join(' • ')}
+        </div>
       </div>
 
-      {/* Główny układ */}
-      <div className="grid grid-cols-3 gap-4">
-        {/* Lewa kolumna */}
-        <div className="col-span-2 pr-4">
-          {/* Podsumowanie */}
+      {/* Grid: main + side */}
+      <div
+        style={{ display: 'grid', gridTemplateColumns: '1fr 66mm', gap: '5mm' }}
+      >
+        {/* MAIN */}
+        <div>
+          {/* Summary */}
           {summary && (
-            <div className="mb-4">
-              <h2 className="text-lg font-semibold mb-1 border-b border-gray-300 pb-1">
+            <section style={{ marginBottom: '4.5mm' }}>
+              <h2
+                style={{
+                  fontSize: '12pt',
+                  fontWeight: 800,
+                  color: ACCENT,
+                  borderBottom: '0.4mm solid #e2e8f0',
+                  paddingBottom: '1.8mm',
+                  marginBottom: '2.2mm',
+                }}
+              >
                 Podsumowanie zawodowe
               </h2>
-              <p className="text-gray-700 whitespace-pre-line leading-snug">
+              <p
+                style={{
+                  fontSize: '10pt',
+                  lineHeight: 1.45,
+                  whiteSpace: 'pre-line',
+                }}
+              >
                 {summary}
               </p>
-            </div>
+            </section>
           )}
 
-          {/* Doświadczenie */}
-          {experienceList.filter((e) => e.visible !== false).length > 0 && (
-            <div className="mb-4">
-              <h2 className="text-lg font-semibold mb-1 border-b border-gray-300 pb-1">
+          {/* Experience */}
+          {experienceList.length > 0 && (
+            <section style={{ marginBottom: '4.5mm' }}>
+              <h2
+                style={{
+                  fontSize: '12pt',
+                  fontWeight: 800,
+                  color: ACCENT,
+                  borderBottom: '0.4mm solid #e2e8f0',
+                  paddingBottom: '1.8mm',
+                  marginBottom: '2.2mm',
+                }}
+              >
                 Doświadczenie
               </h2>
-              {experienceList
-                .filter((e) => e.visible !== false)
-                .map((exp, i) => (
-                  <div key={i} className="mb-3">
-                    <div className="flex justify-between items-start">
-                      <h3 className="font-bold text-base">{exp.title}</h3>
-                      <span className="text-sm text-gray-500 font-medium">
-                        {exp.period}
-                      </span>
+              {experienceList.map((exp, i) => (
+                <div key={i} style={{ marginBottom: '3.5mm' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      gap: '4mm',
+                    }}
+                  >
+                    <div style={{ fontWeight: 700, fontSize: '11pt' }}>
+                      {exp.title}
                     </div>
-                    <p className="text-sm text-gray-600 mb-1">{exp.company}</p>
-                    <ul className="list-disc list-inside text-gray-700 space-y-0 text-sm">
-                      {exp.achievements
-                        ?.filter((a) => a.visible !== false)
-                        .map((ach, j) => (
-                          <li key={j}>{ach.description}</li>
-                        ))}
-                    </ul>
+                    <div
+                      style={{
+                        fontSize: '9pt',
+                        color: MUTED,
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {exp.period}
+                    </div>
                   </div>
-                ))}
-            </div>
+                  <div style={{ fontSize: '9.5pt', color: MUTED }}>
+                    {exp.company}
+                  </div>
+
+                  {/* Osiągnięcia jako kropki */}
+                  <BulletList
+                    items={
+                      Array.isArray(exp.achievements)
+                        ? exp.achievements
+                            .filter((a) => a && a.visible !== false)
+                            .map((a) => a.description)
+                        : []
+                    }
+                  />
+                </div>
+              ))}
+            </section>
           )}
 
-          {/* Projekty */}
-          {portfolioList.filter((p) => p.visible !== false).length > 0 && (
-            <div className="mb-4">
-              <h2 className="text-lg font-semibold mb-1 border-b border-gray-300 pb-1">
+          {/* Projects */}
+          {portfolioList.length > 0 && (
+            <section>
+              <h2
+                style={{
+                  fontSize: '12pt',
+                  fontWeight: 800,
+                  color: ACCENT,
+                  borderBottom: '0.4mm solid #e2e8f0',
+                  paddingBottom: '1.8mm',
+                  marginBottom: '2.2mm',
+                }}
+              >
                 Projekty
               </h2>
-
-              {portfolioList
-                .filter((p) => p.visible !== false)
-                .map((item, i) => (
-                  <div key={i} className="mb-3">
-                    {/* Nazwa projektu */}
-                    <h3 className="font-bold text-base">
+              {portfolioList.map((item, i) => {
+                const bullets =
+                  Array.isArray(item.highlights) && item.highlights.length
+                    ? item.highlights
+                    : Array.isArray(item.achievements) &&
+                      item.achievements.length
+                    ? item.achievements.map((a) => a.description)
+                    : [];
+                return (
+                  <div key={i} style={{ marginBottom: '3.5mm' }}>
+                    <div style={{ fontWeight: 700, fontSize: '11pt' }}>
                       {item.name || item.title}
-                    </h3>
+                    </div>
 
-                    {/* Opis projektu */}
+                    {/* Opis */}
                     {item.description && (
-                      <p className="text-sm text-gray-600 mb-1">
+                      <div
+                        style={{
+                          fontSize: '10pt',
+                          color: MUTED,
+                          marginTop: '1mm',
+                        }}
+                      >
                         {item.description}
-                      </p>
+                      </div>
                     )}
 
-                    {/* Osiągnięcia projektu */}
-                    {item.achievements &&
-                      item.achievements.filter((a) => a.visible !== false)
-                        .length > 0 && (
-                        <ul className="list-disc list-inside text-gray-700 space-y-0 text-sm">
-                          {item.achievements
-                            .filter((a) => a.visible !== false)
-                            .map((ach, j) => (
-                              <li key={j}>{ach.description}</li>
-                            ))}
-                        </ul>
-                      )}
+                    {/* Bullet pointy */}
+                    <BulletList items={bullets} />
 
                     {/* Technologie */}
-                    {item.technologies &&
+                    {Array.isArray(item.technologies) &&
                       item.technologies.filter((t) => t.visible !== false)
                         .length > 0 && (
-                        <p className="text-sm text-gray-700 mt-1">
-                          <span className="font-medium">Technologie: </span>
+                        <div
+                          style={{
+                            fontSize: '9pt',
+                            color: MUTED,
+                            marginTop: '1mm',
+                          }}
+                        >
+                          <span style={{ fontWeight: 700, color: '#0f172a' }}>
+                            Technologie:{' '}
+                          </span>
                           {item.technologies
                             .filter((t) => t.visible !== false)
                             .map((t) => t.name)
                             .join(', ')}
-                        </p>
+                        </div>
                       )}
 
                     {/* Link */}
                     {item.url && (
-                      <a
-                        href={item.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 text-sm hover:underline"
+                      <div
+                        style={{
+                          fontSize: '9pt',
+                          color: ACCENT,
+                          marginTop: '1mm',
+                          wordBreak: 'break-word',
+                        }}
                       >
                         {item.url}
-                      </a>
+                      </div>
                     )}
                   </div>
-                ))}
-            </div>
+                );
+              })}
+            </section>
           )}
         </div>
 
-        {/* Prawa kolumna */}
-        <div className="col-span-1 border-l border-gray-300 pl-4">
-          {/* Umiejętności */}
+        {/* SIDE */}
+        <aside>
+          {/* Skills */}
           {skills?.length > 0 && (
-            <div className="mb-4">
-              <h2 className="text-lg font-semibold mb-1 border-b border-gray-300 pb-1">
+            <section style={{ marginBottom: '4.5mm' }}>
+              <h3
+                style={{
+                  fontSize: '12pt',
+                  fontWeight: 800,
+                  color: ACCENT,
+                  borderBottom: '0.4mm solid #e2e8f0',
+                  paddingBottom: '1.8mm',
+                  marginBottom: '2.2mm',
+                }}
+              >
                 Umiejętności
-              </h2>
+              </h3>
               {skills.map((grp, i) => (
-                <div key={i} className="mb-2">
-                  <h4 className="font-bold text-sm text-gray-800">
+                <div key={i} style={{ marginBottom: '3mm' }}>
+                  <div style={{ fontWeight: 700, fontSize: '10pt' }}>
                     {grp.category}
-                  </h4>
-                  <ul className="list-disc list-inside text-gray-700 text-sm">
+                  </div>
+                  <div style={{ fontSize: '9.5pt', color: MUTED }}>
                     {grp.items
                       ?.filter((it) => it.visible !== false)
-                      .map((it, j) => (
-                        <li key={j}>{it.name}</li>
-                      ))}
-                  </ul>
+                      .map((it) => it.name)
+                      .join(' · ')}
+                  </div>
                 </div>
               ))}
-            </div>
+            </section>
           )}
 
-          {/* Edukacja */}
-          {educationList.filter((e) => e.visible !== false).length > 0 && (
-            <div className="mb-4">
-              <h2 className="text-lg font-semibold mb-1 border-b border-gray-300 pb-1">
+          {/* Edukacja — PRZENIESIONA DO KOLUMNY BOCZNEJ */}
+          {educationList.length > 0 && (
+            <section style={{ marginBottom: '4.5mm' }}>
+              <h3
+                style={{
+                  fontSize: '12pt',
+                  fontWeight: 800,
+                  color: ACCENT,
+                  borderBottom: '0.4mm solid #e2e8f0',
+                  paddingBottom: '1.8mm',
+                  marginBottom: '2.2mm',
+                }}
+              >
                 Edukacja
-              </h2>
-              {educationList
-                .filter((e) => e.visible !== false)
-                .map((edu, i) => (
-                  <div key={i} className="mb-2">
-                    <h3 className="font-bold text-sm">{edu.degree}</h3>
-                    <p className="text-sm text-gray-600">{edu.institution}</p>
-                    {edu.specialization && (
-                      <p className="text-sm text-gray-500">
-                        {edu.specialization}
-                      </p>
-                    )}
-                    <p className="text-xs text-gray-500">{edu.period}</p>
+              </h3>
+              {educationList.map((edu, i) => (
+                <div key={i} style={{ marginBottom: '3mm' }}>
+                  <div style={{ fontWeight: 700, fontSize: '10pt' }}>
+                    {edu.degree}
                   </div>
-                ))}
-            </div>
+                  <div style={{ fontSize: '9.5pt', color: MUTED }}>
+                    {edu.institution}
+                    {edu.specialization ? ` • ${edu.specialization}` : ''}
+                  </div>
+                  {edu.period && (
+                    <div style={{ fontSize: '9pt', color: MUTED }}>
+                      {edu.period}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </section>
           )}
 
-          {/* Certyfikaty */}
-          {certificatesList.filter((c) => c.visible !== false).length > 0 && (
-            <div className="mb-4">
-              <h2 className="text-lg font-semibold mb-1 border-b border-gray-300 pb-1">
+          {/* Certificates */}
+          {certificatesList.length > 0 && (
+            <section>
+              <h3
+                style={{
+                  fontSize: '12pt',
+                  fontWeight: 800,
+                  color: ACCENT,
+                  borderBottom: '0.4mm solid #e2e8f0',
+                  paddingBottom: '1.8mm',
+                  marginBottom: '2.2mm',
+                }}
+              >
                 Certyfikaty
-              </h2>
-              {certificatesList
-                .filter((c) => c.visible !== false)
-                .map((cert, i) => (
-                  <div key={i} className="mb-2">
-                    <h3 className="font-bold text-sm">{cert.name}</h3>
-                    <p className="text-sm text-gray-600">{cert.issuer}</p>
-                    <p className="text-xs text-gray-500">{cert.date}</p>
-                    {cert.description && (
-                      <p className="text-sm text-gray-700">
-                        {cert.description}
-                      </p>
-                    )}
+              </h3>
+              {certificatesList.map((cert, i) => (
+                <div key={i} style={{ marginBottom: '3mm' }}>
+                  <div style={{ fontWeight: 700, fontSize: '10pt' }}>
+                    {cert.name}
                   </div>
-                ))}
-            </div>
+                  {cert.issuer && (
+                    <div style={{ fontSize: '9.5pt', color: MUTED }}>
+                      {cert.issuer}
+                    </div>
+                  )}
+                  {cert.date && (
+                    <div style={{ fontSize: '9pt', color: MUTED }}>
+                      {cert.date}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </section>
           )}
-        </div>
+        </aside>
       </div>
     </div>
   );

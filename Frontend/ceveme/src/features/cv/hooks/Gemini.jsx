@@ -6,10 +6,7 @@ class ApiService {
       const response = await axios({
         url: 'http://localhost:8080/api/ai/geminiByLink',
         method: 'POST',
-        data: {
-          email,
-          link,
-        },
+        data: { email, link },
         withCredentials: true,
       });
       return response.data;

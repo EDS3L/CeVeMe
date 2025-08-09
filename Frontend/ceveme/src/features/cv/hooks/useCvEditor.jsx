@@ -2,6 +2,15 @@ import { useState } from 'react';
 import ApiService from '../hooks/Gemini';
 import useAuth from '../../../hooks/useAuth';
 
+// lekka normalizacja, żeby zawsze mieć 'education' (nie 'educations')
+const normalizeCv = (raw) => {
+  const data = raw || {};
+  if (Array.isArray(data.educations) && !data.education) {
+    data.education = data.educations;
+  }
+  return data;
+};
+
 export const useCvEditor = () => {
   const [cvData, setCvData] = useState(null);
   const [offerLink, setOfferLink] = useState('');
@@ -22,9 +31,9 @@ export const useCvEditor = () => {
     setError('');
     try {
       const data = await ApiService.generateCv(email, offerLink);
-      setCvData(data);
+      setCvData(normalizeCv(data));
     } catch (e) {
-      setError(e.message || 'Błąd generowania CV.');
+      setError(e?.message || 'Błąd generowania CV.');
     } finally {
       setLoading(false);
     }
