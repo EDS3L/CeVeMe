@@ -8,26 +8,23 @@ export default function DemoSection() {
       aria-labelledby="lp-demo-heading"
     >
       <div className="max-w-7xl mx-auto px-6 py-12 lg:py-20">
-        <div className="grid grid-cols-1 lg:grid-cols-[460px_minmax(0,1fr)] gap-10 items-start">
-          {/* LEWY — opis jak działa */}
+        {/* Animacja po LEWEJ, opis po PRAWEJ */}
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_420px] gap-10 items-start">
+          <div className="space-y-6">
+            <DemoAnimation />
+          </div>
+
           <aside className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-[var(--color-ivorymedium)] p-6 lg:sticky lg:top-8 h-fit">
             <header>
               <h2
                 id="lp-demo-heading"
                 className="text-3xl/tight font-extrabold tracking-tight"
               >
-                Zobacz, jak{' '}
-                <span className="text-[var(--color-bookcloth)]">
-                  Twoje dane
-                </span>{' '}
-                stają się eleganckim{' '}
-                <span className="text-[var(--color-bookcloth)]">CV</span>
+                Jak to działa
               </h2>
               <p className="mt-3 text-sm leading-relaxed text-[var(--color-clouddark)]">
-                Nasz edytor przekształca wprowadzone pola w czytelny,
-                profesjonalny dokument. Animacja obok pokazuje, jak informacje
-                „wpadają” we właściwe miejsca na kartce A4, a całość jest zawsze
-                idealnie dopasowana do jednej strony PDF.
+                Aplikacja działa w pętli — po zakończeniu jednego procesu
+                automatycznie zaczyna kolejny. Zawsze możesz wcisnąć „Pauza”.
               </p>
             </header>
 
@@ -37,8 +34,7 @@ export default function DemoSection() {
                   1
                 </span>
                 <div>
-                  <strong>Wpisujesz dane</strong> — imię i nazwisko, nagłówek,
-                  podsumowanie, doświadczenie.
+                  <strong>Wklejasz link lub wybierasz ofertę pracy.</strong>
                 </div>
               </li>
               <li className="flex gap-3">
@@ -46,8 +42,8 @@ export default function DemoSection() {
                   2
                 </span>
                 <div>
-                  <strong>Wybierasz szablon</strong> — ATS, Hybrid lub Project.
-                  Każdy jest ATS-safe.
+                  <strong>AI analizuje ofertę</strong> i łączy ją z Twoimi
+                  danymi.
                 </div>
               </li>
               <li className="flex gap-3">
@@ -55,29 +51,21 @@ export default function DemoSection() {
                   3
                 </span>
                 <div>
-                  <strong>Eksportujesz PDF</strong> — jedna strona A4,
-                  perfekcyjnie zeskalowana do druku.
+                  <strong>Powstaje spersonalizowane CV,</strong> a pola
+                  „wpadają” na swoje miejsce.
+                </div>
+              </li>
+              <li className="flex gap-3">
+                <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-[var(--color-manilla)] font-bold">
+                  4
+                </span>
+                <div>
+                  <strong>Pętla trwa dalej</strong> — zmień ofertę lub dane i
+                  generuj kolejne CV.
                 </div>
               </li>
             </ul>
-
-            <div className="mt-6 flex flex-wrap gap-2">
-              <span className="inline-flex items-center text-[10px] uppercase tracking-wide px-2 py-1 rounded bg-[var(--color-ivorylight)] border border-[rgba(0,0,0,0.06)]">
-                Reverse-chronological
-              </span>
-              <span className="inline-flex items-center text-[10px] uppercase tracking-wide px-2 py-1 rounded bg-[var(--color-ivorylight)] border border-[rgba(0,0,0,0.06)]">
-                STAR/CAR bullets
-              </span>
-              <span className="inline-flex items-center text-[10px] uppercase tracking-wide px-2 py-1 rounded bg-[var(--color-ivorylight)] border border-[rgba(0,0,0,0.06)]">
-                ATS-safe
-              </span>
-            </div>
           </aside>
-
-          {/* PRAWY — sztuczna animacja */}
-          <div className="space-y-6">
-            <DemoAnimation />
-          </div>
         </div>
       </div>
     </section>
