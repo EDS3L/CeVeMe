@@ -1,3 +1,4 @@
+// DemoAnimation.jsx
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import DropChip from './DropChip';
 
@@ -36,6 +37,7 @@ export default function DemoAnimation() {
     dropGap: 800, // odstęp między dropami
     dropDuration: 1200, // czas pojedynczego dropa
     chipStay: 350, // ile chip zostaje po lądowaniu (potem znika)
+    revealLag: 120, // NOWE: ile po zniknięciu chipa odsłonić tekst
     done: 5000, // scena 4
     between: 500, // krótki crossfade między scenami
   };
@@ -54,13 +56,28 @@ export default function DemoAnimation() {
     });
   };
 
+  // Pomiar po montażu + po załadowaniu fontów (wpływają na metryki)
   useLayoutEffect(() => {
     measureTargets();
+    if (document.fonts?.ready) {
+      document.fonts.ready.then(() => measureTargets());
+    }
   }, []);
+
+  // Reaguj na zmiany rozmiaru kontenera/targetów
   useEffect(() => {
+    if (!overlayRef.current) return;
+    const ro = new ResizeObserver(() => measureTargets());
+    ro.observe(overlayRef.current);
+    if (dstNameRef.current) ro.observe(dstNameRef.current);
+    if (dstHeadlineRef.current) ro.observe(dstHeadlineRef.current);
+    if (dstSummaryRef.current) ro.observe(dstSummaryRef.current);
     const onResize = () => measureTargets();
     window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', onResize);
+    };
   }, []);
 
   useEffect(() => {
@@ -102,13 +119,13 @@ export default function DemoAnimation() {
 
     // Name
     later(base + 0, () => setDrop((d) => ({ ...d, name: true })));
-    later(base + T.dropDuration - 60, () =>
+    later(base + 0 + T.dropDuration + T.chipStay + T.revealLag, () =>
       setReveal((r) => ({ ...r, name: true }))
     );
 
     // Headline
     later(base + T.dropGap, () => setDrop((d) => ({ ...d, headline: true })));
-    later(base + T.dropGap + T.dropDuration - 60, () =>
+    later(base + T.dropGap + T.dropDuration + T.chipStay + T.revealLag, () =>
       setReveal((r) => ({ ...r, headline: true }))
     );
 
@@ -116,19 +133,21 @@ export default function DemoAnimation() {
     later(base + 2 * T.dropGap, () =>
       setDrop((d) => ({ ...d, summary: true }))
     );
-    later(base + 2 * T.dropGap + T.dropDuration - 60, () =>
-      setReveal((r) => ({ ...r, summary: true }))
+    later(
+      base + 2 * T.dropGap + T.dropDuration + T.chipStay + T.revealLag,
+      () => setReveal((r) => ({ ...r, summary: true }))
     );
 
     // SCENA 4 — GOTOWE
-    const endGenerate = base + 2 * T.dropGap + T.dropDuration + T.chipStay;
+    const endGenerate =
+      base + 2 * T.dropGap + T.dropDuration + T.chipStay + T.revealLag;
     later(endGenerate + T.between, () => {
       setScene(4);
       // na wszelki wypadek odsłoń wszystko
       setReveal({ name: true, headline: true, summary: true });
     });
 
-    // Restart pętli
+    // Restart pętli (uwzględnia revealLag)
     const total =
       T.link +
       T.between +
@@ -138,6 +157,7 @@ export default function DemoAnimation() {
       2 * T.dropGap +
       T.dropDuration +
       T.chipStay +
+      T.revealLag +
       T.between +
       T.done;
 
@@ -290,7 +310,7 @@ export default function DemoAnimation() {
                 <div className="absolute left-6 right-6 top-6 pb-3 border-b border-[rgba(0,0,0,0.08)]">
                   <div ref={dstNameRef} className="h-9">
                     <span
-                      className={`block text-2xl font-extrabold text-[var(--color-slatedark)] transition-opacity duration-300 ${
+                      className={`block font-extrabold text-[clamp(18px,2.6vw,24px)] leading-tight text-[var(--color-slatedark)] transition-opacity duration-300 ${
                         reveal.name ? 'opacity-100' : 'opacity-0'
                       }`}
                     >
@@ -299,7 +319,7 @@ export default function DemoAnimation() {
                   </div>
                   <div ref={dstHeadlineRef} className="h-6">
                     <span
-                      className={`block text-base text-[var(--color-clouddark)] transition-opacity duration-300 ${
+                      className={`block text-[clamp(14px,1.8vw,16px)] leading-tight text-[var(--color-clouddark)] transition-opacity duration-300 ${
                         reveal.headline ? 'opacity-100' : 'opacity-0'
                       }`}
                     >
@@ -314,7 +334,7 @@ export default function DemoAnimation() {
                   className="absolute left-6 right-6 top-[100px]"
                 >
                   <div
-                    className={`text-base text-[var(--color-slatedark)] leading-relaxed transition-opacity duration-300 ${
+                    className={`text-[clamp(13px,1.6vw,15px)] text-[var(--color-slatedark)] leading-relaxed break-words hyphens-auto line-clamp-4 text-balance transition-opacity duration-300 ${
                       reveal.summary ? 'opacity-100' : 'opacity-0'
                     }`}
                   >
@@ -396,18 +416,18 @@ export default function DemoAnimation() {
                 {/* Nagłówek */}
                 <div className="absolute left-6 right-6 top-6 pb-3 border-b border-[rgba(0,0,0,0.08)]">
                   <div className="h-9">
-                    <span className="block text-2xl font-extrabold text-[var(--color-slatedark)]">
+                    <span className="block font-extrabold text-[clamp(18px,2.6vw,24px)] leading-tight text-[var(--color-slatedark)]">
                       Jan Kowalski
                     </span>
                   </div>
                   <div className="h-6">
-                    <span className="block text-base text-[var(--color-clouddark)]">
+                    <span className="block text-[clamp(14px,1.8vw,16px)] leading-tight text-[var(--color-clouddark)]">
                       Frontend Engineer
                     </span>
                   </div>
                 </div>
                 {/* Podsumowanie */}
-                <div className="absolute left-6 right-6 top-[100px] text-base leading-relaxed">
+                <div className="absolute left-6 right-6 top-[100px] text-[clamp(13px,1.6vw,15px)] leading-relaxed text-balance hyphens-auto">
                   Buduję dopracowane UI z naciskiem na wydajność i dostępność.
                   5+ lat w React/TypeScript.
                 </div>
@@ -438,6 +458,19 @@ export default function DemoAnimation() {
         .fade-enter-active { opacity: 1; transform: translateY(0); transition: opacity 320ms ease, transform 320ms ease; }
         .fade-leave { opacity: 1; }
         .fade-leave-active { opacity: 0; transition: opacity 220ms ease; }
+
+        /* line-clamp bez pluginu Tailwinda */
+        .line-clamp-4 {
+          display: -webkit-box;
+          -webkit-line-clamp: 4;
+          line-clamp: 4;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+
+        /* ładniejsze łamanie długich linii */
+        .text-balance { text-wrap: balance; }
+        .hyphens-auto { hyphens: auto; }
       `}</style>
     </div>
   );
@@ -486,7 +519,7 @@ function SceneHint({ children }) {
   );
 }
 
-function FormField({ label, value, multiline = false, large = false }) {
+function FormField({ label, value, multiline = false }) {
   return (
     <div className="mb-4">
       <div className="text-xs uppercase tracking-wide text-[var(--color-clouddark)] mb-1">

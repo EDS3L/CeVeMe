@@ -64,7 +64,6 @@ export function useSinglePageScale(
     if (!el) return;
 
     const pxPerMm = pxPerMmRef.current;
-    const targetWpx = widthMm * pxPerMm;
     const targetHpx = heightMm * pxPerMm;
 
     // 1) znajdź górne ograniczenie f tak, aby finalna wysokość <= target

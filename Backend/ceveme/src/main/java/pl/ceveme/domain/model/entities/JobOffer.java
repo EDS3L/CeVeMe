@@ -2,6 +2,8 @@ package pl.ceveme.domain.model.entities;
 
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import pl.ceveme.domain.model.vo.Location;
 
 import java.time.LocalDate;
@@ -27,15 +29,19 @@ public class JobOffer {
     private Location location;
 
     @Lob
+    @JdbcTypeCode(SqlTypes.LONGVARCHAR)
     private String requirements;
 
     @Lob
+    @JdbcTypeCode(SqlTypes.LONGVARCHAR)
     private String niceToHave;
 
     @Lob
+    @JdbcTypeCode(SqlTypes.LONGVARCHAR)
     private String responsibilities;
 
     @Lob
+    @JdbcTypeCode(SqlTypes.LONGVARCHAR)
     private String benefits;
 
     private String experienceLevel;

@@ -18,7 +18,7 @@ const RoutersConfig = {
   },
   main: {
     path: '/offers',
-    component: React.lazy(() => import('../features/joboffers/pages/Main')),
+    component: React.lazy(() => import('../features/joboffers/pages/JobsPage')),
     requiredRole: null,
   },
   cv: {
