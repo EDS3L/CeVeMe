@@ -21,8 +21,9 @@ public class UserController {
     private final ChangeUserEmailUseCase changeUserEmailUseCase;
     private final UploadProfileImageUseCase uploadProfileImageUseCase;
     private final UploadCvFileUseCase uploadCvFileUseCase;
+    private final DeleteUserUseCase deleteUserUseCase;
 
-    public UserController(ChangeUsersPasswordUseCase changeUsersPasswordUseCase, ChangeUserNameUseCase changeUserNameUseCase, ChangeUserSurnameUseCase changeUserSurnameUseCase, ChangeUserPhoneNumberUseCase changeUserPhoneNumberUseCase, ChangeUserEmailUseCase changeUserEmailUseCase, UploadProfileImageUseCase uploadProfileImageUseCase, UploadCvFileUseCase uploadCvFileUseCase) {
+    public UserController(ChangeUsersPasswordUseCase changeUsersPasswordUseCase, ChangeUserNameUseCase changeUserNameUseCase, ChangeUserSurnameUseCase changeUserSurnameUseCase, ChangeUserPhoneNumberUseCase changeUserPhoneNumberUseCase, ChangeUserEmailUseCase changeUserEmailUseCase, UploadProfileImageUseCase uploadProfileImageUseCase, UploadCvFileUseCase uploadCvFileUseCase, DeleteUserUseCase deleteUserUseCase) {
         this.changeUsersPasswordUseCase = changeUsersPasswordUseCase;
         this.changeUserNameUseCase = changeUserNameUseCase;
         this.changeUserSurnameUseCase = changeUserSurnameUseCase;
@@ -30,6 +31,7 @@ public class UserController {
         this.changeUserEmailUseCase = changeUserEmailUseCase;
         this.uploadProfileImageUseCase = uploadProfileImageUseCase;
         this.uploadCvFileUseCase = uploadCvFileUseCase;
+        this.deleteUserUseCase = deleteUserUseCase;
     }
 
     @PatchMapping("/{userId}/password")
@@ -72,6 +74,12 @@ public class UserController {
     public ResponseEntity<UploadFileResponse> uploadCvFile(@RequestParam MultipartFile multipartFile, @RequestParam String email, @RequestParam Long jobOfferId) throws IOException {
         UploadFileResponse response = uploadCvFileUseCase.execute(multipartFile,email,jobOfferId);
         return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<DeleteUserResponse> deleteUser(@PathVariable Long userId, @RequestBody DeleteUserRequest request) {
+        DeleteUserResponse response = deleteUserUseCase.execute(request);
+        return  ResponseEntity.ok(response);
     }
 
 }
