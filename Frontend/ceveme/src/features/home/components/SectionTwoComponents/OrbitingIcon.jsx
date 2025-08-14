@@ -7,13 +7,14 @@ export default function OrbitingIcon({
 	isPaused,
 	onMouseEnter,
 	onMouseLeave,
-	hoveredIconId,
+	isOpen,
+	onIconClick,
 }) {
 	const [angle, setAngle] = useState(iconData.initialAngle);
 	const animationFrameId = useRef();
+	const timeoutRef = useRef();
 	const loopSpeed = 0.05;
 
-	// Animation effect for orbiting motion
 	useEffect(() => {
 		if (!isPaused) {
 			const animate = () => {
@@ -22,7 +23,6 @@ export default function OrbitingIcon({
 			};
 			animationFrameId.current = requestAnimationFrame(animate);
 		}
-		// Cleanup animation frame on component unmount or pause
 		return () => {
 			if (animationFrameId.current) {
 				cancelAnimationFrame(animationFrameId.current);
@@ -30,9 +30,24 @@ export default function OrbitingIcon({
 		};
 	}, [isPaused]);
 
-	// Calculate position based on ellipse radii and angle
+	useEffect(() => {
+		if (isOpen) {
+			timeoutRef.current = setTimeout(() => {
+				onIconClick(null);
+			}, 4000);
+		}
+		return () => {
+			if (timeoutRef.current) {
+				clearTimeout(timeoutRef.current);
+			}
+		};
+	}, [isOpen, onIconClick]);
+
 	const x = ellipseRadii.x * Math.cos((angle * Math.PI) / 180);
 	const y = ellipseRadii.y * Math.sin((angle * Math.PI) / 180);
+
+	// czy ikona jest w górnej części orbity
+	const isOnTop = y < 0;
 
 	return (
 		<div
@@ -45,25 +60,23 @@ export default function OrbitingIcon({
 			onMouseEnter={() => onMouseEnter(iconData.id)}
 			onMouseLeave={onMouseLeave}
 		>
-			<div
-				className="flex items-center justify-center w-12 h-12 md:w-16 md:h-16 bg-white rounded-full relative z-10"
-				style={{ boxShadow: `0 0 20px 5px ${iconData.color}` }}
-			>
-				<span
-					className="text-2xl md:text-3xl font-bold"
-					style={{ color: iconData.letterColor }}
+			{isOpen ? (
+				<div
+					className={`absolute left-1/2 z-[100] -translate-x-1/2 
+      ${isOnTop ? "bottom-full mb-2" : "top-full -mt-2"}`}
 				>
-					{iconData.letter}
-				</span>
-			</div>
-
-			{/* Render OrbitCard when icon is hovered */}
-			{hoveredIconId === iconData.id && (
-				<div className="absolute top-1/2 left-1/2 -translate-x-1/3 -translate-y-full z-[100]">
-					<OrbitCard
-						title={`Litera ${iconData.letter}`}
-						description={`Szczegóły dla litery ${iconData.letter}.`}
-					/>
+					<OrbitCard description={iconData.description} />
+				</div>
+			) : (
+				<div
+					className={`flex items-center justify-center w-12 h-12 md:w-16 md:h-16 bg-white border-1 border-gray-400 rounded-full relative z-10 transition-scale duration-100 hover:shadow-xl/30 shadow-${iconData.color} hover:scale-125 hover:cursor-pointer`}
+					onClick={() => onIconClick(iconData.id)}
+				>
+					<span
+						className={`text-2xl md:text-3xl font-bold ${iconData.letterColor}`}
+					>
+						{iconData.letter}
+					</span>
 				</div>
 			)}
 		</div>

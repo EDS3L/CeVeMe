@@ -1,57 +1,59 @@
 import React, { useState, useEffect } from "react";
-import OrbitingIcon from "./OrbitingIcon"; // Importowanie podkomponentu
-import OrbitCard from "./OrbitCard"; // Zakładam, że to osobny komponent
+import OrbitingIcon from "./OrbitingIcon";
 
-// Dane dla ikon, które będą krążyć
+// Dane dla liter
 const orbitingIconsData = [
 	{
 		id: 1,
 		letter: "C",
-		letterColor: "#F472B6",
+		letterColor: "text-pink-400",
 		initialAngle: 60,
-		color: "rgb(204, 120, 92)",
+		description: "Celne dopasowanie CV do każdej oferty pracy",
 	},
 	{
 		id: 2,
 		letter: "E",
-		letterColor: "#FBBF24",
+		letterColor: "text-amber-400",
 		initialAngle: 120,
-		color: "rgb(212, 162, 127)",
+		description:
+			"Efektywne wykorzystanie słów kluczowych zwiększających widoczność kandydata",
 	},
 	{
 		id: 3,
 		letter: "V",
-		letterColor: "#60A5FA",
+		letterColor: "text-blue-400",
 		initialAngle: 180,
-		color: "rgb(97, 170, 242)",
+		description:
+			"Value – dodawanie realnej wartości Twojej aplikacji w oczach rekrutera",
 	},
 	{
 		id: 4,
 		letter: "E",
-		letterColor: "#F87171",
+		letterColor: "text-red-400",
 		initialAngle: 240,
-		color: "rgb(191, 77, 67)",
+		description: "Eliminacja błędów i niedopasowań w dokumentach aplikacyjnych",
 	},
 	{
 		id: 5,
 		letter: "M",
-		letterColor: "#22D3EE",
+		letterColor: "text-cyan-400",
 		initialAngle: 300,
-		color: "rgb(97, 170, 242)",
+		description:
+			"Maksymalizacja szans na zaproszenie na rozmowę kwalifikacyjną",
 	},
 	{
 		id: 6,
 		letter: "E",
-		letterColor: "#A78BFA",
+		letterColor: "text-violet-400",
 		initialAngle: 360,
-		color: "rgb(97, 170, 242)",
+		description: "Ekspresowe tworzenie spersonalizowanych CV w kilka minut",
 	},
 ];
 
 export default function App() {
-	const [ellipseRadii, setEllipseRadii] = useState({ x: 400, y: 200 }); // Domyślne wartości dla dużych ekranów
+	const [ellipseRadii, setEllipseRadii] = useState({ x: 400, y: 200 });
 	const [isPaused, setIsPaused] = useState(false);
-	const [hoveredIconId, setHoveredIconId] = useState(null);
+	const [openCardId, setOpenCardId] = useState(null);
 
 	useEffect(() => {
 		const handleResize = () => {
@@ -67,19 +69,26 @@ export default function App() {
 			}
 		};
 
-		handleResize(); // Ustawienie początkowych wymiarów
+		handleResize();
 		window.addEventListener("resize", handleResize);
 		return () => window.removeEventListener("resize", handleResize);
 	}, []);
 
-	const handleMouseEnter = (id) => {
+	// Jeśli kliknięta ikona jest już otwarta, zamknij ją
+	const handleIconClick = (id) => {
+		if (openCardId === id) {
+			setOpenCardId(null);
+		} else {
+			setOpenCardId(id);
+		}
+	};
+
+	const handleMouseEnter = () => {
 		setIsPaused(true);
-		setHoveredIconId(id);
 	};
 
 	const handleMouseLeave = () => {
 		setIsPaused(false);
-		setHoveredIconId(null);
 	};
 
 	return (
@@ -107,7 +116,8 @@ export default function App() {
 						isPaused={isPaused}
 						onMouseEnter={handleMouseEnter}
 						onMouseLeave={handleMouseLeave}
-						hoveredIconId={hoveredIconId}
+						isOpen={openCardId === iconData.id}
+						onIconClick={handleIconClick}
 					/>
 				))}
 			</div>
