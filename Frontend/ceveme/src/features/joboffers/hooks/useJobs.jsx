@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import api from './ApiService';
 
-const parseSalaryNumber = (s) => {
-  if (!s) return null;
-  const m = s.replace(/\s/g, '').match(/(\d[\d]*)/);
-  return m ? parseInt(m[1], 10) : null;
-};
+// const parseSalaryNumber = (s) => {
+//   if (!s) return null;
+//   const m = s.replace(/\s/g, '').match(/(\d[\d]*)/);
+//   return m ? parseInt(m[1], 10) : null;
+// };
 
 const DEFAULT_PAGE = 50;
 
