@@ -36,7 +36,7 @@ public class LoginUserUseCase {
         }
 
 
-        String token = jwtService.generate(email);
+        String token = jwtService.generate(email, user.getId());
         return new LoginUserResponse(user.getId(), token, "Login successful!");
 
     }

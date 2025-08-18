@@ -57,57 +57,57 @@ public class EditEmploymentInfoController {
     }
 
     @PatchMapping("/certificate")
-    public ResponseEntity<CertificateResponse> createCertificate(@Valid @RequestBody CertificateRequest request, Long id) {
-        CertificateResponse response = editCertificateUseCase.execute(request, id);
+    public ResponseEntity<CertificateResponse> createCertificate(@Valid @RequestBody CertificateRequest request, Long employmentInfoId) {
+        CertificateResponse response = editCertificateUseCase.execute(request, employmentInfoId);
         return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .body(response);
     }
 
     @PatchMapping("/course")
-    public ResponseEntity<CourseResponse> createCourse(@Valid @RequestBody CourseRequest request, Long id) {
-        CourseResponse response = editCourseUseCase.execute(request, id);
+    public ResponseEntity<CourseResponse> createCourse(@Valid @RequestBody CourseRequest request, Long employmentInfoId) {
+        CourseResponse response = editCourseUseCase.execute(request, employmentInfoId);
         return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .body(response);
     }
 
     @PatchMapping("/experience")
-    public ResponseEntity<ExperienceResponse> createExperience(@Valid @RequestBody ExperienceRequest request, Long id) {
-        ExperienceResponse response = editExperienceUseCase.execute(request, id);
+    public ResponseEntity<ExperienceResponse> createExperience(@Valid @RequestBody ExperienceRequest request, Long employmentInfoId) {
+        ExperienceResponse response = editExperienceUseCase.execute(request, employmentInfoId);
         return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .body(response);
     }
 
     @PatchMapping("/language")
-    public ResponseEntity<LanguageResponse> createLanguage(@Valid @RequestBody LanguageRequest request, Long id) {
-        LanguageResponse response = editLanguageUseCase.execute(request, id);
+    public ResponseEntity<LanguageResponse> createLanguage(@Valid @RequestBody LanguageRequest request, Long employmentInfoId) {
+        LanguageResponse response = editLanguageUseCase.execute(request, employmentInfoId);
         return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .body(response);
     }
 
     @PatchMapping("/skill")
-    public ResponseEntity<SkillResponse> createSkill(@Valid @RequestBody SkillRequest request, Long id) {
-        SkillResponse response = editSkillUseCase.execute(request, id);
+    public ResponseEntity<SkillResponse> createSkill(@Valid @RequestBody SkillRequest request, Long employmentInfoId) {
+        SkillResponse response = editSkillUseCase.execute(request, employmentInfoId);
         return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .body(response);
     }
 
     @PatchMapping("/portfolioItem")
-    public ResponseEntity<PortfolioItemsResponse> createPortfolioItem(@Valid @RequestBody PortfolioItemsRequest request, Long id) {
-        PortfolioItemsResponse response = editPortfolioItemUseCase.execute(request, id);
+    public ResponseEntity<PortfolioItemsResponse> createPortfolioItem(@Valid @RequestBody PortfolioItemsRequest request, Long employmentInfoId) {
+        PortfolioItemsResponse response = editPortfolioItemUseCase.execute(request, employmentInfoId);
         return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .body(response);
     }
 
     @PatchMapping("/link")
-    public ResponseEntity<LinkResponse> createLink(@Valid @RequestBody LinkRequest request, Long id) {
-        LinkResponse response = editLinkUseCase.execute(request, id);
+    public ResponseEntity<LinkResponse> createLink(@Valid @RequestBody LinkRequest request, Long employmentInfoId) {
+        LinkResponse response = editLinkUseCase.execute(request, employmentInfoId);
         return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .body(response);
     }
 
     @PatchMapping("/education")
-    public ResponseEntity<EducationResponse> createEducation(@Valid @RequestBody EducationRequest request, Long id) {
-        EducationResponse response = editEducationUseCase.execute(request, id);
+    public ResponseEntity<EducationResponse> createEducation(@Valid @RequestBody EducationRequest request, Long employmentInfoId) {
+        EducationResponse response = editEducationUseCase.execute(request, employmentInfoId);
         return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .body(response);
     }

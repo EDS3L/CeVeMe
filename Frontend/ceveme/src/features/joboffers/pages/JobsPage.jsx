@@ -10,7 +10,7 @@ import SkeletonCard from '../components/jobs/SkeletonCard';
 import EmptyState from '../components/jobs/EmptyState';
 import Pagination from '../components/ui/Pagination';
 import { X, MapPin } from 'lucide-react';
-import Navbar from '../../cv/components/CvNavbar';
+import Navbar from '../../../components/Navbar';
 
 export default function JobsPage() {
   const {

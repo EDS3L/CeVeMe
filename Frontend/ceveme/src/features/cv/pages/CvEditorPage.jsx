@@ -9,9 +9,9 @@ import CVPreviewSidebar from '../cvTypes/CVPreviewSidebar';
 import CVPreviewHybrid from '../cvTypes/CVPreviewHybrid';
 import CVPreviewProject from '../cvTypes/CVPreviewProject';
 import CVPreviewAts from '../cvTypes/CVPreviewAts';
-import Navbar from '../components/CvNavbar';
 import { useSinglePageScale } from '../hooks/useSinglePageScale';
 import LayoutPicker from '../components/LayoutPicker';
+import Navbar from '../../../components/Navbar';
 
 /* Druk: zero marginesów, overflow hidden TYLKO w druku */
 const PAGE_STYLE = `

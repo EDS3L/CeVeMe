@@ -26,6 +26,13 @@ const RoutersConfig = {
     component: React.lazy(() => import('../features/cv/pages/CvEditorPage')),
     requiredRole: null,
   },
+  user: {
+    path: '/user',
+    component: React.lazy(() =>
+      import('../features/user/pages/UserProfilePage')
+    ),
+    requiredRole: null,
+  },
 };
 
 export default RoutersConfig;

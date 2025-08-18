@@ -46,7 +46,7 @@ class LoginUserUseCaseTest {
         when(userRepository.existsByEmail(email)).thenReturn(true);
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
         when(passwordEncoderAdapter.matches(request.password(), user.getPassword())).thenReturn(true);
-        when(jwtService.generate(email)).thenReturn("mocked.jwt.token");
+        when(jwtService.generate(email, user.getId())).thenReturn("mocked.jwt.token");
 
         // When
         var response = loginUserUseCase.login(request);

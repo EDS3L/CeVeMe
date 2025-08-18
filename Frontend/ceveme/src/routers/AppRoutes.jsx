@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import routersConfig from './RoutersConfig';

@@ -1,14 +1,22 @@
 package pl.ceveme.infrastructure.controllers.user;
 
+import com.sun.security.auth.UserPrincipal;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import pl.ceveme.application.dto.cloud.UploadFileResponse;
 import pl.ceveme.application.dto.user.*;
 import pl.ceveme.application.usecase.user.*;
+import pl.ceveme.domain.model.entities.User;
 
+import javax.security.auth.Subject;
 import java.io.IOException;
+import java.net.Authenticator;
 
 @RestController
 @RequestMapping("/api/users")
@@ -76,9 +84,12 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/{userId}")
-    public ResponseEntity<DeleteUserResponse> deleteUser(@PathVariable Long userId, @RequestBody DeleteUserRequest request) {
-        DeleteUserResponse response = deleteUserUseCase.execute(request);
+    @DeleteMapping("/deleteUser")
+    public ResponseEntity<DeleteUserResponse> deleteUser(Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        Long id = user.getId();
+
+        DeleteUserResponse response = deleteUserUseCase.execute(id);
         return  ResponseEntity.ok(response);
     }
 

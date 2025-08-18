@@ -2,6 +2,7 @@ package pl.ceveme.application.usecase.user;
 
 
 import jakarta.transaction.Transactional;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import pl.ceveme.application.dto.user.DeleteUserRequest;
 import pl.ceveme.application.dto.user.DeleteUserResponse;
@@ -17,13 +18,13 @@ public class DeleteUserUseCase {
     }
 
     @Transactional
-    public DeleteUserResponse execute(DeleteUserRequest request) {
-        if (!userRepository.existsById(request.id())) {
-            throw new IllegalArgumentException("User with id: " + request.id() + " does not exist");
+    public DeleteUserResponse execute(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new IllegalArgumentException("User with id: " + id + " does not exist");
         }
 
-        userRepository.deleteById(request.id());
+        userRepository.deleteById(id);
 
-        return new DeleteUserResponse("User with id: " + request.id() + " has been deleted");
+        return new DeleteUserResponse("User with id: " + id + " has been deleted");
     }
 }

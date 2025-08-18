@@ -35,9 +35,9 @@ public class JwtService {
         parser = Jwts.parser().verifyWith(key).build();
     }
 
-    public String generate(Email subject) {
+    public String generate(Email subject, Long id) {
         Instant now = Instant.now();
-        return Jwts.builder().subject(subject.email()).issuedAt(Date.from(now)).expiration(new Date(System.currentTimeMillis() + DAY_MS)).signWith(key, Jwts.SIG.HS256).compact();
+        return Jwts.builder().subject(subject.email()).id(id.toString()).issuedAt(Date.from(now)).expiration(new Date(System.currentTimeMillis() + DAY_MS)).signWith(key, Jwts.SIG.HS256).compact();
     }
 
     /** Walidacja + Claims */
