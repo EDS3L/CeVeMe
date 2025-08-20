@@ -4,6 +4,7 @@ package pl.ceveme.infrastructure.controllers.employmentInfo;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +26,9 @@ import pl.ceveme.application.usecase.employmentInfo.language.DeleteLanguageUseCa
 import pl.ceveme.application.usecase.employmentInfo.link.DeleteLinkUseCase;
 import pl.ceveme.application.usecase.employmentInfo.portfolio.DeletePortfolioItemUseCase;
 import pl.ceveme.application.usecase.employmentInfo.skill.DeleteSkillUseCase;
+import pl.ceveme.domain.model.entities.User;
+
+import java.nio.file.AccessDeniedException;
 
 @RestController
 @RequestMapping("/api/employmentInfo/delete")
@@ -52,57 +56,73 @@ public class DeleteEmploymentInfoController {
     }
 
     @DeleteMapping("/certificate")
-    public ResponseEntity<CertificateResponse> createCertificate(@Valid @RequestBody DeleteEntityRequest request) {
-        CertificateResponse response = deleteCertificateUseCase.execute(request);
+    public ResponseEntity<CertificateResponse> deleteCertificate(@Valid @RequestBody DeleteEntityRequest request, Authentication authentication) throws AccessDeniedException {
+        User user = (User) authentication.getPrincipal();
+        Long userId = user.getId();
+        CertificateResponse response = deleteCertificateUseCase.execute(request, userId);
         return ResponseEntity.status(HttpStatus.GONE)
                 .body(response);
     }
 
     @DeleteMapping("/course")
-    public ResponseEntity<CourseResponse> createCourse(@Valid @RequestBody DeleteEntityRequest request) {
-        CourseResponse response = deleteCourseUseCase.execute(request);
+    public ResponseEntity<CourseResponse> deleteCourse(@Valid @RequestBody DeleteEntityRequest request, Authentication authentication) throws AccessDeniedException {
+        User user = (User) authentication.getPrincipal();
+        Long userId = user.getId();
+        CourseResponse response = deleteCourseUseCase.execute(request, userId);
         return ResponseEntity.status(HttpStatus.GONE)
                 .body(response);
     }
 
     @DeleteMapping("/experience")
-    public ResponseEntity<ExperienceResponse> createExperience(@Valid @RequestBody DeleteEntityRequest request) {
-        ExperienceResponse response = deleteExperienceUseCase.execute(request);
+    public ResponseEntity<ExperienceResponse> deleteExperience(@Valid @RequestBody DeleteEntityRequest request, Authentication authentication) throws AccessDeniedException {
+        User user = (User) authentication.getPrincipal();
+        Long userId = user.getId();
+        ExperienceResponse response = deleteExperienceUseCase.execute(request, userId);
         return ResponseEntity.status(HttpStatus.GONE)
                 .body(response);
     }
 
     @DeleteMapping("/language")
-    public ResponseEntity<LanguageResponse> createLanguage(@Valid @RequestBody DeleteEntityRequest request) {
-        LanguageResponse response = deleteLanguageUseCase.execute(request);
+    public ResponseEntity<LanguageResponse> deleteLanguage(@Valid @RequestBody DeleteEntityRequest request, Authentication authentication) throws AccessDeniedException {
+        User user = (User) authentication.getPrincipal();
+        Long userId = user.getId();
+        LanguageResponse response = deleteLanguageUseCase.execute(request, userId);
         return ResponseEntity.status(HttpStatus.GONE)
                 .body(response);
     }
 
     @DeleteMapping("/skill")
-    public ResponseEntity<SkillResponse> createSkill(@Valid @RequestBody DeleteEntityRequest request) {
-        SkillResponse response = deleteSkillUseCase.execute(request);
+    public ResponseEntity<SkillResponse> deleteSkill(@Valid @RequestBody DeleteEntityRequest request, Authentication authentication) throws AccessDeniedException {
+        User user = (User) authentication.getPrincipal();
+        Long userId = user.getId();
+        SkillResponse response = deleteSkillUseCase.execute(request, userId);
         return ResponseEntity.status(HttpStatus.GONE)
                 .body(response);
     }
 
     @DeleteMapping("/portfolioItem")
-    public ResponseEntity<PortfolioItemsResponse> createPortfolioItem(@Valid @RequestBody DeleteEntityRequest request) {
-        PortfolioItemsResponse response = deletePortfolioItemUseCase.execute(request);
+    public ResponseEntity<PortfolioItemsResponse> deletePortfolioItem(@Valid @RequestBody DeleteEntityRequest request, Authentication authentication) throws AccessDeniedException {
+        User user = (User) authentication.getPrincipal();
+        Long userId = user.getId();
+        PortfolioItemsResponse response = deletePortfolioItemUseCase.execute(request, userId);
         return ResponseEntity.status(HttpStatus.GONE)
                 .body(response);
     }
 
     @DeleteMapping("/link")
-    public ResponseEntity<LinkResponse> createLink(@Valid @RequestBody DeleteEntityRequest request) {
-        LinkResponse response = deleteLinkUseCase.execute(request);
+    public ResponseEntity<LinkResponse> deleteLink(@Valid @RequestBody DeleteEntityRequest request, Authentication authentication) throws AccessDeniedException {
+        User user = (User) authentication.getPrincipal();
+        Long userId = user.getId();
+        LinkResponse response = deleteLinkUseCase.execute(request, userId);
         return ResponseEntity.status(HttpStatus.GONE)
                 .body(response);
     }
 
     @DeleteMapping("/education")
-    public ResponseEntity<EducationResponse> createEducation(@Valid @RequestBody DeleteEntityRequest request) {
-        EducationResponse response = deleteEducationUseCase.execute(request);
+    public ResponseEntity<EducationResponse> deleteEducation(@Valid @RequestBody DeleteEntityRequest request, Authentication authentication) throws AccessDeniedException {
+        User user = (User) authentication.getPrincipal();
+        Long userId = user.getId();
+        EducationResponse response = deleteEducationUseCase.execute(request, userId);
         return ResponseEntity.status(HttpStatus.GONE)
                 .body(response);
     }

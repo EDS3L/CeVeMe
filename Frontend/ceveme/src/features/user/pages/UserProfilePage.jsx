@@ -31,6 +31,8 @@ import LinksList from '../components/employment/LinksList';
 import EducationsList from '../components/employment/EducationsList';
 import Navbar from '../../../components/Navbar';
 import ImploymentInfoGet from '../hooks/useGetEmploymentInfo';
+import EmploymentInfoCreate from '../hooks/useCreateEmploymentInfo';
+import UserService from '../../../hooks/UserService';
 
 export default function EmploymentInfoPage() {
   const [activeTab, setActiveTab] = useState('jezyki');
@@ -38,13 +40,23 @@ export default function EmploymentInfoPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [toasts, setToasts] = useState([]);
   const [confirm, setConfirm] = useState(null);
+  const [languageEditId, setLanguageEditId] = useState(null);
+
   const api = new ImploymentInfoGet();
+
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+  }
+  const token = getCookie('jwt');
+
+  const userService = new UserService();
+  const email = userService.getEmailFromToken(token);
 
   const pushToast = (type, message) =>
     setToasts((t) => [...t, { id: crypto.randomUUID(), type, message }]);
   const removeToast = (id) => setToasts((t) => t.filter((x) => x.id !== id));
-  const [id, setId] = useState(19);
-  const [email, setEmail] = useState('mta1999@wp.pl');
 
   const [form, setForm] = useState(() => ({
     languages: [],
@@ -56,11 +68,6 @@ export default function EmploymentInfoPage() {
     links: [],
     educations: [],
   }));
-
-  const deletee = async () => {
-    const res = await api.delete(id, email);
-    console.log(res);
-  };
 
   const [errors, setErrors] = useState({});
   const validate = () => {
@@ -128,7 +135,7 @@ export default function EmploymentInfoPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await api.getEmploymentInfo('contact.barlik@gmail.com');
+        const data = await api.getEmploymentInfo(email);
         console.log(data);
         setForm(data);
       } catch (error) {
@@ -157,8 +164,7 @@ export default function EmploymentInfoPage() {
             <div className="flex items-center gap-2">
               {!isEdit ? (
                 <button
-                  //   onClick={onEdit}
-                  onClick={() => deletee()}
+                  onClick={onEdit}
                   className="inline-flex items-center gap-2 rounded-xl px-4 py-2 bg-bookcloth text-basewhite hover:opacity-90"
                 >
                   <Pencil size={20} strokeWidth={2} /> Edytuj
@@ -198,13 +204,15 @@ export default function EmploymentInfoPage() {
             <div className="p-4 sm:p-6">
               {activeTab === 'jezyki' && (
                 <LanguagesList
-                  isEdit={isEdit}
+                  editId={languageEditId}
                   languages={form.languages}
                   onChange={(languages) =>
                     setForm((f) => ({ ...f, languages }))
                   }
                   setConfirm={setConfirm}
                   onImprove={improveText}
+                  setEditId={setLanguageEditId}
+                  onCancel={() => setLanguageEditId(null)}
                 />
               )}
 
@@ -217,6 +225,7 @@ export default function EmploymentInfoPage() {
                   }
                   setConfirm={setConfirm}
                   onImprove={improveText}
+                  setIsEdit={setIsEdit}
                 />
               )}
 
@@ -230,6 +239,7 @@ export default function EmploymentInfoPage() {
                   setConfirm={setConfirm}
                   errors={errors}
                   onImprove={improveText}
+                  setIsEdit={setIsEdit}
                 />
               )}
 
@@ -240,6 +250,7 @@ export default function EmploymentInfoPage() {
                   onChange={(courses) => setForm((f) => ({ ...f, courses }))}
                   setConfirm={setConfirm}
                   onImprove={improveText}
+                  setIsEdit={setIsEdit}
                 />
               )}
 
@@ -250,6 +261,7 @@ export default function EmploymentInfoPage() {
                   onChange={(skills) => setForm((f) => ({ ...f, skills }))}
                   setConfirm={setConfirm}
                   onImprove={improveText}
+                  setIsEdit={setIsEdit}
                 />
               )}
 
@@ -262,6 +274,7 @@ export default function EmploymentInfoPage() {
                   }
                   setConfirm={setConfirm}
                   onImprove={improveText}
+                  setIsEdit={setIsEdit}
                 />
               )}
 
@@ -272,6 +285,7 @@ export default function EmploymentInfoPage() {
                   onChange={(links) => setForm((f) => ({ ...f, links }))}
                   setConfirm={setConfirm}
                   onImprove={improveText}
+                  setIsEdit={setIsEdit}
                 />
               )}
 
@@ -285,6 +299,7 @@ export default function EmploymentInfoPage() {
                   setConfirm={setConfirm}
                   errors={errors}
                   onImprove={improveText}
+                  setIsEdit={setIsEdit}
                 />
               )}
             </div>

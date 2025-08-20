@@ -8,7 +8,8 @@ public record CourseRequest(
         String email,
         String courseName,
         LocalDate dateOfCourse,
-        String courseDescription
+        String courseDescription,
+        Long employmentInfoId
 ) {
 
 

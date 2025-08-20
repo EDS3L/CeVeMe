@@ -11,6 +11,8 @@ import pl.ceveme.domain.model.vo.Password;
 import pl.ceveme.domain.repositories.UserRepository;
 import pl.ceveme.infrastructure.adapter.security.BCryptPasswordEncoderAdapter;
 
+import java.nio.file.AccessDeniedException;
+
 @Service
 public class ChangeUsersPasswordUseCase {
 
@@ -24,11 +26,15 @@ public class ChangeUsersPasswordUseCase {
     }
 
     @Transactional
-    public ChangePasswordResponse changePassword(ChangePasswordRequest request) {
+    public ChangePasswordResponse changePassword(ChangePasswordRequest request, Long userId) throws AccessDeniedException {
         Email email = new Email(request.email());
 
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        if(user.getId() != userId) {
+            throw new AccessDeniedException("Access Denied!");
+        }
 
         user.changePassword(
                 request.confirmPassword(),

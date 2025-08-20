@@ -3,7 +3,6 @@ package pl.ceveme.infrastructure.controllers.user;
 import com.sun.security.auth.UserPrincipal;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.parameters.P;
@@ -17,6 +16,7 @@ import pl.ceveme.domain.model.entities.User;
 import javax.security.auth.Subject;
 import java.io.IOException;
 import java.net.Authenticator;
+import java.nio.file.AccessDeniedException;
 
 @RestController
 @RequestMapping("/api/users")
@@ -42,45 +42,59 @@ public class UserController {
         this.deleteUserUseCase = deleteUserUseCase;
     }
 
-    @PatchMapping("/{userId}/password")
-    public ResponseEntity<ChangePasswordResponse> changePassword(@PathVariable Long userId, @RequestBody ChangePasswordRequest request) {
-        ChangePasswordResponse response = changeUsersPasswordUseCase.changePassword(request);
+    @PatchMapping("/password")
+    public ResponseEntity<ChangePasswordResponse> changePassword(@RequestBody ChangePasswordRequest request, Authentication authentication) throws AccessDeniedException {
+        User user = (User) authentication.getPrincipal();
+        Long userId = user.getId();
+        ChangePasswordResponse response = changeUsersPasswordUseCase.changePassword(request,userId);
         return ResponseEntity.ok(response);
     }
 
-    @PatchMapping("/{userId}/name")
-    public ResponseEntity<UpdateUserResponse> changeName(@PathVariable Long userId, @RequestBody ChangeNameRequest request) {
+    @PatchMapping("/name")
+    public ResponseEntity<UpdateUserResponse> changeName( @RequestBody ChangeNameRequest request, Authentication authentication) throws AccessDeniedException {
+        User user = (User) authentication.getPrincipal();
+        Long userId = user.getId();
         UpdateUserResponse response = changeUserNameUseCase.execute(userId, request.name());
         return ResponseEntity.ok(response);
     }
 
-    @PatchMapping("/{userId}/surname")
-    public ResponseEntity<UpdateUserResponse> changeSurname(@PathVariable Long userId, @RequestBody ChangeSurnameRequest request) {
+    @PatchMapping("/surname")
+    public ResponseEntity<UpdateUserResponse> changeSurname(@RequestBody ChangeSurnameRequest request, Authentication authentication) throws AccessDeniedException{
+        User user = (User) authentication.getPrincipal();
+        Long userId = user.getId();
         UpdateUserResponse response = changeUserSurnameUseCase.execute(userId, request.surname());
         return ResponseEntity.ok(response);
     }
 
-    @PatchMapping("/{userId}/phone-number")
-    public ResponseEntity<UpdateUserResponse> changePhoneNumber(@PathVariable Long userId, @RequestBody ChangePhoneNumberRequest request) {
+    @PatchMapping("/phone-number")
+    public ResponseEntity<UpdateUserResponse> changePhoneNumber(@RequestBody ChangePhoneNumberRequest request, Authentication authentication) throws AccessDeniedException{
+        User user = (User) authentication.getPrincipal();
+        Long userId = user.getId();
         UpdateUserResponse response = changeUserPhoneNumberUseCase.execute(userId, request.phoneNumber());
         return ResponseEntity.ok(response);
     }
 
-    @PatchMapping("/{userId}/email")
-    public ResponseEntity<UpdateUserResponse> changeEmail(@PathVariable Long userId, @RequestBody ChangeEmailRequest request) {
+    @PatchMapping("/email")
+    public ResponseEntity<UpdateUserResponse> changeEmail(@RequestBody ChangeEmailRequest request, Authentication authentication) throws AccessDeniedException {
+        User user = (User) authentication.getPrincipal();
+        Long userId = user.getId();
         UpdateUserResponse response = changeUserEmailUseCase.execute(userId, request.email());
         return ResponseEntity.ok(response);
     }
 
     @PostMapping(value = "/upload/profileImage", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<UploadFileResponse> uploadProfilePhoto(@RequestParam MultipartFile multipartFile, @RequestParam String email) throws IOException {
-        UploadFileResponse response = uploadProfileImageUseCase.execute(multipartFile,email);
+    public ResponseEntity<UploadFileResponse> uploadProfilePhoto(@RequestParam MultipartFile multipartFile, @RequestParam String email, Authentication authentication) throws AccessDeniedException, IOException {
+        User user = (User) authentication.getPrincipal();
+        Long userId = user.getId();
+        UploadFileResponse response = uploadProfileImageUseCase.execute(multipartFile,email, userId);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping(value = "/upload/cvFile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<UploadFileResponse> uploadCvFile(@RequestParam MultipartFile multipartFile, @RequestParam String email, @RequestParam Long jobOfferId) throws IOException {
-        UploadFileResponse response = uploadCvFileUseCase.execute(multipartFile,email,jobOfferId);
+    public ResponseEntity<UploadFileResponse> uploadCvFile(@RequestParam MultipartFile multipartFile, @RequestParam String email, @RequestParam Long jobOfferId, Authentication authentication) throws AccessDeniedException, IOException {
+        User user = (User) authentication.getPrincipal();
+        Long userId = user.getId();
+        UploadFileResponse response = uploadCvFileUseCase.execute(multipartFile,email,jobOfferId, userId);
         return ResponseEntity.ok(response);
     }
 

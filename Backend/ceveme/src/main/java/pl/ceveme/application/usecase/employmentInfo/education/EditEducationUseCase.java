@@ -10,6 +10,8 @@ import pl.ceveme.domain.model.entities.Education;
 import pl.ceveme.domain.model.entities.EmploymentInfo;
 import pl.ceveme.domain.repositories.EmploymentInfoRepository;
 
+import java.nio.file.AccessDeniedException;
+
 @Service
 public class EditEducationUseCase {
 
@@ -20,9 +22,13 @@ public class EditEducationUseCase {
     }
 
     @Transactional
-    public EducationResponse execute(EducationRequest request, Long employmentInfoId) {
-        EmploymentInfo info = employmentInfoRepository.findById(employmentInfoId)
+    public EducationResponse execute(EducationRequest request, Long userId) throws AccessDeniedException {
+        EmploymentInfo info = employmentInfoRepository.findById(request.employmentInfoId())
                 .orElseThrow(() -> new IllegalArgumentException("EmploymentInfo not found"));
+
+        if(info.getUser().getId() != userId) {
+            throw new AccessDeniedException("Access Denied!");
+        }
 
         Education education = info.getEducationById(request.id())
                 .orElseThrow(() -> new IllegalArgumentException("Education not found"));

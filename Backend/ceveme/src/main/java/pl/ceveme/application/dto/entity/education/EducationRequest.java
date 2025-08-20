@@ -10,7 +10,8 @@ public record EducationRequest(
         String fieldOfStudy,
         LocalDate startingDate,
         LocalDate endDate,
-        Boolean currently
+        Boolean currently,
+        Long employmentInfoId
 ) {
 
     public EducationRequest {

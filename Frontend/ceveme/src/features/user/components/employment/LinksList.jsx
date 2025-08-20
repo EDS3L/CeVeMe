@@ -1,6 +1,8 @@
 import React from 'react';
-import { Plus, Trash2, Link as LinkIcon } from 'lucide-react';
+import { Plus, Save, Trash2, Link as LinkIcon } from 'lucide-react';
 import FieldWithAI from '../ui/FieldWithAI';
+import EmploymentInfoCreate from '../../hooks/useCreateEmploymentInfo';
+import UserService from '../../../../hooks/UserService';
 
 export default function LinksList({
   isEdit,
@@ -8,9 +10,26 @@ export default function LinksList({
   onChange,
   setConfirm,
   onImprove,
+  setIsEdit,
 }) {
   const update = (id, patch) =>
     onChange(links.map((l) => (l.id === id ? { ...l, ...patch } : l)));
+
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+  }
+  const token = getCookie('jwt');
+
+  const create = new EmploymentInfoCreate();
+  const userService = new UserService();
+  const email = userService.getEmailFromToken(token);
+
+  const createLink = async (title, link) => {
+    await create.createLink(null, email, title, link, null);
+    setIsEdit(false);
+  };
 
   return (
     <div className="grid gap-2">
@@ -65,6 +84,16 @@ export default function LinksList({
                   }
                 >
                   <Trash2 size={18} strokeWidth={2} /> Usuń
+                </button>
+                <button
+                  type="button"
+                  aria-label="Usuń język"
+                  className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border text-white cursor-pointer border-kraft hover:bg-bookcloth/90 bg-bookcloth"
+                  onClick={() => {
+                    createLink(l.title, l.link);
+                  }}
+                >
+                  <Save size={18} strokeWidth={2} /> Zapisz
                 </button>
               </div>
             )}

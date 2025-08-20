@@ -12,7 +12,8 @@ public record ExperienceRequest(
         Boolean currently,
         String positionName,
         String jobDescription,
-        String jobAchievements
+        String jobAchievements,
+        Long employmentInfoId
 ) {
 
 

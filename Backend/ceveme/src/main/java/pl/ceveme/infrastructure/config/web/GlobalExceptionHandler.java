@@ -94,4 +94,16 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<ApiError> handleAccessDeniedException(Exception ex, HttpServletRequest request) {
+//        logger.error("An unexpected error occurred: {}", ex.getMessage(), ex);
+//        ApiError error = new ApiError(
+//                "FORBIDDEN",
+//                "An forbidden error",
+//                Instant.now(),
+//                request.getRequestURI()
+//        );
+//        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+//    }
 }

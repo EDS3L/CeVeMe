@@ -8,6 +8,8 @@ import pl.ceveme.domain.model.entities.EmploymentInfo;
 import pl.ceveme.domain.model.entities.Link;
 import pl.ceveme.domain.repositories.EmploymentInfoRepository;
 
+import java.nio.file.AccessDeniedException;
+
 @Service
 public class DeleteLinkUseCase {
 
@@ -18,9 +20,13 @@ public class DeleteLinkUseCase {
     }
 
     @Transactional
-    public LinkResponse execute(DeleteEntityRequest request) {
+    public LinkResponse execute(DeleteEntityRequest request, Long userId) throws AccessDeniedException {
         EmploymentInfo info = employmentInfoRepository.findById(request.employmentInfoId())
                 .orElseThrow(() -> new IllegalArgumentException("EmploymentInfo not found"));
+
+        if(info.getUser().getId() != userId) {
+            throw new AccessDeniedException("Access Denied!");
+        }
 
         Link link = info.getLinkById(request.itemId())
                 .orElseThrow(() -> new IllegalArgumentException("Link not found"));

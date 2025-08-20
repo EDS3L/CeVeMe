@@ -9,6 +9,8 @@ import pl.ceveme.domain.model.entities.Education;
 import pl.ceveme.domain.model.entities.EmploymentInfo;
 import pl.ceveme.domain.repositories.EmploymentInfoRepository;
 
+import java.nio.file.AccessDeniedException;
+
 @Service
 public class DeleteEducationUseCase {
 
@@ -19,13 +21,17 @@ public class DeleteEducationUseCase {
     }
 
     @Transactional
-    public EducationResponse execute(DeleteEntityRequest request) {
-        EmploymentInfo employmentInfo = employmentInfoRepository.findById(request.employmentInfoId())
+    public EducationResponse execute(DeleteEntityRequest request, Long userId) throws AccessDeniedException {
+        EmploymentInfo info = employmentInfoRepository.findById(request.employmentInfoId())
                 .orElseThrow(() -> new IllegalArgumentException("EmploymentInfo not found!"));
 
-        Education education = employmentInfo.getEducationById(request.itemId()).orElseThrow(() -> new IllegalArgumentException("Education not found!"));
+        if(info.getUser().getId() != userId) {
+            throw new AccessDeniedException("Access Denied!");
+        }
 
-        employmentInfo.removeEducation(education);
+        Education education = info.getEducationById(request.itemId()).orElseThrow(() -> new IllegalArgumentException("Education not found!"));
+
+        info.removeEducation(education);
 
         return new EducationResponse(education.getSchoolName(), education.getDegree(),education.getFieldOfStudy(), "Course deleted successfully");
     }

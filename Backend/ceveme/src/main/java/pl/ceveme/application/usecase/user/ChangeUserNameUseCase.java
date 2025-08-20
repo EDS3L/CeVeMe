@@ -7,6 +7,8 @@ import pl.ceveme.domain.model.entities.User;
 import pl.ceveme.domain.model.vo.Name;
 import pl.ceveme.domain.repositories.UserRepository;
 
+import java.nio.file.AccessDeniedException;
+
 @Service
 public class ChangeUserNameUseCase {
 
@@ -17,9 +19,13 @@ public class ChangeUserNameUseCase {
     }
 
     @Transactional
-    public UpdateUserResponse execute(Long userId, String newName) {
+    public UpdateUserResponse execute(Long userId, String newName) throws AccessDeniedException {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User with id " + userId + " not found"));
+
+        if(user.getId() != userId) {
+            throw new AccessDeniedException("Access Denied!");
+        }
 
         user.changeName(new Name(newName));
 

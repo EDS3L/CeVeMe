@@ -16,4 +16,4 @@ class ImploymentInfoEdit {
   }
 }
 
-export default ImploymentInfoGet;
+export default ImploymentInfoEdit;

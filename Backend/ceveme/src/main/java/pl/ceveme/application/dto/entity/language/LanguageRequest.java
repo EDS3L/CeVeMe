@@ -6,7 +6,8 @@ public record LanguageRequest(
         Long id,
         String email,
         String name,
-        String level
+        String level,
+        Long employmentInfoId
 ) {
 
     private static final Set<String> ALLOWED_LEVELS = Set.of(

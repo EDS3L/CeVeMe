@@ -42,20 +42,18 @@ public class CreateEmploymentInfoController {
     private final CreateExperienceUseCase createExperienceUseCase;
     private final CreateLanguageUseCase createLanguageUseCase;
     private final CreateSkillUseCase createSkillUseCase;
-    private final GetEmploymentInfoUseCase getEmploymentInfoUseCase;
     private final CreatePortfolioItemUseCase createPortfolioItemUseCase;
     private final CreateLinkUseCase createLinkUseCase;
     private final CreateEducationUseCase createEducationUseCase;
 
 
-    public CreateEmploymentInfoController(CreateEmploymentInfoUseCase employmentInfoUseCase, CreateCertificateUseCase createCertificateUseCase, CreateCourseUseCase createCourseUseCase, CreateExperienceUseCase createExperienceUseCase, CreateLanguageUseCase createLanguageUseCase, CreateSkillUseCase createSkillUseCase, GetEmploymentInfoUseCase getEmploymentInfoUseCase, CreatePortfolioItemUseCase createPortfolioItemUseCase, CreateLinkUseCase createLinkUseCase, CreateEducationUseCase createEducationUseCase) {
+    public CreateEmploymentInfoController(CreateEmploymentInfoUseCase employmentInfoUseCase, CreateCertificateUseCase createCertificateUseCase, CreateCourseUseCase createCourseUseCase, CreateExperienceUseCase createExperienceUseCase, CreateLanguageUseCase createLanguageUseCase, CreateSkillUseCase createSkillUseCase, CreatePortfolioItemUseCase createPortfolioItemUseCase, CreateLinkUseCase createLinkUseCase, CreateEducationUseCase createEducationUseCase) {
         this.employmentInfoUseCase = employmentInfoUseCase;
         this.createCertificateUseCase = createCertificateUseCase;
         this.createCourseUseCase = createCourseUseCase;
         this.createExperienceUseCase = createExperienceUseCase;
         this.createLanguageUseCase = createLanguageUseCase;
         this.createSkillUseCase = createSkillUseCase;
-        this.getEmploymentInfoUseCase = getEmploymentInfoUseCase;
         this.createPortfolioItemUseCase = createPortfolioItemUseCase;
         this.createLinkUseCase = createLinkUseCase;
         this.createEducationUseCase = createEducationUseCase;
@@ -115,9 +113,4 @@ public class CreateEmploymentInfoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @GetMapping("/{email}")
-    public ResponseEntity<EmploymentInfoResponse> geEmploymentInfo(@PathVariable String email) {
-        EmploymentInfoResponse response = getEmploymentInfoUseCase.execute(email);
-        return ResponseEntity.ok(response);
-    }
 }

@@ -11,6 +11,7 @@ import pl.ceveme.domain.repositories.UserRepository;
 import pl.ceveme.infrastructure.external.cloud.CloudinaryService;
 
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 
 @Service
 public class UploadProfileImageUseCase {
@@ -24,9 +25,13 @@ public class UploadProfileImageUseCase {
     }
 
     @Transactional
-    public UploadFileResponse execute(MultipartFile multipartFile, String email) throws IOException {
+    public UploadFileResponse execute(MultipartFile multipartFile, String email, Long userId) throws IOException {
         User user = userRepository.findByEmail(new Email(email))
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        if(user.getId() != userId) {
+            throw new AccessDeniedException("Access Denied!");
+        }
 
         UploadFileResponse response = cloudinaryService.uploadProfileImage(multipartFile);
         user.setImage(response.url());

@@ -9,7 +9,8 @@ public record SkillRequest(
         Long id,
         String email,
         String name,
-        Skill.Type type
+        Skill.Type type,
+        Long employmentInfoId
 ) {
 
 

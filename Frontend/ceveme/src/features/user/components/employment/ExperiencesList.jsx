@@ -1,7 +1,9 @@
 import React from 'react';
-import { Plus, Trash2, Briefcase } from 'lucide-react';
+import { Plus, Trash2, Briefcase, Save } from 'lucide-react';
 import FieldWithAI from '../ui/FieldWithAI';
 import Toggle from '../ui/Toggle';
+import EmploymentInfoCreate from '../../hooks/useCreateEmploymentInfo';
+import UserService from '../../../../hooks/UserService';
 
 export default function ExperiencesList({
   isEdit,
@@ -10,9 +12,45 @@ export default function ExperiencesList({
   setConfirm,
   errors,
   onImprove,
+  setIsEdit,
 }) {
   const update = (id, patch) =>
     onChange(experiences.map((e) => (e.id === id ? { ...e, ...patch } : e)));
+
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+  }
+  const token = getCookie('jwt');
+
+  const create = new EmploymentInfoCreate();
+  const userService = new UserService();
+  const email = userService.getEmailFromToken(token);
+
+  const createExperience = async (
+    companyName,
+    startingDate,
+    endDate,
+    currently,
+    positionName,
+    jobDescription,
+    jobAchievements
+  ) => {
+    await create.createExperience(
+      null,
+      email,
+      companyName,
+      startingDate,
+      endDate,
+      currently,
+      positionName,
+      jobDescription,
+      jobAchievements,
+      null
+    );
+    setIsEdit(false);
+  };
 
   return (
     <div className="grid gap-2">
@@ -157,6 +195,24 @@ export default function ExperiencesList({
                   }
                 >
                   <Trash2 size={18} strokeWidth={2} /> Usuń
+                </button>
+                <button
+                  type="button"
+                  aria-label="Usuń język"
+                  className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border text-white cursor-pointer border-kraft hover:bg-bookcloth/90 bg-bookcloth"
+                  onClick={() => {
+                    createExperience(
+                      ex.companyName,
+                      ex.startingDate,
+                      ex.endDate,
+                      ex.currently,
+                      ex.positionName,
+                      ex.jobDescription,
+                      ex.jobAchievements
+                    );
+                  }}
+                >
+                  <Save size={18} strokeWidth={2} /> Zapisz
                 </button>
               </div>
             )}

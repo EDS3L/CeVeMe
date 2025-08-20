@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.Date;
 
 public record ExperienceDto(
+        Long id,
         String companyName,
         LocalDate startingDate,
         LocalDate endDate,

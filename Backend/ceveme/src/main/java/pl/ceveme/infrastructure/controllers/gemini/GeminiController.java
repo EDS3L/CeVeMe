@@ -1,6 +1,7 @@
 package pl.ceveme.infrastructure.controllers.gemini;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

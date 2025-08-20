@@ -29,9 +29,10 @@ public class UploadCvFileUseCase {
     }
 
     @Transactional
-    public UploadFileResponse execute(MultipartFile multipartFile, String email, Long jobOfferId) throws IOException {
+    public UploadFileResponse execute(MultipartFile multipartFile, String email, Long jobOfferId, Long userId) throws IOException {
         User user = userRepository.findByEmail(new Email(email))
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
 
         UploadFileResponse response = cloudinaryService.uploadCvFile(multipartFile);
 

@@ -1,6 +1,8 @@
 import React from 'react';
-import { Plus, Trash2, BookOpen } from 'lucide-react';
+import { Plus, Trash2, BookOpen, Save } from 'lucide-react';
 import FieldWithAI from '../ui/FieldWithAI';
+import EmploymentInfoCreate from '../../hooks/useCreateEmploymentInfo';
+import UserService from '../../../../hooks/UserService';
 
 export default function CoursesList({
   isEdit,
@@ -8,9 +10,33 @@ export default function CoursesList({
   onChange,
   setConfirm,
   onImprove,
+  setIsEdit,
 }) {
   const update = (id, patch) =>
     onChange(courses.map((c) => (c.id === id ? { ...c, ...patch } : c)));
+
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+  }
+  const token = getCookie('jwt');
+
+  const create = new EmploymentInfoCreate();
+  const userService = new UserService();
+  const email = userService.getEmailFromToken(token);
+
+  const createCourse = async (courseName, dateOfCourse, courseDescription) => {
+    await create.createCourse(
+      null,
+      email,
+      courseName,
+      dateOfCourse,
+      courseDescription,
+      null
+    );
+    setIsEdit(false);
+  };
 
   return (
     <div className="grid gap-2">
@@ -88,6 +114,20 @@ export default function CoursesList({
                   }
                 >
                   <Trash2 size={18} strokeWidth={2} /> Usuń
+                </button>
+                <button
+                  type="button"
+                  aria-label="Usuń język"
+                  className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border text-white cursor-pointer border-kraft hover:bg-bookcloth/90 bg-bookcloth"
+                  onClick={() => {
+                    createCourse(
+                      c.courseName,
+                      c.dateOfCourse,
+                      c.courseDescription
+                    );
+                  }}
+                >
+                  <Save size={18} strokeWidth={2} /> Zapisz
                 </button>
               </div>
             )}

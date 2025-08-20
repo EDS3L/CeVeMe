@@ -8,6 +8,8 @@ import pl.ceveme.domain.model.entities.EmploymentInfo;
 import pl.ceveme.domain.model.entities.PortfolioItem;
 import pl.ceveme.domain.repositories.EmploymentInfoRepository;
 
+import java.nio.file.AccessDeniedException;
+
 @Service
 public class EditPortfolioItemUseCase {
 
@@ -18,9 +20,13 @@ public class EditPortfolioItemUseCase {
     }
 
     @Transactional
-    public PortfolioItemsResponse execute(PortfolioItemsRequest request, Long employmentInfoId) {
-        EmploymentInfo info = employmentInfoRepository.findById(employmentInfoId)
+    public PortfolioItemsResponse execute(PortfolioItemsRequest request, Long userId) throws AccessDeniedException {
+        EmploymentInfo info = employmentInfoRepository.findById(request.employmentInfoId())
                 .orElseThrow(() -> new IllegalArgumentException("EmploymentInfo not found"));
+
+        if(info.getUser().getId() != userId) {
+            throw new AccessDeniedException("Access Denied!");
+        }
 
         PortfolioItem portfolioItem = info.getPortfolioItemById(request.id())
                 .orElseThrow(() -> new IllegalArgumentException("PortfolioItem not found"));

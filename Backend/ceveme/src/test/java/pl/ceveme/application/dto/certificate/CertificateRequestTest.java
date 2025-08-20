@@ -19,7 +19,7 @@ class CertificateRequestTest {
 
         // when & then
 
-        final IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new CertificateRequest(1L,email.email(), "", date));
+        final IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new CertificateRequest(1L,email.email(), "", date,1L));
         assertThat(ex.getMessage()).isEqualTo("Name of certificate is null!");
 
     }
@@ -31,7 +31,7 @@ class CertificateRequestTest {
 
         // when & then
 
-        final IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new CertificateRequest(1L,email.email(), "java8", null));
+        final IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new CertificateRequest(1L,email.email(), "java8", null,1L));
         assertThat(ex.getMessage()).isEqualTo("Date of certificate is null");
 
     }
@@ -44,7 +44,7 @@ class CertificateRequestTest {
 
         // when & then
 
-        final IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new CertificateRequest(1L,email.email(), "java8", date));
+        final IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new CertificateRequest(1L,email.email(), "java8", date,1L));
         assertThat(ex.getMessage()).isEqualTo("Date cannot be after " + LocalDate.now());
 
     }

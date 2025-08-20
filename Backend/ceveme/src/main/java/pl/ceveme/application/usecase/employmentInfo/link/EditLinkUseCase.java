@@ -8,6 +8,8 @@ import pl.ceveme.domain.model.entities.EmploymentInfo;
 import pl.ceveme.domain.model.entities.Link;
 import pl.ceveme.domain.repositories.EmploymentInfoRepository;
 
+import java.nio.file.AccessDeniedException;
+
 @Service
 public class EditLinkUseCase {
 
@@ -18,9 +20,14 @@ public class EditLinkUseCase {
     }
 
     @Transactional
-    public LinkResponse execute(LinkRequest request, Long employmentInfoId) {
-        EmploymentInfo info = employmentInfoRepository.findById(employmentInfoId)
+    public LinkResponse execute(LinkRequest request, Long userId) throws AccessDeniedException {
+        EmploymentInfo info = employmentInfoRepository.findById(request.employmentInfoId())
                 .orElseThrow(() -> new IllegalArgumentException("EmploymentInfo not found"));
+
+        if(info.getUser().getId() != userId) {
+            throw new AccessDeniedException("Access Denied!");
+        }
+
 
         Link link = info.getLinkById(request.id())
                 .orElseThrow(() -> new IllegalArgumentException("Link not found"));
