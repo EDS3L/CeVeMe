@@ -33,6 +33,7 @@ import Navbar from '../../../components/Navbar';
 import ImploymentInfoGet from '../hooks/useGetEmploymentInfo';
 import EmploymentInfoCreate from '../hooks/useCreateEmploymentInfo';
 import UserService from '../../../hooks/UserService';
+import { ToastContainer } from 'react-toastify';
 
 export default function EmploymentInfoPage() {
   const [activeTab, setActiveTab] = useState('jezyki');
@@ -40,7 +41,15 @@ export default function EmploymentInfoPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [toasts, setToasts] = useState([]);
   const [confirm, setConfirm] = useState(null);
+
   const [languageEditId, setLanguageEditId] = useState(null);
+  const [certificateEditId, setCertificateEditId] = useState(null);
+  const [experienceEditId, setExperienceEditId] = useState(null);
+  const [courseEditId, setCourseEditId] = useState(null);
+  const [educationEditId, setEducationEditId] = useState(null);
+  const [skillEditId, setSkillEditId] = useState(null);
+  const [portfolioEditId, setPortfolioEditId] = useState(null);
+  const [linkEditId, setLinkEditId] = useState(null);
 
   const api = new ImploymentInfoGet();
 
@@ -136,7 +145,7 @@ export default function EmploymentInfoPage() {
     const fetchData = async () => {
       try {
         const data = await api.getEmploymentInfo(email);
-        console.log(data);
+        // console.log(data);
         setForm(data);
       } catch (error) {
         pushToast('error', 'Nie udało się pobrać danych.');
@@ -213,25 +222,28 @@ export default function EmploymentInfoPage() {
                   onImprove={improveText}
                   setEditId={setLanguageEditId}
                   onCancel={() => setLanguageEditId(null)}
+                  pushToast={pushToast}
                 />
               )}
 
               {activeTab === 'certyfikaty' && (
                 <CertificatesList
-                  isEdit={isEdit}
+                  editId={certificateEditId}
                   certificates={form.certificates}
                   onChange={(certificates) =>
                     setForm((f) => ({ ...f, certificates }))
                   }
                   setConfirm={setConfirm}
                   onImprove={improveText}
-                  setIsEdit={setIsEdit}
+                  setEditId={setCertificateEditId}
+                  onCancel={() => setCertificateEditId(null)}
+                  pushToast={pushToast}
                 />
               )}
 
               {activeTab === 'doswiadczenie' && (
                 <ExperiencesList
-                  isEdit={isEdit}
+                  editId={experienceEditId}
                   experiences={form.experiences}
                   onChange={(experiences) =>
                     setForm((f) => ({ ...f, experiences }))
@@ -239,59 +251,69 @@ export default function EmploymentInfoPage() {
                   setConfirm={setConfirm}
                   errors={errors}
                   onImprove={improveText}
-                  setIsEdit={setIsEdit}
+                  setEditId={setExperienceEditId}
+                  onCancel={() => setExperienceEditId(null)}
+                  pushToast={pushToast}
                 />
               )}
 
               {activeTab === 'kursy' && (
                 <CoursesList
-                  isEdit={isEdit}
+                  editId={courseEditId}
                   courses={form.courses}
                   onChange={(courses) => setForm((f) => ({ ...f, courses }))}
                   setConfirm={setConfirm}
                   onImprove={improveText}
-                  setIsEdit={setIsEdit}
+                  setEditId={setCourseEditId}
+                  onCancel={() => setCourseEditId(null)}
+                  pushToast={pushToast}
                 />
               )}
 
               {activeTab === 'umiejetnosci' && (
                 <SkillsList
-                  isEdit={isEdit}
+                  editId={skillEditId}
                   skills={form.skills}
                   onChange={(skills) => setForm((f) => ({ ...f, skills }))}
                   setConfirm={setConfirm}
                   onImprove={improveText}
-                  setIsEdit={setIsEdit}
+                  setEditId={setSkillEditId}
+                  onCancel={() => setSkillEditId(null)}
+                  pushToast={pushToast}
                 />
               )}
 
               {activeTab === 'portfolio' && (
                 <PortfolioItemsList
-                  isEdit={isEdit}
+                  editId={portfolioEditId}
                   items={form.portfolioItems}
                   onChange={(items) =>
                     setForm((f) => ({ ...f, portfolioItems: items }))
                   }
                   setConfirm={setConfirm}
                   onImprove={improveText}
-                  setIsEdit={setIsEdit}
+                  setEditId={setPortfolioEditId}
+                  onCancel={() => setPortfolioEditId(null)}
+                  pushToast={pushToast}
                 />
               )}
 
               {activeTab === 'linki' && (
                 <LinksList
-                  isEdit={isEdit}
+                  editId={linkEditId}
                   links={form.links}
                   onChange={(links) => setForm((f) => ({ ...f, links }))}
                   setConfirm={setConfirm}
                   onImprove={improveText}
-                  setIsEdit={setIsEdit}
+                  setEditId={setLinkEditId}
+                  onCancel={() => setLinkEditId(null)}
+                  pushToast={pushToast}
                 />
               )}
 
               {activeTab === 'edukacja' && (
                 <EducationsList
-                  isEdit={isEdit}
+                  editId={educationEditId}
                   educations={form.educations}
                   onChange={(educations) =>
                     setForm((f) => ({ ...f, educations }))
@@ -299,7 +321,9 @@ export default function EmploymentInfoPage() {
                   setConfirm={setConfirm}
                   errors={errors}
                   onImprove={improveText}
-                  setIsEdit={setIsEdit}
+                  setEditId={setEducationEditId}
+                  onCancel={() => setEducationEditId(null)}
+                  pushToast={pushToast}
                 />
               )}
             </div>
@@ -320,7 +344,6 @@ export default function EmploymentInfoPage() {
           onConfirm={() => {
             confirm?.action?.();
             setConfirm(null);
-            pushToast('success', 'Wykonano.');
           }}
         />
       </div>

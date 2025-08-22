@@ -6,24 +6,26 @@ import pl.ceveme.application.dto.entity.DeleteEntityRequest;
 import pl.ceveme.application.dto.entity.course.CourseResponse;
 import pl.ceveme.domain.model.entities.Course;
 import pl.ceveme.domain.model.entities.EmploymentInfo;
+import pl.ceveme.domain.model.entities.User;
 import pl.ceveme.domain.repositories.EmploymentInfoRepository;
+import pl.ceveme.domain.repositories.UserRepository;
 
 import java.nio.file.AccessDeniedException;
 
 @Service
 public class DeleteCourseUseCase {
 
-    private final EmploymentInfoRepository employmentInfoRepository;
+    private final UserRepository userRepository;
 
-    public DeleteCourseUseCase(EmploymentInfoRepository employmentInfoRepository) {
-        this.employmentInfoRepository = employmentInfoRepository;
+    public DeleteCourseUseCase(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Transactional
     public CourseResponse execute(DeleteEntityRequest request, Long userId) throws AccessDeniedException {
-        EmploymentInfo info = employmentInfoRepository.findById(request.employmentInfoId())
-                .orElseThrow(() -> new IllegalArgumentException("EmploymentInfo not found"));
-
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User with id " + userId + " not found"));
+        EmploymentInfo info = user.getEmploymentInfo();
         if(info.getUser().getId() != userId) {
             throw new AccessDeniedException("Access Denied!");
         }
@@ -34,6 +36,7 @@ public class DeleteCourseUseCase {
         info.removeCourse(course);
 
         return new CourseResponse(
+                course.getId(),
                 course.getCourseName(),
                 course.getDateOfCourse(),
                 "Course deleted successfully"

@@ -7,15 +7,18 @@ import pl.ceveme.application.dto.entity.portfolioItems.PortfolioItemsResponse;
 import pl.ceveme.domain.model.entities.PortfolioItem;
 import pl.ceveme.domain.model.entities.User;
 import pl.ceveme.domain.model.vo.Email;
+import pl.ceveme.domain.repositories.PortfolioItemRepository;
 import pl.ceveme.domain.repositories.UserRepository;
 
 @Service
 public class CreatePortfolioItemUseCase {
 
     private final UserRepository userRepository;
+    private final PortfolioItemRepository portfolioItemRepository;
 
-    public CreatePortfolioItemUseCase(UserRepository userRepository) {
+    public CreatePortfolioItemUseCase(UserRepository userRepository, PortfolioItemRepository portfolioItemRepository) {
         this.userRepository = userRepository;
+        this.portfolioItemRepository = portfolioItemRepository;
     }
 
     @Transactional
@@ -23,17 +26,12 @@ public class CreatePortfolioItemUseCase {
         User user = userRepository.findByEmail(new Email(request.email()))
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        user.addPortfolioItems(new PortfolioItem(
-                request.title(),
-                request.description()
-        ));
+        PortfolioItem portfolioItem = new PortfolioItem(request.title(), request.description());
 
-        userRepository.save(user);
+        user.addPortfolioItems(portfolioItem);
 
-        return new PortfolioItemsResponse(
-                request.title(),
-                request.description(),
-                "Addition of portfolio item successfully completed"
-        );
+        portfolioItemRepository.save(portfolioItem);
+
+        return new PortfolioItemsResponse(portfolioItem.getId(), request.title(), request.description(), "Addition of portfolio item successfully completed");
     }
 }

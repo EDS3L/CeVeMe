@@ -9,6 +9,8 @@ import {
 import FieldWithAI from '../ui/FieldWithAI';
 import EmploymentInfoCreate from '../../hooks/useCreateEmploymentInfo';
 import UserService from '../../../../hooks/UserService';
+import EmploymentInfoDelete from '../../hooks/useDeleteEmploymentInfo';
+import { toast } from 'react-toastify';
 
 export default function LanguagesList({
   editId,
@@ -29,11 +31,23 @@ export default function LanguagesList({
   const token = getCookie('jwt');
 
   const create = new EmploymentInfoCreate();
+  const remove = new EmploymentInfoDelete();
   const userService = new UserService();
   const email = userService.getEmailFromToken(token);
 
   const createLanguage = async (name, level) => {
-    await create.createLanguage(null, email, name, level, null);
+    try {
+      const res = await create.createLanguage(null, email, name, level, null);
+      toast.success(res.message);
+      return res;
+    } catch {
+      return null;
+    }
+  };
+
+  const deleteLanguage = async (itemId) => {
+    const res = await remove.deleteLanguage(itemId);
+    toast.success(res.message);
   };
 
   return (
@@ -100,20 +114,38 @@ export default function LanguagesList({
 
               {isEditing && (
                 <div className="flex justify-end gap-2">
+                  {!l.name && !l.level ? (
+                    <button
+                      type="button"
+                      aria-label="Zapisz język"
+                      className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border text-white cursor-pointer border-kraft hover:bg-bookcloth/90 bg-bookcloth"
+                      onClick={() => {
+                        createLanguage(l.name, l.level);
+                        setEditId(null);
+                      }}
+                    >
+                      <Save size={18} strokeWidth={2} /> Zapisz
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      aria-label="Zapisz edycję języka"
+                      className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border text-white cursor-pointer border-kraft hover:bg-bookcloth/90 bg-bookcloth"
+                      onClick={async () => {
+                        const result = await createLanguage(l.name, l.level);
+                        if (result) {
+                          l.id = result.itemId;
+                          setEditId(null);
+                        }
+                      }}
+                    >
+                      <Save size={18} strokeWidth={2} /> Zapisz edycję
+                    </button>
+                  )}
+
                   <button
                     type="button"
-                    aria-label="Usuń język"
-                    className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border text-white cursor-pointer border-kraft hover:bg-bookcloth/90 bg-bookcloth"
-                    onClick={() => {
-                      createLanguage(l.name, l.level);
-                      setEditId(null);
-                    }}
-                  >
-                    <Save size={18} strokeWidth={2} /> Zapisz
-                  </button>
-                  <button
-                    type="button"
-                    aria-label="Usuń język"
+                    aria-label="Anuluj edycję"
                     className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border border-cloudlight hover:bg-ivorymedium/60"
                     onClick={() => {
                       if (!l.name && !l.level) {
@@ -124,18 +156,22 @@ export default function LanguagesList({
                   >
                     <X size={18} strokeWidth={2} /> Anuluj
                   </button>
+
                   {(l.name || l.level) && (
                     <button
                       type="button"
                       className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border border-cloudlight hover:bg-ivorymedium/60"
-                      onClick={() =>
+                      onClick={() => {
                         setConfirm({
                           title: 'Usunąć język?',
                           desc: 'Tej operacji nie można cofnąć.',
-                          action: () =>
-                            onChange(languages.filter((x) => x.id !== l.id)),
-                        })
-                      }
+                          action: () => {
+                            onChange(languages.filter((x) => x.id !== l.id));
+                            deleteLanguage(l.id);
+                            setEditId(null);
+                          },
+                        });
+                      }}
                     >
                       <Trash2 size={18} strokeWidth={2} /> Usuń
                     </button>

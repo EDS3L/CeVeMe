@@ -7,15 +7,18 @@ import pl.ceveme.application.dto.entity.language.LanguageResponse;
 import pl.ceveme.domain.model.entities.Language;
 import pl.ceveme.domain.model.entities.User;
 import pl.ceveme.domain.model.vo.Email;
+import pl.ceveme.domain.repositories.LanguageRepository;
 import pl.ceveme.domain.repositories.UserRepository;
 
 @Service
 public class CreateLanguageUseCase {
 
     private final UserRepository userRepository;
+    private final LanguageRepository languageRepository;
 
-    public CreateLanguageUseCase(UserRepository userRepository) {
+    public CreateLanguageUseCase(UserRepository userRepository, LanguageRepository languageRepository) {
         this.userRepository = userRepository;
+        this.languageRepository = languageRepository;
     }
 
     @Transactional
@@ -23,17 +26,12 @@ public class CreateLanguageUseCase {
         User user = userRepository.findByEmail(new Email(request.email()))
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        user.addLanguage(new Language(
-                request.name(),
-                request.level()
-        ));
+        Language language = new Language(request.name(), request.level());
 
-        userRepository.save(user);
+        user.addLanguage(language);
 
-        return new LanguageResponse(
-                request.name(),
-                request.level(),
-                "Addition of language successfully completed"
-        );
+        languageRepository.save(language);
+
+        return new LanguageResponse(language.getId(), request.name(), request.level(), "Addition of language successfully completed");
     }
 }

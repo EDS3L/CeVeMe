@@ -6,25 +6,27 @@ import pl.ceveme.application.dto.entity.DeleteEntityRequest;
 import pl.ceveme.application.dto.entity.language.LanguageResponse;
 import pl.ceveme.domain.model.entities.EmploymentInfo;
 import pl.ceveme.domain.model.entities.Language;
-import pl.ceveme.domain.repositories.EmploymentInfoRepository;
+import pl.ceveme.domain.model.entities.User;
+import pl.ceveme.domain.repositories.UserRepository;
 
 import java.nio.file.AccessDeniedException;
 
 @Service
 public class DeleteLanguageUseCase {
 
-    private final EmploymentInfoRepository employmentInfoRepository;
+    private final UserRepository userRepository;
 
-    public DeleteLanguageUseCase(EmploymentInfoRepository employmentInfoRepository) {
-        this.employmentInfoRepository = employmentInfoRepository;
+    public DeleteLanguageUseCase(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Transactional
     public LanguageResponse execute(DeleteEntityRequest request, Long userId) throws AccessDeniedException {
-        EmploymentInfo info = employmentInfoRepository.findById(request.employmentInfoId())
-                .orElseThrow(() -> new IllegalArgumentException("EmploymentInfo not found"));
-
-        if(info.getUser().getId() != userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User with id " + userId + " not found"));
+        EmploymentInfo info = user.getEmploymentInfo();
+        if (info.getUser()
+                .getId() != userId) {
             throw new AccessDeniedException("Access Denied!");
         }
 
@@ -33,10 +35,6 @@ public class DeleteLanguageUseCase {
 
         info.removeLanguage(language);
 
-        return new LanguageResponse(
-                language.getName(),
-                language.getLevel(),
-                "Language deleted successfully"
-        );
+        return new LanguageResponse(language.getId(),language.getName(), language.getLevel(), "Language deleted successfully");
     }
 }

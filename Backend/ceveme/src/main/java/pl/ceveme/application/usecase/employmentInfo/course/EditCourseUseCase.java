@@ -33,6 +33,6 @@ public class EditCourseUseCase {
 
         course.update(request.courseName(), request.dateOfCourse(), request.courseDescription());
 
-        return new CourseResponse(request.courseName(), request.dateOfCourse(), "Course updated successfully");
+        return new CourseResponse(course.getId(),request.courseName(), request.dateOfCourse(), "Course updated successfully");
     }
 }

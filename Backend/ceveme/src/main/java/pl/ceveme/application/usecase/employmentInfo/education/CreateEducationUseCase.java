@@ -8,15 +8,18 @@ import pl.ceveme.application.dto.entity.education.EducationResponse;
 import pl.ceveme.domain.model.entities.Education;
 import pl.ceveme.domain.model.entities.User;
 import pl.ceveme.domain.model.vo.Email;
+import pl.ceveme.domain.repositories.EducationRepository;
 import pl.ceveme.domain.repositories.UserRepository;
 
 @Service
 public class CreateEducationUseCase {
 
     private final UserRepository userRepository;
+    private final EducationRepository educationRepository;
 
-    public CreateEducationUseCase(UserRepository userRepository) {
+    public CreateEducationUseCase(UserRepository userRepository, EducationRepository educationRepository) {
         this.userRepository = userRepository;
+        this.educationRepository = educationRepository;
     }
 
     @Transactional
@@ -24,18 +27,21 @@ public class CreateEducationUseCase {
         User user = userRepository.findByEmail(new Email(request.email()))
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        user.addEducation(new Education(
+        Education education = new Education(
                 request.schoolName(),
                 request.degree(),
                 request.fieldOfStudy(),
                 request.startingDate(),
                 request.endDate(),
                 request.currently()
-        ));
+        );
 
-        userRepository.save(user);
+        user.addEducation(education);
+
+        educationRepository.save(education);
 
         return new EducationResponse(
+                education.getId(),
                 request.schoolName(),
                 request.degree(),
                 request.fieldOfStudy(),

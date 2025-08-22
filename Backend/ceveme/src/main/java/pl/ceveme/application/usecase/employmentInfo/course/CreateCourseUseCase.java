@@ -7,15 +7,18 @@ import pl.ceveme.application.dto.entity.course.CourseResponse;
 import pl.ceveme.domain.model.entities.Course;
 import pl.ceveme.domain.model.entities.User;
 import pl.ceveme.domain.model.vo.Email;
+import pl.ceveme.domain.repositories.CourseRepository;
 import pl.ceveme.domain.repositories.UserRepository;
 
 @Service
 public class CreateCourseUseCase {
 
     private final UserRepository userRepository;
+    private final CourseRepository courseRepository;
 
-    public CreateCourseUseCase(UserRepository userRepository) {
+    public CreateCourseUseCase(UserRepository userRepository, CourseRepository courseRepository) {
         this.userRepository = userRepository;
+        this.courseRepository = courseRepository;
     }
 
     @Transactional
@@ -23,10 +26,12 @@ public class CreateCourseUseCase {
         User user = userRepository.findByEmail(new Email(request.email()))
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        user.addCourse(new Course(request.courseName(), request.dateOfCourse(), request.courseDescription()));
+        Course course = new Course(request.courseName(), request.dateOfCourse(), request.courseDescription());
 
-        userRepository.save(user);
+        user.addCourse(course);
 
-        return new CourseResponse(request.courseName(), request.dateOfCourse(), "Addition of course successfully completed");
+        courseRepository.save(course);
+
+        return new CourseResponse(course.getId(), request.courseName(), request.dateOfCourse(), "Addition of course successfully completed");
     }
 }

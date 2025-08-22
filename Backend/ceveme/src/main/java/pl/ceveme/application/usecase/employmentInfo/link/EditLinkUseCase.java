@@ -38,6 +38,7 @@ public class EditLinkUseCase {
         );
 
         return new LinkResponse(
+                link.getId(),
                 request.title(),
                 request.link(),
                 "Link updated successfully"

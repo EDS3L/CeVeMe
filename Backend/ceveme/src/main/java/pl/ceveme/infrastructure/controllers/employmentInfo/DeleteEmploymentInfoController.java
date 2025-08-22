@@ -60,7 +60,7 @@ public class DeleteEmploymentInfoController {
         User user = (User) authentication.getPrincipal();
         Long userId = user.getId();
         CertificateResponse response = deleteCertificateUseCase.execute(request, userId);
-        return ResponseEntity.status(HttpStatus.GONE)
+        return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .body(response);
     }
 
@@ -69,7 +69,7 @@ public class DeleteEmploymentInfoController {
         User user = (User) authentication.getPrincipal();
         Long userId = user.getId();
         CourseResponse response = deleteCourseUseCase.execute(request, userId);
-        return ResponseEntity.status(HttpStatus.GONE)
+        return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .body(response);
     }
 
@@ -78,7 +78,7 @@ public class DeleteEmploymentInfoController {
         User user = (User) authentication.getPrincipal();
         Long userId = user.getId();
         ExperienceResponse response = deleteExperienceUseCase.execute(request, userId);
-        return ResponseEntity.status(HttpStatus.GONE)
+        return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .body(response);
     }
 
@@ -87,7 +87,7 @@ public class DeleteEmploymentInfoController {
         User user = (User) authentication.getPrincipal();
         Long userId = user.getId();
         LanguageResponse response = deleteLanguageUseCase.execute(request, userId);
-        return ResponseEntity.status(HttpStatus.GONE)
+        return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .body(response);
     }
 
@@ -96,7 +96,7 @@ public class DeleteEmploymentInfoController {
         User user = (User) authentication.getPrincipal();
         Long userId = user.getId();
         SkillResponse response = deleteSkillUseCase.execute(request, userId);
-        return ResponseEntity.status(HttpStatus.GONE)
+        return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .body(response);
     }
 
@@ -105,7 +105,7 @@ public class DeleteEmploymentInfoController {
         User user = (User) authentication.getPrincipal();
         Long userId = user.getId();
         PortfolioItemsResponse response = deletePortfolioItemUseCase.execute(request, userId);
-        return ResponseEntity.status(HttpStatus.GONE)
+        return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .body(response);
     }
 
@@ -114,7 +114,7 @@ public class DeleteEmploymentInfoController {
         User user = (User) authentication.getPrincipal();
         Long userId = user.getId();
         LinkResponse response = deleteLinkUseCase.execute(request, userId);
-        return ResponseEntity.status(HttpStatus.GONE)
+        return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .body(response);
     }
 
@@ -123,7 +123,7 @@ public class DeleteEmploymentInfoController {
         User user = (User) authentication.getPrincipal();
         Long userId = user.getId();
         EducationResponse response = deleteEducationUseCase.execute(request, userId);
-        return ResponseEntity.status(HttpStatus.GONE)
+        return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .body(response);
     }
 }

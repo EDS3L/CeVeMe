@@ -6,23 +6,26 @@ import pl.ceveme.application.dto.entity.DeleteEntityRequest;
 import pl.ceveme.application.dto.entity.portfolioItems.PortfolioItemsResponse;
 import pl.ceveme.domain.model.entities.EmploymentInfo;
 import pl.ceveme.domain.model.entities.PortfolioItem;
+import pl.ceveme.domain.model.entities.User;
 import pl.ceveme.domain.repositories.EmploymentInfoRepository;
+import pl.ceveme.domain.repositories.UserRepository;
 
 import java.nio.file.AccessDeniedException;
 
 @Service
 public class DeletePortfolioItemUseCase {
 
-    private final EmploymentInfoRepository employmentInfoRepository;
+    private final UserRepository userRepository;
 
-    public DeletePortfolioItemUseCase(EmploymentInfoRepository employmentInfoRepository) {
-        this.employmentInfoRepository = employmentInfoRepository;
+    public DeletePortfolioItemUseCase(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Transactional
     public PortfolioItemsResponse execute(DeleteEntityRequest request, Long userId) throws AccessDeniedException {
-        EmploymentInfo info = employmentInfoRepository.findById(request.employmentInfoId())
-                .orElseThrow(() -> new IllegalArgumentException("EmploymentInfo not found"));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User with id " + userId + " not found"));
+        EmploymentInfo info = user.getEmploymentInfo();
 
         if(info.getUser().getId() != userId) {
             throw new AccessDeniedException("Access Denied!");
@@ -34,6 +37,7 @@ public class DeletePortfolioItemUseCase {
         info.removePortfolioItem(portfolioItem);
 
         return new PortfolioItemsResponse(
+                portfolioItem.getId(),
                 portfolioItem.getTitle(),
                 portfolioItem.getDescription(),
                 "PortfolioItem deleted successfully"

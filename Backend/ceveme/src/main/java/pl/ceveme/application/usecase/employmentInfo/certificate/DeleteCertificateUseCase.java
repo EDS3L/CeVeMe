@@ -6,23 +6,26 @@ import pl.ceveme.application.dto.entity.DeleteEntityRequest;
 import pl.ceveme.application.dto.entity.certificate.CertificateResponse;
 import pl.ceveme.domain.model.entities.Certificate;
 import pl.ceveme.domain.model.entities.EmploymentInfo;
+import pl.ceveme.domain.model.entities.User;
 import pl.ceveme.domain.repositories.EmploymentInfoRepository;
+import pl.ceveme.domain.repositories.UserRepository;
 
 import java.nio.file.AccessDeniedException;
 
 @Service
 public class DeleteCertificateUseCase {
 
-    private final EmploymentInfoRepository employmentInfoRepository;
+    private final UserRepository userRepository;
 
-    public DeleteCertificateUseCase(EmploymentInfoRepository employmentInfoRepository) {
-        this.employmentInfoRepository = employmentInfoRepository;
+    public DeleteCertificateUseCase(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Transactional
     public CertificateResponse execute(DeleteEntityRequest request, Long userId) throws AccessDeniedException {
-        EmploymentInfo info = employmentInfoRepository.findById(request.employmentInfoId())
-                .orElseThrow(() -> new IllegalArgumentException("EmploymentInfo not found"));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User with id " + userId + " not found"));
+        EmploymentInfo info = user.getEmploymentInfo();
 
         if(info.getUser().getId() != userId) {
             throw new AccessDeniedException("Access Denied!");
@@ -34,6 +37,7 @@ public class DeleteCertificateUseCase {
         info.removeCertificate(certificate);
 
         return new CertificateResponse(
+                certificate.getId(),
                 certificate.getName(),
                 certificate.getDateOfCertificate(),
                 "Certificate deleted successfully"

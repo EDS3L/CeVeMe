@@ -35,6 +35,6 @@ public class EditEducationUseCase {
 
         education.update(request.schoolName(), request.degree(), request.fieldOfStudy(),request.startingDate(),request.endDate(),request.currently());
 
-        return new EducationResponse(request.schoolName(), request.degree(),request.fieldOfStudy(), "Course updated successfully");
+        return new EducationResponse(education.getId(),request.schoolName(), request.degree(),request.fieldOfStudy(), "Course updated successfully");
     }
 }

@@ -7,15 +7,18 @@ import pl.ceveme.application.dto.entity.experience.ExperienceResponse;
 import pl.ceveme.domain.model.entities.Experience;
 import pl.ceveme.domain.model.entities.User;
 import pl.ceveme.domain.model.vo.Email;
+import pl.ceveme.domain.repositories.ExperienceRepository;
 import pl.ceveme.domain.repositories.UserRepository;
 
 @Service
 public class CreateExperienceUseCase {
 
     private final UserRepository userRepository;
+    private final ExperienceRepository experienceRepository;
 
-    public CreateExperienceUseCase(UserRepository userRepository) {
+    public CreateExperienceUseCase(UserRepository userRepository, ExperienceRepository experienceRepository) {
         this.userRepository = userRepository;
+        this.experienceRepository = experienceRepository;
     }
 
     @Transactional
@@ -23,14 +26,12 @@ public class CreateExperienceUseCase {
         User user = userRepository.findByEmail(new Email(request.email()))
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        user.addExperience(new Experience(request.companyName(), request.startingDate(), request.endDate(), request.currently(), request.positionName(), request.jobDescription(), request.jobAchievements()));
+        Experience experience = new Experience(request.companyName(), request.startingDate(), request.endDate(), request.currently(), request.positionName(), request.jobDescription(), request.jobAchievements());
 
-        userRepository.save(user);
+        user.addExperience(experience);
 
-        return new ExperienceResponse(
-                request.companyName(),
-                request.positionName(),
-                "Addition of experience successfully completed"
-        );
+        experienceRepository.save(experience);
+
+        return new ExperienceResponse(experience.getId(), request.companyName(), request.positionName(), "Addition of experience successfully completed");
     }
 }

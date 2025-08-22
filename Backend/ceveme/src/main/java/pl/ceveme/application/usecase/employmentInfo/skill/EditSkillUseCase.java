@@ -37,6 +37,7 @@ public class EditSkillUseCase {
         );
 
         return new SkillResponse(
+                skill.getId(),
                 request.name(),
                 request.type(),
                 "Skill updated successfully"

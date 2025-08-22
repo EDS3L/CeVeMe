@@ -37,6 +37,7 @@ public class EditLanguageUseCase {
         );
 
         return new LanguageResponse(
+                language.getId(),
                 request.name(),
                 request.level(),
                 "Language updated successfully"

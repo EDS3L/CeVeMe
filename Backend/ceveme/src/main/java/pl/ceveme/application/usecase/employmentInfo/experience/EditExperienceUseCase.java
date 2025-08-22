@@ -42,6 +42,7 @@ public class EditExperienceUseCase {
         );
 
         return new ExperienceResponse(
+                experience.getId(),
                 request.companyName(),
                 request.positionName(),
                 "Experience updated successfully"

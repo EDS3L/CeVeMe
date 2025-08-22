@@ -33,6 +33,6 @@ public class EditCertificateUseCase {
 
         certificate.update(request.name(), request.dateOfCertificate());
 
-        return new CertificateResponse(request.name(), request.dateOfCertificate(), "Certificate updated successfully");
+        return new CertificateResponse(certificate.getId(),request.name(), request.dateOfCertificate(), "Certificate updated successfully");
     }
 }
