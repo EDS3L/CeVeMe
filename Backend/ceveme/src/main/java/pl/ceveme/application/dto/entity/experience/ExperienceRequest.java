@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 
 public record ExperienceRequest(
+        Long id,
         String email,
         String companyName,
         LocalDate startingDate,
@@ -11,7 +12,8 @@ public record ExperienceRequest(
         Boolean currently,
         String positionName,
         String jobDescription,
-        String jobAchievements
+        String jobAchievements,
+        Long employmentInfoId
 ) {
 
 

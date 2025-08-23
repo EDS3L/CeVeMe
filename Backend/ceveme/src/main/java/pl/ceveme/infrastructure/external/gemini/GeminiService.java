@@ -60,7 +60,7 @@ public class GeminiService implements GeminiMapper {
             return objectMapper.readValue(cleanedJson, GeminiResponse.class);
 
         } catch (JsonProcessingException e) {
-            return parseJsonManually(cleanedJson, objectMapper);
+            return parseJson(cleanedJson, objectMapper);
         }
     }
 
@@ -78,12 +78,13 @@ public class GeminiService implements GeminiMapper {
         String aiResponse = fetchAi.getResponse(prompt).text();
 
         String cleanedJson = cleanJsonResponse(aiResponse);
+        log.info("cleanded JSON {}", cleanedJson);
 
 
         try {
             return objectMapper.readValue(cleanedJson, GeminiResponse.class);
         } catch (JsonProcessingException e) {
-            return parseJsonManually(cleanedJson, objectMapper);
+            return parseJson(cleanedJson, objectMapper);
         }
     }
 

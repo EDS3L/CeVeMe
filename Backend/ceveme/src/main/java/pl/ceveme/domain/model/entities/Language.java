@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 @Table(name = "languages")
 public class Language {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     private String name;
@@ -20,6 +20,11 @@ public class Language {
     }
 
     public Language(String name, String level) {
+        this.name = name;
+        this.level = level;
+    }
+
+    public void update(String name, String level) {
         this.name = name;
         this.level = level;
     }

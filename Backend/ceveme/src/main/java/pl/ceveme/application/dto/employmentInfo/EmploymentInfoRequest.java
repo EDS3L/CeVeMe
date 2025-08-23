@@ -4,6 +4,7 @@ import pl.ceveme.domain.model.entities.*;
 
 import java.util.List;
 public record EmploymentInfoRequest(
+        Long id,
         List<LanguageDto> languages,
         List<CertificateDto> certificates,
         List<ExperienceDto> experiences,

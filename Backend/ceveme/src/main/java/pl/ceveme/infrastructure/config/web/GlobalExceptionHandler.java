@@ -62,9 +62,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ApiError> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex, HttpServletRequest request) {
         logger.warn("Malformed JSON request: {}", ex.getMessage());
+        Throwable rootCause = ex.getMostSpecificCause();
+        String problem = rootCause.getMessage();
         ApiError error = new ApiError(
                 "MALFORMED_JSON",
-                "Request body is invalid or missing required fields.",
+                problem,
                 Instant.now(),
                 request.getRequestURI()
         );
@@ -72,8 +74,10 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
-    public ResponseEntity<ApiError> handleHttpMediaTypeNotSupportedException(Exception ex , HttpServletRequest request) {
+    public ResponseEntity<ApiError> handleHttpMediaTypeNotSupportedException(HttpMessageNotReadableException ex , HttpServletRequest request) {
         logger.error(" Media Type Not Supported ");
+        Throwable rootCause = ex.getMostSpecificCause();
+        String problem = rootCause.getMessage();
         ApiError error = new ApiError(
                 "HttpMediaTypeNotSupportedException",
                 "Media type not supported",
@@ -84,7 +88,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiError> handleGenericException(Exception ex, HttpServletRequest request) {
+    public ResponseEntity<ApiError> handleGenericException(HttpMessageNotReadableException ex, HttpServletRequest request) {
         logger.error("An unexpected error occurred: {}", ex.getMessage(), ex);
         ApiError error = new ApiError(
                 "UNEXPECTED_ERROR",
@@ -94,4 +98,16 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<ApiError> handleAccessDeniedException(Exception ex, HttpServletRequest request) {
+//        logger.error("An unexpected error occurred: {}", ex.getMessage(), ex);
+//        ApiError error = new ApiError(
+//                "FORBIDDEN",
+//                "An forbidden error",
+//                Instant.now(),
+//                request.getRequestURI()
+//        );
+//        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+//    }
 }

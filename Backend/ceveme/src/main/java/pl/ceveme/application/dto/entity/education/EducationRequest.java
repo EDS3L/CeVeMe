@@ -3,13 +3,15 @@ package pl.ceveme.application.dto.entity.education;
 import java.time.LocalDate;
 
 public record EducationRequest(
+        Long id,
         String email,
         String schoolName,
         String degree,
         String fieldOfStudy,
         LocalDate startingDate,
         LocalDate endDate,
-        Boolean currently
+        Boolean currently,
+        Long employmentInfoId
 ) {
 
     public EducationRequest {

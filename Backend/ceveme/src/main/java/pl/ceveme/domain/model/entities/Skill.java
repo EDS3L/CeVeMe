@@ -7,7 +7,7 @@ import jakarta.persistence.*;
 public class Skill {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     private String name;
@@ -21,6 +21,11 @@ public class Skill {
     }
 
     public Skill(String name, Type type) {
+        this.name = name;
+        this.type = type;
+    }
+
+    public void update(String name, Type type) {
         this.name = name;
         this.type = type;
     }

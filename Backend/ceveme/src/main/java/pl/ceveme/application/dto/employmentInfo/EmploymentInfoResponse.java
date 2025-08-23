@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.List;
 
 public record EmploymentInfoResponse(
+        Long id,
         List<LanguageDto> languages,
         List<CertificateDto> certificates,
         List<ExperienceDto> experiences,

@@ -1,4 +1,9 @@
 package pl.ceveme.application.dto.gemini;
 
-public record GeminiResponse(String summary,String personalData, String education, String skills, String experience, String portfolio, String certificates, String gdprClause) {
+import pl.ceveme.application.dto.gemini.cvStructure.*;
+
+import java.util.List;
+
+public record GeminiResponse(String summary, String headline, PersonalData personalData, List<Educations> educations, List<Skills> skills, List<Experience> experience, List<Portfolio> portfolio, List<Certificate> certificates, List<Language> languages, String gdprClause) {
+
 }

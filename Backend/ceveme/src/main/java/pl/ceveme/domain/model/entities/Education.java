@@ -35,6 +35,15 @@ public class Education {
         this.currently = currently;
     }
 
+    public void update(String schoolName, String degree, String fieldOfStudy, LocalDate startingDate, LocalDate endDate, Boolean currently) {
+        this.schoolName = schoolName;
+        this.degree = degree;
+        this.fieldOfStudy = fieldOfStudy;
+        this.startingDate = startingDate;
+        this.endDate = endDate;
+        this.currently = currently;
+    }
+
     public long getId() {
         return id;
     }

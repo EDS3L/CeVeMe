@@ -1,10 +1,9 @@
 package pl.ceveme.domain.model.entities;
 
 import jakarta.persistence.*;
-import pl.ceveme.domain.model.vo.Email;
-import pl.ceveme.domain.model.vo.Name;
-import pl.ceveme.domain.model.vo.PhoneNumber;
-import pl.ceveme.domain.model.vo.Surname;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import pl.ceveme.domain.model.vo.*;
+import pl.ceveme.infrastructure.adapter.security.BCryptPasswordEncoderAdapter;
 
 import java.util.List;
 
@@ -37,13 +36,16 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private EmploymentInfo employmentInfo;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private ActivationToken activationToken;
+
     private boolean isActive;
 
 
     public User() {
     }
 
-    public User(Name name, Surname surname, PhoneNumber phoneNumber, Email email, String image, String password, List<Cv> cvList, List<ApplicationHistory> applicationHistoryList, EmploymentInfo employmentInfo, boolean isActive) {
+    public User(Name name, Surname surname, PhoneNumber phoneNumber, Email email, String image, String password, List<Cv> cvList, List<ApplicationHistory> applicationHistoryList, EmploymentInfo employmentInfo, boolean isActive, ActivationToken activationToken) {
         this.name = name;
         this.surname = surname;
         this.phoneNumber = phoneNumber;
@@ -54,14 +56,23 @@ public class User {
         this.applicationHistoryList = applicationHistoryList;
         this.employmentInfo = employmentInfo;
         this.isActive = isActive;
+        this.activationToken = activationToken;
     }
 
-    public static User createNewUser(Name name, Surname surname, PhoneNumber phoneNumber, String password, Email email, String image, List<Cv> cvList, List<ApplicationHistory> applicationHistoryList, EmploymentInfo employmentInfo) {
-        return new User(name, surname, phoneNumber, email, image, password, cvList, applicationHistoryList, employmentInfo, false);
+    public static User createNewUser(Name name, Surname surname, PhoneNumber phoneNumber, String password, Email email, String image, List<Cv> cvList, List<ApplicationHistory> applicationHistoryList, EmploymentInfo employmentInfo, ActivationToken activationToken) {
+        return new User(name, surname, phoneNumber, email, image, password, cvList, applicationHistoryList, employmentInfo, false, activationToken);
     }
 
-    public void changePassword(String password) {
-        this.password = password;
+    public void changePassword(String currentPassword, String newPassword, BCryptPasswordEncoderAdapter passwordEncoder) {
+        if (!passwordEncoder.matches(currentPassword, this.password)) {
+            throw new IllegalArgumentException("Incorrect current password");
+        }
+
+        if (passwordEncoder.matches(newPassword, this.password)) {
+            throw new IllegalArgumentException("New password cannot be the same as the current password");
+        }
+        Password pass = new Password(newPassword);
+        this.password = passwordEncoder.encode(pass);
     }
 
     public void changeName(Name name) {

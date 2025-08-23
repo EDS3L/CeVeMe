@@ -1,4 +1,4 @@
 package pl.ceveme.application.dto.employmentInfo;
 
-public record PortfolioItemsDto(String title, String description) {
+public record PortfolioItemsDto(Long id, String title, String description) {
 }
