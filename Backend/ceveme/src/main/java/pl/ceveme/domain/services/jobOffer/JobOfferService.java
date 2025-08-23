@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import pl.ceveme.domain.model.entities.JobOffer;
 import pl.ceveme.domain.repositories.JobOfferRepository;
 
+import java.time.LocalDate;
+
 @Service
 public class JobOfferService {
 
@@ -23,10 +25,11 @@ public class JobOfferService {
     public Page<JobOffer> getJobOffersPage(int pageNumber, int pageSize) {
         validatePageParameters(pageNumber, pageSize);
 
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("id").descending());
-        return jobOfferRepository.findAll(pageable);
-    }
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Direction.DESC, "id"));
+        LocalDate today = LocalDate.now();
 
+        return jobOfferRepository.findByDateEndingGreaterThanEqual(today, pageable);
+    }
     public Page<JobOffer> getJobOffersPage(int pageNumber) {
         return getJobOffersPage(pageNumber, DEFAULT_PAGE_SIZE);
     }

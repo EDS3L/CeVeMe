@@ -14,7 +14,6 @@ export default function FieldWithAI({
   multiline = false,
   disabled = false,
   help,
-  onImprove,
   aiButton = false,
   isEditing,
 }) {
@@ -29,7 +28,7 @@ export default function FieldWithAI({
     if (loadingAi) return;
     try {
       setLoadingAi(true);
-      const res = await refinement.refinementRequirements(value);
+      const res = await refinement.refinementRequirements(value, label);
 
       if (res != null) {
         onChange(res.refinementText);

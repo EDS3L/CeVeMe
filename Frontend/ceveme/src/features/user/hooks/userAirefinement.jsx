@@ -5,12 +5,13 @@ import { toast } from 'react-toastify';
 const jwt = document.cookie.replace('jwt=', '');
 
 class Refinement {
-  async refinementRequirements(text) {
+  async refinementRequirements(text, label) {
     try {
       const resposne = await axios({
         url: `/api/ai/refinementText`,
         data: {
           text,
+          label,
         },
         headers: {
           Authorization: `Bearer ${jwt}`,

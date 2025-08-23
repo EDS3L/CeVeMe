@@ -3,7 +3,7 @@ package pl.ceveme.infrastructure.external.gemini;
 public class TextRefinementPromptBuilder {
 
 
-    public static String createPrompt(String text) {
+    public static String createPrompt(String text, String subject) {
         return
                 """
                 ### ROLA ###
@@ -12,6 +12,15 @@ public class TextRefinementPromptBuilder {
                 ### ZADANIE ###
                 Twoim zadaniem jest przeanalizowanie poniższego tekstu dostarczonego przez użytkownika, który opisuje jego doświadczenie, kurs, projekt lub umiejętności w prosty sposób. Następnie masz przepisać ten tekst, znacząco go rozbudowując i podnosząc jego jakość. Z kotkestu wywnioskuj, który to z wczśenij podanychi pisz właśnie w takim tonie
                 
+                ### OPIS ###
+                Opis dotyczny 
+                """
+                +
+                        subject
+                        +
+                """
+                
+                bazuj w najepszych pratykach na tej podstawie
                 ### TEKST WEJŚCIOWY UŻYTKOWNIKA ###
                 """
                 +
@@ -25,6 +34,7 @@ public class TextRefinementPromptBuilder {
                 4.  **Profesjonalna Terminologia:** Wprowadź branżowe słownictwo i profesjonalne sformułowania, ale zachowaj tekst zrozumiałym i klarownym.
                 5.  **Struktura i Przejrzystość:** Zadbaj o logiczną strukturę tekstu. Nowy opis powinien być spójny i łatwy do przyswojenia dla osoby, która go analizuje (np. rekrutera, menedżera).
                 6.  **Identyfikacja Umiejętności:** Wyodrębnij i nazwij konkretne umiejętności (twarde i miękkie), które wynikają z opisu użytkownika.
+                7.   **ważne:** Nie wymyślaj, ani halucynować, masz jedynie ulepszyć i poprwaić wartość, którą ci podałem.
                 
                 ### TON I STYL ###
                 Profesjonalny, pewny siebie, rzeczowy i zorientowany na wyniki. Unikaj potocznego języka, ogólników i pustych frazesów.

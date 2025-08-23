@@ -21,16 +21,38 @@ public class SearchJobOffersUseCase {
 
     public Page<JobOffer> search(String q, int pageNumber, int size, String sort) {
         Pageable pageable = PageRequest.of(Math.max(0, pageNumber - 1), normalizeSize(size), mapSort(sort));
-        return jobOfferRepository.findByTitleContainingIgnoreCaseOrCompanyContainingIgnoreCaseOrLocation_CityContainingIgnoreCaseOrRequirementsContainingIgnoreCaseOrExperienceLevelContainingIgnoreCaseOrEmploymentTypeContainingIgnoreCase(q, q, q, q, q, q, pageable);
+        LocalDate today = LocalDate.now();
+        String qq = (q == null) ? "" : q.trim();
+
+        return jobOfferRepository
+                .findByDateEndingGreaterThanEqualAndTitleContainingIgnoreCaseOrDateEndingGreaterThanEqualAndCompanyContainingIgnoreCaseOrDateEndingGreaterThanEqualAndLocation_CityContainingIgnoreCaseOrDateEndingGreaterThanEqualAndRequirementsContainingIgnoreCaseOrDateEndingGreaterThanEqualAndExperienceLevelContainingIgnoreCaseOrDateEndingGreaterThanEqualAndEmploymentTypeContainingIgnoreCase(
+                today, qq,
+                today, qq,
+                today, qq,
+                today, qq,
+                today, qq,
+                today, qq,
+                pageable
+        );
     }
 
-    public Page<JobOffer> searchBy(String company, String city, String experienceLevel, String employmentType, String title, LocalDate dateAddedFrom, LocalDate dateAddedTo, int pageNumber, int size, String sort) {
+    public Page<JobOffer> searchBy(
+            String company, String city, String experienceLevel, String employmentType, String title,
+            LocalDate dateAddedFrom, LocalDate dateAddedTo,
+            int pageNumber, int size, String sort
+    ) {
         Pageable pageable = PageRequest.of(Math.max(0, pageNumber - 1), normalizeSize(size), mapSort(sort));
 
         LocalDate from = (dateAddedFrom != null) ? dateAddedFrom : LocalDate.of(1970, 1, 1);
-        LocalDate to = (dateAddedTo != null) ? dateAddedTo : LocalDate.of(2100, 12, 31);
+        LocalDate to   = (dateAddedTo   != null) ? dateAddedTo   : LocalDate.of(2100, 12, 31);
+        LocalDate today = LocalDate.now();
 
-        return jobOfferRepository.findByDateAddedBetweenAndCompanyContainingIgnoreCaseAndLocation_CityContainingIgnoreCaseAndExperienceLevelContainingIgnoreCaseAndEmploymentTypeContainingIgnoreCaseAndTitleContainingIgnoreCase(from, to, def(company), def(city), def(experienceLevel), def(employmentType), def(title), pageable);
+        return jobOfferRepository
+                .findByDateEndingGreaterThanEqualAndDateAddedBetweenAndCompanyContainingIgnoreCaseAndLocation_CityContainingIgnoreCaseAndExperienceLevelContainingIgnoreCaseAndEmploymentTypeContainingIgnoreCaseAndTitleContainingIgnoreCase(
+                        today, from, to,
+                        def(company), def(city), def(experienceLevel), def(employmentType), def(title),
+                        pageable
+                );
     }
 
 

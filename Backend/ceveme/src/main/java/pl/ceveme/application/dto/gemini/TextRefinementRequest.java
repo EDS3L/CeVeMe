@@ -1,4 +1,4 @@
 package pl.ceveme.application.dto.gemini;
 
-public record TextRefinementRequest(String text) {
+public record TextRefinementRequest(String text, String subject) {
 }

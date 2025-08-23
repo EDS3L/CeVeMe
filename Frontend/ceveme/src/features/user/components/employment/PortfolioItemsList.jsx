@@ -80,8 +80,8 @@ export default function PortfolioItemsList({
               <div
                 className={`grid ${
                   isEditing || editId
-                    ? 'sm:grid-cols-[6fr_6fr]'
-                    : 'sm:grid-cols-[6fr_6fr_1fr]'
+                    ? 'sm:grid-cols-[6fr]'
+                    : 'sm:grid-cols-[6fr]'
                 } gap-2`}
               >
                 <FieldWithAI

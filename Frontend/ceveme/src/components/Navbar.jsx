@@ -127,8 +127,10 @@ function Navbar() {
                     className="flex items-center w-full px-4 py-2 text-[var(--color-kraft)] hover:bg-[var(--color-manilla)]/40 transition-colors duration-200"
                     onClick={() => {
                       setIsUserDropdownOpen(false);
-                      // TODO: wylogowanie
-                      console.log('Wylogowywanie...');
+                      document.cookie =
+                        'jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+                      localStorage.clear();
+                      window.location.href = '/';
                     }}
                   >
                     <LogOut size={20} strokeWidth={2} className="mr-3" />
