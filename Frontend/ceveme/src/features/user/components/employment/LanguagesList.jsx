@@ -35,6 +35,12 @@ export default function LanguagesList({
   const userService = new UserService();
   const email = userService.getEmailFromToken(token);
 
+  const isUUID = (str) => {
+    const uuidRegex =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(str);
+  };
+
   const createLanguage = async (name, level) => {
     try {
       const res = await create.createLanguage(null, email, name, level, null);
@@ -114,14 +120,23 @@ export default function LanguagesList({
 
               {isEditing && (
                 <div className="flex justify-end gap-2">
-                  {!l.name && !l.level ? (
+                  {isUUID(l.id) ? (
                     <button
                       type="button"
                       aria-label="Zapisz język"
                       className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border text-white cursor-pointer border-kraft hover:bg-bookcloth/90 bg-bookcloth"
-                      onClick={() => {
-                        createLanguage(l.name, l.level);
-                        setEditId(null);
+                      onClick={async () => {
+                        const result = await createLanguage(l.name, l.level);
+                        if (result) {
+                          onChange(
+                            languages.map((lang) =>
+                              lang.id === l.id
+                                ? { ...lang, id: result.itemId }
+                                : lang
+                            )
+                          );
+                          setEditId(null);
+                        }
                       }}
                     >
                       <Save size={18} strokeWidth={2} /> Zapisz
@@ -134,7 +149,6 @@ export default function LanguagesList({
                       onClick={async () => {
                         const result = await createLanguage(l.name, l.level);
                         if (result) {
-                          l.id = result.itemId;
                           setEditId(null);
                         }
                       }}
@@ -148,7 +162,7 @@ export default function LanguagesList({
                     aria-label="Anuluj edycję"
                     className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border border-cloudlight hover:bg-ivorymedium/60"
                     onClick={() => {
-                      if (!l.name && !l.level) {
+                      if (isUUID(l.id)) {
                         onChange(languages.filter((x) => x.id !== l.id));
                       }
                       setEditId(null);
@@ -157,7 +171,7 @@ export default function LanguagesList({
                     <X size={18} strokeWidth={2} /> Anuluj
                   </button>
 
-                  {(l.name || l.level) && (
+                  {!isUUID(l.id) && (
                     <button
                       type="button"
                       className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border border-cloudlight hover:bg-ivorymedium/60"

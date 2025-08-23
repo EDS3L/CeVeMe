@@ -29,6 +29,12 @@ export default function PortfolioItemsList({
   const userService = new UserService();
   const email = userService.getEmailFromToken(token);
 
+  const isUUID = (str) => {
+    const uuidRegex =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(str);
+  };
+
   const createPortfolio = async (title, description) => {
     try {
       const res = await create.createPortfolio(
@@ -59,7 +65,6 @@ export default function PortfolioItemsList({
       <ul role="list" className="grid gap-3">
         {items.map((p) => {
           const isEditing = editId === p.id;
-          const isNew = !p.title && !p.description;
 
           return (
             <li
@@ -100,6 +105,7 @@ export default function PortfolioItemsList({
                   multiline
                   aiButton={true}
                   disabled={!isEditing}
+                  isEditing={isEditing}
                   onImprove={async () =>
                     update(p.id, {
                       description: await onImprove(p.description),
@@ -123,14 +129,26 @@ export default function PortfolioItemsList({
 
               {isEditing && (
                 <div className="flex justify-end gap-2">
-                  {isNew ? (
+                  {isUUID(p.id) ? (
                     <button
                       type="button"
                       aria-label="Zapisz pozycję"
                       className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border text-white cursor-pointer border-kraft hover:bg-bookcloth/90 bg-bookcloth"
-                      onClick={() => {
-                        createPortfolio(p.title, p.description);
-                        setEditId(null);
+                      onClick={async () => {
+                        const result = await createPortfolio(
+                          p.title,
+                          p.description
+                        );
+                        if (result) {
+                          onChange(
+                            items.map((item) =>
+                              item.id === p.id
+                                ? { ...item, id: result.itemId || result.id }
+                                : item
+                            )
+                          );
+                          setEditId(null);
+                        }
                       }}
                     >
                       <Save size={18} strokeWidth={2} /> Zapisz
@@ -146,7 +164,6 @@ export default function PortfolioItemsList({
                           p.description
                         );
                         if (result) {
-                          p.id = result.id;
                           setEditId(null);
                         }
                       }}
@@ -160,7 +177,7 @@ export default function PortfolioItemsList({
                     aria-label="Anuluj edycję"
                     className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border border-cloudlight hover:bg-ivorymedium/60"
                     onClick={() => {
-                      if (isNew) {
+                      if (isUUID(p.id)) {
                         onChange(items.filter((x) => x.id !== p.id));
                       }
                       setEditId(null);
@@ -169,14 +186,14 @@ export default function PortfolioItemsList({
                     <X size={18} strokeWidth={2} /> Anuluj
                   </button>
 
-                  {!isNew && (
+                  {!isUUID(p.id) && (
                     <button
                       type="button"
                       aria-label="Usuń pozycję"
                       className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border border-cloudlight hover:bg-ivorymedium/60"
                       onClick={() => {
                         setConfirm({
-                          title: 'Usunąć język?',
+                          title: 'Usunąć pozycję portfolio?',
                           desc: 'Tej operacji nie można cofnąć.',
                           action: () => {
                             onChange(items.filter((x) => x.id !== p.id));

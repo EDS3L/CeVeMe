@@ -29,6 +29,12 @@ export default function CoursesList({
   const userService = new UserService();
   const email = userService.getEmailFromToken(token);
 
+  const isUUID = (str) => {
+    const uuidRegex =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(str);
+  };
+
   const createCourse = async (courseName, dateOfCourse, courseDescription) => {
     try {
       const res = await create.createCourse(
@@ -45,8 +51,9 @@ export default function CoursesList({
       return null;
     }
   };
+
   const deleteCourse = async (itemId) => {
-    const res = await remove.deleteLanguage(itemId);
+    const res = await remove.deleteCourse(itemId);
     toast.success(res.message);
   };
 
@@ -59,8 +66,6 @@ export default function CoursesList({
       <ul role="list" className="grid gap-3">
         {courses.map((c) => {
           const isEditing = editId === c.id;
-          const isNew =
-            !c.courseName && !c.dateOfCourse && !c.courseDescription;
 
           return (
             <li
@@ -133,6 +138,7 @@ export default function CoursesList({
                 placeholder="Czego się nauczyłeś…"
                 multiline
                 aiButton={true}
+                isEditing={isEditing}
                 disabled={!isEditing}
                 onImprove={async () =>
                   update(c.id, {
@@ -143,18 +149,27 @@ export default function CoursesList({
 
               {isEditing && (
                 <div className="flex justify-end gap-2">
-                  {isNew ? (
+                  {isUUID(c.id) ? (
                     <button
                       type="button"
                       aria-label="Zapisz kurs"
                       className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border text-white cursor-pointer border-kraft hover:bg-bookcloth/90 bg-bookcloth"
-                      onClick={() => {
-                        createCourse(
+                      onClick={async () => {
+                        const result = await createCourse(
                           c.courseName,
                           c.dateOfCourse,
                           c.courseDescription
                         );
-                        setEditId(null);
+                        if (result) {
+                          onChange(
+                            courses.map((course) =>
+                              course.id === c.id
+                                ? { ...course, id: result.itemId || result.id }
+                                : course
+                            )
+                          );
+                          setEditId(null);
+                        }
                       }}
                     >
                       <Save size={18} strokeWidth={2} /> Zapisz
@@ -171,7 +186,6 @@ export default function CoursesList({
                           c.courseDescription
                         );
                         if (result) {
-                          c.id = result.id;
                           setEditId(null);
                         }
                       }}
@@ -185,7 +199,7 @@ export default function CoursesList({
                     aria-label="Anuluj edycję"
                     className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border border-cloudlight hover:bg-ivorymedium/60"
                     onClick={() => {
-                      if (isNew) {
+                      if (isUUID(c.id)) {
                         onChange(courses.filter((x) => x.id !== c.id));
                       }
                       setEditId(null);
@@ -194,7 +208,7 @@ export default function CoursesList({
                     <X size={18} strokeWidth={2} /> Anuluj
                   </button>
 
-                  {!isNew && (
+                  {!isUUID(c.id) && (
                     <button
                       type="button"
                       aria-label="Usuń kurs"

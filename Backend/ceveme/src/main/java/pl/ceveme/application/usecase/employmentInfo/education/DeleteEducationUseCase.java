@@ -37,6 +37,6 @@ public class DeleteEducationUseCase {
 
         info.removeEducation(education);
 
-        return new EducationResponse(education.getId(),education.getSchoolName(), education.getDegree(), education.getFieldOfStudy(), "Course deleted successfully");
+        return new EducationResponse(education.getId(),education.getSchoolName(), education.getDegree(), education.getFieldOfStudy(), "Education deleted successfully");
     }
 }

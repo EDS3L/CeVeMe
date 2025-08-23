@@ -6,6 +6,7 @@ import EmploymentInfoCreate from '../../hooks/useCreateEmploymentInfo';
 import UserService from '../../../../hooks/UserService';
 import EmploymentInfoDelete from '../../hooks/useDeleteEmploymentInfo';
 import { toast } from 'react-toastify';
+import Refinement from '../../hooks/userAirefinement';
 
 export default function ExperiencesList({
   editId,
@@ -30,6 +31,13 @@ export default function ExperiencesList({
   const remove = new EmploymentInfoDelete();
   const userService = new UserService();
   const email = userService.getEmailFromToken(token);
+
+  const isUUID = (str) => {
+    const uuidRegex =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(str);
+  };
+
   const createExperience = async (
     companyName,
     startingDate,
@@ -64,17 +72,6 @@ export default function ExperiencesList({
     toast.success(res.message);
   };
 
-  const isEmpty = (ex) =>
-    !(
-      ex.companyName?.trim() ||
-      ex.positionName?.trim() ||
-      ex.startingDate ||
-      ex.endDate ||
-      ex.jobDescription?.trim() ||
-      ex.jobAchievements?.trim() ||
-      ex.currently
-    );
-
   return (
     <div className="grid gap-2">
       <h3 className="font-semibold flex items-center gap-2">
@@ -84,7 +81,6 @@ export default function ExperiencesList({
       <ul role="list" className="grid gap-3">
         {experiences.map((ex) => {
           const editing = editId === ex.id;
-          const empty = isEmpty(ex);
 
           return (
             <li
@@ -211,6 +207,7 @@ export default function ExperiencesList({
                 multiline
                 disabled={!editing}
                 aiButton={true}
+                isEditing={editing}
                 onImprove={async () =>
                   update(ex.id, {
                     jobDescription: await onImprove(ex.jobDescription),
@@ -226,6 +223,7 @@ export default function ExperiencesList({
                 placeholder="Najważniejsze sukcesy…"
                 multiline
                 disabled={!editing}
+                isEditing={editing}
                 aiButton={true}
                 onImprove={async () =>
                   update(ex.id, {
@@ -236,13 +234,13 @@ export default function ExperiencesList({
 
               {editing && (
                 <div className="flex justify-end gap-2">
-                  {empty ? (
+                  {isUUID(ex.id) ? (
                     <button
                       type="button"
                       aria-label="Zapisz doświadczenie"
                       className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border text-white cursor-pointer border-kraft hover:bg-bookcloth/90 bg-bookcloth"
-                      onClick={() => {
-                        createExperience(
+                      onClick={async () => {
+                        const result = await createExperience(
                           ex.companyName,
                           ex.startingDate,
                           ex.endDate,
@@ -251,7 +249,19 @@ export default function ExperiencesList({
                           ex.jobDescription,
                           ex.jobAchievements
                         );
-                        setEditId(null);
+                        if (result) {
+                          onChange(
+                            experiences.map((experience) =>
+                              experience.id === ex.id
+                                ? {
+                                    ...experience,
+                                    id: result.itemId || result.id,
+                                  }
+                                : experience
+                            )
+                          );
+                          setEditId(null);
+                        }
                       }}
                     >
                       <Save size={18} strokeWidth={2} /> Zapisz
@@ -272,7 +282,6 @@ export default function ExperiencesList({
                           ex.jobAchievements
                         );
                         if (result) {
-                          ex.id = result.id;
                           setEditId(null);
                         }
                       }}
@@ -286,7 +295,7 @@ export default function ExperiencesList({
                     aria-label="Anuluj edycję"
                     className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border border-cloudlight hover:bg-ivorymedium/60"
                     onClick={() => {
-                      if (empty) {
+                      if (isUUID(ex.id)) {
                         onChange(experiences.filter((x) => x.id !== ex.id));
                       }
                       setEditId(null);
@@ -295,7 +304,7 @@ export default function ExperiencesList({
                     <X size={18} strokeWidth={2} /> Anuluj
                   </button>
 
-                  {!empty && (
+                  {!isUUID(ex.id) && (
                     <button
                       type="button"
                       aria-label="Usuń doświadczenie"
@@ -306,7 +315,6 @@ export default function ExperiencesList({
                           desc: 'Tej operacji nie można cofnąć.',
                           action: () => {
                             onChange(experiences.filter((x) => x.id !== ex.id));
-                            console.log(ex.id);
                             deleteExperience(ex.id);
                             setEditId(null);
                           },

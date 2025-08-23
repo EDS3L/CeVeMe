@@ -13,6 +13,9 @@ class EmploymentInfoDelete {
           itemId,
         },
         method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${jwt}`,
+        },
         withCredentials: true,
       });
       return resposne.data;

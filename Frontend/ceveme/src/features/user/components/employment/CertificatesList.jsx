@@ -24,6 +24,12 @@ export default function CertificatesList({
   }
   const token = getCookie('jwt');
 
+  const isUUID = (str) => {
+    const uuidRegex =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(str);
+  };
+
   const create = new EmploymentInfoCreate();
   const remove = new EmploymentInfoDelete();
   const userService = new UserService();
@@ -127,14 +133,26 @@ export default function CertificatesList({
 
               {isEditing && (
                 <div className="flex justify-end gap-2">
-                  {!c.name && !c.dateOfCertificate ? (
+                  {isUUID(c.id) ? (
                     <button
                       type="button"
                       aria-label="Zapisz certyfikat"
                       className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border text-white cursor-pointer border-kraft hover:bg-bookcloth/90 bg-bookcloth"
-                      onClick={() => {
-                        createCertificate(c.name, c.dateOfCertificate);
-                        setEditId(null);
+                      onClick={async () => {
+                        const result = await createCertificate(
+                          c.name,
+                          c.dateOfCertificate
+                        );
+                        if (result) {
+                          onChange(
+                            certificates.map((cert) =>
+                              cert.id === c.id
+                                ? { ...cert, id: result.itemId }
+                                : cert
+                            )
+                          );
+                          setEditId(null);
+                        }
                       }}
                     >
                       <Save size={18} strokeWidth={2} /> Zapisz
@@ -150,7 +168,6 @@ export default function CertificatesList({
                           c.dateOfCertificate
                         );
                         if (result) {
-                          c.id = result.itemId;
                           setEditId(null);
                         }
                       }}
@@ -164,7 +181,7 @@ export default function CertificatesList({
                     aria-label="Anuluj edycję"
                     className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border border-cloudlight hover:bg-ivorymedium/60"
                     onClick={() => {
-                      if (!c.name && !c.dateOfCertificate) {
+                      if (isUUID(c.id)) {
                         onChange(certificates.filter((x) => x.id !== c.id));
                       }
                       setEditId(null);
@@ -173,7 +190,7 @@ export default function CertificatesList({
                     <X size={18} strokeWidth={2} /> Anuluj
                   </button>
 
-                  {(c.name || c.dateOfCertificate) && (
+                  {!isUUID(c.id) && (
                     <button
                       type="button"
                       aria-label="Usuń certyfikat"
@@ -183,8 +200,8 @@ export default function CertificatesList({
                           title: 'Usunąć certyfikat?',
                           desc: 'Tej operacji nie można cofnąć.',
                           action: () => {
-                            onChange(certificates.filter((x) => x.id !== c.id)),
-                              deleteCertificate(c.id);
+                            onChange(certificates.filter((x) => x.id !== c.id));
+                            deleteCertificate(c.id);
                             setEditId(null);
                           },
                         })

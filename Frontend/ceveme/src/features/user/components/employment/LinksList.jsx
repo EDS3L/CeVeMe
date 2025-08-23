@@ -3,6 +3,8 @@ import { Plus, Save, Trash2, Link as LinkIcon, Pencil, X } from 'lucide-react';
 import FieldWithAI from '../ui/FieldWithAI';
 import EmploymentInfoCreate from '../../hooks/useCreateEmploymentInfo';
 import UserService from '../../../../hooks/UserService';
+import EmploymentInfoDelete from '../../hooks/useDeleteEmploymentInfo';
+import { toast } from 'react-toastify';
 
 export default function LinksList({
   editId,
@@ -23,11 +25,29 @@ export default function LinksList({
   const token = getCookie('jwt');
 
   const create = new EmploymentInfoCreate();
+  const remove = new EmploymentInfoDelete();
   const userService = new UserService();
   const email = userService.getEmailFromToken(token);
 
+  const isUUID = (str) => {
+    const uuidRegex =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(str);
+  };
+
   const createLink = async (title, link) => {
-    await create.createLink(null, email, title, link, null);
+    try {
+      const res = await create.createLink(null, email, title, link, null);
+      toast.success(res.message);
+      return res;
+    } catch {
+      return null;
+    }
+  };
+
+  const deleteLink = async (itemId) => {
+    const res = await remove.deleteLink(itemId);
+    toast.success(res.message);
   };
 
   return (
@@ -39,7 +59,6 @@ export default function LinksList({
       <ul role="list" className="grid gap-3">
         {links.map((l) => {
           const isEditing = editId === l.id;
-          const isNew = !l.title && !l.link;
 
           return (
             <li
@@ -98,14 +117,23 @@ export default function LinksList({
 
               {isEditing && (
                 <div className="flex justify-end gap-2">
-                  {isNew ? (
+                  {isUUID(l.id) ? (
                     <button
                       type="button"
                       aria-label="Zapisz link"
                       className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border text-white cursor-pointer border-kraft hover:bg-bookcloth/90 bg-bookcloth"
-                      onClick={() => {
-                        createLink(l.title, l.link);
-                        setEditId(null);
+                      onClick={async () => {
+                        const result = await createLink(l.title, l.link);
+                        if (result) {
+                          onChange(
+                            links.map((link) =>
+                              link.id === l.id
+                                ? { ...link, id: result.itemId || result.id }
+                                : link
+                            )
+                          );
+                          setEditId(null);
+                        }
                       }}
                     >
                       <Save size={18} strokeWidth={2} /> Zapisz
@@ -115,9 +143,11 @@ export default function LinksList({
                       type="button"
                       aria-label="Zapisz edycję linku"
                       className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border text-white cursor-pointer border-kraft hover:bg-bookcloth/90 bg-bookcloth"
-                      onClick={() => {
-                        createLink(l.title, l.link);
-                        setEditId(null);
+                      onClick={async () => {
+                        const result = await createLink(l.title, l.link);
+                        if (result) {
+                          setEditId(null);
+                        }
                       }}
                     >
                       <Save size={18} strokeWidth={2} /> Zapisz edycję
@@ -129,7 +159,7 @@ export default function LinksList({
                     aria-label="Anuluj edycję"
                     className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border border-cloudlight hover:bg-ivorymedium/60"
                     onClick={() => {
-                      if (isNew) {
+                      if (isUUID(l.id)) {
                         onChange(links.filter((x) => x.id !== l.id));
                       }
                       setEditId(null);
@@ -138,19 +168,22 @@ export default function LinksList({
                     <X size={18} strokeWidth={2} /> Anuluj
                   </button>
 
-                  {!isNew && (
+                  {!isUUID(l.id) && (
                     <button
                       type="button"
                       aria-label="Usuń link"
                       className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border border-cloudlight hover:bg-ivorymedium/60"
-                      onClick={() =>
+                      onClick={() => {
                         setConfirm({
                           title: 'Usunąć link?',
                           desc: 'Tej operacji nie można cofnąć.',
-                          action: () =>
-                            onChange(links.filter((x) => x.id !== l.id)),
-                        })
-                      }
+                          action: () => {
+                            onChange(links.filter((x) => x.id !== l.id));
+                            deleteLink(l.id);
+                            setEditId(null);
+                          },
+                        });
+                      }}
                     >
                       <Trash2 size={18} strokeWidth={2} /> Usuń
                     </button>

@@ -29,6 +29,12 @@ export default function SkillsList({
   const userService = new UserService();
   const email = userService.getEmailFromToken(token);
 
+  const isUUID = (str) => {
+    const uuidRegex =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(str);
+  };
+
   const createSkill = async (name, type) => {
     try {
       const res = await create.createSkill(null, email, name, type, null);
@@ -53,7 +59,6 @@ export default function SkillsList({
       <ul role="list" className="grid gap-3">
         {skills.map((s) => {
           const isEditing = editId === s.id;
-          const isNew = !s.name && !s.type;
 
           return (
             <li
@@ -121,14 +126,23 @@ export default function SkillsList({
 
               {isEditing && (
                 <div className="flex justify-end gap-2">
-                  {isNew ? (
+                  {isUUID(s.id) ? (
                     <button
                       type="button"
                       aria-label="Zapisz umiejętność"
                       className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border text-white cursor-pointer border-kraft hover:bg-bookcloth/90 bg-bookcloth"
-                      onClick={() => {
-                        createSkill(s.name, s.type);
-                        setEditId(null);
+                      onClick={async () => {
+                        const result = await createSkill(s.name, s.type);
+                        if (result) {
+                          onChange(
+                            skills.map((skill) =>
+                              skill.id === s.id
+                                ? { ...skill, id: result.itemId || result.id }
+                                : skill
+                            )
+                          );
+                          setEditId(null);
+                        }
                       }}
                     >
                       <Save size={18} strokeWidth={2} /> Zapisz
@@ -141,7 +155,6 @@ export default function SkillsList({
                       onClick={async () => {
                         const result = await createSkill(s.name, s.type);
                         if (result) {
-                          s.id = result.id;
                           setEditId(null);
                         }
                       }}
@@ -155,7 +168,7 @@ export default function SkillsList({
                     aria-label="Anuluj edycję"
                     className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border border-cloudlight hover:bg-ivorymedium/60"
                     onClick={() => {
-                      if (isNew) {
+                      if (isUUID(s.id)) {
                         onChange(skills.filter((x) => x.id !== s.id));
                       }
                       setEditId(null);
@@ -164,22 +177,22 @@ export default function SkillsList({
                     <X size={18} strokeWidth={2} /> Anuluj
                   </button>
 
-                  {!isNew && (
+                  {!isUUID(s.id) && (
                     <button
                       type="button"
                       aria-label="Usuń umiejętność"
                       className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border border-cloudlight hover:bg-ivorymedium/60"
-                      onClick={() =>
+                      onClick={() => {
                         setConfirm({
                           title: 'Usunąć umiejętność?',
                           desc: 'Tej operacji nie można cofnąć.',
                           action: () => {
-                            onChange(skills.filter((x) => x.id !== s.id)),
-                              deleteSkill(s.id);
+                            onChange(skills.filter((x) => x.id !== s.id));
+                            deleteSkill(s.id);
                             setEditId(null);
                           },
-                        })
-                      }
+                        });
+                      }}
                     >
                       <Trash2 size={18} strokeWidth={2} /> Usuń
                     </button>

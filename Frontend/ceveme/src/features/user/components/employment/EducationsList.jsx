@@ -31,6 +31,12 @@ export default function EducationsList({
   const userService = new UserService();
   const email = userService.getEmailFromToken(token);
 
+  const isUUID = (str) => {
+    const uuidRegex =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(str);
+  };
+
   const createEducation = async (
     schoolName,
     degree,
@@ -40,7 +46,7 @@ export default function EducationsList({
     currently
   ) => {
     try {
-      const res = await await create.createEducation(
+      const res = await create.createEducation(
         null,
         email,
         schoolName,
@@ -59,19 +65,9 @@ export default function EducationsList({
   };
 
   const deleteEducation = async (itemId) => {
-    const res = await remove.deleteLanguage(itemId);
+    const res = await remove.deleteEducation(itemId);
     toast.success(res.message);
   };
-
-  const isEmpty = (ed) =>
-    !(
-      ed.schoolName?.trim() ||
-      ed.degree?.trim() ||
-      ed.fieldOfStudy?.trim() ||
-      ed.startingDate ||
-      ed.endDate ||
-      ed.currently
-    );
 
   return (
     <div className="grid gap-2">
@@ -82,7 +78,6 @@ export default function EducationsList({
       <ul role="list" className="grid gap-3">
         {educations.map((ed) => {
           const isEditing = editId === ed.id;
-          const empty = isEmpty(ed);
 
           return (
             <li
@@ -99,7 +94,7 @@ export default function EducationsList({
                 className={`grid ${
                   isEditing || editId
                     ? 'sm:grid-cols-[6fr_6fr]'
-                    : 'sm:grid-cols-[6fr_6fr_1fr]'
+                    : 'sm:grid-cols-[6fr_6fr]'
                 } gap-2`}
               >
                 <FieldWithAI
@@ -124,6 +119,20 @@ export default function EducationsList({
                   disabled={!isEditing}
                   onImprove={async () =>
                     update(ed.id, { degree: await onImprove(ed.degree) })
+                  }
+                />
+
+                <FieldWithAI
+                  id={`edu-field-${ed.id}`}
+                  label="Kierunek"
+                  value={ed.fieldOfStudy || ''}
+                  onChange={(v) => update(ed.id, { fieldOfStudy: v })}
+                  placeholder="np. Informatyka"
+                  disabled={!isEditing}
+                  onImprove={async () =>
+                    update(ed.id, {
+                      fieldOfStudy: await onImprove(ed.fieldOfStudy),
+                    })
                   }
                 />
 
@@ -200,13 +209,13 @@ export default function EducationsList({
 
               {isEditing && (
                 <div className="flex justify-end gap-2">
-                  {empty ? (
+                  {isUUID(ed.id) ? (
                     <button
                       type="button"
                       aria-label="Zapisz edukację"
                       className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border text-white cursor-pointer border-kraft hover:bg-bookcloth/90 bg-bookcloth"
-                      onClick={() => {
-                        createEducation(
+                      onClick={async () => {
+                        const result = await createEducation(
                           ed.schoolName,
                           ed.degree,
                           ed.fieldOfStudy,
@@ -214,7 +223,19 @@ export default function EducationsList({
                           ed.endDate,
                           ed.currently
                         );
-                        setEditId(null);
+                        if (result) {
+                          onChange(
+                            educations.map((education) =>
+                              education.id === ed.id
+                                ? {
+                                    ...education,
+                                    id: result.itemId || result.id,
+                                  }
+                                : education
+                            )
+                          );
+                          setEditId(null);
+                        }
                       }}
                     >
                       <Save size={18} strokeWidth={2} /> Zapisz
@@ -234,7 +255,6 @@ export default function EducationsList({
                           ed.currently
                         );
                         if (result) {
-                          ed.id = result.itemId;
                           setEditId(null);
                         }
                       }}
@@ -248,7 +268,7 @@ export default function EducationsList({
                     aria-label="Anuluj edycję"
                     className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border border-cloudlight hover:bg-ivorymedium/60"
                     onClick={() => {
-                      if (empty) {
+                      if (isUUID(ed.id)) {
                         onChange(educations.filter((x) => x.id !== ed.id));
                       }
                       setEditId(null);
@@ -257,14 +277,14 @@ export default function EducationsList({
                     <X size={18} strokeWidth={2} /> Anuluj
                   </button>
 
-                  {!empty && (
+                  {!isUUID(ed.id) && (
                     <button
                       type="button"
                       aria-label="Usuń edukację"
                       className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border border-cloudlight hover:bg-ivorymedium/60"
                       onClick={() => {
                         setConfirm({
-                          title: 'Usunąć język?',
+                          title: 'Usunąć edukację?',
                           desc: 'Tej operacji nie można cofnąć.',
                           action: () => {
                             onChange(educations.filter((x) => x.id !== ed.id));
