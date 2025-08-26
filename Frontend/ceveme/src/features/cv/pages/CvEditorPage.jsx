@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useReactToPrint } from 'react-to-print';
 
 import { useCvEditor } from '../hooks/useCvEditor';
@@ -12,6 +12,7 @@ import CVPreviewAts from '../cvTypes/CVPreviewAts';
 import { useSinglePageScale } from '../hooks/useSinglePageScale';
 import LayoutPicker from '../components/LayoutPicker';
 import Navbar from '../../../components/Navbar';
+import { useLocation } from 'react-router-dom';
 
 /* Druk: zero marginesów, overflow hidden TYLKO w druku */
 const PAGE_STYLE = `
@@ -103,9 +104,22 @@ export default function CvEditorPage() {
   } = useCvEditor();
 
   const [layout, setLayout] = useState('classic');
+  const location = useLocation();
 
   const innerRef = useRef(null); // element skalowany
   const pageRef = useRef(null); // element drukowany
+
+  useEffect(() => {
+    if (location.state?.offerLink) {
+      setOfferLink(location.state.offerLink);
+    }
+  }, [location.state?.offerLink]);
+
+  useEffect(() => {
+    if (offerLink) {
+      handleGenerateCv();
+    }
+  }, [offerLink]);
 
   const { scale, tx, ty, recomputeNow } = useSinglePageScale(innerRef, {
     widthMm: 210,

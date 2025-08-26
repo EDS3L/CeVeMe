@@ -98,7 +98,7 @@ export default function PortfolioItemsList({
 
                 <FieldWithAI
                   id={`port-desc-${p.id}`}
-                  label="Opis"
+                  label="Opis projektu"
                   value={p.description || ''}
                   onChange={(v) => update(p.id, { description: v })}
                   placeholder="Krótki opis projektu…"

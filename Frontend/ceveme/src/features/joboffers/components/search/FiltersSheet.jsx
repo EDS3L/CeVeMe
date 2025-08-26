@@ -43,7 +43,7 @@ export default function FiltersSheet({
           open ? 'translate-y-0' : '-translate-y-8'
         }`}
       >
-        <Card className="relative">
+        <Card className="relative top-20">
           <button
             onClick={onClose}
             className="absolute right-3 top-3 p-2 rounded-lg text-slatedark hover:bg-ivorymedium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-feedbackfocus"

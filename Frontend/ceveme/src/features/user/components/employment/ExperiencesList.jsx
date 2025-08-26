@@ -217,7 +217,7 @@ export default function ExperiencesList({
 
               <FieldWithAI
                 id={`exp-ach-${ex.id}`}
-                label="Osiągnięcia"
+                label="Osiągnięcia w pracy"
                 value={ex.jobAchievements || ''}
                 onChange={(v) => update(ex.id, { jobAchievements: v })}
                 placeholder="Najważniejsze sukcesy…"

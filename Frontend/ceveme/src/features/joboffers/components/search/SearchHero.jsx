@@ -47,9 +47,8 @@ export default function SearchHero({
 
   const onPick = (it) => {
     const token = it.label;
-    const next = (local ? `${local} ` : '') + token;
-    setLocal(next);
-    debounced.current(next);
+    setLocal(token);
+    onQuery(token);
     setOpenSug(false);
   };
 

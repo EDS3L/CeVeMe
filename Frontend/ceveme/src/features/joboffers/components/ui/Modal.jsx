@@ -18,7 +18,7 @@ export default function Modal({
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
       <div className="absolute inset-0 bg-slatedark/70" onClick={onClose} />
-      <div className="relative flex min-h-full items-start justify-center p-4">
+      <div className="relative top-20 flex min-h-full items-start justify-center p-4">
         <div
           className={`relative ${widthClass} bg-ivorylight rounded-2xl border border-basewhite/50 shadow-2xl overflow-hidden`}
         >

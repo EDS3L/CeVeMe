@@ -1,19 +1,23 @@
 import React from 'react';
 import Modal from '../ui/Modal';
-import { X, Building2, MapPin, ArrowUpRight } from 'lucide-react';
+import { X, Building2, MapPin, ArrowUpRight, ScrollText } from 'lucide-react';
 import { sanitizeHtml } from '../../utils/sanitizeHtml';
+import CvGenerator from '../../hooks/useGemini';
+import UserService from '../../../../hooks/UserService';
+import { useNavigate } from 'react-router-dom';
 
 export default function JobModal({ open, onClose, job }) {
+  const nav = useNavigate();
   if (!open || !job) return null;
 
   return (
     <Modal open={open} onClose={onClose}>
       <button
         onClick={onClose}
-        className="absolute right-3 top-3 p-2 rounded-lg text-slatedark hover:bg-ivorymedium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-feedbackfocus"
+        className="absolute cursor-pointer right-3 top-3 p-2 rounded-lg text-slatedark hover:bg-ivorymedium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-feedbackfocus"
         aria-label="Zamknij szczegóły"
       >
-        <X className="w-5 h-5" />
+        <X className="w-5 h-5 " />
       </button>
 
       {/* HEADER */}
@@ -83,6 +87,13 @@ export default function JobModal({ open, onClose, job }) {
               >
                 Przejdź do oferty <ArrowUpRight className="w-4 h-4" />
               </a>
+              <button
+                className="mt-4 w-full cursor-pointer inline-flex font-bold items-center justify-center gap-2 px-4 py-2 rounded-lg text-basewhite bg-gradient-to-r from-blue-300 to-blue-700 hover:to-blue-500"
+                onClick={() => nav('/cv', { state: { offerLink: job.link } })}
+                rel="noopener noreferrer"
+              >
+                Wygneruj cv <ScrollText className="w-4 h-4" />
+              </button>
             </div>
           </aside>
         </div>

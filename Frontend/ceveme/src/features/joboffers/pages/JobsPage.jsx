@@ -152,6 +152,7 @@ export default function JobsPage() {
       )}
 
       {/* Modal szczegółów */}
+
       <JobModal
         open={!!activeJob}
         onClose={() => setActiveJob(null)}
