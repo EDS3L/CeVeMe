@@ -41,7 +41,7 @@ export default function JobsPage() {
 
   return (
     <div className="min-h-screen bg-ivorylight">
-      <Navbar />
+      <Navbar showShadow={true} />
       {/* HERO */}
       <SearchHero
         query={query}

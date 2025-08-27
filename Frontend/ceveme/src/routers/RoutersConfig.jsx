@@ -33,6 +33,13 @@ const RoutersConfig = {
     ),
     requiredRole: null,
   },
+  settings: {
+    path: '/settings',
+    component: React.lazy(() =>
+      import('../features/settings/pages/SettingsPage')
+    ),
+    requiredRole: null,
+  },
 };
 
 export default RoutersConfig;

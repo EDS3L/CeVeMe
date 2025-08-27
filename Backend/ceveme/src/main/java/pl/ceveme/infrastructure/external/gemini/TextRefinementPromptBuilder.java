@@ -44,7 +44,7 @@ public class TextRefinementPromptBuilder {
                         Profesjonalny, pewny siebie, rzeczowy i zorientowany na wyniki. Unikaj potocznego języka, ogólników i pustych frazesów. Dostosuj ton do subject: formalny i konkretny dla obowiązków i osiągnięć, edukacyjny dla kursów, inspirujący dla projektów.
                         
                         ### FORMAT WYJŚCIOWY ###
-                        Jako odpowiedź zwróć **tylko i wyłącznie** finalny, przepisany tekst w formie jednego lub dwóch akapitów. Twoja odpowiedź nie może zawierać żadnych wstępów, nagłówków, podsumowań, wyjaśnień ani jakichkolwiek innych elementów poza czystym tekstem wynikowym.                
+                        Jako odpowiedź zwróć **tylko i wyłącznie** finalny, przepisany tekst. Twoja odpowiedź nie może zawierać żadnych wstępów, nagłówków, podsumowań, wyjaśnień ani jakichkolwiek innych elementów poza czystym tekstem wynikowym.                
                         Zacznij teraz.
                         """;
     }

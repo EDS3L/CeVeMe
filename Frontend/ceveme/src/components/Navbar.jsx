@@ -9,7 +9,7 @@ import {
   Menu as MenuIcon,
 } from 'lucide-react';
 
-function Navbar() {
+function Navbar({ showShadow }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
 
@@ -27,8 +27,16 @@ function Navbar() {
 
   return (
     <>
-      <nav className="sticky top-0 w-full z-[10000] bg-[var(--color-ivorylight)] shadow-lg h-16">
-        <div className="flex items-center justify-between px-6 md:px-12 h-full">
+      <nav
+        className={` ${
+          showShadow
+            ? 'sticky top-0 shadow-lg  bg-ivorylight'
+            : 'relative bg-gradient-to-b from-cloudlight to-ivorylight'
+        }
+    w-full z-[10000] h-16
+  `}
+      >
+        <div className="flex items-center cursor-pointer justify-between px-6 md:px-12 h-full">
           <Link
             //wyświetla w zależności od logowania page
             to={isLogged ? '/offers' : '/'}

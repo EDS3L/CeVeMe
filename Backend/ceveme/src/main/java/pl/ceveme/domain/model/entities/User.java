@@ -24,6 +24,7 @@ public class User {
     @Column(unique = true)
     @Embedded
     private Email email;
+    private String city;
     private String password;
     private String image;
 
@@ -45,7 +46,7 @@ public class User {
     public User() {
     }
 
-    public User(Name name, Surname surname, PhoneNumber phoneNumber, Email email, String image, String password, List<Cv> cvList, List<ApplicationHistory> applicationHistoryList, EmploymentInfo employmentInfo, boolean isActive, ActivationToken activationToken) {
+    public User(Name name, Surname surname, PhoneNumber phoneNumber, Email email, String image, String password, List<Cv> cvList, List<ApplicationHistory> applicationHistoryList, EmploymentInfo employmentInfo, boolean isActive, ActivationToken activationToken, String city) {
         this.name = name;
         this.surname = surname;
         this.phoneNumber = phoneNumber;
@@ -57,10 +58,11 @@ public class User {
         this.employmentInfo = employmentInfo;
         this.isActive = isActive;
         this.activationToken = activationToken;
+        this.city = city;
     }
 
-    public static User createNewUser(Name name, Surname surname, PhoneNumber phoneNumber, String password, Email email, String image, List<Cv> cvList, List<ApplicationHistory> applicationHistoryList, EmploymentInfo employmentInfo, ActivationToken activationToken) {
-        return new User(name, surname, phoneNumber, email, image, password, cvList, applicationHistoryList, employmentInfo, false, activationToken);
+    public static User createNewUser(Name name, Surname surname, PhoneNumber phoneNumber, String password, Email email, String image, List<Cv> cvList, List<ApplicationHistory> applicationHistoryList, EmploymentInfo employmentInfo, ActivationToken activationToken, String city) {
+        return new User(name, surname, phoneNumber, email, image, password, cvList, applicationHistoryList, employmentInfo, false, activationToken, city);
     }
 
     public void changePassword(String currentPassword, String newPassword, BCryptPasswordEncoderAdapter passwordEncoder) {
@@ -154,6 +156,14 @@ public class User {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
     }
 
     public void setApplicationHistoryList(List<ApplicationHistory> applicationHistoryList) {

@@ -13,6 +13,7 @@ import {
   FolderGit2,
   Link as LinkIcon,
   GraduationCap,
+  User,
 } from 'lucide-react';
 
 import Tabs from '../components/ui/Tabs';
@@ -34,6 +35,7 @@ import ImploymentInfoGet from '../hooks/useGetEmploymentInfo';
 import EmploymentInfoCreate from '../hooks/useCreateEmploymentInfo';
 import UserService from '../../../hooks/UserService';
 import { ToastContainer } from 'react-toastify';
+import UserDetails from '../../settings/components/UserDetails';
 
 export default function EmploymentInfoPage() {
   const [activeTab, setActiveTab] = useState('jezyki');

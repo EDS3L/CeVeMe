@@ -30,8 +30,10 @@ public class UserController {
     private final UploadProfileImageUseCase uploadProfileImageUseCase;
     private final UploadCvFileUseCase uploadCvFileUseCase;
     private final DeleteUserUseCase deleteUserUseCase;
+    private final GetUserDetailsInfoUseCase getUserDetailsInfoUseCase;
+    private final ChangeUserNameSurnameCityUseCase changeUserNameSurnameCityUseCase;
 
-    public UserController(ChangeUsersPasswordUseCase changeUsersPasswordUseCase, ChangeUserNameUseCase changeUserNameUseCase, ChangeUserSurnameUseCase changeUserSurnameUseCase, ChangeUserPhoneNumberUseCase changeUserPhoneNumberUseCase, ChangeUserEmailUseCase changeUserEmailUseCase, UploadProfileImageUseCase uploadProfileImageUseCase, UploadCvFileUseCase uploadCvFileUseCase, DeleteUserUseCase deleteUserUseCase) {
+    public UserController(ChangeUsersPasswordUseCase changeUsersPasswordUseCase, ChangeUserNameUseCase changeUserNameUseCase, ChangeUserSurnameUseCase changeUserSurnameUseCase, ChangeUserPhoneNumberUseCase changeUserPhoneNumberUseCase, ChangeUserEmailUseCase changeUserEmailUseCase, UploadProfileImageUseCase uploadProfileImageUseCase, UploadCvFileUseCase uploadCvFileUseCase, DeleteUserUseCase deleteUserUseCase, GetUserDetailsInfoUseCase getUserDetailsInfoUseCase, ChangeUserNameSurnameCityUseCase changeUserNameSurnameCityUseCase) {
         this.changeUsersPasswordUseCase = changeUsersPasswordUseCase;
         this.changeUserNameUseCase = changeUserNameUseCase;
         this.changeUserSurnameUseCase = changeUserSurnameUseCase;
@@ -40,6 +42,8 @@ public class UserController {
         this.uploadProfileImageUseCase = uploadProfileImageUseCase;
         this.uploadCvFileUseCase = uploadCvFileUseCase;
         this.deleteUserUseCase = deleteUserUseCase;
+        this.getUserDetailsInfoUseCase = getUserDetailsInfoUseCase;
+        this.changeUserNameSurnameCityUseCase = changeUserNameSurnameCityUseCase;
     }
 
     @PatchMapping("/password")
@@ -82,6 +86,22 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    @PatchMapping("/city")
+    public ResponseEntity<UpdateUserResponse> changeCity(@RequestBody ChangeCityRequest request, Authentication authentication) throws AccessDeniedException {
+        User user = (User) authentication.getPrincipal();
+        Long userId = user.getId();
+        UpdateUserResponse response = changeUserEmailUseCase.execute(userId, request.email());
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/cityAndNameAndSurname")
+    public ResponseEntity<UpdateUserResponse> changeUserNameSurnameCity(@RequestBody ChangeUserNameSurnameCityRequest request, Authentication authentication) throws AccessDeniedException {
+        User user = (User) authentication.getPrincipal();
+        Long userId = user.getId();
+        UpdateUserResponse response = changeUserNameSurnameCityUseCase.execute(userId, request);
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping(value = "/upload/profileImage", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<UploadFileResponse> uploadProfilePhoto(@RequestParam MultipartFile multipartFile, @RequestParam String email, Authentication authentication) throws AccessDeniedException, IOException {
         User user = (User) authentication.getPrincipal();
@@ -105,6 +125,15 @@ public class UserController {
 
         DeleteUserResponse response = deleteUserUseCase.execute(id);
         return  ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/userDetails")
+    public ResponseEntity<UserDetailsResponse> userDetails(Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        Long id = user.getId();
+
+        UserDetailsResponse response = getUserDetailsInfoUseCase.execute(id);
+        return ResponseEntity.ok(response);
     }
 
 }

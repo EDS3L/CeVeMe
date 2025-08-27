@@ -39,10 +39,10 @@ public class RegisterUserUseCase {
         if(userRepository.existsByEmail(email)) throw new IllegalArgumentException("Email already exists!");
 
 
-        User user = User.createNewUser(name,surname,phoneNumber,bCryptPasswordEncoderAdapter.encode(password),email,null,null,null,null,activationToken);
+        User user = User.createNewUser(name,surname,phoneNumber,bCryptPasswordEncoderAdapter.encode(password),email,null,null,null,null,activationToken, request.city());
         activationToken.setUser(user);
         userRepository.save(user);
 
-        return new RegisterUserResponse(name.name(),surname.surname(),email.email(),"Register successful!");
+        return new RegisterUserResponse(name.name(),surname.surname(),email.email(), request.city(), "Register successful!");
     }
 }
