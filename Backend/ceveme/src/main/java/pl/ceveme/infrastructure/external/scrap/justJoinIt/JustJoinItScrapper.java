@@ -37,7 +37,7 @@ public class JustJoinItScrapper extends AbstractJobScraper {
             int pages = totalPageNumber();
             log.info("Total pages {}", pages);
             List<String> all = new ArrayList<>();
-            for (int p = 1; p <= 2; p++) {
+            for (int p = 1; p <= pages; p++) {
                 log.info("Currnet page {}", p);
                 JsonNode page = objectMapper.readTree(httpClient.fetchContentJJI(String.format(API_URL, p)));
                 extractLinks(page, all);

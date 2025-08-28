@@ -20,6 +20,6 @@ public class GetUserDetailsInfoUseCase {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        return new UserDetailsResponse(user.getName().name(),user.getSurname().surname(),user.getPhoneNumber().phoneNumber(),user.getEmail().email());
+        return new UserDetailsResponse(user.getName().name(),user.getSurname().surname(),user.getPhoneNumber().phoneNumber(),user.getEmail().email(), user.getCity());
     }
 }
