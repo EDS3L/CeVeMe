@@ -120,6 +120,24 @@ class UserDetailsInfo {
       console.error('changeEmail error:', error);
     }
   }
+
+  async changePassowrd(email, newPassword, confirmPassword) {
+    const response = await axios({
+      url: `/api/users/password`,
+      method: 'PATCH',
+      data: {
+        email,
+        newPassword,
+        confirmPassword,
+      },
+      headers: {
+        Authorization: `Bearer ${jwt}`,
+      },
+      withCredentials: true,
+    });
+    toast.success(response.data?.message);
+    return response.data;
+  }
 }
 
 export default UserDetailsInfo;

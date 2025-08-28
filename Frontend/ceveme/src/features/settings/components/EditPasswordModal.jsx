@@ -1,17 +1,35 @@
 import React, { useState, useEffect } from 'react';
+import UserDetailsInfo from '../hooks/useUserDeailsInfo';
+import UserService from '../../../hooks/UserService';
+import { Eye, EyeOff } from 'lucide-react';
 
 export default function EditPasswordModal({ open, onClose }) {
+  const [oldPass, setOldPass] = useState('');
   const [pass, setPass] = useState('');
   const [confirm, setConfirm] = useState('');
-  const [show, setShow] = useState(false);
+  const [showCurrentPass, setShowCurrentPass] = useState(false);
+  const [showPass, setShowPass] = useState(false);
+  const [showConfirmPass, setShowConfirmPass] = useState(false);
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
+
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+  }
+  const token = getCookie('jwt');
+
+  const userService = new UserService();
+  const email = userService.getEmailFromToken(token);
 
   useEffect(() => {
     if (open) {
       setPass('');
       setConfirm('');
-      setShow(false);
+      setShowCurrentPass(false);
+      setShowPass(false);
+      setShowConfirmPass(false);
       setError('');
     }
   }, [open]);
@@ -28,12 +46,15 @@ export default function EditPasswordModal({ open, onClose }) {
       setError(v);
       return;
     }
+    setSaving(true);
+    setError('');
     try {
-      setSaving(true);
-      await new Promise((r) => setTimeout(r, 700));
-      onClose();
+      const useDetailsInfo = new UserDetailsInfo();
+      const res = await useDetailsInfo.changePassowrd(email, pass, oldPass);
+      return res;
     } catch (err) {
-      setError('Błąd zmiany hasła', err);
+      const msg = err?.response?.data?.message || err?.message;
+      setError(msg);
     } finally {
       setSaving(false);
     }
@@ -58,12 +79,32 @@ export default function EditPasswordModal({ open, onClose }) {
           Wprowadź nowe hasło i potwierdź je.
         </p>
 
-        <div className="grid gap-3 md:grid-cols-2">
+        <div className="grid gap-3 md:grid-cols-1">
+          <div>
+            <label className="text-xs text-cloudmedium">Akutalne hasło</label>
+            <div className="mt-1 relative">
+              <input
+                id="currentPasswordInput"
+                type={showCurrentPass ? 'text' : 'password'}
+                value={oldPass}
+                onChange={(e) => setOldPass(e.target.value)}
+                className="w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-feedbackfocus"
+                placeholder="••••••••"
+              />
+              <button
+                type="button"
+                onClick={() => setShowCurrentPass((s) => !s)}
+                className="absolute right-2 cursor-pointer top-1/2 -translate-y-1/2 text-cloudmedium"
+              >
+                {showPass ? <EyeOff /> : <Eye />}
+              </button>
+            </div>
+          </div>
           <div>
             <label className="text-xs text-cloudmedium">Nowe hasło</label>
             <div className="mt-1 relative">
               <input
-                type={show ? 'text' : 'password'}
+                type={showPass ? 'text' : 'password'}
                 value={pass}
                 onChange={(e) => setPass(e.target.value)}
                 className="w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-feedbackfocus"
@@ -71,25 +112,31 @@ export default function EditPasswordModal({ open, onClose }) {
               />
               <button
                 type="button"
-                onClick={() => setShow((s) => !s)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-cloudmedium"
+                onClick={() => showPass((s) => !s)}
+                className="absolute right-2 cursor-pointer top-1/2 -translate-y-1/2 text-cloudmedium"
               >
-                {show ? 'Ukryj' : 'Pokaż'}
+                {showPass ? <EyeOff /> : <Eye />}
               </button>
             </div>
-            <p className="text-xs text-cloudmedium mt-2">Min. 8 znaków.</p>
           </div>
-
           <div>
             <label className="text-xs text-cloudmedium">Potwierdź hasło</label>
             <input
-              type={show ? 'text' : 'password'}
+              type={showConfirmPass ? 'text' : 'password'}
               value={confirm}
               onChange={(e) => setConfirm(e.target.value)}
               className="mt-1 w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-feedbackfocus"
               placeholder="••••••••"
             />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPass((s) => !s)}
+              className="absolute cursor-pointer right-8 top-2/3 text-cloudmedium"
+            >
+              {showConfirmPass ? <EyeOff /> : <Eye />}
+            </button>
           </div>
+          <p className="text-xs text-cloudmedium mt-2">Min. 8 znaków.</p>
         </div>
 
         {error && <p className="mt-3 text-sm text-feedbackerror">{error}</p>}

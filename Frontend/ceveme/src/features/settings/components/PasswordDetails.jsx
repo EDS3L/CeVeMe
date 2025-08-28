@@ -1,8 +1,10 @@
 import { Lock, Phone, Save, ShieldAlert, User } from 'lucide-react';
-import React from 'react';
+import React, { useState } from 'react';
 import FieldWithAI from '../../user/components/ui/FieldWithAI';
+import EditPasswordModal from './EditPasswordModal';
 
 function PasswordDetails() {
+  const [openPasswordModal, setOpenPasswordModal] = useState(false);
   return (
     <div className="border-b border-gray-300 p-3">
       <div className="font-semibold items-center grid gap-3 p-2 ">
@@ -28,7 +30,11 @@ function PasswordDetails() {
                   </div>
                 </div>
                 <div>
-                  <button className="text-center bg-slatelight p-3 rounded-2xl text-white font-bold">
+                  <button
+                    className="text-center bg-slatelight p-3 rounded-2xl text-white font-bold"
+                    type="button"
+                    onClick={() => setOpenPasswordModal(true)}
+                  >
                     Zapisz
                   </button>
                 </div>
@@ -38,6 +44,11 @@ function PasswordDetails() {
           </div>
         </div>
       </div>
+
+      <EditPasswordModal
+        open={openPasswordModal}
+        onClose={() => setOpenPasswordModal(false)}
+      />
     </div>
   );
 }

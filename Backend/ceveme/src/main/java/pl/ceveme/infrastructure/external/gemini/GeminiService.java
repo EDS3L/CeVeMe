@@ -24,44 +24,16 @@ public class GeminiService implements GeminiMapper {
 
     private final UserRepository userRepository;
     private final ScrapChooser scrapChooser;
-    private final JobOfferRepository jobOfferRepository;
     private final GeminiHttpClient fetchAi;
     private final EmploymentInfoMapper mapper;
     private final ObjectMapper objectMapper;
 
-
-    public GeminiService(UserRepository userRepository, ScrapChooser scrapChooser, JobOfferRepository jobOfferRepository, GeminiHttpClient fetchAi, EmploymentInfoMapper mapper, ObjectMapper objectMapper) {
+    public GeminiService(UserRepository userRepository, ScrapChooser scrapChooser, GeminiHttpClient fetchAi, EmploymentInfoMapper mapper, ObjectMapper objectMapper) {
         this.userRepository = userRepository;
         this.scrapChooser = scrapChooser;
-        this.jobOfferRepository = jobOfferRepository;
         this.fetchAi = fetchAi;
         this.mapper = mapper;
         this.objectMapper = objectMapper;
-    }
-
-    @Transactional
-    public GeminiResponse responseByExistOffer(GeminiExistOfferRequest request) throws JsonProcessingException {
-        User user = userRepository.findByEmail(new Email(request.email()))
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-
-        EmploymentInfo employmentInfo = user.getEmploymentInfo();
-        EmploymentInfoResponse response = mapper.toResponse(employmentInfo);
-
-        JobOffer offer = jobOfferRepository.findById(request.id())
-                .orElseThrow(() -> new IllegalArgumentException("Job offer not found"));
-
-        String prompt = PromptBuilder.createPrompt(new DataContainer(offer, user, response));
-        String aiResponse = fetchAi.getResponse(prompt).text();
-
-        String cleanedJson = cleanJsonResponse(aiResponse);
-
-
-        try {
-            return objectMapper.readValue(cleanedJson, GeminiResponse.class);
-
-        } catch (JsonProcessingException e) {
-            return parseJson(cleanedJson, objectMapper);
-        }
     }
 
     @Transactional
@@ -76,9 +48,10 @@ public class GeminiService implements GeminiMapper {
 
         String prompt = PromptBuilder.createPrompt(new DataLinkContainer(offer, user, response));
         String aiResponse = fetchAi.getResponse(prompt).text();
+        log.info("cleanded JSON {}", aiResponse);
 
         String cleanedJson = cleanJsonResponse(aiResponse);
-        log.info("cleanded JSON {}", cleanedJson);
+
 
 
         try {

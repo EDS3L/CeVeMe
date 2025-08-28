@@ -19,7 +19,7 @@ public record Name(String name) {
         if (name.length() < 3) {
             throw new IllegalArgumentException("Name must be at least 2 characters long");
         }
-        if (!name.matches("[a-zA-Z]*")) {
+        if (!name.matches("[a-zA-ZąĄćĆęĘłŁńŃóÓśŚźŹżŻ]*")) {
             throw new IllegalArgumentException("Name must contain only letters (no digits or special characters).");
         }
 

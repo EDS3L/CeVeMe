@@ -257,6 +257,8 @@ public class User {
                 ", surname=" + surname +
                 ", phoneNumber=" + phoneNumber +
                 ", email=" + email +
+                ", city='" + city + '\'' +
+                ", image='" + image + '\'' +
                 '}';
     }
 }

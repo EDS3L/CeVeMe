@@ -7,6 +7,7 @@ const PAD = 4; // mm — ciaśniej, pełniejsza karta
 // Uniwersalna lista z okrągłym markerem (kropką)
 const BulletList = ({ items }) => {
   const data = (items || []).filter(Boolean);
+
   if (!data.length) return null;
 
   return (
@@ -43,7 +44,15 @@ const BulletList = ({ items }) => {
   );
 };
 
+const LINK_ICONS = {
+  github:
+    'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg',
+  linkedin:
+    'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linkedin/linkedin-original.svg',
+};
+
 const CVPreviewClassic = React.forwardRef(({ cvData }, ref) => {
+  console.log(cvData);
   if (!cvData) return null;
 
   const {
@@ -85,18 +94,104 @@ const CVPreviewClassic = React.forwardRef(({ cvData }, ref) => {
           marginBottom: '4.5mm',
           borderBottom: '0.4mm solid #e2e8f0',
           paddingBottom: '2mm',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '16mm',
         }}
       >
-        <div style={{ fontSize: '17pt', fontWeight: 800, lineHeight: 1.15 }}>
-          {personalData?.name}
-        </div>
-        <div style={{ fontSize: '10pt', color: MUTED, marginTop: '0.8mm' }}>
-          {headline}
-        </div>
-        <div style={{ fontSize: '9pt', color: MUTED, marginTop: '1mm' }}>
-          {[personalData?.email, personalData?.phoneNumber, personalData?.city]
-            .filter(Boolean)
-            .join(' • ')}
+        {/* Avatar */}
+        {personalData?.images ||
+        personalData?.image ||
+        personalData?.avatarUrl ? (
+          <div
+            style={{
+              width: '32mm',
+              height: '32mm',
+              borderRadius: '50%',
+              overflow: 'hidden',
+              border: '1.5mm solid #e2e8f0',
+              flexShrink: 0,
+              background: '#f8fafc',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <img
+              src={
+                personalData.images ||
+                personalData.image ||
+                personalData.avatarUrl
+              }
+              alt="Zdjęcie profilowe"
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                borderRadius: '50%',
+                display: 'block',
+              }}
+            />
+          </div>
+        ) : null}
+
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: '17pt', fontWeight: 800, lineHeight: 1.15 }}>
+            {personalData?.name}
+          </div>
+          <div style={{ fontSize: '10pt', color: MUTED, marginTop: '0.8mm' }}>
+            {headline}
+          </div>
+          <div style={{ fontSize: '9pt', color: MUTED, marginTop: '1mm' }}>
+            {[
+              personalData?.email,
+              personalData?.phoneNumber,
+              personalData?.city,
+            ]
+              .filter(Boolean)
+              .join(' • ')}
+          </div>
+          {/* Linki społecznościowe */}
+          {Array.isArray(personalData?.links) &&
+            personalData.links.length > 0 && (
+              <div style={{ marginTop: '2mm', display: 'flex', gap: '6mm' }}>
+                {personalData.links.map((link, i) => (
+                  <a
+                    key={i}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '2mm',
+                      fontSize: '9pt',
+                      color: ACCENT,
+                      textDecoration: 'none',
+                      fontWeight: 500,
+                    }}
+                  >
+                    {LINK_ICONS[link.type] ? (
+                      <img
+                        src={LINK_ICONS[link.type]}
+                        alt={link.type}
+                        style={{
+                          width: '5mm',
+                          height: '5mm',
+                          objectFit: 'contain',
+                          borderRadius: '50%',
+                          background: '#fff',
+                          border: '0.2mm solid #e2e8f0',
+                        }}
+                      />
+                    ) : null}
+                    <span>
+                      {link.type.charAt(0).toUpperCase() + link.type.slice(1)}
+                    </span>
+                  </a>
+                ))}
+              </div>
+            )}
         </div>
       </div>
 
@@ -170,10 +265,12 @@ const CVPreviewClassic = React.forwardRef(({ cvData }, ref) => {
                       {exp.period}
                     </div>
                   </div>
-                  <div style={{ fontSize: '9.5pt', color: MUTED }}>
+                  <div style={{ fontSize: '9.5pt', color: 'black' }}>
                     {exp.company}
                   </div>
-
+                  <div style={{ fontSize: '10pt', color: MUTED }}>
+                    {exp.jobDescription}
+                  </div>
                   {/* Osiągnięcia jako kropki */}
                   <BulletList
                     items={
