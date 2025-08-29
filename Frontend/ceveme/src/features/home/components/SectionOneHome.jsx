@@ -1,16 +1,13 @@
-import HomeNavBar from "../components/HomeNavBar";
-import HomeNavBarScroll from "../components/HomeNavBarScroll";
+import HomeNavBar from "./SectionOneComponents/HomeNavBar";
+import HomeNavBarScroll from "./SectionOneComponents/HomeNavBarScroll";
+import Hero from "./SectionOneComponents/Hero";
 
 function SectionOneHome() {
 	return (
 		<div className="h-screen flex flex-col">
 			<HomeNavBar />
 			<HomeNavBarScroll />
-			<div className="flex-1 bg-gradient-to-b from-manilla to-ivorydark flex items-center justify-center">
-				<div className="w-5/6 h-8/12 md:w-4/5 lg:w-3/4 xl:w-2/3 2xl:w-1/2 bg-cloudlight border-2 rounded-4xl border-black flex justify-center items-center">
-					<p className="text-center">Witaj</p>
-				</div>
-			</div>
+			<Hero />
 		</div>
 	);
 }
