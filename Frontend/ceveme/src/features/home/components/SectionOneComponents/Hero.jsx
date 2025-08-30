@@ -6,7 +6,7 @@ function Hero() {
 		<div className="min-h-screen bg-gradient-to-b from-manilla to-ivorydark h-screen flex flex-col justify-center items-center font-sans relative overflow-hidden">
 			{/* Background shape */}
 			<div
-				className="absolute top-40 left-1/2 transform -translate-x-1/2 w-7/10 h-8/10 bg-ivorydark rounded-full opacity-20"
+				className="absolute top-40 left-1/2 transform -translate-x-1/2 w-7/10 h-8/10 bg-ivorydark rounded-full opacity-30"
 				style={{ clipPath: "ellipse(50% 50% at 50% 50%)" }}
 			></div>
 			<div className="relative z-10 text-center px-4">
@@ -20,10 +20,18 @@ function Hero() {
 					ofert pracy w zaledwie kilka chwil
 				</p>
 				<Link to={"/auth/register"}>
-					<button className="mt-12 px-8 py-3 bg-black text-white rounded-full text-lg font-medium hover:bg-gray-800 transition-colors duration-200">
+					<button className="mt-12 px-8 py-3 bg-black cursor-pointer text-white rounded-full text-lg font-medium hover:bg-gray-800 transition-colors duration-200">
 						Dołącz do nas
 					</button>
 				</Link>
+				<p className="pt-2">
+					Masz już konto?{" "}
+					<Link to={"/auth/login"}>
+						<button className="hover:text-amber-700 font-bold cursor-pointer">
+							Zaloguj się
+						</button>
+					</Link>
+				</p>
 			</div>
 		</div>
 	);
