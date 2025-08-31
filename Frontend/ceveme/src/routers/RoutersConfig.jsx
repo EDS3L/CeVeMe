@@ -40,6 +40,13 @@ const RoutersConfig = {
     ),
     requiredRole: null,
   },
+  histories: {
+    path: '/history',
+    component: React.lazy(() =>
+      import('../features/applicationHistories/pages/ApplicationHistoriesPage')
+    ),
+    requiredRole: null,
+  },
 };
 
 export default RoutersConfig;

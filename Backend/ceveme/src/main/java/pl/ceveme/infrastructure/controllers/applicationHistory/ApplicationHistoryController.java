@@ -1,14 +1,13 @@
 package pl.ceveme.infrastructure.controllers.applicationHistory;
 
-import org.apache.tomcat.util.http.parser.Authorization;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import pl.ceveme.application.dto.applicationHistories.ApplicationHistoriesResponse;
 import pl.ceveme.application.dto.entity.applicationHistory.ApplicationHistoryRequest;
 import pl.ceveme.application.dto.entity.applicationHistory.ApplicationHistoryResponse;
 import pl.ceveme.application.usecase.applicationHistory.GetApplicationHistoriesUseCase;
 import pl.ceveme.application.usecase.applicationHistory.SaveApplicationHistoryUseCase;
-import pl.ceveme.domain.model.entities.ApplicationHistory;
 import pl.ceveme.domain.model.entities.User;
 
 import java.util.List;
@@ -34,7 +33,7 @@ public class ApplicationHistoryController {
 
 
     @GetMapping("/")
-    public ResponseEntity<List<ApplicationHistory>>  histories(Authentication authentication) {
+    public ResponseEntity<List<ApplicationHistoriesResponse>> histories(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         Long userId = user.getId();
         return ResponseEntity.ok(getApplicationHistoriesUseCase.execute(userId));

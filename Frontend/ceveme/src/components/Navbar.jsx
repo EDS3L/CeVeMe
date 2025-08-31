@@ -66,10 +66,10 @@ function Navbar({ showShadow }) {
               Oferty
             </Link>
             <Link
-              to="/contact"
+              to="/history"
               className="text-[var(--color-clouddark)] hover:text-[var(--color-slatedark)] transition-colors duration-200 font-bold"
             >
-              Contact
+              Historia aplikacji
             </Link>
           </div>
 
