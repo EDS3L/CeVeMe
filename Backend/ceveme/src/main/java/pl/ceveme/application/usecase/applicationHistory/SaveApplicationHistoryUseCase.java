@@ -14,7 +14,7 @@ public class SaveApplicationHistoryUseCase {
         this.applicationHistoryService = applicationHistoryService;
     }
 
-    public ApplicationHistoryResponse execute(ApplicationHistoryRequest request) {
-        return applicationHistoryService.saveApplication(request);
+    public ApplicationHistoryResponse execute(ApplicationHistoryRequest request, Long userId) {
+        return applicationHistoryService.saveApplication(request, userId);
     }
 }

@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpHeaders;
@@ -21,34 +22,26 @@ import pl.ceveme.domain.repositories.UserRepository;
 
 import java.io.IOException;
 
-
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UserRepository userRepository;
 
+    private static final String COOKIE_NAME = "jwt";
+
     public JwtFilter(JwtService jwtService, UserRepository userRepository) {
         this.jwtService = jwtService;
         this.userRepository = userRepository;
     }
 
-
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
-
-        String header = request.getHeader(HttpHeaders.AUTHORIZATION);
-
-        if (header == null) {
-            filterChain.doFilter(request, response);
-            return;
-        }
 
         String token = extractToken(request);
 
         if (token == null || token.isBlank()) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Token not found!");
+            filterChain.doFilter(request, response);
             return;
         }
 
@@ -71,9 +64,25 @@ public class JwtFilter extends OncePerRequestFilter {
         }
     }
 
-
     private String extractToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        return (bearerToken != null && bearerToken.startsWith("Bearer ")) ? bearerToken.substring(7) : null;
+        String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (COOKIE_NAME.equals(cookie.getName())) {
+                    String cookieValue = cookie.getValue();
+                    if (cookieValue.startsWith("Bearer ")) {
+                        return cookieValue.substring(7);
+                    }
+                    return cookieValue;
+                }
+            }
+        }
+
+        return null;
     }
 }

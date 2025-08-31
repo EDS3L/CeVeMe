@@ -25,14 +25,8 @@ public class SearchJobOffersUseCase {
         String qq = (q == null) ? "" : q.trim();
 
         return jobOfferRepository
-                .findByDateEndingGreaterThanEqualAndTitleContainingIgnoreCaseOrDateEndingGreaterThanEqualAndCompanyContainingIgnoreCaseOrDateEndingGreaterThanEqualAndLocation_CityContainingIgnoreCaseOrDateEndingGreaterThanEqualAndRequirementsContainingIgnoreCaseOrDateEndingGreaterThanEqualAndExperienceLevelContainingIgnoreCaseOrDateEndingGreaterThanEqualAndEmploymentTypeContainingIgnoreCase(
-                today, qq,
-                today, qq,
-                today, qq,
-                today, qq,
-                today, qq,
-                today, qq,
-                pageable
+                .searchActive(
+                today, qq, pageable
         );
     }
 
@@ -48,7 +42,7 @@ public class SearchJobOffersUseCase {
         LocalDate today = LocalDate.now();
 
         return jobOfferRepository
-                .findByDateEndingGreaterThanEqualAndDateAddedBetweenAndCompanyContainingIgnoreCaseAndLocation_CityContainingIgnoreCaseAndExperienceLevelContainingIgnoreCaseAndEmploymentTypeContainingIgnoreCaseAndTitleContainingIgnoreCase(
+                .search(
                         today, from, to,
                         def(company), def(city), def(experienceLevel), def(employmentType), def(title),
                         pageable

@@ -8,7 +8,6 @@ import pl.ceveme.domain.model.entities.ApplicationHistory;
 import pl.ceveme.domain.model.entities.Cv;
 import pl.ceveme.domain.model.entities.JobOffer;
 import pl.ceveme.domain.model.entities.User;
-import pl.ceveme.domain.model.vo.Email;
 import pl.ceveme.domain.repositories.ApplicationHistoryRepository;
 import pl.ceveme.domain.repositories.CvRepository;
 import pl.ceveme.domain.repositories.JobOfferRepository;
@@ -20,29 +19,27 @@ import java.time.LocalDate;
 public class ApplicationHistoryService {
 
     private final UserRepository userRepository;
-    private final ApplicationHistoryRepository applicationHistoryRepository;
     private final JobOfferRepository jobOfferRepository;
     private final CvRepository cvRepository;
 
-    public ApplicationHistoryService(UserRepository userRepository, ApplicationHistoryRepository applicationHistoryRepository, JobOfferRepository jobOfferRepository, CvRepository cvRepository) {
+    public ApplicationHistoryService(UserRepository userRepository, JobOfferRepository jobOfferRepository, CvRepository cvRepository) {
         this.userRepository = userRepository;
-        this.applicationHistoryRepository = applicationHistoryRepository;
         this.jobOfferRepository = jobOfferRepository;
         this.cvRepository = cvRepository;
     }
 
     @Transactional
-    public ApplicationHistoryResponse saveApplication(ApplicationHistoryRequest request) {
-        User user = userRepository.findByEmail(new Email(request.email()))
+    public ApplicationHistoryResponse saveApplication(ApplicationHistoryRequest request, Long userId) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        JobOffer jobOffer = jobOfferRepository.findById(request.idJobOffer())
+        JobOffer jobOffer = jobOfferRepository.findByLink(request.link())
                 .orElseThrow(() -> new IllegalArgumentException("Job offer not found"));
 
         Cv cv = cvRepository.findById(request.cvId())
                 .orElseThrow(() -> new IllegalArgumentException("Cv not found"));
 
-        ApplicationHistory applicationHistory = new ApplicationHistory(LocalDate.now(), jobOffer);
+        ApplicationHistory applicationHistory = new ApplicationHistory(jobOffer,LocalDate.now(),user,cv, ApplicationHistory.STATUS.PENDING);
 
         user.getApplicationHistoryList().add(applicationHistory);
 

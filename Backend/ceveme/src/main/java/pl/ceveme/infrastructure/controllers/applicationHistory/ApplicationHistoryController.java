@@ -1,26 +1,42 @@
 package pl.ceveme.infrastructure.controllers.applicationHistory;
 
+import org.apache.tomcat.util.http.parser.Authorization;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 import pl.ceveme.application.dto.entity.applicationHistory.ApplicationHistoryRequest;
 import pl.ceveme.application.dto.entity.applicationHistory.ApplicationHistoryResponse;
+import pl.ceveme.application.usecase.applicationHistory.GetApplicationHistoriesUseCase;
 import pl.ceveme.application.usecase.applicationHistory.SaveApplicationHistoryUseCase;
+import pl.ceveme.domain.model.entities.ApplicationHistory;
+import pl.ceveme.domain.model.entities.User;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/applicationHistory")
 public class ApplicationHistoryController {
 
     private final SaveApplicationHistoryUseCase saveApplicationHistoryUseCase;
+    private final GetApplicationHistoriesUseCase getApplicationHistoriesUseCase;
 
-    public ApplicationHistoryController(SaveApplicationHistoryUseCase saveApplicationHistoryUseCase) {
+    public ApplicationHistoryController(SaveApplicationHistoryUseCase saveApplicationHistoryUseCase, GetApplicationHistoriesUseCase getApplicationHistoriesUseCase) {
         this.saveApplicationHistoryUseCase = saveApplicationHistoryUseCase;
+        this.getApplicationHistoriesUseCase = getApplicationHistoriesUseCase;
     }
 
-    @PostMapping
-    public ResponseEntity<ApplicationHistoryResponse> save(@RequestBody ApplicationHistoryRequest request) {
-        return ResponseEntity.ok(saveApplicationHistoryUseCase.execute(request));
+    @PostMapping("/save")
+    public ResponseEntity<ApplicationHistoryResponse> save(@RequestBody ApplicationHistoryRequest request, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        Long userId = user.getId();
+        return ResponseEntity.ok(saveApplicationHistoryUseCase.execute(request,userId));
+    }
+
+
+    @GetMapping("/")
+    public ResponseEntity<List<ApplicationHistory>>  histories(Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        Long userId = user.getId();
+        return ResponseEntity.ok(getApplicationHistoriesUseCase.execute(userId));
     }
 }

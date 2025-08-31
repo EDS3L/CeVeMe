@@ -1,21 +1,17 @@
 package pl.ceveme.infrastructure.controllers.user;
 
-import com.sun.security.auth.UserPrincipal;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import pl.ceveme.application.dto.cloud.UploadFileResponse;
 import pl.ceveme.application.dto.user.*;
+import pl.ceveme.application.usecase.cv.UploadCvFileUseCase;
 import pl.ceveme.application.usecase.user.*;
 import pl.ceveme.domain.model.entities.User;
 
-import javax.security.auth.Subject;
 import java.io.IOException;
-import java.net.Authenticator;
 import java.nio.file.AccessDeniedException;
 
 @RestController
@@ -111,10 +107,10 @@ public class UserController {
     }
 
     @PostMapping(value = "/upload/cvFile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<UploadFileResponse> uploadCvFile(@RequestParam MultipartFile multipartFile, @RequestParam String email, @RequestParam Long jobOfferId, Authentication authentication) throws AccessDeniedException, IOException {
+    public ResponseEntity<UploadFileResponse> uploadCvFile(@RequestParam MultipartFile multipartFile, @RequestParam String jobOfferLink, Authentication authentication) throws AccessDeniedException, IOException {
         User user = (User) authentication.getPrincipal();
         Long userId = user.getId();
-        UploadFileResponse response = uploadCvFileUseCase.execute(multipartFile,email,jobOfferId, userId);
+        UploadFileResponse response = uploadCvFileUseCase.execute(multipartFile, userId, jobOfferLink);
         return ResponseEntity.ok(response);
     }
 

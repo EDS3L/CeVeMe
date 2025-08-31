@@ -58,7 +58,7 @@ public class FileManager {
                 .map(Object::toString)
                 .orElseThrow(() -> new IOException("Upload response missing URL"));
 
-        return new UploadFileResponse(originalFilename, url, "Upload successful");
+        return new UploadFileResponse(originalFilename, url, "Upload successful", null);
     }
 
 
