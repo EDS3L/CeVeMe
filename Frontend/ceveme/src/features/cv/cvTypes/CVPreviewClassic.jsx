@@ -52,7 +52,6 @@ const LINK_ICONS = {
 };
 
 const CVPreviewClassic = React.forwardRef(({ cvData }, ref) => {
-  console.log(cvData);
   if (!cvData) return null;
 
   const {

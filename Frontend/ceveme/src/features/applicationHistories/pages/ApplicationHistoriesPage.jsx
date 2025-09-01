@@ -33,7 +33,7 @@ export default function ApplicationHistoryPage() {
   const handleStatusChange = async (id, newStatus) => {
     const originalHistories = [...histories];
     const updatedHistories = histories.map((history) =>
-      history._id === id ? { ...history, status: newStatus } : history
+      history.id === id ? { ...history, status: newStatus } : history
     );
     setHistories(updatedHistories);
 
@@ -59,10 +59,10 @@ export default function ApplicationHistoryPage() {
       <div className="space-y-6">
         {histories.map((history) => (
           <ApplicationHistoryCard
-            key={history._id}
+            key={history.id}
             history={history}
             onStatusChange={(newStatus) =>
-              handleStatusChange(history._id, newStatus)
+              handleStatusChange(history.id, newStatus)
             }
           />
         ))}

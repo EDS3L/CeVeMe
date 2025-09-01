@@ -26,6 +26,7 @@ public class GetApplicationHistoriesUseCase {
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         return user.getApplicationHistoryList().stream().map(ah -> new ApplicationHistoriesResponse(
+                ah.getId(),
                 ah.getJobOffer().getCompany(),
                 ah.getJobOffer().getLink(),
                 ah.getApplicationDate(),

@@ -21,11 +21,13 @@ public class ApplicationHistoryService {
     private final UserRepository userRepository;
     private final JobOfferRepository jobOfferRepository;
     private final CvRepository cvRepository;
+    private final ApplicationHistoryRepository applicationHistoryRepository;
 
-    public ApplicationHistoryService(UserRepository userRepository, JobOfferRepository jobOfferRepository, CvRepository cvRepository) {
+    public ApplicationHistoryService(UserRepository userRepository, JobOfferRepository jobOfferRepository, CvRepository cvRepository, ApplicationHistoryRepository applicationHistoryRepository) {
         this.userRepository = userRepository;
         this.jobOfferRepository = jobOfferRepository;
         this.cvRepository = cvRepository;
+        this.applicationHistoryRepository = applicationHistoryRepository;
     }
 
     @Transactional
@@ -46,6 +48,7 @@ public class ApplicationHistoryService {
         applicationHistory.setCv(cv);
         applicationHistory.setUser(user);
 
+        applicationHistoryRepository.save(applicationHistory);
         userRepository.save(user);
 
 

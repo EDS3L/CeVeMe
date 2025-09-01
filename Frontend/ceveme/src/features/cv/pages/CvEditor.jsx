@@ -5,10 +5,10 @@ import React, {
   useState,
   useCallback,
 } from 'react';
-
 import { useReactToPrint } from 'react-to-print';
 import { toast } from 'react-toastify';
 import { useLocation } from 'react-router-dom';
+import cvData from './mockData';
 
 import Navbar from '../../../components/Navbar';
 import LayoutPicker from '../components/LayoutPicker';
@@ -23,10 +23,23 @@ import { LAYOUTS, getLayoutComponent } from './constants/layouts';
 import { prepareForSnapshot } from './utils/dom';
 import { usePdfExport } from './hooks/usePdfExport';
 import { useCvSave } from './hooks/useCvSave';
+import { Stage, Layer, Rect, Text, Group } from 'react-konva';
+
+export function Editor() {
+  return (
+    <Stage width={1122} height={794}>
+      <Layer>
+        <Group draggable>
+          <Rect x={50} y={50} width={200} height={100} fill="lightblue"></Rect>
+          <Text text="Hello Canva Clone!" x={60} y={70} fontSize={20} />
+        </Group>
+      </Layer>
+    </Stage>
+  );
+}
 
 export default function CvEditorPage() {
   const {
-    cvData,
     offerLink,
     setOfferLink,
     loading,
@@ -37,14 +50,6 @@ export default function CvEditorPage() {
 
   const [layout, setLayout] = useState('classic');
   const location = useLocation();
-
-  //GetHeight
-  const [previewHeight, setPreviewHeight] = useState(0);
-
-  const getHeight = () => {
-    setPreviewHeight(innerRef.current.clientHeight);
-    return previewHeight;
-  };
 
   // skalowany (wewnątrz) i drukowany (strona)
   const innerRef = useRef(null);
@@ -60,29 +65,31 @@ export default function CvEditorPage() {
   });
 
   // ładowanie danych po wejściu "z linkiem"
-  const generateRef = useRef(handleGenerateCv);
-  useEffect(() => {
-    generateRef.current = handleGenerateCv;
-  }, [handleGenerateCv]);
+  // const generateRef = useRef(handleGenerateCv);
+  // useEffect(() => {
+  //   generateRef.current = handleGenerateCv;
+  // }, [handleGenerateCv]);
 
   // wczytanie offerLink z nawigacji
-  useEffect(() => {
-    if (location.state?.offerLink) {
-      setOfferLink(location.state.offerLink);
-    }
-  }, [location.state?.offerLink, setOfferLink]);
+  // useEffect(() => {
+  //   if (location.state?.offerLink) {
+  //     setOfferLink(location.state.offerLink);
+  //   }
+  // }, [location.state?.offerLink, setOfferLink]);
 
   // autogeneracja gdy zmienia się offerLink
-  useEffect(() => {
-    if (!offerLink) return;
-    generateRef.current();
-  }, [offerLink]);
+  // useEffect(() => {
+  //   if (!offerLink) return;
+  //   generateRef.current();
+  // }, [offerLink]);
 
-  useEffect(() => {
-    getHeight();
-  });
+  const generatePdfBlob = usePdfExport(innerRef, pageRef, recomputeNow);
 
-  const generatePdfBlob = usePdfExport(innerRef, pageRef);
+  // const { savingMode, handleSaveAndHistory } = useCvSave({
+  //   cvData,
+  //   offerLink,
+  //   generatePdfBlob,
+  // });
 
   const { savingMode, handleSaveAndHistory } = useCvSave({
     cvData,
@@ -98,22 +105,25 @@ export default function CvEditorPage() {
     documentTitle: cvData?.personalData?.name
       ? `CV_${cvData.personalData.name.replace(/\s+/g, '_')}`
       : 'CV',
+    onBeforePrint: async () => {
+      await prepareForSnapshot(innerRef, recomputeNow);
+    },
   });
 
   const PreviewComponent = useMemo(() => getLayoutComponent(layout), [layout]);
 
-  const handleGenerate = useCallback(() => {
-    if (!offerLink) {
-      toast.info('Podaj link do oferty, aby wygenerować dopasowane CV.');
-      return;
-    }
-    generateRef.current();
-  }, [offerLink]);
+  // const handleGenerate = useCallback(() => {
+  //   if (!offerLink) {
+  //     toast.info('Podaj link do oferty, aby wygenerować dopasowane CV.');
+  //     return;
+  //   }
+  //   generateRef.current();
+  // }, [offerLink]);
 
   return (
     <div className="flex flex-col h-screen bg-[var(--color-ivorylight)] text-[var(--color-slatedark)]">
-      <Navbar showShadow={true} />
-
+      <Navbar />
+      <Editor />
       <div className="flex-1 min-h-0">
         {!cvData ? (
           <div className="max-w-5xl mx-auto p-8">
@@ -127,7 +137,6 @@ export default function CvEditorPage() {
           </div>
         ) : (
           <div className="h-full flex min-h-0">
-            {console.log(cvData)}
             {/* LEWY PANEL */}
             <div className="flex flex-col w-[400px] min-w-[360px] max-w-[440px] bg-[var(--color-ivorymedium)] border-r border-[color:rgba(0,0,0,0.08)]">
               <div className="px-4 py-3 border-b border-[color:rgba(0,0,0,0.06)]">
@@ -185,9 +194,7 @@ export default function CvEditorPage() {
                         dodasz tę aplikację do historii aplikowanych ofert.
                       </div>
                     </div>
-                    <div>
-                      <h2>Wysokość akutalnego CV to: {previewHeight}</h2>
-                    </div>
+
                     <button
                       onClick={handlePrint}
                       disabled={loading || !cvData}
@@ -197,16 +204,6 @@ export default function CvEditorPage() {
                         focus:ring-2 focus:ring-[var(--color-feedbackfocus)] disabled:opacity-50"
                     >
                       {loading ? 'Generowanie…' : 'Drukuj / PDF'}
-                    </button>
-                    <button
-                      onClick={() => prepareForSnapshot(innerRef, recomputeNow)}
-                      disabled={loading || !cvData}
-                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-md
-                        bg-[var(--color-bookcloth)] text-[var(--color-basewhite)] font-semibold
-                        shadow-sm hover:bg-[var(--color-kraft)] focus:outline-none
-                        focus:ring-2 focus:ring-[var(--color-feedbackfocus)] disabled:opacity-50"
-                    >
-                      Skaluj Do storny A4
                     </button>
                   </div>
                 </div>
@@ -219,7 +216,6 @@ export default function CvEditorPage() {
                     <div
                       id="cv-page"
                       ref={pageRef}
-                      // ref={previewRef}
                       style={{
                         width: '210mm',
                         height: '297mm',

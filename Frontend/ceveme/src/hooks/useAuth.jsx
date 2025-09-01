@@ -14,7 +14,6 @@ function useAuth() {
       try {
         const decodedToken = decodeURIComponent(token);
         const decoded = jwtDecode(decodedToken);
-        console.log('Decoded JWT:', decoded);
         setEmail(decoded.sub);
       } catch (error) {
         console.error('Invalid JWT token:', error);
@@ -22,14 +21,11 @@ function useAuth() {
 
         try {
           const decoded = jwtDecode(token);
-          console.log('Decoded JWT (without URL decode):', decoded);
           setEmail(decoded.email);
         } catch (secondError) {
           console.error('Second attempt failed:', secondError);
         }
       }
-    } else {
-      console.log('No JWT token found in cookies');
     }
   }, []);
 
