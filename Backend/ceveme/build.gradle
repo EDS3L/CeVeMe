@@ -42,6 +42,7 @@ dependencies {
 	testImplementation("org.assertj:assertj-core:3.27.3")
 
 	implementation("com.cloudinary:cloudinary-http5:2.3.0")
+	implementation("org.springframework.boot:spring-boot-starter-aop:3.5.3")
 }
 
 tasks.withType(Test).configureEach {
