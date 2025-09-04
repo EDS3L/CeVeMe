@@ -1,6 +1,7 @@
 package pl.ceveme.infrastructure.config.web;
 
 import io.swagger.v3.oas.annotations.Hidden;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,10 +11,13 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 import pl.ceveme.application.dto.exception.ApiError;
 
+import javax.naming.AuthenticationException;
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 import java.time.Instant;
 
 @RestControllerAdvice
@@ -33,6 +37,8 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiError> handleIllegalArgumentException(IllegalArgumentException ex, HttpServletRequest request) {
@@ -60,10 +66,9 @@ public class GlobalExceptionHandler {
 
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ApiError> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex, HttpServletRequest request) {
+    public ResponseEntity<ApiError> handleHttpMessageNotReadableException(HttpMediaTypeNotSupportedException ex, HttpServletRequest request) {
         logger.warn("Malformed JSON request: {}", ex.getMessage());
-        Throwable rootCause = ex.getMostSpecificCause();
-        String problem = rootCause.getMessage();
+        String problem = ex.getMessage();
         ApiError error = new ApiError(
                 "MALFORMED_JSON",
                 problem,
@@ -71,6 +76,19 @@ public class GlobalExceptionHandler {
                 request.getRequestURI()
         );
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(HttpClientErrorException.Forbidden.class)
+    public ResponseEntity<ApiError> handleHttpMessageAccessDeniedException(HttpClientErrorException.Forbidden ex, HttpServletRequest request) {
+        logger.warn("Access denied exception: {}", ex.getMessage());
+        String problem = ex.getMessage();
+        ApiError error = new ApiError(
+                "Access denied exception",
+                problem,
+                Instant.now(),
+                request.getRequestURI()
+        );
+        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)

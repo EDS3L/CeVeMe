@@ -6,9 +6,11 @@ import org.springframework.stereotype.Service;
 import pl.ceveme.application.dto.auth.RegisterUserRequest;
 import pl.ceveme.application.dto.auth.RegisterUserResponse;
 import pl.ceveme.domain.model.entities.ActivationToken;
+import pl.ceveme.domain.model.entities.EmploymentInfo;
 import pl.ceveme.domain.model.entities.User;
 import pl.ceveme.domain.model.vo.*;
 import pl.ceveme.domain.repositories.ActivationTokenRepository;
+import pl.ceveme.domain.repositories.EmploymentInfoRepository;
 import pl.ceveme.domain.repositories.UserRepository;
 import pl.ceveme.infrastructure.adapter.security.BCryptPasswordEncoderAdapter;
 
@@ -20,10 +22,12 @@ public class RegisterUserUseCase {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoderAdapter bCryptPasswordEncoderAdapter;
+    private final EmploymentInfoRepository employmentInfoRepository;
 
-    public RegisterUserUseCase(UserRepository userRepository, BCryptPasswordEncoderAdapter bCryptPasswordEncoderAdapter) {
+    public RegisterUserUseCase(UserRepository userRepository, BCryptPasswordEncoderAdapter bCryptPasswordEncoderAdapter, EmploymentInfoRepository employmentInfoRepository) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoderAdapter = bCryptPasswordEncoderAdapter;
+        this.employmentInfoRepository = employmentInfoRepository;
     }
 
     @Transactional
@@ -40,8 +44,13 @@ public class RegisterUserUseCase {
 
 
         User user = User.createNewUser(name,surname,phoneNumber,bCryptPasswordEncoderAdapter.encode(password),email,null,null,null,null,activationToken, request.city());
+        EmploymentInfo employmentInfo = new EmploymentInfo();
+        user.setEmploymentInfo(employmentInfo);
+        employmentInfo.setUser(user);
         activationToken.setUser(user);
+        employmentInfoRepository.save(employmentInfo);
         userRepository.save(user);
+
 
         return new RegisterUserResponse(name.name(),surname.surname(),email.email(), request.city(), "Register successful!");
     }

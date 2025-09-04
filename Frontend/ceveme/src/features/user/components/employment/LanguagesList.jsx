@@ -22,17 +22,10 @@ export default function LanguagesList({
 }) {
   const update = (id, patch) =>
     onChange(languages.map((l) => (l.id === id ? { ...l, ...patch } : l)));
-
-  function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
-  }
-  const token = getCookie('jwt');
-
   const create = new EmploymentInfoCreate();
   const remove = new EmploymentInfoDelete();
   const userService = new UserService();
+  const token = userService.getCookie('accessToken');
   const email = userService.getEmailFromToken(token);
 
   const isUUID = (str) => {
@@ -69,8 +62,7 @@ export default function LanguagesList({
             <li
               key={l.id}
               className={`grid gap-2 rounded-xl border p-3 transition
-    ${isEditing ? 'border-bookcloth/20 bg-bookcloth/5' : 'border-cloudlight'}
-  `}
+    ${isEditing ? 'border-bookcloth/20 bg-bookcloth/5' : 'border-cloudlight'}`}
             >
               <div
                 className={`grid ${

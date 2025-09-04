@@ -15,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 import pl.ceveme.domain.model.entities.User;
 import pl.ceveme.domain.model.vo.Email;
@@ -25,10 +26,13 @@ import java.io.IOException;
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 
+    private static final AntPathMatcher PM = new AntPathMatcher();
+    private static final String[] SKIP_PATHS = {"/auth/refresh", "/api/auth/refresh", // dopasuj do swoich
+            "/auth/login", "/api/auth/login", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html"};
+
+    private static final String COOKIE_NAME = "accessToken";
     private final JwtService jwtService;
     private final UserRepository userRepository;
-
-    private static final String COOKIE_NAME = "jwt";
 
     public JwtFilter(JwtService jwtService, UserRepository userRepository) {
         this.jwtService = jwtService;
@@ -38,6 +42,18 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
 
+        String path = request.getRequestURI();
+
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+        for (String p : SKIP_PATHS) {
+            if (PM.match(p, path)) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+        }
         String token = extractToken(request);
 
         if (token == null || token.isBlank()) {
@@ -46,21 +62,30 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         try {
-            Claims claims = jwtService.parse(token);
-            Email email = new Email(claims.getSubject());
-            User user = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found!"));
+            if (SecurityContextHolder.getContext()
+                    .getAuthentication() == null) {
 
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user, null, AuthorityUtils.NO_AUTHORITIES);
-            authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                Claims claims = jwtService.parse(token);
+                Email email = new Email(claims.getSubject());
+                User user = userRepository.findByEmail(email)
+                        .orElseThrow(() -> new UsernameNotFoundException("User not found!"));
 
+                if (jwtService.isAccessTokenValid(token, user)) {
+                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user, null, AuthorityUtils.NO_AUTHORITIES);
+                    authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext()
+                            .setAuthentication(authenticationToken);
+                }
+            }
             filterChain.doFilter(request, response);
         } catch (JwtException e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Invalid token: " + e.getMessage());
+            response.getWriter()
+                    .write("Invalid token: " + e.getMessage());
         } catch (UsernameNotFoundException e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write(e.getMessage());
+            response.getWriter()
+                    .write(e.getMessage());
         }
     }
 

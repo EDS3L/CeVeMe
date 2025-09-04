@@ -13,14 +13,8 @@ export default function EditPasswordModal({ open, onClose }) {
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
 
-  function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
-  }
-  const token = getCookie('jwt');
-
   const userService = new UserService();
+  const token = userService.getCookie('accessToken'); //zobacz czyjest taka nazwa, ja mam rece ujebanw bo jem
   const email = userService.getEmailFromToken(token);
 
   useEffect(() => {

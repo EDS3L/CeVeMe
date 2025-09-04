@@ -54,15 +54,8 @@ export default function EmploymentInfoPage() {
   const [linkEditId, setLinkEditId] = useState(null);
 
   const api = new ImploymentInfoGet();
-
-  function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
-  }
-  const token = getCookie('jwt');
-
   const userService = new UserService();
+  const token = userService.getCookie('accessToken');
   const email = userService.getEmailFromToken(token);
 
   const pushToast = (type, message) =>
@@ -160,7 +153,7 @@ export default function EmploymentInfoPage() {
 
   return (
     <>
-      <Navbar />
+      <Navbar showShadow={true} />
       <div className="min-h-dvh bg-ivorylight text-slatedark">
         <main className="mx-auto max-w-[1100px] px-4 sm:px-6 py-6">
           <header className="mb-4 flex items-center justify-between">

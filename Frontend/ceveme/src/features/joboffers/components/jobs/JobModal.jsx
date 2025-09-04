@@ -1,9 +1,6 @@
-import React from 'react';
 import Modal from '../ui/Modal';
 import { X, Building2, MapPin, ArrowUpRight, ScrollText } from 'lucide-react';
 import { sanitizeHtml } from '../../utils/sanitizeHtml';
-import CvGenerator from '../../hooks/useGemini';
-import UserService from '../../../../hooks/UserService';
 import { useNavigate } from 'react-router-dom';
 
 export default function JobModal({ open, onClose, job }) {

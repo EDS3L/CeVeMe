@@ -5,8 +5,8 @@ import './index.css';
 import { ToastContainer } from 'react-toastify';
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
+  <>
     <AppRoutes />
     <ToastContainer position="bottom-right" reverseOrder={false} />
-  </StrictMode>
+  </>
 );
