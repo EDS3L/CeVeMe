@@ -31,22 +31,13 @@ public class LogoutUseCase {
             }
         }
 
-
-        Cookie refreshCookie = new Cookie("refreshToken", "");
-        refreshCookie.setMaxAge(0);
-        refreshCookie.setPath("/");
-        refreshCookie.setHttpOnly(true);
-
-
-        Cookie accessToken = new Cookie("accessToken", "");
-        accessToken.setMaxAge(0);
-        accessToken.setPath("/");
-        accessToken.setHttpOnly(true);
+        //todo problem z kasowaniem tokenow z cookie, nie czysci sie w przegladarce, probowałem ustawiac Cookie cookie = new cookei ale tez nie dziala
+        servletResponse.addHeader("Set-Cookie", "accessToken=; Max-Age=0; Path=/; Secure=false; HttpOnly");
+        servletResponse.addHeader("Set-Cookie", "refreshToken=; Max-Age=0; Path=/; Secure=false; HttpOnly");
 
 
 
-        servletResponse.addCookie(refreshCookie);
-        servletResponse.addCookie(accessToken);
+
 
         return new RefreshResponse("Logged out successfully!");
     }
