@@ -41,8 +41,9 @@ export default function CvEditorPage() {
 	//GetHeight
 	const [previewHeight, setPreviewHeight] = useState(0);
 	const getHeight = () => {
-		// setPreviewHeight(innerRef.current.clientHeight);
-		return previewHeight;
+		if (innerRef.current) {
+			setPreviewHeight(innerRef.current.clientHeight);
+		}
 	};
 
 	// skalowany (wewnątrz) i drukowany (strona)

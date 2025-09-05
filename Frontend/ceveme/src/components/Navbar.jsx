@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
 	User,
 	ChevronDown,
@@ -8,10 +8,14 @@ import {
 	LogOut,
 	Menu as MenuIcon,
 } from "lucide-react";
+import UseAuth from "../features/auth/hooks/UseAuth";
 
 function Navbar({ showShadow }) {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
+	const nav = useNavigate();
+
+	const auth = new UseAuth();
 
 	const isLogged = document.cookie.includes("accessToken=");
 
@@ -134,11 +138,7 @@ function Navbar({ showShadow }) {
 										role='menuitem'
 										className='flex items-center w-full px-4 py-2 text-[var(--color-kraft)] hover:bg-[var(--color-manilla)]/40 transition-colors duration-200'
 										onClick={() => {
-											setIsUserDropdownOpen(false);
-											document.cookie =
-												"jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-											localStorage.clear();
-											window.location.href = "/";
+											auth.logout(nav);
 										}}
 									>
 										<LogOut size={20} strokeWidth={2} className='mr-3' />
@@ -212,7 +212,7 @@ function Navbar({ showShadow }) {
 							onClick={() => {
 								setIsMenuOpen(false);
 								// TODO: wylogowanie
-								console.log("Wylogowywanie...");
+								auth.logout(nav);
 							}}
 						>
 							<LogOut size={20} strokeWidth={2} className='mr-3' />
