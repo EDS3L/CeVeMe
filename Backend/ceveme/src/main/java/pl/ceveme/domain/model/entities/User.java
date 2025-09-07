@@ -2,6 +2,7 @@ package pl.ceveme.domain.model.entities;
 
 import jakarta.persistence.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import pl.ceveme.domain.model.enums.UserRole;
 import pl.ceveme.domain.model.vo.*;
 import pl.ceveme.infrastructure.adapter.security.BCryptPasswordEncoderAdapter;
 
@@ -28,6 +29,12 @@ public class User {
     private String password;
     private String image;
 
+    @Embedded
+    private UserRole userRole;
+
+    @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST,CascadeType.MERGE}, fetch = FetchType.LAZY)
+    private List<LimitUsage> limitUsages;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Cv> cvList;
 
@@ -46,7 +53,7 @@ public class User {
     public User() {
     }
 
-    public User(Name name, Surname surname, PhoneNumber phoneNumber, Email email, String image, String password, List<Cv> cvList, List<ApplicationHistory> applicationHistoryList, EmploymentInfo employmentInfo, boolean isActive, ActivationToken activationToken, String city) {
+    public User(Name name, Surname surname, PhoneNumber phoneNumber, Email email, String image, String password, List<Cv> cvList, List<ApplicationHistory> applicationHistoryList, EmploymentInfo employmentInfo, boolean isActive, ActivationToken activationToken, String city, UserRole userRole) {
         this.name = name;
         this.surname = surname;
         this.phoneNumber = phoneNumber;
@@ -59,10 +66,11 @@ public class User {
         this.isActive = isActive;
         this.activationToken = activationToken;
         this.city = city;
+        this.userRole = userRole;
     }
 
     public static User createNewUser(Name name, Surname surname, PhoneNumber phoneNumber, String password, Email email, String image, List<Cv> cvList, List<ApplicationHistory> applicationHistoryList, EmploymentInfo employmentInfo, ActivationToken activationToken, String city) {
-        return new User(name, surname, phoneNumber, email, image, password, cvList, applicationHistoryList, employmentInfo, false, activationToken, city);
+        return new User(name, surname, phoneNumber, email, image, password, cvList, applicationHistoryList, employmentInfo, false, activationToken, city, UserRole.FREE);
     }
 
     public void changePassword(String currentPassword, String newPassword, BCryptPasswordEncoderAdapter passwordEncoder) {
@@ -184,6 +192,30 @@ public class User {
 
     public void setActive(boolean active) {
         isActive = active;
+    }
+
+    public UserRole getUserRole() {
+        return userRole;
+    }
+
+    public void setUserRole(UserRole userRole) {
+        this.userRole = userRole;
+    }
+
+    public List<LimitUsage> getLimitUsages() {
+        return limitUsages;
+    }
+
+    public void setLimitUsages(List<LimitUsage> limitUsages) {
+        this.limitUsages = limitUsages;
+    }
+
+    public ActivationToken getActivationToken() {
+        return activationToken;
+    }
+
+    public void setActivationToken(ActivationToken activationToken) {
+        this.activationToken = activationToken;
     }
 
     public void addCertificate(Certificate certificate) {
