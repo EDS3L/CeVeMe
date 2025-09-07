@@ -1,6 +1,7 @@
 package pl.ceveme.application.usecase.auth;
 
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,8 @@ public class LogoutUseCase {
     }
 
     @Transactional
-    public RefreshResponse execute(String refreshToken, HttpServletResponse servletResponse) {
+    public RefreshResponse execute(HttpServletRequest request, HttpServletResponse servletResponse) {
+        String refreshToken = jwtService.extractTokenFromCookie(request,"refreshToken");
 
         if(refreshToken != null) {
             try {
@@ -30,24 +32,17 @@ public class LogoutUseCase {
 
             }
         }
-
-
-        Cookie refreshCookie = new Cookie("refreshToken", "");
-        refreshCookie.setMaxAge(0);
-        refreshCookie.setPath("/");
-        refreshCookie.setHttpOnly(true);
-
-
-        Cookie accessToken = new Cookie("accessToken", "");
-        accessToken.setMaxAge(0);
-        accessToken.setPath("/");
-        accessToken.setHttpOnly(true);
-
-
-
-        servletResponse.addCookie(refreshCookie);
-        servletResponse.addCookie(accessToken);
+        // clears all cookies from request
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null)
+            for (Cookie cookie : cookies) {
+                cookie.setValue("");
+                cookie.setPath("/");
+                cookie.setMaxAge(0);
+                servletResponse.addCookie(cookie);
+            }
 
         return new RefreshResponse("Logged out successfully!");
     }
-}
+
+    }

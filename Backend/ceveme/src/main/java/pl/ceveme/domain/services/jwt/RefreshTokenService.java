@@ -1,6 +1,8 @@
 package pl.ceveme.domain.services.jwt;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -8,6 +10,7 @@ import pl.ceveme.domain.model.entities.RefreshToken;
 import pl.ceveme.domain.model.entities.User;
 import pl.ceveme.domain.repositories.RefreshTokenRepository;
 import pl.ceveme.infrastructure.config.jwt.JwtService;
+import pl.ceveme.infrastructure.external.scrap.nofluffjobs.NoFluffJobsScrapper;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -20,6 +23,7 @@ public class RefreshTokenService {
     private final ExpiredTokenCleanerService expiredTokenCleanerService;
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtService jwtService;
+    private static final Logger log = LoggerFactory.getLogger(RefreshTokenService.class);
 
     public RefreshTokenService(ExpiredTokenCleanerService expiredTokenCleanerService, RefreshTokenRepository refreshTokenRepository, JwtService jwtService) {
         this.expiredTokenCleanerService = expiredTokenCleanerService;
@@ -51,7 +55,7 @@ public class RefreshTokenService {
 
         RefreshToken refreshToken = refreshTokenRepository.findByJit(jit)
                 .orElseThrow(() -> new IllegalArgumentException("Refresh token not found"));
-        System.out.println("refresh token servicve: " + refreshToken.getExpiresAt());
+        log.info("Token refresh for: {}  at time: {}",refreshToken.getUser().getEmail().email(), Instant.now());
         if (refreshToken.getExpiresAt()
                 .isBefore(Instant.now())) {
             expiredTokenCleanerService.deleteExpiredToken(jit);
