@@ -29,7 +29,7 @@ public class User {
     private String password;
     private String image;
 
-    @Embedded
+    @Enumerated(EnumType.STRING)
     private UserRole userRole;
 
     @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST,CascadeType.MERGE}, fetch = FetchType.LAZY)

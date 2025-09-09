@@ -1,7 +1,7 @@
 package pl.ceveme.domain.model.entities;
 
 import jakarta.persistence.*;
-import pl.ceveme.domain.model.enums.LimitEndpointType;
+import pl.ceveme.domain.model.enums.EndpointType;
 
 import java.time.LocalDateTime;
 
@@ -12,18 +12,21 @@ public class LimitUsage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToMany
+    @ManyToOne
     private User user;
 
     @Enumerated(EnumType.STRING)
-    private LimitEndpointType limitEndpointType;
-
+    private EndpointType endpointType;
     private LocalDateTime timestamp;
     private String endpoint;
 
-    public LimitUsage(User user, LimitEndpointType limitEndpointType, LocalDateTime timestamp, String endpoint) {
+
+    public LimitUsage() {
+    }
+
+    public LimitUsage(User user, EndpointType endpointType, LocalDateTime timestamp, String endpoint) {
         this.user = user;
-        this.limitEndpointType = limitEndpointType;
+        this.endpointType = endpointType;
         this.timestamp = timestamp;
         this.endpoint = endpoint;
     }
@@ -44,12 +47,12 @@ public class LimitUsage {
         this.user = user;
     }
 
-    public LimitEndpointType getLimitEndpointType() {
-        return limitEndpointType;
+    public EndpointType getLimitEndpointType() {
+        return endpointType;
     }
 
-    public void setLimitEndpointType(LimitEndpointType limitEndpointType) {
-        this.limitEndpointType = limitEndpointType;
+    public void setLimitEndpointType(EndpointType endpointType) {
+        this.endpointType = endpointType;
     }
 
     public LocalDateTime getTimestamp() {

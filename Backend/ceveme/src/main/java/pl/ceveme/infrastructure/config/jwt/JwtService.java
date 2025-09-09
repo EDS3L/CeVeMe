@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import pl.ceveme.domain.model.entities.User;
+import pl.ceveme.domain.model.enums.UserRole;
 import pl.ceveme.domain.model.vo.Email;
 
 import javax.crypto.SecretKey;
@@ -51,7 +52,7 @@ public class JwtService {
         parser = Jwts.parser().verifyWith(key).build();
     }
 
-    public String generateAccessToken(Email email, String id) {
+    public String generateAccessToken(Email email, String id, UserRole userRole) {
         Instant now = Instant.now();
         Date nowDate = Date.from(now);
         return Jwts.builder()
@@ -60,6 +61,7 @@ public class JwtService {
                 .issuedAt(nowDate)
                 .expiration(Date.from(now.plusMillis(accessTokenExpiration)))
                 .claim("type", "access")
+                .claim("role", userRole)
                 .signWith(key, Jwts.SIG.HS256)
                 .compact();
     }

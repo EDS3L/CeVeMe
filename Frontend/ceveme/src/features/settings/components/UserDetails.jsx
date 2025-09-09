@@ -4,20 +4,25 @@ import PasswordDetails from './PasswordDetails';
 import EmailAndPhone from './EmailAndPhone';
 import UserNavBar from './UserNavBar';
 import DeleteAccount from './DeleteAccount';
-import Limits from './Limits';
+import Limits from './limits/Limits';
 import Payments from './Payments';
 
 import UserDetailsInfo from '../hooks/useUserDeailsInfo';
 
 function UserDetails() {
   const [userData, setUserData] = useState(null);
+  const [userLimits, setUserLimits] = useState(null);
+
   const [activeTab, setActiveTab] = useState('account'); // domyślnie Konto
   const userDatails = new UserDetailsInfo();
 
   useEffect(() => {
     async function fetchData() {
       const data = await userDatails.getUserDetailsInfo();
+      const limits = await userDatails.getUseLimitsInfo();
       setUserData(data);
+      setUserLimits(limits);
+      console.log(limits);
     }
     fetchData();
   }, []);
@@ -38,7 +43,7 @@ function UserDetails() {
             </>
           )}
 
-          {activeTab === 'limits' && <Limits />}
+          {activeTab === 'limits' && <Limits data={userLimits} />}
 
           {activeTab === 'payments' && <Payments user={userData} />}
         </div>

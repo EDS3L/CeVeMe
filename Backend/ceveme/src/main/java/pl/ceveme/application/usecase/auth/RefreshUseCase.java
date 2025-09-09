@@ -32,7 +32,7 @@ public class RefreshUseCase {
         User user = storedToken.getUser();
         String userId = String.valueOf(user.getId());
 
-        String newAccessToken = jwtService.generateAccessToken(user.getEmail(), userId);
+        String newAccessToken = jwtService.generateAccessToken(user.getEmail(), userId, user.getUserRole());
 
 
         Cookie accessCookie = new Cookie("accessToken", newAccessToken);

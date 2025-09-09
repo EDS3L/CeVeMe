@@ -10,6 +10,7 @@ import pl.ceveme.application.dto.user.*;
 import pl.ceveme.application.usecase.cv.UploadCvFileUseCase;
 import pl.ceveme.application.usecase.user.*;
 import pl.ceveme.domain.model.entities.User;
+import pl.ceveme.domain.services.limits.EndpointUsagesService;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
@@ -28,8 +29,9 @@ public class UserController {
     private final DeleteUserUseCase deleteUserUseCase;
     private final GetUserDetailsInfoUseCase getUserDetailsInfoUseCase;
     private final ChangeUserNameSurnameCityUseCase changeUserNameSurnameCityUseCase;
+    private final EndpointUsagesService endpointUsagesService;
 
-    public UserController(ChangeUsersPasswordUseCase changeUsersPasswordUseCase, ChangeUserNameUseCase changeUserNameUseCase, ChangeUserSurnameUseCase changeUserSurnameUseCase, ChangeUserPhoneNumberUseCase changeUserPhoneNumberUseCase, ChangeUserEmailUseCase changeUserEmailUseCase, UploadProfileImageUseCase uploadProfileImageUseCase, UploadCvFileUseCase uploadCvFileUseCase, DeleteUserUseCase deleteUserUseCase, GetUserDetailsInfoUseCase getUserDetailsInfoUseCase, ChangeUserNameSurnameCityUseCase changeUserNameSurnameCityUseCase) {
+    public UserController(ChangeUsersPasswordUseCase changeUsersPasswordUseCase, ChangeUserNameUseCase changeUserNameUseCase, ChangeUserSurnameUseCase changeUserSurnameUseCase, ChangeUserPhoneNumberUseCase changeUserPhoneNumberUseCase, ChangeUserEmailUseCase changeUserEmailUseCase, UploadProfileImageUseCase uploadProfileImageUseCase, UploadCvFileUseCase uploadCvFileUseCase, DeleteUserUseCase deleteUserUseCase, GetUserDetailsInfoUseCase getUserDetailsInfoUseCase, ChangeUserNameSurnameCityUseCase changeUserNameSurnameCityUseCase, EndpointUsagesService endpointUsagesService) {
         this.changeUsersPasswordUseCase = changeUsersPasswordUseCase;
         this.changeUserNameUseCase = changeUserNameUseCase;
         this.changeUserSurnameUseCase = changeUserSurnameUseCase;
@@ -40,6 +42,7 @@ public class UserController {
         this.deleteUserUseCase = deleteUserUseCase;
         this.getUserDetailsInfoUseCase = getUserDetailsInfoUseCase;
         this.changeUserNameSurnameCityUseCase = changeUserNameSurnameCityUseCase;
+        this.endpointUsagesService = endpointUsagesService;
     }
 
     @PatchMapping("/password")
@@ -130,6 +133,15 @@ public class UserController {
 
         UserDetailsResponse response = getUserDetailsInfoUseCase.execute(id);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/limit")
+    public ResponseEntity<UserLimitResponse> limits(Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        Long id = user.getId();
+
+        UserLimitResponse userLimitResponse = endpointUsagesService.userLimits(id);
+        return ResponseEntity.ok(userLimitResponse);
     }
 
 }

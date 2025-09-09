@@ -1,7 +1,7 @@
 package pl.ceveme.domain.model.entities;
 
 import jakarta.persistence.*;
-import pl.ceveme.domain.model.enums.LimitEndpointType;
+import pl.ceveme.domain.model.enums.EndpointType;
 import pl.ceveme.domain.model.enums.UserRole;
 
 @Entity
@@ -15,15 +15,18 @@ public class EndpointLimit {
     private UserRole role;
 
     @Enumerated(EnumType.STRING)
-    private LimitEndpointType limitEndpointType;
+    private EndpointType endpointType;
 
     private Integer dailyLimit;
     private Integer monthlyLimit;
 
 
-    public EndpointLimit(UserRole role, LimitEndpointType limitEndpointType, Integer dailyLimit, Integer monthlyLimit) {
+    public EndpointLimit() {
+    }
+
+    public EndpointLimit(UserRole role, EndpointType endpointType, Integer dailyLimit, Integer monthlyLimit) {
         this.role = role;
-        this.limitEndpointType = limitEndpointType;
+        this.endpointType = endpointType;
         this.dailyLimit = dailyLimit;
         this.monthlyLimit = monthlyLimit;
     }
@@ -44,12 +47,12 @@ public class EndpointLimit {
         this.role = role;
     }
 
-    public LimitEndpointType getLimitEndpointType() {
-        return limitEndpointType;
+    public EndpointType getLimitEndpointType() {
+        return endpointType;
     }
 
-    public void setLimitEndpointType(LimitEndpointType limitEndpointType) {
-        this.limitEndpointType = limitEndpointType;
+    public void setLimitEndpointType(EndpointType endpointType) {
+        this.endpointType = endpointType;
     }
 
     public Integer getDailyLimit() {

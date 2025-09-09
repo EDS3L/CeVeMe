@@ -45,7 +45,7 @@ public class LoginUserUseCase {
 
         String userId = String.valueOf(user.getId());
 
-        String accessToken = jwtService.generateAccessToken(email,userId);
+        String accessToken = jwtService.generateAccessToken(email,userId, user.getUserRole());
         Cookie accessCookie = new Cookie("accessToken", accessToken);
         accessCookie.setHttpOnly(false);
         accessCookie.setSecure(false);
