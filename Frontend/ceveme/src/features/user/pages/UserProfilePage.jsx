@@ -36,6 +36,7 @@ import EmploymentInfoCreate from '../hooks/useCreateEmploymentInfo';
 import UserService from '../../../hooks/UserService';
 import { ToastContainer } from 'react-toastify';
 import UserDetails from '../../settings/components/UserDetails';
+import Refinement from '../hooks/userAirefinement';
 
 export default function EmploymentInfoPage() {
   const [activeTab, setActiveTab] = useState('jezyki');
@@ -53,10 +54,13 @@ export default function EmploymentInfoPage() {
   const [portfolioEditId, setPortfolioEditId] = useState(null);
   const [linkEditId, setLinkEditId] = useState(null);
 
+  // const [timeoutAi, setTimeoutAI] = useState();
+
   const api = new ImploymentInfoGet();
   const userService = new UserService();
   const token = userService.getCookie('accessToken');
   const email = userService.getEmailFromToken(token);
+  // const aiApi = new Refinement();
 
   const pushToast = (type, message) =>
     setToasts((t) => [...t, { id: crypto.randomUUID(), type, message }]);
@@ -140,7 +144,9 @@ export default function EmploymentInfoPage() {
     const fetchData = async () => {
       try {
         const data = await api.getEmploymentInfo(email);
+        // const timeoutAi = await aiApi.checkTimeout('REFINEMENT');
         // console.log(data);
+        // setTimeoutAI(timeoutAi.howMuchLeft);
         setForm(data);
       } catch (error) {
         pushToast('error', 'Nie udało się pobrać danych.');
@@ -150,6 +156,12 @@ export default function EmploymentInfoPage() {
 
     fetchData();
   }, []);
+
+  // const aiTimeout = async () => {
+  //   const useTimeoutAi = await aiApi.checkTimeout('REFINEMENT');
+  //   setTimeoutAI(useTimeoutAi.howMuchLeft);
+  //   console.log(timeoutAi);
+  // };
 
   return (
     <>

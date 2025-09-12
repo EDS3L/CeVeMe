@@ -47,11 +47,11 @@ public class LimitUsage {
         this.user = user;
     }
 
-    public EndpointType getLimitEndpointType() {
+    public EndpointType getEndpointType() {
         return endpointType;
     }
 
-    public void setLimitEndpointType(EndpointType endpointType) {
+    public void setEndpointType(EndpointType endpointType) {
         this.endpointType = endpointType;
     }
 

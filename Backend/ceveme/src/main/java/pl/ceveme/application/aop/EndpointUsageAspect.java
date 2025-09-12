@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import pl.ceveme.application.annotations.CheckAiEndpointUsage;
 import pl.ceveme.domain.model.entities.User;
 import pl.ceveme.domain.model.enums.EndpointType;
 import pl.ceveme.domain.services.limits.EndpointUsagesService;

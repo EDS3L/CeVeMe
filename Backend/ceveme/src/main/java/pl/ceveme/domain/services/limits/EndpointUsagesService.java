@@ -13,6 +13,7 @@ import pl.ceveme.domain.model.enums.UserRole;
 import pl.ceveme.domain.repositories.EndpointLimitRepository;
 import pl.ceveme.domain.repositories.LimitUsageRepository;
 import pl.ceveme.domain.repositories.UserRepository;
+import pl.ceveme.infrastructure.external.exception.TimeoutException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -25,6 +26,7 @@ public class EndpointUsagesService {
     private final LimitUsageRepository limitUsageRepository;
     private final EndpointLimitRepository endpointLimitRepository;
     private final UserRepository userRepository;
+    private final CheckTimeout checkTimeout;
 
     private final LocalDateTime START_OF_DAY = LocalDate.now().atStartOfDay();
     private final LocalDateTime END_OF_DAY = LocalDate.now().atTime(23, 59, 59);
@@ -32,13 +34,15 @@ public class EndpointUsagesService {
             .atStartOfDay();
     private final LocalDateTime LAST_DAY_OF_MONTH = LocalDate.now().withDayOfMonth(LocalDate.now().getMonth().length(LocalDate.now().isLeapYear())).atTime(23,59,59);
 
-    public EndpointUsagesService(LimitUsageRepository limitUsageRepository, EndpointLimitRepository endpointLimitRepository, UserRepository userRepository) {
+
+    public EndpointUsagesService(LimitUsageRepository limitUsageRepository, EndpointLimitRepository endpointLimitRepository, UserRepository userRepository, CheckTimeout checkTimeout) {
         this.limitUsageRepository = limitUsageRepository;
         this.endpointLimitRepository = endpointLimitRepository;
         this.userRepository = userRepository;
+        this.checkTimeout = checkTimeout;
     }
 
-    public boolean canUseAiEndpoint(User user, EndpointType endpointType) {
+    public boolean canUseAiEndpoint(User user, EndpointType endpointType) throws TimeoutException {
         EndpointLimit endpointLimit = endpointLimitRepository.findByRoleAndEndpointType(user.getUserRole(),endpointType);
 
         if(endpointLimit == null) return false;
@@ -52,6 +56,7 @@ public class EndpointUsagesService {
         log.info("Monthly usages: {} out of: {}",monthlyUsage, endpointLimit.getMonthlyLimit() );
 
 
+        if(!checkTimeout.isTimeoutStillActive(user.getId(),endpointType)) throw new TimeoutException(checkTimeout.timeLeft(user.getId(), endpointType));
 
         if(endpointLimit.getRole() == UserRole.FREE) return todayUsage <= endpointLimit.getDailyLimit();
 
@@ -62,7 +67,7 @@ public class EndpointUsagesService {
     public void recordUsages(User user, EndpointType endpointType, String endpoint) {
         LimitUsage limitUsage = new LimitUsage();
         limitUsage.setUser(user);
-        limitUsage.setLimitEndpointType(endpointType);
+        limitUsage.setEndpointType(endpointType);
         limitUsage.setEndpoint(endpoint);
         limitUsage.setTimestamp(LocalDateTime.now());
 

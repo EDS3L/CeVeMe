@@ -1,4 +1,4 @@
-package pl.ceveme.application.aop;
+package pl.ceveme.application.annotations;
 
 import pl.ceveme.domain.model.enums.EndpointType;
 

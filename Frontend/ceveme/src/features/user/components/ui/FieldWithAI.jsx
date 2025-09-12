@@ -23,6 +23,13 @@ export default function FieldWithAI({
     'w-full rounded-xl border border-cloudlight bg-basewhite text-slatedark px-3 py-2 outline-none ring-offset-2 focus:ring-2 focus:ring-feedbackfocus';
   const refinement = new Refinement();
   const [loadingAi, setLoadingAi] = useState(false);
+  const [timeoutAi, setTimeoutAI] = useState();
+
+  const aiTimeout = async () => {
+    const useTimeoutAi = await refinement.checkTimeout('REFINEMENT');
+    setTimeoutAI(useTimeoutAi.howMuchLeft);
+    console.log(timeoutAi);
+  };
 
   const refinementText = async () => {
     if (loadingAi) return;
@@ -100,7 +107,10 @@ export default function FieldWithAI({
         {aiButton && isEditing && (
           <button
             type="button"
-            onClick={refinementText}
+            onClick={() => {
+              refinementText();
+              aiTimeout();
+            }}
             disabled={disabled || loadingAi}
             className={`${
               loadingAi
