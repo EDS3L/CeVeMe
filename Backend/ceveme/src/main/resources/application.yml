@@ -1,0 +1,49 @@
+spring:
+  application:
+    name: ceveme
+
+  datasource:
+    url: ${DATASOURCE_URL}
+    username: ${DATASOURCE_USERNAME}
+    password: ${DATASOURCE_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      max-lifetime: 600000
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    open-in-view: false
+
+  servlet:
+    multipart:
+      max-file-size: 15MB
+      max-request-size: 15MB
+
+server:
+  port: 8080
+
+logging:
+  level:
+    root: INFO
+    org.springframework: WARN
+
+jwt:
+  access-expiration: 100000
+  refresh-expiration: 2592000000
+
+token:
+  secret-key: ${TOKEN_SECRETKEY}
+
+gemini:
+  api-key: ${GEMINI_API_KEY}
+  model: gemini-2.5-flash
+
+stripe:
+  api-key: ${STRIPE_APIKEY}
+  api-version: 2024-09-30.acacia
+
+cloudinary:
+  url: ${CLOUDINARY_URL}

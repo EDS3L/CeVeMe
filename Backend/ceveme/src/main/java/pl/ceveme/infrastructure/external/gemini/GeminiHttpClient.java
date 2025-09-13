@@ -10,7 +10,7 @@ public class GeminiHttpClient {
 
     private final Client client;
 
-    @Value("${MODEL}")
+    @Value("${gemini.model}")
     private String model;
 
     public GeminiHttpClient(Client client) {
