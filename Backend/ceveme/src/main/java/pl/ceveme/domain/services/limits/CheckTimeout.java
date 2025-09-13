@@ -25,7 +25,7 @@ public class CheckTimeout {
 
     public boolean isTimeoutStillActive(Long userId, EndpointType endpointType) {
         if(endpointType.equals(EndpointType.REFINEMENT)) return lastUsageEndpointTime(userId, endpointType).plusMinutes(2).isBefore(LocalDateTime.now());
-        return  lastUsageEndpointTime(userId, endpointType).plusMinutes(5).isBefore(LocalDateTime.now());
+        return  lastUsageEndpointTime(userId, endpointType).plusMinutes(1).isBefore(LocalDateTime.now());
 
     }
 

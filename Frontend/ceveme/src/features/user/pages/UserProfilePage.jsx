@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import {
   ShieldCheck,
   Pencil,
@@ -13,14 +13,11 @@ import {
   FolderGit2,
   Link as LinkIcon,
   GraduationCap,
-  User,
 } from 'lucide-react';
 
 import Tabs from '../components/ui/Tabs';
 import Toast from '../components/ui/Toast';
 import ConfirmModal from '../components/ui/ConfirmModal';
-import FieldWithAI from '../components/ui/FieldWithAI';
-import Toggle from '../components/ui/Toggle';
 
 import LanguagesList from '../components/employment/LanguagesList';
 import CertificatesList from '../components/employment/CertificatesList';
@@ -30,15 +27,18 @@ import SkillsList from '../components/employment/SkillsList';
 import PortfolioItemsList from '../components/employment/PortfolioItemsList';
 import LinksList from '../components/employment/LinksList';
 import EducationsList from '../components/employment/EducationsList';
+
 import Navbar from '../../../components/Navbar';
 import ImploymentInfoGet from '../hooks/useGetEmploymentInfo';
-import EmploymentInfoCreate from '../hooks/useCreateEmploymentInfo';
 import UserService from '../../../hooks/UserService';
-import { ToastContainer } from 'react-toastify';
-import UserDetails from '../../settings/components/UserDetails';
 import Refinement from '../hooks/userAirefinement';
 
-export default function EmploymentInfoPage() {
+import {
+  AITimeoutProvider,
+  useAITimeout,
+} from '../components/utils/AITimeoutContext';
+
+function EmploymentInfoPageContent() {
   const [activeTab, setActiveTab] = useState('jezyki');
   const [isEdit, setIsEdit] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -54,16 +54,16 @@ export default function EmploymentInfoPage() {
   const [portfolioEditId, setPortfolioEditId] = useState(null);
   const [linkEditId, setLinkEditId] = useState(null);
 
-  // const [timeoutAi, setTimeoutAI] = useState();
+  const { hasActiveTimeout, timeoutData } = useAITimeout();
 
-  const api = new ImploymentInfoGet();
-  const userService = new UserService();
+  const api = useMemo(() => new ImploymentInfoGet(), []);
+  const userService = useMemo(() => new UserService(), []);
   const token = userService.getCookie('accessToken');
   const email = userService.getEmailFromToken(token);
-  // const aiApi = new Refinement();
 
   const pushToast = (type, message) =>
     setToasts((t) => [...t, { id: crypto.randomUUID(), type, message }]);
+
   const removeToast = (id) => setToasts((t) => t.filter((x) => x.id !== id));
 
   const [form, setForm] = useState(() => ({
@@ -78,6 +78,7 @@ export default function EmploymentInfoPage() {
   }));
 
   const [errors, setErrors] = useState({});
+
   const validate = () => {
     const e = {};
     form.experiences.forEach((ex) => {
@@ -107,11 +108,13 @@ export default function EmploymentInfoPage() {
   const improveText = async (text) => (text || '').trim();
 
   const onEdit = () => setIsEdit(true);
+
   const onCancel = () => {
     setIsEdit(false);
     setErrors({});
     pushToast('info', 'Zmiany odrzucone.');
   };
+
   const onSave = async () => {
     const e = validate();
     if (Object.keys(e).length) {
@@ -141,27 +144,21 @@ export default function EmploymentInfoPage() {
   );
 
   useEffect(() => {
+    let mounted = true;
     const fetchData = async () => {
       try {
         const data = await api.getEmploymentInfo(email);
-        // const timeoutAi = await aiApi.checkTimeout('REFINEMENT');
-        // console.log(data);
-        // setTimeoutAI(timeoutAi.howMuchLeft);
-        setForm(data);
+        if (mounted) setForm(data);
       } catch (error) {
         pushToast('error', 'Nie udało się pobrać danych.');
         console.error(error);
       }
     };
-
     fetchData();
-  }, []);
-
-  // const aiTimeout = async () => {
-  //   const useTimeoutAi = await aiApi.checkTimeout('REFINEMENT');
-  //   setTimeoutAI(useTimeoutAi.howMuchLeft);
-  //   console.log(timeoutAi);
-  // };
+    return () => {
+      mounted = false;
+    };
+  }, [api, email]);
 
   return (
     <>
@@ -176,7 +173,16 @@ export default function EmploymentInfoPage() {
                 className="text-bookcloth"
               />
               <h1 className="text-xl font-semibold">Informacje zawodowe</h1>
+
+              {hasActiveTimeout && timeoutData && (
+                <div className="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
+                  AI dostępne za:{' '}
+                  {Math.floor((timeoutData.howMuchLeft ?? 0) / 60)}:
+                  {String((timeoutData.howMuchLeft ?? 0) % 60).padStart(2, '0')}
+                </div>
+              )}
             </div>
+
             <div className="flex items-center gap-2">
               {!isEdit ? (
                 <button
@@ -358,5 +364,16 @@ export default function EmploymentInfoPage() {
   );
 }
 
-// user - > emplyment infio(list) -> experince(list) -> jobs(list) -> education(list)
-//   Frontend: E
+export default function EmploymentInfoPage() {
+  const refinement = useMemo(() => new Refinement(), []);
+  const bootstrapFetcher = useCallback(
+    () => refinement.checkTimeout('REFINEMENT'),
+    [refinement]
+  );
+
+  return (
+    <AITimeoutProvider bootstrapFetcher={bootstrapFetcher}>
+      <EmploymentInfoPageContent />
+    </AITimeoutProvider>
+  );
+}

@@ -20,7 +20,7 @@ import { useSinglePageScale } from '../hooks/useSinglePageScale';
 
 import { PAGE_STYLE } from './constants/pageStyle';
 import { LAYOUTS, getLayoutComponent } from './constants/layouts';
-import { prepareForSnapshot } from './utils/dom';
+
 import { usePdfExport } from './hooks/usePdfExport';
 import { useCvSave } from './hooks/useCvSave';
 

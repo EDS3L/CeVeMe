@@ -46,6 +46,7 @@ public class EndpointUsagesService {
         EndpointLimit endpointLimit = endpointLimitRepository.findByRoleAndEndpointType(user.getUserRole(),endpointType);
 
         if(endpointLimit == null) return false;
+        if(!checkTimeout.isTimeoutStillActive(user.getId(),endpointType)) throw new TimeoutException(checkTimeout.timeLeft(user.getId(), endpointType));
         if (endpointLimit.getDailyLimit() == -1) return true;
 
 
@@ -55,8 +56,6 @@ public class EndpointUsagesService {
         log.info("Today daily usages: {} out of: {}",todayUsage, endpointLimit.getDailyLimit() );
         log.info("Monthly usages: {} out of: {}",monthlyUsage, endpointLimit.getMonthlyLimit() );
 
-
-        if(!checkTimeout.isTimeoutStillActive(user.getId(),endpointType)) throw new TimeoutException(checkTimeout.timeLeft(user.getId(), endpointType));
 
         if(endpointLimit.getRole() == UserRole.FREE) return todayUsage <= endpointLimit.getDailyLimit();
 

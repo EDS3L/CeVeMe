@@ -33,7 +33,7 @@ export const useCvEditor = () => {
       const data = await ApiService.generateCv(email, offerLink);
       setCvData(normalizeCv(data));
     } catch (e) {
-      setError(e?.message || 'Błąd generowania CV.');
+      setError(e.response.data.message);
     } finally {
       setLoading(false);
     }
