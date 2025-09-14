@@ -47,6 +47,11 @@ const RoutersConfig = {
     ),
     requiredRole: null,
   },
+  cv2: {
+    path: '/cv2',
+    component: React.lazy(() => import('../features/cv/newIdea/CvPage')),
+    requiredRole: null,
+  },
 };
 
 export default RoutersConfig;
