@@ -36,6 +36,7 @@ export default function NodeView({
     return (
       <div
         onMouseDown={(e) => onMouseDownNode(e, node)}
+        className="select-none"
         style={{
           ...baseStyle,
           background: fill ? fill.color : 'transparent',
@@ -52,18 +53,15 @@ export default function NodeView({
     return (
       <div
         onMouseDown={(e) => onMouseDownNode(e, node)}
-        style={{ ...baseStyle, overflow: 'hidden' }}
+        className="overflow-hidden select-none"
+        style={{ ...baseStyle }}
       >
         <img
           alt=""
           src={node.src}
           draggable={false}
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: node.objectFit || 'cover',
-            display: 'block',
-          }}
+          className="w-full h-full block"
+          style={{ objectFit: node.objectFit || 'cover' }}
         />
       </div>
     );
@@ -74,12 +72,8 @@ export default function NodeView({
     return (
       <div
         onMouseDown={(e) => onMouseDownNode(e, node)}
-        style={{
-          ...baseStyle,
-          background: 'transparent',
-          padding: 4,
-          cursor: 'text',
-        }}
+        className="cursor-text bg-transparent p-1.5"
+        style={{ ...baseStyle }}
         onDoubleClick={(e) => {
           const el = e.currentTarget.querySelector('[data-edit]');
           if (el) {
@@ -94,9 +88,8 @@ export default function NodeView({
           suppressContentEditableWarning
           spellCheck={false}
           onInput={(e) => onChangeText(node.id, e.currentTarget.innerText)}
+          className="w-full h-full outline-none"
           style={{
-            width: '100%',
-            height: '100%',
             color: style.color || '#0f172a',
             fontFamily: style.fontFamily || 'Inter, Arial, sans-serif',
             fontWeight: style.fontWeight || 400,
@@ -107,7 +100,6 @@ export default function NodeView({
             wordBreak: 'break-word',
             overflowWrap: 'anywhere',
             hyphens: 'auto',
-            outline: 'none',
           }}
         >
           {node.text || ''}

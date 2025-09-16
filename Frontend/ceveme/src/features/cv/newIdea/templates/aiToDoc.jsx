@@ -5,7 +5,7 @@ import {
   createShapeNode,
 } from '../core/model';
 import { A4 } from '../core/mm';
-import { measureTextHeightMm } from './typeset';
+import { measureTextHeightMm } from '../services/typeset';
 
 export function buildDocFromAI(api = {}) {
   const doc = emptyDocument(A4);
@@ -66,7 +66,7 @@ export function buildDocFromAI(api = {}) {
       })
     );
 
-  // --- Pasek nagłówka ---
+  // Pasek nagłówka
   nodes.push(
     createShapeNode({
       frame: { x: 0, y: 0, w: PAGE_W, h: HEADER_H, rotation: 0 },
@@ -106,7 +106,7 @@ export function buildDocFromAI(api = {}) {
     );
   }
 
-  // --- Sidebar tło ---
+  // Sidebar tło
   nodes.push(
     createShapeNode({
       frame: {
@@ -268,7 +268,7 @@ export function buildDocFromAI(api = {}) {
     y += GAP_SECTION;
   }
 
-  // Projekty / portfolio
+  // Projekty
   if (Array.isArray(api.portfolio) && api.portfolio.length) {
     y += addLabelNode(MAIN_X, y, MAIN_W, 'Projekty') + GAP_BLOCK;
     for (const p of api.portfolio) {
@@ -284,7 +284,7 @@ export function buildDocFromAI(api = {}) {
     y += GAP_SECTION;
   }
 
-  // Klauzula RODO
+  // RODO
   if (api.gdprClause) {
     const rodoLabelH = measureTextHeightMm(
       'Klauzula RODO',
@@ -311,5 +311,6 @@ export function buildDocFromAI(api = {}) {
   }
 
   doc.nodes = nodes;
+  doc.meta = { data: api };
   return doc;
 }

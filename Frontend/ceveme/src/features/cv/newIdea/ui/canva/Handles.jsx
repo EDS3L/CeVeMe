@@ -22,18 +22,14 @@ export default function Handles({ framePx, onStartResize, rotation = 0 }) {
         <div
           key={k}
           onMouseDown={(e) => onStartResize(e, k)}
+          className="absolute bg-white border-2 border-blue-600 rounded shadow-sm"
           style={{
-            position: 'absolute',
             left: pos[k].left - 5,
             top: pos[k].top - 5,
             width: 10,
             height: 10,
-            background: '#fff',
-            border: '2px solid #2563eb',
-            borderRadius: 2,
             cursor: `${k}-resize`,
             transform: `rotate(${rotation}deg)`,
-            boxShadow: '0 0 0 1px rgba(0,0,0,.1)',
           }}
         />
       ))}

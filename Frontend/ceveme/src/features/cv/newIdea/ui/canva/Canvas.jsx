@@ -15,7 +15,7 @@ export default function Canvas({
 }) {
   const wrapperRef = useRef(null);
   const { scale, pxPerMm } = useCanvasScale(A4, wrapperRef, {
-    min: 0.2,
+    min: 1,
     max: 5,
   });
 
@@ -25,15 +25,10 @@ export default function Canvas({
   const pageStyle = useMemo(
     () => ({
       width: `${A4.widthMm}mm`,
+      // width: `full`,
+
       height: `${A4.heightMm}mm`,
       transform: `scale(${scale})`,
-      transformOrigin: 'top left',
-      background: '#fff',
-      boxShadow: '0 20px 50px rgba(0,0,0,.12)',
-      borderRadius: 12,
-      position: 'relative',
-      overflow: 'hidden',
-      border: '1px solid rgba(0,0,0,.05)',
     }),
     [scale]
   );
@@ -43,18 +38,17 @@ export default function Canvas({
       e.stopPropagation();
       if (node.lock) return;
       setSelectedId(node.id);
-      const start = {
+      dragRef.current = {
         id: node.id,
         mx: e.clientX,
         my: e.clientY,
         x: node.frame.x,
         y: node.frame.y,
       };
-      dragRef.current = start;
       window.addEventListener('mousemove', onMouseMoveDrag);
       window.addEventListener('mouseup', onMouseUpDrag, { once: true });
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [setSelectedId]
   );
 
@@ -62,11 +56,12 @@ export default function Canvas({
     (e) => {
       const s = dragRef.current;
       if (!s) return;
-      const dxMm = (e.clientX - s.mx) / pxPerMm;
-      const dyMm = (e.clientY - s.my) / pxPerMm;
+      const denom = pxPerMm * scale;
+      const dxMm = (e.clientX - s.mx) / denom;
+      const dyMm = (e.clientY - s.my) / denom;
       updateNode(s.id, { frame: { x: s.x + dxMm, y: s.y + dyMm } });
     },
-    [pxPerMm, updateNode]
+    [pxPerMm, scale, updateNode]
   );
 
   const onMouseUpDrag = useCallback(() => {
@@ -76,13 +71,12 @@ export default function Canvas({
 
   const startResize = useCallback((e, dir, node) => {
     e.stopPropagation();
-    const { frame } = node;
     resizeRef.current = {
       id: node.id,
       dir,
       mx: e.clientX,
       my: e.clientY,
-      frame: { ...frame },
+      frame: { ...node.frame },
     };
     window.addEventListener('mousemove', onMouseMoveResize);
     window.addEventListener('mouseup', onMouseUpResize, { once: true });
@@ -93,8 +87,9 @@ export default function Canvas({
     (e) => {
       const r = resizeRef.current;
       if (!r) return;
-      const dxMm = (e.clientX - r.mx) / pxPerMm;
-      const dyMm = (e.clientY - r.my) / pxPerMm;
+      const denom = pxPerMm * scale;
+      const dxMm = (e.clientX - r.mx) / denom;
+      const dyMm = (e.clientY - r.my) / denom;
       let { x, y, w, h } = r.frame;
       switch (r.dir) {
         case 'e':
@@ -136,7 +131,7 @@ export default function Canvas({
       }
       updateNode(r.id, { frame: { x, y, w, h } });
     },
-    [pxPerMm, updateNode]
+    [pxPerMm, scale, updateNode]
   );
 
   const onMouseUpResize = useCallback(() => {
@@ -162,11 +157,16 @@ export default function Canvas({
 
   return (
     <div
-      className="canvas-wrapper"
+      className="w-full h-full flex justify-center items-center bg-slate-50 p-6"
       ref={wrapperRef}
       onMouseDown={() => setSelectedId(null)}
     >
-      <div ref={pageRef} id="cv-page" style={pageStyle}>
+      <div
+        ref={pageRef}
+        id="cv-page"
+        className="relative  bg-white rounded-xl shadow-2xl ring-1 ring-black/5 overflow-hidden"
+        style={pageStyle}
+      >
         {showGrid && <GridOverlay show />}
         {doc.nodes
           .filter((n) => n.visible !== false)
@@ -180,17 +180,15 @@ export default function Canvas({
               onChangeText={onChangeText}
             />
           ))}
-        {selectedNode && !selectedNode.lock && (
+        {selectedNode && !selectedNode.lock && framePx && (
           <>
             <div
+              className="absolute pointer-events-none border border-dashed border-blue-600"
               style={{
-                position: 'absolute',
                 left: framePx.x,
                 top: framePx.y,
                 width: framePx.w,
                 height: framePx.h,
-                border: '1.5px dashed #2563eb',
-                pointerEvents: 'none',
               }}
             />
             <Handles

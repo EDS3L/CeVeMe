@@ -76,10 +76,10 @@ function IconButton({ title, className = '', onClick, children }) {
   return (
     <button
       type="button"
-      className={`btn-icon ${className}`}
       title={title}
       aria-label={title}
       onClick={onClick}
+      className={`inline-grid place-items-center w-7 h-7 rounded-lg border border-black/10 bg-white hover:bg-slate-50 active:translate-y-px ${className}`}
     >
       {children}
     </button>
@@ -95,30 +95,44 @@ export default function LayersPanel({
 }) {
   return (
     <div>
-      <div style={{ fontWeight: 700, marginBottom: 10 }}>Warstwy</div>
-      <ul className="layer-list">
+      <div className="font-bold mb-2">Warstwy</div>
+      <ul className="flex flex-col gap-2 m-0 p-0 list-none">
         {nodes
           .slice()
           .reverse()
           .map((node) => {
             const isSelected = node.id === selectedId;
-            const name = node.text?.trim() || node.src?.trim() || node.id;
+            const name = (
+              node.text?.split('\n')[0] ||
+              node.src ||
+              node.id ||
+              ''
+            ).trim();
             const visible = node.visible !== false;
             return (
               <li
                 key={node.id}
-                className={`layer-item ${isSelected ? 'selected' : ''}`}
                 onClick={() => setSelectedId(node.id)}
+                className={`grid grid-cols-[1fr_auto] gap-2 items-center min-w-0 p-2 rounded-xl border border-black/10 bg-white ${
+                  isSelected
+                    ? 'outline outline-2 outline-blue-200 bg-blue-50'
+                    : ''
+                }`}
               >
-                <div className="layer-main">
-                  <span className="layer-type">{node.type}</span>
-                  <span className="layer-name" title={name}>
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="text-xs text-slate-600 w-14 flex-none lowercase">
+                    {node.type}
+                  </span>
+                  <span
+                    className="text-xs text-slate-900 truncate"
+                    title={name}
+                  >
                     {name}
                   </span>
                 </div>
 
                 <div
-                  className="layer-actions"
+                  className="flex items-center gap-1 flex-wrap justify-end"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <IconButton
@@ -153,7 +167,7 @@ export default function LayersPanel({
 
                   <IconButton
                     title="Na wierzch"
-                    className="btn-front"
+                    className="hidden sm:inline-grid"
                     onClick={() => reorder(node.id, 'front')}
                   >
                     <Icon name="top" />
@@ -161,7 +175,7 @@ export default function LayersPanel({
 
                   <IconButton
                     title="Na spód"
-                    className="btn-back"
+                    className="hidden sm:inline-grid"
                     onClick={() => reorder(node.id, 'back')}
                   >
                     <Icon name="bottom" />

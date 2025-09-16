@@ -2,15 +2,45 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
 export async function exportPageToPdf(pageEl, filename = 'CV.pdf') {
-  const el = pageEl || document.getElementById('cv-page');
-  if (!el) throw new Error('Brak elementu strony do eksportu');
+  const src = pageEl || document.getElementById('cv-page');
+  if (!src) throw new Error('Brak elementu strony do eksportu');
 
-  const canvas = await html2canvas(el, {
-    backgroundColor: '#fff',
-    scale: 2,
-    useCORS: true,
+  const clone = src.cloneNode(true);
+  Object.assign(clone.style, {
+    transform: 'none',
+    transformOrigin: 'top left',
+    width: '210mm',
+    height: '297mm',
+    boxShadow: 'none',
+    border: '0',
+    margin: '0',
+    background: '#fff',
+    position: 'static',
   });
-  const img = canvas.toDataURL('image/jpeg', 0.92);
+
+  const holder = document.createElement('div');
+  Object.assign(holder.style, {
+    position: 'fixed',
+    left: '-10000px',
+    top: '0',
+    background: '#fff',
+    padding: '0',
+    margin: '0',
+    zIndex: -1,
+  });
+  holder.appendChild(clone);
+  document.body.appendChild(holder);
+
+  const canvas = await html2canvas(clone, {
+    backgroundColor: '#fff',
+    scale: 3,
+    useCORS: true,
+    logging: false,
+  });
+
+  document.body.removeChild(holder);
+
+  const img = canvas.toDataURL('image/jpeg', 0.95);
   const pdf = new jsPDF({
     orientation: 'p',
     unit: 'mm',
@@ -34,8 +64,15 @@ export function printPage(pageEl) {
         <title>Print</title>
         <style>
           @page { size: A4; margin: 0; }
-          body, html { margin:0; padding:0; }
-          #page { width:210mm; height:297mm; }
+          html, body { margin:0; padding:0; background:#fff; }
+          #cv-page {
+            width:210mm !important;
+            height:297mm !important;
+            transform:none !important;
+            box-shadow:none !important;
+            border:none !important;
+            margin:0 !important;
+          }
         </style>
       </head>
       <body>${el.outerHTML}</body>

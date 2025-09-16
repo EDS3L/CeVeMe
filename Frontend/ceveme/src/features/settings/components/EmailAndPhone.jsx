@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import FieldWithAI from '../../user/components/ui/FieldWithAI';
 import { Phone } from 'lucide-react';
 import EditContactModal from './EditContactModal';
 import EditPhoneModal from './EditPhoneModal';
+import SettignsField from './SettignsField';
 
 function EmailAndPhone({ data = {} }) {
   const [form, setForm] = useState({
@@ -48,11 +48,11 @@ function EmailAndPhone({ data = {} }) {
           <div className="flex flex-col w-full">
             <div className="flex w-full gap-2 justify-around">
               <div className="flex gap-2 w-1/2 p-3">
-                <FieldWithAI
+                <SettignsField
                   label="Email"
                   value={form.email}
                   onChange={handleChange('email')}
-                ></FieldWithAI>
+                ></SettignsField>
                 <div className="flex items-end">
                   <button
                     className="text-center bg-slatelight p-3 rounded-2xl text-white font-bold items-end h-2/3"
@@ -64,11 +64,11 @@ function EmailAndPhone({ data = {} }) {
                 </div>
               </div>
               <div className="flex gap-2 w-1/2 p-3">
-                <FieldWithAI
+                <SettignsField
                   label="Numer Telefonu"
                   value={form.phoneNumber}
                   onChange={handleChange('phoneNumber')}
-                ></FieldWithAI>
+                ></SettignsField>
                 <div className="flex items-end">
                   <button
                     className="text-center bg-slatelight p-3 rounded-2xl text-white font-bold items-end h-2/3"

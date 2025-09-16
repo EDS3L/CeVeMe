@@ -1,6 +1,5 @@
 import { Lock, Phone, Save, ShieldAlert, User } from 'lucide-react';
 import React, { useState } from 'react';
-import FieldWithAI from '../../user/components/ui/FieldWithAI';
 import EditPasswordModal from './EditPasswordModal';
 
 function PasswordDetails() {

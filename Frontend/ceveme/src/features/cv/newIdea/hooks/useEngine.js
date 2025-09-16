@@ -129,6 +129,7 @@ export default function useEngine(initialDoc) {
 
   const setDocument = useCallback(
     (newDoc) => {
+      console.log(newDoc);
       setDoc(newDoc);
       pushHistory(newDoc);
       setSelectedId(null);

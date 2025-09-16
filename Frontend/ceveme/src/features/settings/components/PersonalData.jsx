@@ -1,10 +1,10 @@
 import { Save, User } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import FieldWithAI from '../../user/components/ui/FieldWithAI';
 import userPNG from '../../../../public/user.png';
 import UserDetailsInfo from '../hooks/useUserDeailsInfo';
 import EditAvatarModal from './EditAvatarModal';
 import { toast } from 'react-toastify';
+import SettignsField from './SettignsField';
 
 function PersonalData({ data }) {
   const userDetailsInfo = new UserDetailsInfo();
@@ -72,17 +72,17 @@ function PersonalData({ data }) {
       </div>
       <div className="flex flex-col md:flex-row">
         <div className="w-full md:w-1/2 grid gap-2">
-          <FieldWithAI
+          <SettignsField
             label="Imię"
             value={form.firstName}
             onChange={handleChange('firstName')}
           />
-          <FieldWithAI
+          <SettignsField
             label="Nazwisko"
             value={form.lastName}
             onChange={handleChange('lastName')}
           />
-          <FieldWithAI
+          <SettignsField
             label="Miasto"
             value={form.city}
             onChange={handleChange('city')}
