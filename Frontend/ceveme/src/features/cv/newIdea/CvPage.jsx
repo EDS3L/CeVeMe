@@ -10,6 +10,7 @@ import Navbar from '../../../components/Navbar';
 import { buildSimpleCV } from './templates/SimpleCvTemplte';
 import { buildDocFromAI } from './templates/aiToDoc';
 import TemplatesPanel from './ui/sidebar/TemplatePanel';
+import { fitDocToSinglePage } from './utils/fit';
 
 function isOurDocSchema(x) {
   return x && typeof x === 'object' && x.page && Array.isArray(x.nodes);
@@ -73,7 +74,8 @@ export default function App() {
     try {
       setLoading(true);
       const data = await ApiService.generateCv(email, link);
-      const nextDoc = isOurDocSchema(data) ? data : buildSimpleCV(data);
+      const baseDoc = isOurDocSchema(data) ? data : buildSimpleCV(data);
+      const nextDoc = fitDocToSinglePage(baseDoc, { top: 0, bottom: 0 });
       setDocument(nextDoc);
       localStorage.setItem('JSON_CV_DATA', JSON.stringify(data));
       setCvData(data);
