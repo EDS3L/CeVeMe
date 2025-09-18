@@ -21,6 +21,10 @@ export default function Toolbar({
   loading = false,
   showGrid = false,
   onToggleGrid = () => {},
+
+  overflowPeek = false,
+  onToggleOverflowPeek = () => {},
+  overflowMm = 0,
 }) {
   const onAddImage = async () => {
     if (loading) return;
@@ -40,14 +44,18 @@ export default function Toolbar({
         <button disabled={loading} onClick={addRect} className={BTN}>
           + Prostokąt
         </button>
+
         <div className="w-px h-7 bg-black/10" />
+
         <button disabled={!canUndo || loading} onClick={undo} className={BTN}>
           Cofnij
         </button>
         <button disabled={!canRedo || loading} onClick={redo} className={BTN}>
           Ponów
         </button>
+
         <div className="w-px h-7 bg-black/10" />
+
         <button
           disabled={loading}
           onClick={() =>
@@ -64,7 +72,9 @@ export default function Toolbar({
         >
           Wczytaj
         </button>
+
         <div className="w-px h-7 bg-black/10" />
+
         <button
           disabled={loading}
           onClick={() => exportPageToPdf(pageRef?.current, 'CV.pdf')}
@@ -79,10 +89,28 @@ export default function Toolbar({
         >
           Drukuj
         </button>
+
         <div className="w-px h-7 bg-black/10" />
+
         <button disabled={loading} onClick={onToggleGrid} className={BTN}>
           {showGrid ? 'Ukryj siatkę' : 'Pokaż siatkę'}
         </button>
+
+        <button
+          disabled={loading}
+          onClick={onToggleOverflowPeek}
+          className={BTN}
+        >
+          {overflowPeek
+            ? 'Wyłącz podgląd przepełnienia'
+            : 'Podgląd przepełnienia'}
+        </button>
+
+        {overflowMm > 0 && (
+          <span className="px-2 py-1 rounded bg-red-50 text-red-700 border border-red-200 text-xs">
+            Wystaje: +{overflowMm.toFixed(1)} mm
+          </span>
+        )}
       </div>
 
       <div className="flex items-center gap-2">

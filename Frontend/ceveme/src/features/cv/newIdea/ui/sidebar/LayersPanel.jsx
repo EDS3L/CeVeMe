@@ -110,78 +110,84 @@ export default function LayersPanel({
             ).trim();
             const visible = node.visible !== false;
             return (
-              <li
-                key={node.id}
-                onClick={() => setSelectedId(node.id)}
-                className={`grid grid-cols-[1fr_auto] gap-2 items-center min-w-0 p-2 rounded-xl border border-black/10 bg-white ${
-                  isSelected
-                    ? 'outline outline-2 outline-blue-200 bg-blue-50'
-                    : ''
-                }`}
-              >
-                <div className="flex items-center gap-2 min-w-0">
-                  <span className="text-xs text-slate-600 w-14 flex-none lowercase">
-                    {node.type}
-                  </span>
-                  <span
-                    className="text-xs text-slate-900 truncate"
-                    title={name}
+              <>
+                {(isSelected || !visible || node.lock) && (
+                  <li
+                    key={node.id}
+                    onClick={() => setSelectedId(node.id)}
+                    className={`grid grid-cols-[1fr_auto] gap-2 items-center min-w-0 p-2 rounded-xl border border-black/10 bg-white ${
+                      isSelected ? 'outline-2 outline-blue-200 bg-blue-50' : ''
+                    }`}
                   >
-                    {name}
-                  </span>
-                </div>
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="text-xs text-slate-600 w-14 flex-none lowercase">
+                        {node.type}
+                      </span>
+                      <span
+                        className="text-xs text-slate-900 truncate"
+                        title={name}
+                      >
+                        {name}
+                      </span>
+                    </div>
 
-                <div
-                  className="flex items-center gap-1 flex-wrap justify-end"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <IconButton
-                    title={visible ? 'Ukryj' : 'Pokaż'}
-                    onClick={() =>
-                      updateNode(node.id, { visible: visible ? false : true })
-                    }
-                  >
-                    <Icon name={visible ? 'eye' : 'eye-off'} />
-                  </IconButton>
+                    <div
+                      className="flex items-center gap-1 flex-wrap justify-end"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <IconButton
+                        title={visible ? 'Ukryj' : 'Pokaż'}
+                        onClick={() =>
+                          updateNode(node.id, {
+                            visible: visible ? false : true,
+                          })
+                        }
+                      >
+                        <Icon name={visible ? 'eye' : 'eye-off'} />
+                      </IconButton>
 
-                  <IconButton
-                    title={node.lock ? 'Odblokuj' : 'Zablokuj'}
-                    onClick={() => updateNode(node.id, { lock: !node.lock })}
-                  >
-                    <Icon name={node.lock ? 'unlock' : 'lock'} />
-                  </IconButton>
+                      <IconButton
+                        title={node.lock ? 'Odblokuj' : 'Zablokuj'}
+                        onClick={() =>
+                          updateNode(node.id, { lock: !node.lock })
+                        }
+                      >
+                        <Icon name={node.lock ? 'unlock' : 'lock'} />
+                      </IconButton>
 
-                  <IconButton
-                    title="W górę"
-                    onClick={() => reorder(node.id, 'forward')}
-                  >
-                    <Icon name="up" />
-                  </IconButton>
+                      <IconButton
+                        title="W górę"
+                        onClick={() => reorder(node.id, 'forward')}
+                      >
+                        <Icon name="up" />
+                      </IconButton>
 
-                  <IconButton
-                    title="W dół"
-                    onClick={() => reorder(node.id, 'backward')}
-                  >
-                    <Icon name="down" />
-                  </IconButton>
+                      <IconButton
+                        title="W dół"
+                        onClick={() => reorder(node.id, 'backward')}
+                      >
+                        <Icon name="down" />
+                      </IconButton>
 
-                  <IconButton
-                    title="Na wierzch"
-                    className="hidden sm:inline-grid"
-                    onClick={() => reorder(node.id, 'front')}
-                  >
-                    <Icon name="top" />
-                  </IconButton>
+                      <IconButton
+                        title="Na wierzch"
+                        className="hidden sm:inline-grid"
+                        onClick={() => reorder(node.id, 'front')}
+                      >
+                        <Icon name="top" />
+                      </IconButton>
 
-                  <IconButton
-                    title="Na spód"
-                    className="hidden sm:inline-grid"
-                    onClick={() => reorder(node.id, 'back')}
-                  >
-                    <Icon name="bottom" />
-                  </IconButton>
-                </div>
-              </li>
+                      <IconButton
+                        title="Na spód"
+                        className="hidden sm:inline-grid"
+                        onClick={() => reorder(node.id, 'back')}
+                      >
+                        <Icon name="bottom" />
+                      </IconButton>
+                    </div>
+                  </li>
+                )}
+              </>
             );
           })}
       </ul>

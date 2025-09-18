@@ -27,6 +27,7 @@ export default function useCanvasScale(
       ro.disconnect();
       window.removeEventListener('resize', recompute);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageSizeMm]);
   return { scale, pxPerMm, recompute };
 }
