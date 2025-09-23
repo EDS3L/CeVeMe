@@ -7,13 +7,19 @@ import Toolbar from './ui/toolbar/Toolbar';
 import { TEMPLATES } from './services/templates';
 import ApiService from '../hooks/Gemini';
 import Navbar from '../../../components/Navbar';
-import { buildSimpleCV } from './templates/SimpleCvTemplte';
-import { buildDocFromAI } from './templates/aiToDoc';
 import TemplatesPanel from './ui/sidebar/TemplatePanel';
 
 import OverflowTray from './ui/sidebar/OverflowTray';
 import MiniMap from './ui/canva/MiniMap';
 import { extraBottomMm } from './utils/overflow';
+
+import { buildBlackAndWhiteCV } from './templates/BlackAndWhite';
+import { buildGreenBlackATSCV } from './templates/buildGreenBlackATSCV';
+import { buildTestPageCV } from './templates/testPage';
+import { buildWhiteMinimalistCompactCV } from './templates/WhiteMinimalistNodes';
+import { buildDocFromAI } from './templates/SideBarTemplate';
+import { buildGreenAndWhite } from './templates/GrayAndWhiteSimple';
+import { buildGrayMinimalist } from './templates/GrayMinimalistExact';
 
 function isOurDocSchema(x) {
   return x && typeof x === 'object' && x.page && Array.isArray(x.nodes);
@@ -33,7 +39,7 @@ export default function App() {
     const cv = readCvData() || {};
     const first = TEMPLATES[0];
     if (first && typeof first.build === 'function') return first.build(cv);
-    return buildSimpleCV(cv);
+    return buildDocFromAI(cv);
   }, []);
   const engine = useEngine(initial);
   const {
@@ -66,8 +72,37 @@ export default function App() {
 
   const cvTemplates = useMemo(
     () => [
-      { key: 'classic-ai', title: 'Classic', func: buildDocFromAI },
-      { key: 'sidebar-simple', title: 'Sidebar', func: buildSimpleCV },
+      { key: 'sidebar', title: 'Sidebar', func: buildDocFromAI },
+      {
+        key: 'black-and-white',
+        title: 'Black and White ATS',
+        func: buildBlackAndWhiteCV,
+      },
+      {
+        key: 'test',
+        title: 'test',
+        func: buildGrayMinimalist,
+      },
+      {
+        key: 'green-and-white',
+        title: 'Green and White',
+        func: buildGreenAndWhite,
+      },
+      {
+        key: 'green-and-black',
+        title: 'Green and Black TESTOWE',
+        func: buildGreenBlackATSCV,
+      },
+      {
+        key: 'White-Minimalist',
+        title: 'White Minimalist',
+        func: buildWhiteMinimalistCompactCV,
+      },
+      {
+        key: 'test-page',
+        title: 'Test',
+        func: buildTestPageCV,
+      },
     ],
     []
   );

@@ -40,8 +40,6 @@ import {
 
 function EmploymentInfoPageContent() {
   const [activeTab, setActiveTab] = useState('jezyki');
-  const [isEdit, setIsEdit] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
   const [toasts, setToasts] = useState([]);
   const [confirm, setConfirm] = useState(null);
 
@@ -77,57 +75,9 @@ function EmploymentInfoPageContent() {
     educations: [],
   }));
 
-  const [errors, setErrors] = useState({});
-
-  const validate = () => {
-    const e = {};
-    form.experiences.forEach((ex) => {
-      if (
-        ex.startingDate &&
-        ex.endDate &&
-        !ex.currently &&
-        ex.startingDate > ex.endDate
-      ) {
-        e[`exp-dates-${ex.id}`] = 'Data zakończenia < daty rozpoczęcia.';
-      }
-    });
-    form.educations.forEach((ed) => {
-      if (
-        ed.startingDate &&
-        ed.endDate &&
-        !ed.currently &&
-        ed.startingDate > ed.endDate
-      ) {
-        e[`edu-dates-${ed.id}`] = 'Data zakończenia < daty rozpoczęcia.';
-      }
-    });
-    setErrors(e);
-    return e;
-  };
+  const [errors] = useState({});
 
   const improveText = async (text) => (text || '').trim();
-
-  const onEdit = () => setIsEdit(true);
-
-  const onCancel = () => {
-    setIsEdit(false);
-    setErrors({});
-    pushToast('info', 'Zmiany odrzucone.');
-  };
-
-  const onSave = async () => {
-    const e = validate();
-    if (Object.keys(e).length) {
-      pushToast('error', 'Popraw błędy w formularzu.');
-      return;
-    }
-    setIsSaving(true);
-    setTimeout(() => {
-      setIsSaving(false);
-      setIsEdit(false);
-      pushToast('success', 'Zapisano.');
-    }, 300);
-  };
 
   const tabs = useMemo(
     () => [
@@ -180,42 +130,6 @@ function EmploymentInfoPageContent() {
                   {Math.floor((timeoutData.howMuchLeft ?? 0) / 60)}:
                   {String((timeoutData.howMuchLeft ?? 0) % 60).padStart(2, '0')}
                 </div>
-              )}
-            </div>
-
-            <div className="flex items-center gap-2">
-              {!isEdit ? (
-                <button
-                  onClick={onEdit}
-                  className="inline-flex items-center gap-2 rounded-xl px-4 py-2 bg-bookcloth text-basewhite hover:opacity-90"
-                >
-                  <Pencil size={20} strokeWidth={2} /> Edytuj
-                </button>
-              ) : (
-                <>
-                  <button
-                    onClick={onSave}
-                    disabled={isSaving}
-                    className="inline-flex items-center gap-2 rounded-xl px-4 py-2 bg-bookcloth text-basewhite hover:opacity-90 disabled:opacity-60"
-                  >
-                    {isSaving ? (
-                      <Loader2
-                        size={20}
-                        strokeWidth={2}
-                        className="animate-spin"
-                      />
-                    ) : (
-                      <Save size={20} strokeWidth={2} />
-                    )}
-                    Zapisz
-                  </button>
-                  <button
-                    onClick={onCancel}
-                    className="inline-flex items-center gap-2 rounded-xl px-4 py-2 border border-cloudlight hover:bg-ivorymedium/60"
-                  >
-                    <X size={20} strokeWidth={2} /> Anuluj
-                  </button>
-                </>
               )}
             </div>
           </header>

@@ -13,20 +13,20 @@ export function buildDocFromAI(api = {}) {
 
   const PAGE_W = 210;
   const PAGE_H = 297;
-  const MARGIN = 12;
+  const MARGIN = 10;
   const HEADER_H = 36;
   const SIDEBAR_W = 64;
   const MAIN_X = SIDEBAR_W + MARGIN;
   const MAIN_W = PAGE_W - MAIN_X - MARGIN;
 
   const LABEL_STYLE = {
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: 800,
     color: '#0f766e',
     lineHeight: 1.25,
   };
   const BODY_STYLE = {
-    fontSize: 10,
+    fontSize: 9,
     fontWeight: 400,
     color: '#0f172a',
     lineHeight: 1.45,
@@ -38,8 +38,8 @@ export function buildDocFromAI(api = {}) {
     lineHeight: 1.35,
   };
 
-  const GAP_SECTION = 5;
-  const GAP_BLOCK = 3;
+  const GAP_SECTION = 1;
+  const GAP_BLOCK = 1;
 
   const addTextNode = (x, y, w, text, style = BODY_STYLE) => {
     const h = Math.max(6, measureTextHeightMm(text, w, style));
@@ -64,16 +64,14 @@ export function buildDocFromAI(api = {}) {
           cornerRadius: 0,
         },
       })
-    );
+    ); // Pasek nagłówka
 
-  // Pasek nagłówka
   nodes.push(
     createShapeNode({
       frame: { x: 0, y: 0, w: PAGE_W, h: HEADER_H, rotation: 0 },
       style: {
         fill: { color: '#f8fafc', opacity: 1 },
         stroke: null,
-        cornerRadius: 12,
       },
     })
   );
@@ -104,16 +102,15 @@ export function buildDocFromAI(api = {}) {
         style: { cornerRadius: 999 },
       })
     );
-  }
+  } // Sidebar tło
 
-  // Sidebar tło
   nodes.push(
     createShapeNode({
       frame: {
         x: 0,
         y: HEADER_H,
         w: SIDEBAR_W,
-        h: PAGE_H - HEADER_H,
+        h: PAGE_H - HEADER_H - 1,
         rotation: 0,
       },
       style: {
@@ -124,18 +121,17 @@ export function buildDocFromAI(api = {}) {
     })
   );
 
-  let sideY = HEADER_H + 6;
+  let sideY = HEADER_H + 4; // Minimalnie zmniejszona wartość, aby przesunąć wszystko w górę // Kontakt
 
-  // Kontakt
   addTextNode(MARGIN, sideY, SIDEBAR_W - 2 * MARGIN, 'Kontakt', {
     ...LABEL_STYLE,
     color: '#3730a3',
   });
   sideY += GAP_BLOCK + 6;
   const contact = [
-    api?.personalData?.phoneNumber && `📞  ${api.personalData.phoneNumber}`,
-    api?.personalData?.email && `✉️  ${api.personalData.email}`,
-    api?.personalData?.city && `📍  ${api.personalData.city}`,
+    api?.personalData?.phoneNumber && `📞  ${api.personalData.phoneNumber}`,
+    api?.personalData?.email && `✉️  ${api.personalData.email}`,
+    api?.personalData?.city && `📍  ${api.personalData.city}`,
     ...(Array.isArray(api?.personalData?.links)
       ? api.personalData.links.map((l) => `🔗 ${l}`)
       : []),
@@ -147,9 +143,8 @@ export function buildDocFromAI(api = {}) {
       addTextNode(MARGIN, sideY, SIDEBAR_W - 2 * MARGIN, contact, SOFT_STYLE) +
       GAP_SECTION;
   addRule(MARGIN, sideY, SIDEBAR_W - 2 * MARGIN);
-  sideY += GAP_SECTION;
+  sideY += GAP_SECTION; // Umiejętności
 
-  // Umiejętności
   sideY +=
     addTextNode(MARGIN, sideY, SIDEBAR_W - 2 * MARGIN, 'Umiejętności', {
       ...LABEL_STYLE,
@@ -178,9 +173,8 @@ export function buildDocFromAI(api = {}) {
         ) + GAP_SECTION;
   }
   addRule(MARGIN, sideY, SIDEBAR_W - 2 * MARGIN);
-  sideY += GAP_SECTION;
+  sideY += GAP_SECTION; // Języki
 
-  // Języki
   if (Array.isArray(api.languages) && api.languages.length) {
     sideY +=
       addTextNode(MARGIN, sideY, SIDEBAR_W - 2 * MARGIN, 'Języki', {
@@ -195,9 +189,8 @@ export function buildDocFromAI(api = {}) {
       GAP_SECTION;
     addRule(MARGIN, sideY, SIDEBAR_W - 2 * MARGIN);
     sideY += GAP_SECTION;
-  }
+  } // Certyfikaty
 
-  // Certyfikaty
   if (Array.isArray(api.certificates) && api.certificates.length) {
     sideY +=
       addTextNode(MARGIN, sideY, SIDEBAR_W - 2 * MARGIN, 'Certyfikaty', {
@@ -216,17 +209,40 @@ export function buildDocFromAI(api = {}) {
       GAP_SECTION;
     addRule(MARGIN, sideY, SIDEBAR_W - 2 * MARGIN);
     sideY += GAP_SECTION;
-  }
+  } // 📍 Edukacja - PRZENIESIONA NA LEWĄ STRONĘ
 
-  let y = HEADER_H + 6;
+  if (Array.isArray(api.educations) && api.educations.length) {
+    sideY +=
+      addTextNode(MARGIN, sideY, SIDEBAR_W - 2 * MARGIN, 'Edukacja', {
+        ...LABEL_STYLE,
+        color: '#3730a3',
+      }) + GAP_BLOCK;
+    for (const ed of api.educations) {
+      const top = [ed?.degree, ed?.institution].filter(Boolean).join(' – ');
+      const spec = ed?.specialization ? `\n${ed.specialization}` : '';
+      const per = ed?.period ? `\n${ed.period}` : '';
+      const block = `${top}${spec}${per}`.trim();
+      if (block)
+        sideY +=
+          addTextNode(
+            MARGIN,
+            sideY,
+            SIDEBAR_W - 2 * MARGIN,
+            block,
+            SOFT_STYLE
+          ) + GAP_BLOCK;
+    }
+    addRule(MARGIN, sideY, SIDEBAR_W - 2 * MARGIN);
+    sideY += GAP_SECTION;
+  } // Teraz sekcje na głównej stronie będą zaczynać się wyżej
 
-  // Podsumowanie
+  let y = HEADER_H + 4; // Minimalnie zmniejszona wartość, aby przesunąć wszystko w górę // Podsumowanie
+
   if (api.summary) {
     y += addLabelNode(MAIN_X, y, MAIN_W, 'Podsumowanie') + GAP_BLOCK;
     y += addTextNode(MAIN_X, y, MAIN_W, api.summary, BODY_STYLE) + GAP_SECTION;
-  }
+  } // Doświadczenie
 
-  // Doświadczenie
   if (Array.isArray(api.experience) && api.experience.length) {
     y += addLabelNode(MAIN_X, y, MAIN_W, 'Doświadczenie') + GAP_BLOCK;
     for (const exp of api.experience) {
@@ -252,39 +268,40 @@ export function buildDocFromAI(api = {}) {
       y += 2;
     }
     y += GAP_SECTION;
-  }
+  } // Projekty
 
-  // Edukacja
-  if (Array.isArray(api.educations) && api.educations.length) {
-    y += addLabelNode(MAIN_X, y, MAIN_W, 'Edukacja') + GAP_BLOCK;
-    for (const ed of api.educations) {
-      const top = [ed?.degree, ed?.institution].filter(Boolean).join(' – ');
-      const spec = ed?.specialization ? `\n${ed.specialization}` : '';
-      const per = ed?.period ? `\n${ed.period}` : '';
-      const block = `${top}${spec}${per}`.trim();
-      if (block)
-        y += addTextNode(MAIN_X, y, MAIN_W, block, BODY_STYLE) + GAP_BLOCK;
-    }
-    y += GAP_SECTION;
-  }
-
-  // Projekty
   if (Array.isArray(api.portfolio) && api.portfolio.length) {
     y += addLabelNode(MAIN_X, y, MAIN_W, 'Projekty') + GAP_BLOCK;
     for (const p of api.portfolio) {
-      const line1 = p?.name ? p.name : 'Projekt';
+      const name = p?.name ? p.name : 'Projekt';
       const tech = (p?.technologies || [])
         .map((t) => t?.name)
         .filter(Boolean)
-        .join(' • ');
-      const url = p?.url ? `\n${p.url}` : '';
-      const text = `${line1}${tech ? `\n${tech}` : ''}${url}`;
-      y += addTextNode(MAIN_X, y, MAIN_W, text, BODY_STYLE) + GAP_BLOCK;
+        .join(' • '); // Pogrubiona nazwa projektu
+
+      if (name.trim())
+        y +=
+          addTextNode(MAIN_X, y, MAIN_W, name, {
+            ...BODY_STYLE,
+            fontWeight: 800,
+          }) + 1.5; // Oddzielone osiągnięcia
+
+      const bullets = (p?.achievements || [])
+        .map((a) => a?.description)
+        .filter(Boolean)
+        .map((t) => `• ${t}`)
+        .join('\n');
+
+      if (bullets)
+        y += addTextNode(MAIN_X, y, MAIN_W, bullets, BODY_STYLE) + 1.5; // Oddzielone technologie
+
+      if (tech)
+        y += addTextNode(MAIN_X, y, MAIN_W, tech, BODY_STYLE) + GAP_BLOCK;
+      y += 2;
     }
     y += GAP_SECTION;
-  }
+  } // RODO
 
-  // RODO
   if (api.gdprClause) {
     const rodoLabelH = measureTextHeightMm(
       'Klauzula RODO',
