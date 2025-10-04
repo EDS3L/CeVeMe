@@ -242,8 +242,8 @@ export default function Canvas({
       };
       window.addEventListener('mousemove', onMouseMoveResize);
       window.addEventListener('mouseup', onMouseUpResize, { once: true });
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [liveContentMaxY, overflowPeek]
   );
 

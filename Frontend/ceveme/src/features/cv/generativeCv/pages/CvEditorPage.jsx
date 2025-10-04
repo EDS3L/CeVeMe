@@ -10,7 +10,7 @@ import { useReactToPrint } from 'react-to-print';
 import { toast } from 'react-toastify';
 import { useLocation } from 'react-router-dom';
 
-import Navbar from '../../../components/Navbar';
+import Navbar from '../../../../components/Navbar';
 import LayoutPicker from '../components/LayoutPicker';
 import CvForm from '../components/CvForm';
 import SidebarEditor from '../components/SidebarEditor';

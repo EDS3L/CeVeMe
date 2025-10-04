@@ -1,5 +1,5 @@
 import React from 'react';
-import { exportPageToPdf, printPage } from '../../services/export';
+import { exportPageToPdf, printPage } from '../services/export';
 
 const BTN =
   'px-3 py-2 rounded-lg border border-black/15 bg-white text-sm font-semibold hover:bg-slate-50 disabled:opacity-60 disabled:cursor-not-allowed';

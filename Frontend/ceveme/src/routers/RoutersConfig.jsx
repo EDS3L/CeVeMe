@@ -23,7 +23,9 @@ const RoutersConfig = {
   },
   cv: {
     path: '/cv',
-    component: React.lazy(() => import('../features/cv/pages/CvEditorPage')),
+    component: React.lazy(() =>
+      import('../features/cv/generativeCv/pages/CvEditorPage')
+    ),
     requiredRole: null,
   },
   user: {
@@ -49,7 +51,7 @@ const RoutersConfig = {
   },
   cv2: {
     path: '/cv2',
-    component: React.lazy(() => import('../features/cv/newIdea/CvPage')),
+    component: React.lazy(() => import('../features/cv/canvasCv/CvPage')),
     requiredRole: null,
   },
 };

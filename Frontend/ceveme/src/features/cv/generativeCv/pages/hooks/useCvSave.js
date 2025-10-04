@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import axios from '../../../../utils/AxiosConfig';
+import axios from '../../../../../utils/AxiosConfig';
 import { toast } from 'react-toastify';
 
 export function useCvSave({ cvData, offerLink, generatePdfBlob }) {

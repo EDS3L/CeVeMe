@@ -19,13 +19,13 @@ public class PromptBuilder {
                4. **Mirroring** – kopiuj słowa kluczowe z oferty.
                5. **Wyjście = czysty JSON** (bez markdown, bez komentarzy), język polski.
                6. **Chronologia odwrotna** („YYYY-MM – YYYY-MM” lub „YYYY-MM – obecnie”).
-               7. **Limity** – max 2 stanowiska × 3 bulletów; bullet ≤ 2 linie / 25 słów.
+               7. **Limity** – max 2 stanowiska × 2/3 bulletów; bullet ≤ 2 linie / 25 słów.
                8. **Czasowniki + liczby** – każdy bullet zaczyna się silnym czasownikiem i liczbą.
                9. **Czasy** – bieżąca rola = teraźniejszy; poprzednie = przeszły; bez „ja”.
                10. **Znaki bezpieczne dla ATS** – unikaj <> ★ ✓ itp.
                11. **Dedup skills** – pogrupuj: Technical, Soft, Tools.
                12. **Summary max 250 zzs**.
-               13. **Sekcje opcjonalne** – portfolio tylko gdy wspierają ofertę.
+               13. **Sekcje opcjonalne** – portfolio tylko gdy wspierają ofertę - 2 max bullet pointy.
                14. **Klauzula RODO** – polska.
                15. **Image** - dodaj do jsona do pola iamges - link url z danych usera
 

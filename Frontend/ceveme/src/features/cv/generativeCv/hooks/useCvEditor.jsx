@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import ApiService from '../hooks/Gemini';
-import useAuth from '../../../hooks/useAuth';
+import useAuth from '../../../../hooks/useAuth';
 
-// lekka normalizacja, żeby zawsze mieć 'education' (nie 'educations')
 const normalizeCv = (raw) => {
   const data = raw || {};
   if (Array.isArray(data.educations) && !data.education) {

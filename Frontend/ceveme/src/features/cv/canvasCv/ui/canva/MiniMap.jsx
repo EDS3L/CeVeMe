@@ -1,4 +1,3 @@
-// ui/canva/MiniMap.jsx
 import React, { useMemo, useRef } from 'react';
 import { maxContentYMm } from '../../utils/overflow';
 import { A4 } from '../../core/mm';
