@@ -31,7 +31,7 @@ public class LoginUserUseCase {
     }
 
     @Transactional
-    public LoginUserResponse login(LoginUserRequest request, HttpServletResponse servletResponse) {
+    public LoginUserResponse login(LoginUserRequest request, HttpServletResponse servletResponse, HttpServletRequest servletRequest) {
         Email email = new Email(request.email());
 
         if (!userRepository.existsByEmail(email)) throw new IllegalArgumentException("Email not found");
@@ -45,26 +45,32 @@ public class LoginUserUseCase {
 
         String userId = String.valueOf(user.getId());
 
-        String accessToken = jwtService.generateAccessToken(email,userId, user.getUserRole());
-        Cookie accessCookie = new Cookie("accessToken", accessToken);
-        accessCookie.setHttpOnly(false);
-        accessCookie.setSecure(false);
-        accessCookie.setPath("/");
+        createRefreshCookie(user,servletRequest,servletResponse);
+        generateAccessCookie(email,userId,user,servletResponse);
 
+        return new LoginUserResponse(user.getId(), "Login successful!");
 
+    }
 
-        String refreshToken = refreshTokenService.createRefreshToken(user, null);
+    private void createRefreshCookie(User user, HttpServletRequest servletRequest, HttpServletResponse servletResponse) {
+        String refreshToken = refreshTokenService.createRefreshToken(user,servletRequest);
         Cookie refreshCookie = new Cookie("refreshToken", refreshToken);
         refreshCookie.setHttpOnly(true);
         refreshCookie.setSecure(false);
         refreshCookie.setPath("/");
 
         servletResponse.addCookie(refreshCookie);
+
+    }
+
+    private void generateAccessCookie(Email email, String userId, User user, HttpServletResponse servletResponse) {
+        String accessToken = jwtService.generateAccessToken(email,userId, user.getUserRole());
+        Cookie accessCookie = new Cookie("accessToken", accessToken);
+        accessCookie.setHttpOnly(false);
+        accessCookie.setSecure(false);
+        accessCookie.setPath("/");
+
         servletResponse.addCookie(accessCookie);
-
-
-        return new LoginUserResponse(user.getId(), "Login successful!");
-
     }
 
 

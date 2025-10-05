@@ -59,7 +59,7 @@ const TemplateModal = ({ isOpen, onClose, templates, onSelectTemplate }) => {
     >
       <div
         ref={modalRef}
-        className="bg-[var(--color-ivorylight)] w-full max-w-6xl max-h-[92vh] overflow-hidden rounded-2xl shadow-2xl flex flex-col animate-[scaleIn_200ms_ease-out]"
+        className="bg-[var(--color-ivorylight)] w-full max-w-6xl max-h-[85vh] overflow-hidden rounded-2xl shadow-2xl flex flex-col animate-[scaleIn_200ms_ease-out]"
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-title"

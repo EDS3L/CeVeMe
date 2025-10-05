@@ -1,10 +1,8 @@
 import React, { useState, useRef, useCallback, useMemo } from 'react';
 
-// Nowe, wyodrębnione komponenty
 import TemplateModal from './ui/sidebar/templateChooser/TemplateModal';
 import TemplateSelectButton from './ui/sidebar/templateChooser/TemplateSelectButton';
 
-// Twój kod / hooki / UI
 import useEngine from './hooks/useEngine';
 import Canvas from './ui/canva/Canvas';
 import InspectorPanel from './ui/sidebar/InspectorPanel';
@@ -18,11 +16,19 @@ import OverflowTray from './ui/sidebar/OverflowTray';
 import MiniMap from './ui/canva/MiniMap';
 import { extraBottomMm } from './utils/overflow';
 
-// Generatory szablonów
 import { buildBlackAndWhiteCV } from './templates/BlackAndWhite';
 import { buildWhiteMinimalistCompactCV } from './templates/WhiteMinimalistNodes';
 import { buildDocFromAI } from './templates/SideBarTemplate';
 import { buildGrayAndWhite } from './templates/GrayAndWhiteSimple';
+
+import { generatePdfBlob } from './services/exportVector';
+
+import { useCvSave } from '../generativeCv/pages/hooks/useCvSave';
+
+import useAuth from '../../../hooks/useAuth';
+
+import GenerateCvModal from './ui/canva/GenerateCvModal';
+import { buildModernTurquoiseCV } from './templates/modernTurquoiseCv';
 
 function isOurDocSchema(x) {
   return x && typeof x === 'object' && x.page && Array.isArray(x.nodes);
@@ -45,6 +51,7 @@ export default function App() {
     return buildDocFromAI(cv);
   }, []);
 
+  // Silnik edycji
   const engine = useEngine(initial);
   const {
     doc,
@@ -61,8 +68,6 @@ export default function App() {
     redo,
     canUndo,
     canRedo,
-    save,
-    load,
   } = engine;
 
   const pageRef = useRef(null);
@@ -75,11 +80,26 @@ export default function App() {
   const [overflowPeek, setOverflowPeek] = useState(false);
   const [metrics, setMetrics] = useState({ scale: 1, pxPerMm: 3.7795 });
 
-  // Modal + wybór szablonu
+  const { email } = useAuth();
+
+  const [offerLink, setOfferLink] = useState(() => {
+    try {
+      return localStorage.getItem('CV_OFFER_LINK') || '';
+    } catch {
+      return '';
+    }
+  });
+
+  // Modal wyboru szablonu
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTemplateName, setSelectedTemplateName] = useState(null);
 
-  // Lista szablonów widocznych w modalu
+  // Modal „Wygeneruj CV”
+  const [isGenModalOpen, setIsGenModalOpen] = useState(false);
+  const openGenerateModal = useCallback(() => setIsGenModalOpen(true), []);
+  const closeGenerateModal = useCallback(() => setIsGenModalOpen(false), []);
+
+  // Lista szablonów (do TemplateModal)
   const cvTemplates = useMemo(
     () => [
       {
@@ -87,7 +107,7 @@ export default function App() {
         title: 'Panel boczny',
         func: buildDocFromAI,
         description:
-          'Nowoczesny układ z bocznym panelem nawigacyjnym idealny dla kreatywnych profesji',
+          'Nowoczesny układ z bocznym panelem — świetny dla kreatywnych profesji.',
         sections: [
           'Profil',
           'Doświadczenie',
@@ -102,7 +122,7 @@ export default function App() {
         title: 'Nowoczesny Biznesowy',
         func: buildBlackAndWhiteCV,
         description:
-          'Elegancki czarno-biały design dla korporacji i środowisk formalnych',
+          'Elegancki czarno-biały design do zastosowań korporacyjnych.',
         sections: ['Header', 'O mnie', 'Kariera', 'Kompetencje', 'Certyfikaty'],
         style: 'Profesjonalny, stonowany, monochromatyczny',
       },
@@ -111,7 +131,7 @@ export default function App() {
         title: 'Czysty Klasyczny',
         func: buildGrayAndWhite,
         description:
-          'Klasyczny szablon z subtelnymi akcentami szarości, uniwersalny dla każdej branży',
+          'Klasyczny szablon z subtelnymi akcentami szarości, uniwersalny.',
         sections: [
           'Dane kontaktowe',
           'Doświadczenie',
@@ -124,35 +144,63 @@ export default function App() {
         key: 'White-Minimalist',
         title: 'White Minimalist',
         func: buildWhiteMinimalistCompactCV,
-        description:
-          'Ultra-minimalistyczny design z dużą ilością białej przestrzeni w stylu skandynawskim',
+        description: 'Ultra-minimalistyczny design ze sporą ilością bieli.',
         sections: ['Intro', 'Experience', 'Skills', 'Education'],
-        style: 'Skandynawski minimalizm, przestronny',
+        style: 'Skandynawski minimalizm',
+      },
+      {
+        key: 'modern-turquoise',
+        title: 'Turkusowy Dwukolumnowy',
+        func: buildModernTurquoiseCV,
+        description:
+          'Dwukolumnowy szablon z turkusową belką akcentową, białym arkuszem, okrągłym zdjęciem i „chipami” kontaktu.',
+        sections: [
+          'Nagłówek',
+          'Doświadczenie',
+          'O mnie',
+          'Edukacja',
+          'Umiejętności',
+          'Referencje',
+        ],
+        style: 'Kreatywny, świeży, kontrastowy',
       },
     ],
     []
   );
 
-  const handleGenerate = useCallback(async () => {
-    const email = window.prompt('Email do CV:') || '';
-    const link = window.prompt('Link (LinkedIn/portfolio):') || '';
-    if (!email || !link) return;
+  // Generowanie CV z linku (z modala) — wykorzystuje e-mail z useAuth
+  const handleGenerateFromLink = useCallback(
+    async (link) => {
+      if (!email || !link) return;
+      try {
+        setLoading(true);
+        setOfferLink(link);
 
-    try {
-      setLoading(true);
-      const data = await ApiService.generateCv(email, link);
-      const baseDoc = isOurDocSchema(data) ? data : '';
-      setDocument(baseDoc);
-      localStorage.setItem('JSON_CV_DATA', JSON.stringify(data));
-      setCvData(data);
-    } catch (e) {
-      console.error('Nie udało się wygenerować CV:', e);
-      alert('Nie udało się wygenerować CV (szczegóły w konsoli).');
-    } finally {
-      setLoading(false);
-    }
-  }, [setDocument]);
+        localStorage.setItem('CV_OFFER_LINK', link);
 
+        const data = await ApiService.generateCv(email, link);
+        const baseDoc = isOurDocSchema(data) ? data : '';
+        setDocument(baseDoc);
+        localStorage.setItem('JSON_CV_DATA', JSON.stringify(data));
+        setCvData(data);
+      } catch (e) {
+        console.error('Nie udało się wygenerować CV:', e);
+        alert('Nie udało się wygenerować CV (szczegóły w konsoli).');
+      } finally {
+        setLoading(false);
+      }
+    },
+    [email, setDocument]
+  );
+
+  // (Opcjonalnie) wybór oferty z listy — podłącz swoje UI; tu przykład z alertem
+  const handlePickOffer = useCallback(() => {
+    // TODO: otwórz picker ofert i po wyborze wywołaj:
+    // setOfferLink(wybranyLink); localStorage.setItem('CV_OFFER_LINK', wybranyLink);
+    alert('Tu podłącz picker ofert. Po wyborze wywołaj setOfferLink(link).');
+  }, []);
+
+  // Zmiana szablonu
   const handleSelectTemplate = useCallback(
     (template) => {
       const newDoc = template.func(cvData);
@@ -162,8 +210,14 @@ export default function App() {
     [cvData, setDocument]
   );
 
-  const selectedNode = doc.nodes.find((n) => n.id === selectedId) || null;
+  // Hook zapisu — użyje aktualnego offerLink
+  const { savingMode, handleSaveAndHistory } = useCvSave({
+    cvData,
+    offerLink,
+    generatePdfBlob: () => generatePdfBlob(doc),
+  });
 
+  // Skok do pozycji (mm) w podglądzie
   const jumpToMm = useCallback(
     (yMm) => {
       const cont = scrollRef.current;
@@ -176,6 +230,7 @@ export default function App() {
     [metrics]
   );
 
+  // Przepełnienie strony (mm)
   const overflowMm = useMemo(() => extraBottomMm(doc), [doc]);
 
   return (
@@ -183,6 +238,7 @@ export default function App() {
       <Navbar showShadow={true} />
 
       <Toolbar
+        doc={doc}
         addText={addText}
         addImage={addImage}
         addRect={addRect}
@@ -190,20 +246,20 @@ export default function App() {
         redo={redo}
         canUndo={canUndo}
         canRedo={canRedo}
-        save={save}
-        load={load}
-        pageRef={pageRef}
-        onGenerate={handleGenerate}
-        loading={loading}
+        loading={loading || savingMode === 'uploadAndHistory'}
         showGrid={showGrid}
         onToggleGrid={() => setShowGrid((v) => !v)}
         overflowPeek={overflowPeek}
         onToggleOverflowPeek={() => setOverflowPeek((v) => !v)}
         overflowMm={overflowMm}
+        // zapis
+        onGenerateAndSave={handleSaveAndHistory}
+        // otwarcie modala „Wygeneruj CV”
+        onOpenGenerateModal={openGenerateModal}
       />
 
       <div className="grid gap-3 p-3 [grid-template-columns:280px_1fr_320px] max-[1400px]:[grid-template-columns:240px_1fr_280px] max-[1200px]:[grid-template-columns:240px_1fr] max-[1200px]:[grid-template-areas:'sidebar_canvas''inspector_inspector'] max-[900px]:grid-cols-1 max-[900px]:[grid-template-areas:'canvas''sidebar''inspector']">
-        {/* Sidebar left */}
+        {/* Sidebar lewy */}
         <aside className="bg-white border border-black/10 rounded-xl p-3 min-h-[200px] [grid-area:unset] max-[1200px]:[grid-area:sidebar]">
           <div className="mb-4">
             <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--color-clouddark)]">
@@ -242,7 +298,7 @@ export default function App() {
           <div className="h-px w-full bg-black/10 my-2" />
         </aside>
 
-        {/* Canvas center */}
+        {/* Canvas (środek) */}
         <main
           ref={scrollRef}
           className="relative bg-slate-50 border p-3 border-black/20 rounded-xl w-full h-full md:min-h-[50vh] md:max-h-[1200px] overflow-auto flex items-center justify-center [grid-area:unset] max-[1200px]:[grid-area:canvas]"
@@ -266,10 +322,10 @@ export default function App() {
           />
         </main>
 
-        {/* Inspector right */}
+        {/* Inspector (prawy) */}
         <aside className="bg-white border border-black/10 rounded-xl p-3 min-h-[200px] [grid-area:unset] max-[1200px]:[grid-area:inspector]">
           <InspectorPanel
-            node={selectedNode}
+            node={doc.nodes.find((n) => n.id === selectedId) || null}
             updateNode={updateNode}
             removeNode={removeNode}
           />
@@ -282,6 +338,15 @@ export default function App() {
         onClose={() => setIsModalOpen(false)}
         templates={cvTemplates}
         onSelectTemplate={handleSelectTemplate}
+      />
+
+      {/* Modal „Wygeneruj CV” */}
+      <GenerateCvModal
+        open={isGenModalOpen}
+        onClose={closeGenerateModal}
+        email={email}
+        onGenerateFromLink={handleGenerateFromLink}
+        onPickOffer={handlePickOffer}
       />
     </div>
   );

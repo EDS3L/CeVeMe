@@ -13,9 +13,9 @@ export function buildDocFromAI(api = {}) {
 
   const PAGE_W = 210;
   const PAGE_H = 297;
-  const MARGIN = 8; // mniejsze marginesy
-  const HEADER_H = 30; // niższy header
-  const SIDEBAR_W = 58; // węższy sidebar
+  const MARGIN = 8;
+  const HEADER_H = 30;
+  const SIDEBAR_W = 58;
   const MAIN_X = SIDEBAR_W + MARGIN;
   const MAIN_W = PAGE_W - MAIN_X - MARGIN;
 
@@ -38,7 +38,7 @@ export function buildDocFromAI(api = {}) {
     lineHeight: 1.2,
   };
 
-  // proste ikony (emoji) dla najpopularniejszych linków
+  // ikony do linków
   const ICON_MAP = {
     linkedin: '🔗',
     github: '🐙',
@@ -50,19 +50,20 @@ export function buildDocFromAI(api = {}) {
     homepage: '🌐',
   };
 
-  const GAP_SECTION = 0.6; // mniejsze przerwy między sekcjami
-  const GAP_BLOCK = 0.6; // mniejsze przerwy wewnątrz bloków
+  const GAP_SECTION = 0.6;
+  const GAP_BLOCK = 0.6;
 
-  const addTextNode = (x, y, w, text, style = BODY_STYLE) => {
-    // niższe min-height żeby linie były ciaśniej nawet dla krótkich wierszy
+  // helper: dodanie tekstu (z obsługą linka na całym węźle)
+  const addTextNode = (x, y, w, text, style = BODY_STYLE, opts = {}) => {
     const h = Math.max(4, measureTextHeightMm(text, w, style));
-    nodes.push(
-      createTextNode({
-        frame: { x, y, w, h, rotation: 0 },
-        text,
-        textStyle: style,
-      })
-    );
+    const node = createTextNode({
+      frame: { x, y, w, h, rotation: 0 },
+      text,
+      textStyle: style,
+    });
+    if (opts.link) node.link = opts.link; // <<<<<<<<<<<<<< klikany link
+    if (opts.vAlign) node.textStyle.verticalAlign = opts.vAlign; // ewentualne wymuszenie vAlign
+    nodes.push(node);
     return h;
   };
   const addLabelNode = (x, y, w, text) =>
@@ -77,15 +78,13 @@ export function buildDocFromAI(api = {}) {
           cornerRadius: 0,
         },
       })
-    ); // Pasek nagłówka
+    );
 
+  // pasek nagłówka
   nodes.push(
     createShapeNode({
       frame: { x: 0, y: 0, w: PAGE_W, h: HEADER_H, rotation: 0 },
-      style: {
-        fill: { color: '#f8fafc', opacity: 1 },
-        stroke: null,
-      },
+      style: { fill: { color: '#f8fafc', opacity: 1 }, stroke: null },
     })
   );
 
@@ -108,16 +107,16 @@ export function buildDocFromAI(api = {}) {
   });
 
   if (api?.personalData?.images) {
-    // mniejsze zdjęcie aby nie zabierało zbyt wiele miejsca
     nodes.push(
       createImageNode({
         frame: { x: PAGE_W - MARGIN - 20, y: 8, w: 20, h: 20, rotation: 0 },
         src: api.personalData.images,
-        style: { cornerRadius: 999 },
+        style: { cornerRadius: 999, shape: 'circle', clipCircle: true }, // <<<<<< okrąg
       })
     );
-  } // Sidebar tło
+  }
 
+  // sidebar tło
   nodes.push(
     createShapeNode({
       frame: {
@@ -135,58 +134,131 @@ export function buildDocFromAI(api = {}) {
     })
   );
 
-  let sideY = HEADER_H + 4; // Minimalnie zmniejszona wartość, aby przesunąć wszystko w górę // Kontakt
+  let sideY = HEADER_H + 4;
 
+  // Kontakt
   addTextNode(MARGIN, sideY, SIDEBAR_W - 2 * MARGIN, 'Kontakt', {
     ...LABEL_STYLE,
     color: '#3730a3',
   });
   sideY += GAP_BLOCK + 6;
-  const contact = [
-    api?.personalData?.phoneNumber && `📞  ${api.personalData.phoneNumber}`,
-    api?.personalData?.email && `✉️  ${api.personalData.email}`,
-    api?.personalData?.city && `📍 ${api.personalData.city}`,
-    ...(Array.isArray(api?.personalData?.links)
-      ? api.personalData.links
-          .map((l) => {
-            if (!l) return null;
-            const url = typeof l === 'string' ? l : l?.url;
-            const rawType =
-              typeof l === 'object' && l?.type
-                ? String(l.type).toLowerCase()
-                : '';
-            if (!url) return null;
-            const u = String(url).toLowerCase();
-            // wybierz ikonę po typie lub z URL
-            const icon =
-              ICON_MAP[rawType] ||
-              (u.includes('linkedin.com')
-                ? ICON_MAP.linkedin
-                : u.includes('github.com')
-                ? ICON_MAP.github
-                : u.includes('gitlab.com')
-                ? ICON_MAP.gitlab
-                : u.includes('instagram.com')
-                ? ICON_MAP.instagram
-                : u.includes('facebook.com')
-                ? ICON_MAP.facebook
-                : u.includes('twitter.com')
-                ? ICON_MAP.twitter
-                : ICON_MAP.website);
-            return `${icon} ${url}`;
-          })
-          .filter(Boolean)
-      : []),
-  ]
-    .filter(Boolean)
-    .join('\n');
-  if (contact)
-    sideY +=
-      addTextNode(MARGIN, sideY, SIDEBAR_W - 2 * MARGIN, contact, SOFT_STYLE) +
-      GAP_SECTION;
-  addRule(MARGIN, sideY, SIDEBAR_W - 2 * MARGIN);
-  sideY += GAP_SECTION; // Umiejętności
 
+  // Telefon
+  if (api?.personalData?.phoneNumber) {
+    const tel = String(api.personalData.phoneNumber);
+    sideY +=
+      addTextNode(
+        MARGIN,
+        sideY,
+        SIDEBAR_W - 2 * MARGIN,
+        `☎ ${tel}`,
+        SOFT_STYLE,
+        { link: `tel:${tel.replace(/\s+/g, '')}`, vAlign: 'middle' }
+      ) + 1.2;
+  }
+
+  // E-mail
+  if (api?.personalData?.email) {
+    const mail = String(api.personalData.email);
+    sideY +=
+      addTextNode(
+        MARGIN,
+        sideY,
+        SIDEBAR_W - 2 * MARGIN,
+        `✉ ${mail}`,
+        SOFT_STYLE,
+        { link: `mailto:${mail}`, vAlign: 'middle' }
+      ) + 1.2;
+  }
+
+  // Miasto (bez linka)
+  if (api?.personalData?.city) {
+    sideY +=
+      addTextNode(
+        MARGIN,
+        sideY,
+        SIDEBAR_W - 2 * MARGIN,
+        `📍 ${api.personalData.city}`,
+        SOFT_STYLE,
+        { vAlign: 'middle' }
+      ) + 1.2;
+  }
+
+  // Nazwa dla etykiety linku (ładne słowo zamiast pełnego URL)
+  function titleForTypeOrDomain(url, rawType) {
+    const TYPE_TITLES = {
+      linkedin: 'LinkedIn',
+      github: 'GitHub',
+      gitlab: 'GitLab',
+      instagram: 'Instagram',
+      facebook: 'Facebook',
+      twitter: 'Twitter',
+      website: 'Strona WWW',
+      homepage: 'Strona WWW',
+    };
+    if (rawType && TYPE_TITLES[rawType]) return TYPE_TITLES[rawType];
+    try {
+      const u = new URL(url);
+      const host = u.hostname.replace(/^www\./, '');
+      if (host.includes('linkedin.')) return 'LinkedIn';
+      if (host.includes('github.')) return 'GitHub';
+      if (host.includes('gitlab.')) return 'GitLab';
+      if (host.includes('instagram.')) return 'Instagram';
+      if (host.includes('facebook.')) return 'Facebook';
+      if (host.includes('twitter.')) return 'Twitter';
+      return host;
+    } catch {
+      return 'Link';
+    }
+  }
+
+  // Linki (LinkedIn, GitHub, itp.) — etykiety + klikalne URL-e
+  if (Array.isArray(api?.personalData?.links)) {
+    for (const l of api.personalData.links) {
+      if (!l) continue;
+      const url = typeof l === 'string' ? l : l?.url;
+      const rawType = (
+        typeof l === 'object' && l?.type ? String(l.type) : ''
+      ).toLowerCase();
+      if (!url) continue;
+
+      const u = String(url);
+      const lu = u.toLowerCase();
+      const icon =
+        ICON_MAP[rawType] ||
+        (lu.includes('linkedin.com')
+          ? ICON_MAP.linkedin
+          : lu.includes('github.com')
+          ? ICON_MAP.github
+          : lu.includes('gitlab.com')
+          ? ICON_MAP.gitlab
+          : lu.includes('instagram.com')
+          ? ICON_MAP.instagram
+          : lu.includes('facebook.com')
+          ? ICON_MAP.facebook
+          : lu.includes('twitter.com')
+          ? ICON_MAP.twitter
+          : ICON_MAP.website);
+
+      const label = titleForTypeOrDomain(u, rawType);
+
+      sideY +=
+        addTextNode(
+          MARGIN,
+          sideY,
+          SIDEBAR_W - 2 * MARGIN,
+          `${icon} ${label}`,
+          SOFT_STYLE,
+          { link: u, vAlign: 'middle' } // <<<<<<<<<<<<<< klikana etykieta
+        ) + 1.2;
+    }
+  }
+
+  sideY += GAP_SECTION;
+  addRule(MARGIN, sideY, SIDEBAR_W - 2 * MARGIN);
+  sideY += GAP_SECTION;
+
+  // Umiejętności
   sideY +=
     addTextNode(MARGIN, sideY, SIDEBAR_W - 2 * MARGIN, 'Umiejętności', {
       ...LABEL_STYLE,
@@ -209,8 +281,9 @@ export function buildDocFromAI(api = {}) {
         addTextNode(MARGIN, sideY, 45, skillsBlocks, SOFT_STYLE) + GAP_SECTION;
   }
   addRule(MARGIN, sideY, SIDEBAR_W - 2 * MARGIN);
-  sideY += GAP_SECTION; // Języki
+  sideY += GAP_SECTION;
 
+  // Języki
   if (Array.isArray(api.languages) && api.languages.length) {
     sideY +=
       addTextNode(MARGIN, sideY, SIDEBAR_W - 2 * MARGIN, 'Języki', {
@@ -225,28 +298,9 @@ export function buildDocFromAI(api = {}) {
       GAP_SECTION;
     addRule(MARGIN, sideY, SIDEBAR_W - 2 * MARGIN);
     sideY += GAP_SECTION;
-  } // Certyfikaty
+  }
 
-  if (Array.isArray(api.certificates) && api.certificates.length) {
-    sideY +=
-      addTextNode(MARGIN, sideY, SIDEBAR_W - 2 * MARGIN, 'Certyfikaty', {
-        ...LABEL_STYLE,
-        color: '#3730a3',
-      }) + GAP_BLOCK;
-    const certText = api.certificates
-      .map((c) => {
-        const line = [c?.name, c?.issuer].filter(Boolean).join(' – ');
-        return c?.data ? `${line} (${c.data})` : line;
-      })
-      .filter(Boolean)
-      .join('\n');
-    sideY +=
-      addTextNode(MARGIN, sideY, SIDEBAR_W - 2 * MARGIN, certText, SOFT_STYLE) +
-      GAP_SECTION;
-    addRule(MARGIN, sideY, SIDEBAR_W - 2 * MARGIN);
-    sideY += GAP_SECTION;
-  } // 📍 Edukacja - PRZENIESIONA NA LEWĄ STRONĘ
-
+  // Edukacja (lewa kolumna)
   if (Array.isArray(api.educations) && api.educations.length) {
     sideY +=
       addTextNode(MARGIN, sideY, SIDEBAR_W - 2 * MARGIN, 'Edukacja', {
@@ -270,14 +324,15 @@ export function buildDocFromAI(api = {}) {
     }
     addRule(MARGIN, sideY, SIDEBAR_W - 2 * MARGIN);
     sideY += GAP_SECTION;
-  } // Teraz sekcje na głównej stronie będą zaczynać się wyżej
+  }
 
-  let y = HEADER_H + 4; // Minimalnie zmniejszona wartość, aby przesunąć wszystko w górę // Podsumowanie
+  // prawa kolumna
+  let y = HEADER_H + 4;
 
   if (api.summary) {
     y += addLabelNode(MAIN_X, y, MAIN_W, 'Podsumowanie') + GAP_BLOCK;
     y += addTextNode(MAIN_X, y, MAIN_W, api.summary, BODY_STYLE) + GAP_SECTION;
-  } // Doświadczenie
+  }
 
   if (Array.isArray(api.experience) && api.experience.length) {
     y += addLabelNode(MAIN_X, y, MAIN_W, 'Doświadczenie') + GAP_BLOCK;
@@ -304,39 +359,43 @@ export function buildDocFromAI(api = {}) {
       y += 2;
     }
     y += GAP_SECTION;
-  } // Projekty
+  }
 
   if (Array.isArray(api.portfolio) && api.portfolio.length) {
     y += addLabelNode(MAIN_X, y, MAIN_W, 'Projekty') + GAP_BLOCK;
     for (const p of api.portfolio) {
-      const name = p?.name ? p.name : 'Projekt';
+      const pname = p?.name ? p.name : 'Projekt';
       const tech = (p?.technologies || [])
         .map((t) => t?.name)
         .filter(Boolean)
-        .join(' • '); // Pogrubiona nazwa projektu
+        .join(' • ');
 
-      if (name.trim())
+      // nazwa projektu opcjonalnie klikalna (jeśli p.url istnieje)
+      if (pname.trim())
         y +=
-          addTextNode(MAIN_X, y, MAIN_W, name, {
-            ...BODY_STYLE,
-            fontWeight: 800,
-          }) + 1.5; // Oddzielone osiągnięcia
+          addTextNode(
+            MAIN_X,
+            y,
+            MAIN_W,
+            pname,
+            { ...BODY_STYLE, fontWeight: 800 },
+            { link: p?.url }
+          ) + 1.5;
 
       const bullets = (p?.achievements || [])
         .map((a) => a?.description)
         .filter(Boolean)
         .map((t) => `• ${t}`)
         .join('\n');
-
       if (bullets)
-        y += addTextNode(MAIN_X, y, MAIN_W, bullets, BODY_STYLE) + 1.5; // Oddzielone technologie
+        y += addTextNode(MAIN_X, y, MAIN_W, bullets, BODY_STYLE) + 1.5;
 
       if (tech)
         y += addTextNode(MAIN_X, y, MAIN_W, tech, BODY_STYLE) + GAP_BLOCK;
       y += 2;
     }
     y += GAP_SECTION;
-  } // RODO
+  }
 
   if (api.gdprClause) {
     const rodoLabelH = measureTextHeightMm(

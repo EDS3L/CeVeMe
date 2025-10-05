@@ -25,7 +25,7 @@ public class PromptBuilder {
                10. **Znaki bezpieczne dla ATS** – unikaj <> ★ ✓ itp.
                11. **Dedup skills** – pogrupuj: Technical, Soft, Tools.
                12. **Summary max 250 zzs**.
-               13. **Sekcje opcjonalne** – portfolio tylko gdy wspierają ofertę - 2 max bullet pointy.
+               13. **Sekcje opcjonalne** – portfolio tylko gdy wspierają ofertę - 2 max bullet pointy jeżeli dodajesz tą sekcje konieczny jest opis osiągnięć w formie co robi projekt ** ważne **.
                14. **Klauzula RODO** – polska.
                15. **Image** - dodaj do jsona do pola iamges - link url z danych usera
 

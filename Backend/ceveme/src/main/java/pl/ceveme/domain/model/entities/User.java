@@ -47,6 +47,9 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private ActivationToken activationToken;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<RefreshToken> refreshTokenList;
+
     private boolean isActive;
 
 
@@ -216,6 +219,18 @@ public class User {
 
     public void setActivationToken(ActivationToken activationToken) {
         this.activationToken = activationToken;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public List<RefreshToken> getRefreshTokenList() {
+        return refreshTokenList;
+    }
+
+    public void setRefreshTokenList(List<RefreshToken> refreshTokenList) {
+        this.refreshTokenList = refreshTokenList;
     }
 
     public void addCertificate(Certificate certificate) {

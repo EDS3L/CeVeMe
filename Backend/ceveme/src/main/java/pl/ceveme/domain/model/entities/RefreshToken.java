@@ -24,16 +24,18 @@ public class RefreshToken {
 
     private Instant lastUsed;
 
-    private String deviceInfo;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "device_id")
+    private Device device;
 
     public RefreshToken() {
     }
 
-    public RefreshToken(String jit, User user, Instant expiresAt, String deviceInfo) {
+    public RefreshToken(String jit, User user, Instant expiresAt, Device device) {
         this.jit = jit;
         this.user = user;
         this.expiresAt = expiresAt;
-        this.deviceInfo = deviceInfo;
+        this.device = device;
     }
 
     public Long getId() {
@@ -84,11 +86,11 @@ public class RefreshToken {
         this.lastUsed = lastUsed;
     }
 
-    public String getDeviceInfo() {
-        return deviceInfo;
+    public Device getDevice() {
+        return device;
     }
 
-    public void setDeviceInfo(String deviceInfo) {
-        this.deviceInfo = deviceInfo;
+    public void setDevice(Device device) {
+        this.device = device;
     }
 }

@@ -1,4 +1,9 @@
-import { emptyDocument, createTextNode, createShapeNode } from '../core/model';
+import {
+  emptyDocument,
+  createTextNode,
+  createShapeNode,
+  createImageNode,
+} from '../core/model';
 import { A4 } from '../core/mm';
 import { measureTextHeightMm } from '../services/typeset';
 
@@ -8,11 +13,11 @@ export class GrayAndWhiteResume {
   static CONTENT_W =
     GrayAndWhiteResume.PAGE.W - 2 * GrayAndWhiteResume.PAGE.MARGIN;
 
-  // kolumny (lekko ciaśniej)
+  // kolumny
   static COLUMNS = { LEFT_RATIO: 0.4, GAP: 6, SEPARATOR_W: 0.6 };
 
-  // odstępy (mm) – ciaśniejsze
-  static SPACING = { xs: 1.5, sm: 3, md: 5, lg: 6 };
+  // odstępy (mm)
+  static SPACING = { xs: 1.2, sm: 2.4, md: 4, lg: 5 };
 
   // kolory
   static COLORS = {
@@ -22,32 +27,84 @@ export class GrayAndWhiteResume {
     bg: '#f2f2f2',
     line: '#535353',
     iconBg: '#4b4b4b',
-    iconFg: '#ffffff',
+    iconFg: '#ffffff', // BIAŁE IKONY
   };
 
-  // glify
-  static GLYPHS = { phone: '☎', email: '✉', home: '🏠︎' };
+  // IKONY: użyjemy wektorów (SVG → data:) zamiast emoji
+  static ICONS = {
+    phone: `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+     fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M22 16.92v3a2 2 0 0 1-2.18 2
+           19.8 19.8 0 0 1-8.63-3.07
+           19.5 19.5 0 0 1-6-6
+           19.8 19.8 0 0 1-3.07-8.63A2 2 0 0 1 4.11 2h3
+           a2 2 0 0 1 2 1.72c.12.9.31 1.77.57 2.61a2 2 0 0 1-.45 2.11L8.09 9.91
+           a16 16 0 0 0 6 6l1.47-1.47a2 2 0 0 1 2.11-.45
+           c.84.26 1.71.45 2.61.57A2 2 0 0 1 22 16.92z"/>
+</svg>`,
+    mail: `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+     fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <rect x="3" y="5" width="18" height="14" rx="2" ry="2"/>
+  <path d="M3 7l9 6 9-6"/>
+</svg>`,
+    pin: `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+     fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M21 10c0 5.5-9 12-9 12s-9-6.5-9-12a9 9 0 1 1 18 0z"/>
+  <circle cx="12" cy="10" r="3"/>
+</svg>`,
+    link: `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+     fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M15 7h3a5 5 0 1 1 0 10h-3"/>
+  <path d="M9 17H6a5 5 0 1 1 0-10h3"/>
+  <line x1="8" y1="12" x2="16" y2="12"/>
+</svg>`,
+    github: `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+     fill="white">
+  <path d="M12 2C6.477 2 2 6.477 2 12a10 10 0 0 0 6.838 9.488c.5.092.682-.217.682-.482
+           0-.237-.009-.868-.014-1.703-2.782.604-3.369-1.34-3.369-1.34
+           -.454-1.154-1.11-1.462-1.11-1.462-.908-.621.069-.608.069-.608
+           1.004.07 1.532 1.032 1.532 1.032.892 1.53 2.341 1.088 2.91.833
+           .091-.647.35-1.088.636-1.339-2.22-.252-4.555-1.11-4.555-4.943
+           0-1.091.39-1.984 1.029-2.682-.103-.253-.446-1.27.098-2.647
+           0 0 .84-.269 2.75 1.025A9.564 9.564 0 0 1 12 6.844
+           c.85.004 1.705.115 2.504.337 1.909-1.294 2.748-1.025 2.748-1.025
+           .546 1.377.203 2.394.1 2.647.64.698 1.028 1.591 1.028 2.682
+           0 3.842-2.339 4.687-4.566 4.936.359.309.678.919.678 1.852
+           0 1.335-.012 2.411-.012 2.737 0 .267.18.579.688.48A10.001 10.001 0 0 0 22 12
+           c0-5.523-4.477-10-10-10z"/>
+</svg>`,
+  };
 
-  // style
   static STYLES = {
     nameFirst: {
-      fontSize: 32,
+      fontSize: 30, // było 32
       fontWeight: 400,
       color: '#767676',
       lineHeight: 1.05,
       fontFamily: 'Lora, serif',
     },
     nameLast: {
-      fontSize: 32,
+      fontSize: 30,
       fontWeight: 700,
       color: '#767676',
       lineHeight: 1.05,
       fontFamily: 'Lora, serif',
     },
-    title: { fontSize: 16, fontWeight: 500, color: '#727272', lineHeight: 1.2 },
+    // tytuł przerzucony bardziej w prawo (mniejsza szerokość lewego bloku)
+    title: {
+      fontSize: 14.2,
+      fontWeight: 600,
+      color: '#727272',
+      lineHeight: 1.15,
+    },
 
     section: {
-      fontSize: 14,
+      fontSize: 13.5,
       fontWeight: 700,
       fontFamily: 'Lora, serif',
       color: '#767676',
@@ -58,45 +115,42 @@ export class GrayAndWhiteResume {
     body: { fontSize: 8.5, color: '#727272', lineHeight: 1.45 },
     bodyMuted: { fontSize: 8.5, color: '#8b8b8b', lineHeight: 1.45 },
 
-    compact: { fontSize: 8.9, color: '#727272', lineHeight: 1.25 },
-    compactMuted: { fontSize: 8.9, color: '#8b8b8b', lineHeight: 1.25 },
+    compact: { fontSize: 8.8, color: '#727272', lineHeight: 1.25 },
+    compactMuted: { fontSize: 8.8, color: '#8b8b8b', lineHeight: 1.25 },
 
-    contact: { fontSize: 10, color: '#727272', lineHeight: 1.4 },
-    iconText: {
-      fontSize: 12,
-      color: '#ffffff',
-      textAlign: 'center',
-      lineHeight: 1,
-    },
+    // kontakt — ciaśniejszy
+    contact: { fontSize: 8.8, color: '#727272', lineHeight: 1.2 },
 
     rowTitle: {
-      fontSize: 10.5,
+      fontSize: 10.3,
       fontWeight: 700,
       color: '#727272',
-      lineHeight: 1.3,
+      lineHeight: 1.28,
     },
-    rowSubtle: { fontSize: 8.5, color: '#8b8b8b', lineHeight: 1.3 },
+    rowSubtle: { fontSize: 8.4, color: '#8b8b8b', lineHeight: 1.26 },
 
     legal: {
-      fontSize: 8.7,
+      fontSize: 8.5,
       color: '#727272',
-      lineHeight: 1.3,
+      lineHeight: 1.28,
       textAlign: 'justify',
     },
   };
 
-  // header/kontakt/zdjęcie – header niższy (45)
+  // header/kontakt/zdjęcie – header 45
   static CONTACT = {
-    ICON_SIZE: 6,
-    GAP: 5,
-    TEXT_W: 90,
-    ROW_SPACING: 4,
-    UNDERLINE_H: 0.8,
+    ICON_SIZE: 5.0, // kółko mniejsze
+    GAP: 3.2, // mniejszy odstęp
+    TEXT_W: 68, // węższe pole tekstowe
+    ROW_SPACING: 2.2, // ciaśniej w pionie
+    UNDERLINE_H: 0.7,
     HEADER_H: 45,
   };
 
-  static PHOTO = { SIZE: 24, GAP: 8 }; // okrągłe zdjęcie w prawym górnym rogu
-  static LAYOUT = { NAME_TOP_OFFSET: -8, NAME_AREA_W_RATIO: 0.58 };
+  // zmniejszam obszar nazwiska, żeby tytuł i linki nie „wchodziły” pod zdjęcie
+  static LAYOUT = { NAME_TOP_OFFSET: -7, NAME_AREA_W_RATIO: 0.52 };
+
+  static PHOTO = { SIZE: 23, GAP: 6 };
 
   constructor(api = {}) {
     this.api = api;
@@ -142,7 +196,7 @@ export class GrayAndWhiteResume {
 
     const headerY = this.y + NAME_TOP_OFFSET;
 
-    // zdjęcie (prawy górny róg)
+    // zdjęcie (prawy górny róg) — naprawione 'src'
     const photoUrl = this.api?.personalData?.images;
     const photoSize = GrayAndWhiteResume.PHOTO.SIZE;
     const photoX = PAGE_W - MARGIN - photoSize;
@@ -160,13 +214,16 @@ export class GrayAndWhiteResume {
       })
     );
     if (photoUrl) {
-      this.#image(
-        photoUrl,
-        photoX,
-        photoY,
-        photoSize,
-        photoSize,
-        photoSize / 2
+      this.nodes.push(
+        createImageNode({
+          frame: { x: photoX, y: photoY, w: photoSize, h: photoSize },
+          src: photoUrl,
+          style: {
+            cornerRadius: photoSize / 2,
+            shape: 'circle',
+            clipCircle: true,
+          },
+        })
       );
     }
 
@@ -193,6 +250,7 @@ export class GrayAndWhiteResume {
     );
     const nameH = Math.max(firstH, lastH);
 
+    // podkreślenie tylko pod lewym blokiem (nie zachodzi na kontakt)
     this.#rect(
       MARGIN,
       headerY + nameH + GrayAndWhiteResume.SPACING.xs,
@@ -201,30 +259,70 @@ export class GrayAndWhiteResume {
       GrayAndWhiteResume.COLORS.line
     );
 
-    // kontakt (prawa część, pod zdjęciem)
-    const iconSize = GrayAndWhiteResume.CONTACT.ICON_SIZE;
-    const contactRightEdge = photoX - GrayAndWhiteResume.PHOTO.GAP; // kontakt zaczyna się tuż przed zdjęciem
-    const iconX = contactRightEdge - iconSize;
+    // kontakt (po prawej, pod zdjęciem)
+    const C = GrayAndWhiteResume.CONTACT;
+    const contactRightEdge = photoX - GrayAndWhiteResume.PHOTO.GAP;
+    // dynamicznie przytnij szerokość tekstu, aby na 100% się mieścił
+    const maxTextW = Math.min(
+      C.TEXT_W,
+      contactRightEdge - MARGIN - C.ICON_SIZE - C.GAP
+    );
+    const iconX = contactRightEdge - C.ICON_SIZE;
     let cy = headerY + GrayAndWhiteResume.SPACING.xs;
 
     const pd = this.api?.personalData || {};
-    cy = pd.phoneNumber
-      ? this.#contactRow(
-          iconX,
-          cy,
-          pd.phoneNumber,
-          GrayAndWhiteResume.GLYPHS.phone
-        )
-      : cy;
-    cy = pd.email
-      ? this.#contactRow(iconX, cy, pd.email, GrayAndWhiteResume.GLYPHS.email)
-      : cy;
-    // eslint-disable-next-line no-unused-vars
-    cy = pd.city
-      ? this.#contactRow(iconX, cy, pd.city, GrayAndWhiteResume.GLYPHS.home)
-      : cy;
 
-    // tytuł pod nazwiskiem
+    // tel / mail / miasto
+    if (pd.phoneNumber) {
+      cy = this.#contactRow({
+        iconX,
+        y: cy,
+        text: String(pd.phoneNumber),
+        icon: 'phone',
+        link: `tel:${String(pd.phoneNumber).replace(/\s+/g, '')}`,
+        textW: maxTextW,
+      });
+    }
+    if (pd.email) {
+      cy = this.#contactRow({
+        iconX,
+        y: cy,
+        text: String(pd.email),
+        icon: 'mail',
+        link: `mailto:${String(pd.email)}`,
+        textW: maxTextW,
+      });
+    }
+    if (pd.city) {
+      cy = this.#contactRow({
+        iconX,
+        y: cy,
+        text: String(pd.city),
+        icon: 'pin',
+        textW: maxTextW,
+      });
+    }
+
+    // dodatkowe linki (krótkie etykiety, klikalne)
+    const extra = this.#normalizeLinks(pd?.links);
+    for (const item of extra) {
+      const iconKey =
+        item.key === 'github'
+          ? 'github'
+          : item.key === 'linkedin'
+          ? 'link'
+          : 'link';
+      cy = this.#contactRow({
+        iconX,
+        y: cy,
+        text: item.label,
+        icon: iconKey,
+        link: item.url,
+        textW: maxTextW,
+      });
+    }
+
+    // tytuł — lekko niżej, zostaje w LEWYM bloku (nie wchodzi pod zdjęcie/kontakt)
     this.y = headerY + nameH + GrayAndWhiteResume.SPACING.sm;
     const title = this.api?.headline || 'Your Title';
     this.y += this.#textBlock(
@@ -235,14 +333,17 @@ export class GrayAndWhiteResume {
       GrayAndWhiteResume.STYLES.title
     );
 
-    // start treści niżej (header 45)
-    this.y = HEADER_H + GrayAndWhiteResume.SPACING.sm;
+    // treść od dolnej krawędzi headera
+    this.y =
+      GrayAndWhiteResume.CONTACT.HEADER_H + GrayAndWhiteResume.SPACING.sm;
   }
 
-  #contactRow(iconX, y, text, glyph) {
-    const { ICON_SIZE, GAP, TEXT_W, ROW_SPACING } = GrayAndWhiteResume.CONTACT;
+  // jedna linia kontaktu: kółko + wektorowa ikona (białe) + tekst do prawej
+  #contactRow({ iconX, y, text, icon, link, textW }) {
+    const { ICON_SIZE, GAP, ROW_SPACING } = GrayAndWhiteResume.CONTACT;
     const centerY = y + ICON_SIZE / 2;
 
+    // kółko
     this.nodes.push(
       createShapeNode({
         frame: {
@@ -259,33 +360,80 @@ export class GrayAndWhiteResume {
       })
     );
 
+    // IKONA SVG (biała) w środku kółka — rasteryzowana przez renderer (image node)
+    const svg = GrayAndWhiteResume.ICONS[icon] || GrayAndWhiteResume.ICONS.link;
+    const svgDataUrl =
+      'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg.trim());
+    const iconInner = ICON_SIZE * 0.62; // odrobinkę marginesu w kółku
     this.nodes.push(
-      createTextNode({
+      createImageNode({
         frame: {
-          x: iconX - 0.7,
-          y: centerY - ICON_SIZE / 2 + ICON_SIZE - 6.4,
-          w: ICON_SIZE,
-          h: ICON_SIZE,
+          x: iconX + (ICON_SIZE - iconInner) / 2,
+          y: centerY - iconInner / 2,
+          w: iconInner,
+          h: iconInner,
         },
-        text: glyph,
-        textStyle: GrayAndWhiteResume.STYLES.iconText,
+        src: svgDataUrl,
       })
     );
 
-    const style = { ...GrayAndWhiteResume.STYLES.contact, textAlign: 'right' };
-    const h = measureTextHeightMm(String(text), TEXT_W, style);
+    // Tekst: po lewej od kółka, wyrównany do PRAWEJ i wycentrowany pionowo do linii
+    const style = {
+      ...GrayAndWhiteResume.STYLES.contact,
+      textAlign: 'right',
+      verticalAlign: 'middle',
+    };
+    const h = Math.max(3, measureTextHeightMm(String(text), textW, style));
     const textY = centerY - h / 2;
-    const textX = iconX - TEXT_W - GAP;
+    const textX = iconX - GAP - textW;
 
-    this.#textBlock(textX, textY, TEXT_W, String(text), style);
+    const node = createTextNode({
+      frame: { x: textX, y: textY, w: textW, h },
+      text: String(text),
+      textStyle: style,
+    });
+    if (link) node.link = link;
+    this.nodes.push(node);
+
     return centerY + ICON_SIZE / 2 + ROW_SPACING;
+  }
+
+  // etykiety linków: krótkie i czytelne
+  #normalizeLinks(raw) {
+    const out = [];
+    const arr = Array.isArray(raw) ? raw : [];
+    for (const l of arr) {
+      const url = typeof l === 'string' ? l : l?.url || l?.href || '';
+      if (!url) continue;
+      let key = (typeof l === 'string' ? '' : l?.type || l?.name || '')
+        .toString()
+        .toLowerCase();
+      let label = 'Strona www';
+      try {
+        const u = new URL(url);
+        const host = u.hostname.replace(/^www\./, '');
+        if (host.includes('linkedin')) {
+          key ||= 'linkedin';
+          label = 'LinkedIn';
+        } else if (host.includes('github')) {
+          key ||= 'github';
+          label = 'GitHub';
+        } else {
+          label = 'Strona www';
+          key ||= 'website';
+        }
+      } catch {
+        /* noop */
+      }
+      out.push({ label, key, url });
+    }
+    return out;
   }
 
   /* ------------------------ SUMMARY ------------------------ */
 
   #summary() {
     if (!this.api?.summary) return;
-
     const { MARGIN } = GrayAndWhiteResume.PAGE;
     const W = GrayAndWhiteResume.CONTENT_W;
 
@@ -329,7 +477,7 @@ export class GrayAndWhiteResume {
       GrayAndWhiteResume.COLORS.line
     );
 
-    // prawa: Doświadczenie + RODO (RODO przeniesione tutaj, na dół)
+    // prawa: Doświadczenie + RODO
     let ry = topY;
     ry += this.#section({
       x: rightX,
@@ -491,7 +639,7 @@ export class GrayAndWhiteResume {
       .filter(Boolean)
       .join(' • ');
     const desc = p?.description || '';
-    const url = p?.url ? `URL: ${p.url}` : '';
+    const url = p?.url || '';
     const ach = (p?.achievements || [])
       .map((a) => a?.description)
       .filter(Boolean);
@@ -515,14 +663,25 @@ export class GrayAndWhiteResume {
       used +=
         this.#textBlock(x, y + used, w, desc, GrayAndWhiteResume.STYLES.body) +
         GrayAndWhiteResume.SPACING.xs;
-    if (url)
+
+    if (url) {
+      let host = '';
+      try {
+        host = new URL(url).hostname.replace(/^www\./, '');
+      } catch {
+        console.log('');
+      }
+      const nodeText = host ? `URL: ${host}` : `URL: ${url}`;
       used += this.#textBlock(
         x,
         y + used,
         w,
-        url,
-        GrayAndWhiteResume.STYLES.rowSubtle
+        nodeText,
+        GrayAndWhiteResume.STYLES.rowSubtle,
+        { link: url }
       );
+    }
+
     if (ach.length)
       used += this.#bulletedList(
         x,
@@ -615,20 +774,12 @@ export class GrayAndWhiteResume {
     );
   }
 
-  // obraz (node typu "image"); renderer powinien obsługiwać cornerRadius
-  #image(url, x, y, w, h, cornerRadius = 0) {
-    this.nodes.push({
-      type: 'image',
-      frame: { x, y, w, h },
-      url,
-      style: cornerRadius ? { cornerRadius } : null,
-    });
-  }
+  // obraz (node typu "image"); renderer obsłuży cornerRadius + clipCircle
 
-  // tekst z auto-pomiarem wysokości; respektuje textAlign
-  #textBlock(x, y, w, text, style) {
+  // tekst z auto-pomiarem wysokości; respektuje textAlign; obsługa node.link
+  #textBlock(x, y, w, text, style, opts = {}) {
     const t = String(text ?? '');
-    const h = measureTextHeightMm(t, w, style);
+    const h = Math.max(3, measureTextHeightMm(t, w, style));
     let textX = x;
 
     const align = style?.textAlign;
@@ -638,13 +789,13 @@ export class GrayAndWhiteResume {
       if (align === 'right') textX = x + (w - textW);
     }
 
-    this.nodes.push(
-      createTextNode({
-        frame: { x: textX, y, w, h },
-        text: t,
-        textStyle: style,
-      })
-    );
+    const node = createTextNode({
+      frame: { x: textX, y, w, h },
+      text: t,
+      textStyle: style,
+    });
+    if (opts.link) node.link = opts.link;
+    this.nodes.push(node);
 
     return h;
   }

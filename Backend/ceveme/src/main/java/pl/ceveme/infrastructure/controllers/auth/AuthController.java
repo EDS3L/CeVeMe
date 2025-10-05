@@ -34,9 +34,9 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginUserResponse> login(@RequestBody LoginUserRequest loginUserRequest, HttpServletResponse servletResponse) {
+    public ResponseEntity<LoginUserResponse> login(@RequestBody LoginUserRequest loginUserRequest, HttpServletResponse servletResponse, HttpServletRequest request) {
 
-        LoginUserResponse response = loginUserUseCase.login(loginUserRequest, servletResponse);
+        LoginUserResponse response = loginUserUseCase.login(loginUserRequest, servletResponse, request);
         return ResponseEntity.ok(response);
 
     }
@@ -52,8 +52,6 @@ public class AuthController {
     @PostMapping("/refresh")
     public ResponseEntity<RefreshResponse> refreshToken(HttpServletRequest servletRequest, HttpServletResponse servletResponse) {
         String refreshToken = jwtService.extractTokenFromCookie(servletRequest, "refreshToken");
-        String test = System.getenv().get("CLOUDINARY_URL");
-        log.info("lol test {}", test);
         if (refreshToken == null) {
             return ResponseEntity.status(401)
                     .body(new RefreshResponse("Refresh token not found"));

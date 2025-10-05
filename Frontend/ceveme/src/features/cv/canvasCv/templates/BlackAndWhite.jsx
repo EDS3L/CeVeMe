@@ -75,13 +75,17 @@ export function buildBlackAndWhiteCV(api = {}) {
     twitter: '🐦',
   };
 
-  // --- Pomocnicze rysowanie ---
-  const addTextNode = (x, y, w, text, style = BODY_STYLE) => {
+  // --- Pomocnicze rysowanie (z obsługą linków) ---
+  const addTextNode = (x, y, w, text, style = BODY_STYLE, opts = {}) => {
     const t = text || '';
     const h = Math.max(3.8, measureTextHeightMm(t, w, style));
-    nodes.push(
-      createTextNode({ frame: { x, y, w, h }, text: t, textStyle: style })
-    );
+    const node = createTextNode({
+      frame: { x, y, w, h },
+      text: t,
+      textStyle: style,
+    });
+    if (opts.link) node.link = opts.link; // << klikany węzeł
+    nodes.push(node);
     return h;
   };
 
@@ -120,9 +124,8 @@ export function buildBlackAndWhiteCV(api = {}) {
   };
 
   // --- Nagłówek ---
-  const name =
-    (api && api.personalData && api.personalData.name) || 'Imię Nazwisko';
-  const title = api.headline || '';
+  const name = api?.personalData?.name || 'Imię Nazwisko';
+  const title = api?.headline || '';
   const nameH = addTextNode(MARGIN, MARGIN, CONTENT_W, name, NAME_STYLE);
   addTextNode(MARGIN, MARGIN + nameH - 1, CONTENT_W, title, TITLE_STYLE);
   addHLine(MARGIN, MARGIN + nameH + 6, CONTENT_W, 0.5, COLOR_PRIMARY);
@@ -140,6 +143,7 @@ export function buildBlackAndWhiteCV(api = {}) {
   addHLine(MARGIN, leftY, LEFT_COL_W);
   leftY += GAP_ITEM;
 
+  // — linki z danych
   const rawLinks = Array.isArray(api?.personalData?.links)
     ? api.personalData.links
     : [];
@@ -147,46 +151,60 @@ export function buildBlackAndWhiteCV(api = {}) {
     .map((l) => {
       if (!l) return null;
       const url = typeof l === 'string' ? l : l.url || l.href || '';
-      const type = (typeof l === 'string' ? '' : l.type || l.name || '')
+      if (!url) return null;
+      const typeRaw = (typeof l === 'string' ? '' : l.type || l.name || '')
         .toString()
         .toLowerCase();
+
       const label =
-        type ||
+        typeRaw ||
         (url.includes('linkedin.com') && 'LinkedIn') ||
         (url.includes('github.com') && 'GitHub') ||
         (url.includes('gitlab.com') && 'GitLab') ||
         (url.includes('instagram.com') && 'Instagram') ||
         (url.includes('facebook.com') && 'Facebook') ||
         'Strona www';
+
       const icon =
-        ICON_MAP[type] ||
+        ICON_MAP[typeRaw] ||
         (label === 'LinkedIn' && ICON_MAP.linkedin) ||
         (label === 'GitHub' && ICON_MAP.github) ||
         (label === 'GitLab' && ICON_MAP.gitlab) ||
         (label === 'Strona www' && ICON_MAP.website) ||
         '🔗';
-      return `${icon} ${label}`;
+
+      return { text: `${icon} ${label}`, link: url };
     })
     .filter(Boolean);
 
-  const contactLines = [
-    api?.personalData?.phoneNumber
-      ? `📞 ${api.personalData.phoneNumber}`
-      : null,
-    api?.personalData?.email ? `✉️ ${api.personalData.email}` : null,
-    api?.personalData?.city ? `📍 ${api.personalData.city}` : null,
-    ...normalizedLinks,
-  ].filter(Boolean);
+  // — telefon / e-mail / miasto (+ klik w tel/mail)
+  const contactItems = [];
+  if (api?.personalData?.phoneNumber) {
+    const tel = String(api.personalData.phoneNumber);
+    contactItems.push({
+      text: `☎ ${tel}`,
+      link: `tel:${tel.replace(/\s+/g, '')}`,
+    });
+  }
+  if (api?.personalData?.email) {
+    const mail = String(api.personalData.email);
+    contactItems.push({ text: `✉ ${mail}`, link: `mailto:${mail}` }); // Uwaga: bez emoji-variant
+  }
+  if (api?.personalData?.city) {
+    contactItems.push({ text: `📍 ${api.personalData.city}` }); // bez linku
+  }
+  // dołóż profile (LinkedIn/GitHub/...)
+  contactItems.push(...normalizedLinks);
 
-  if (contactLines.length) {
-    leftY +=
-      addTextNode(
-        MARGIN,
-        leftY,
-        LEFT_COL_W,
-        contactLines.join('\n'),
-        CONTACT_STYLE
-      ) + GAP_SECTION;
+  // rysuj pojedyncze klikalne wiersze
+  if (contactItems.length) {
+    for (const item of contactItems) {
+      leftY +=
+        addTextNode(MARGIN, leftY, LEFT_COL_W, item.text, CONTACT_STYLE, {
+          link: item.link,
+        }) + 1.1;
+    }
+    leftY += GAP_SECTION;
   }
 
   // Umiejętności — wszystkie kategorie osobno
@@ -409,12 +427,15 @@ export function buildBlackAndWhiteCV(api = {}) {
 
     projects.forEach((p) => {
       addTimelineCircle(rightY + 3);
+
+      // Nazwa projektu klikalna, jeśli jest URL
       rightY += addTextNode(
         RIGHT_COL_X,
         rightY,
         RIGHT_COL_W,
         p?.name || 'Projekt',
-        BOLD_BODY_STYLE
+        BOLD_BODY_STYLE,
+        p?.url ? { link: p.url } : {}
       );
 
       const tech = (p?.technologies || [])
@@ -430,14 +451,23 @@ export function buildBlackAndWhiteCV(api = {}) {
           ITALIC_STYLE
         );
 
-      if (p?.url)
+      // Pokaż URL jako osobną, klikalną linię (skrócenie do hosta opcjonalne)
+      if (p?.url) {
+        let host = '';
+        try {
+          host = new URL(p.url).hostname.replace(/^www\./, '');
+        } catch {
+          console.log('');
+        }
         rightY += addTextNode(
           RIGHT_COL_X,
           rightY,
           RIGHT_COL_W,
-          p.url,
-          DATE_STYLE
+          host || p.url,
+          DATE_STYLE,
+          { link: p.url }
         );
+      }
 
       const bullets = (p?.achievements || [])
         .map((a) => a?.description)

@@ -111,20 +111,6 @@ public class JwtService {
         return parse(token).getExpiration().before(new Date());
     }
 
-
-
-
-//    public String generate(Email subject, Long id) {
-//        Instant now = Instant.now();
-//        return Jwts.builder()
-//                .subject(subject.email())
-//                .id(id.toString())
-//                .issuedAt(Date.from(now))
-//                .expiration(new Date(System.currentTimeMillis() + DAY_MS))
-//                .signWith(key, Jwts.SIG.HS256)
-//                .compact();
-//    }
-
     public Claims parse(String jwt){
         return parser.parseSignedClaims(jwt).getPayload();
     }
