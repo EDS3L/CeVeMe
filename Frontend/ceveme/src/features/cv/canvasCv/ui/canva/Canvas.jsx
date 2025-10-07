@@ -10,7 +10,9 @@ import { A4 } from '../../core/mm';
 import NodeView from './NodeView';
 import Handles from './Handles';
 import GridOverlay from './GridOverlay';
+import SmartGuidesSVG from './SmartGuidesSVG';
 import { maxContentYMm } from '../../utils/overflow';
+import { computeSmartGuides } from '../../hooks/useSmartGuides';
 
 export default function Canvas({
   doc,
@@ -34,19 +36,18 @@ export default function Canvas({
     () => maxContentYMm(doc) || A4.heightMm,
     [doc]
   );
-
   const [frozen, setFrozen] = useState({
     contentMaxY: liveContentMaxY,
     overflowPeekSnapshot: overflowPeek,
   });
+  const [guides, setGuides] = useState([]);
 
   useEffect(() => {
-    if (!layoutFrozen) {
+    if (!layoutFrozen)
       setFrozen({
         contentMaxY: liveContentMaxY,
         overflowPeekSnapshot: overflowPeek,
       });
-    }
   }, [layoutFrozen, liveContentMaxY, overflowPeek]);
 
   const contentMaxY = layoutFrozen ? frozen.contentMaxY : liveContentMaxY;
@@ -58,17 +59,14 @@ export default function Canvas({
   const resizeRef = useRef(null);
 
   const extendedHeightMm = useMemo(
-    () => Math.max(A4.heightMm, contentMaxY + 6 /* bufor */),
+    () => Math.max(A4.heightMm, contentMaxY + 6),
     [contentMaxY]
   );
-
   const PAGE_BUFFER_MM = 1;
-
   const pageCount = useMemo(
     () => Math.max(1, Math.ceil((contentMaxY + PAGE_BUFFER_MM) / A4.heightMm)),
     [contentMaxY]
   );
-
   const pages = useMemo(
     () => Array.from({ length: pageCount }, (_, i) => i),
     [pageCount]
@@ -81,7 +79,6 @@ export default function Canvas({
     }),
     [pxPerMm, scale]
   );
-
   const peekWrapperPx = useMemo(
     () => ({
       w: Math.ceil(A4.widthMm * pxPerMm * scale),
@@ -98,25 +95,14 @@ export default function Canvas({
     return bottom > pageTop && top < pageBottom;
   }, []);
 
-  const singlePageStyle = useMemo(
-    () => ({
-      width: `${A4.widthMm}mm`,
-      height: `${A4.heightMm}mm`,
-      transform: `scale(${scale})`,
-      transformOrigin: 'top left',
-    }),
-    [scale]
-  );
+  const mmPageStyle = (hMm) => ({
+    width: `${A4.widthMm}mm`,
+    height: `${hMm}mm`,
+    transform: `scale(${scale})`,
+    transformOrigin: 'top left',
+  });
 
-  const peekPageStyle = useMemo(
-    () => ({
-      width: `${A4.widthMm}mm`,
-      height: `${extendedHeightMm}mm`,
-      transform: `scale(${scale})`,
-      transformOrigin: 'top left',
-    }),
-    [scale, extendedHeightMm]
-  );
+  const mmRound = (v) => Math.round(v * 10) / 10; // stabilny drag – 0.1mm
 
   const onMouseMoveDrag = useCallback(
     (e) => {
@@ -125,13 +111,40 @@ export default function Canvas({
       const denom = pxPerMm * scale;
       const dxMm = (e.clientX - s.mx) / denom;
       const dyMm = (e.clientY - s.my) / denom;
-      updateNode(s.id, { frame: { x: s.x + dxMm, y: s.y + dyMm } });
+      const candX = s.x + dxMm;
+      const candY = s.y + dyMm;
+
+      const node = s.nodeRef();
+      if (!node) return;
+      const candidate = {
+        ...node,
+        frame: { ...node.frame, x: candX, y: candY },
+      };
+      const { guides, snapOffset } = computeSmartGuides(
+        candidate,
+        s.allNodes()
+      );
+      setGuides(guides);
+
+      const nx = mmRound(candX + (snapOffset.x || 0));
+      const ny = mmRound(candY + (snapOffset.y || 0));
+
+      updateNode(s.id, {
+        frame: {
+          x: nx,
+          y: ny,
+          w: node.frame.w,
+          h: node.frame.h,
+          rotation: node.frame.rotation || 0,
+        },
+      });
     },
     [pxPerMm, scale, updateNode]
   );
 
   const onMouseUpDrag = useCallback(() => {
     dragRef.current = null;
+    setGuides([]);
     window.removeEventListener('mousemove', onMouseMoveDrag);
     setLayoutFrozen(false);
   }, [onMouseMoveDrag]);
@@ -141,7 +154,6 @@ export default function Canvas({
       e.stopPropagation();
       if (node.lock) return;
       setSelectedId(node.id);
-
       setLayoutFrozen(true);
       setFrozen({
         contentMaxY: liveContentMaxY,
@@ -154,6 +166,8 @@ export default function Canvas({
         my: e.clientY,
         x: node.frame.x,
         y: node.frame.y,
+        nodeRef: () => doc.nodes.find((n) => n.id === node.id),
+        allNodes: () => doc.nodes,
       };
       window.addEventListener('mousemove', onMouseMoveDrag);
       window.addEventListener('mouseup', onMouseUpDrag, { once: true });
@@ -164,6 +178,7 @@ export default function Canvas({
       overflowPeek,
       onMouseMoveDrag,
       onMouseUpDrag,
+      doc.nodes,
     ]
   );
 
@@ -175,6 +190,7 @@ export default function Canvas({
       const dxMm = (e.clientX - r.mx) / denom;
       const dyMm = (e.clientY - r.my) / denom;
       let { x, y, w, h } = r.frame;
+
       switch (r.dir) {
         case 'e':
           w = Math.max(5, r.frame.w + dxMm);
@@ -213,7 +229,15 @@ export default function Canvas({
         default:
           break;
       }
-      updateNode(r.id, { frame: { x, y, w, h } });
+      updateNode(r.id, {
+        frame: {
+          x: mmRound(x),
+          y: mmRound(y),
+          w: mmRound(w),
+          h: mmRound(h),
+          rotation: r.frame.rotation || 0,
+        },
+      });
     },
     [pxPerMm, scale, updateNode]
   );
@@ -232,7 +256,6 @@ export default function Canvas({
         contentMaxY: liveContentMaxY,
         overflowPeekSnapshot: overflowPeek,
       });
-
       resizeRef.current = {
         id: node.id,
         dir,
@@ -243,8 +266,7 @@ export default function Canvas({
       window.addEventListener('mousemove', onMouseMoveResize);
       window.addEventListener('mouseup', onMouseUpResize, { once: true });
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [liveContentMaxY, overflowPeek]
+    [liveContentMaxY, overflowPeek, onMouseMoveResize, onMouseUpResize]
   );
 
   const onChangeText = useCallback(
@@ -253,7 +275,6 @@ export default function Canvas({
   );
 
   const selectedNode = doc.nodes.find((n) => n.id === selectedId) || null;
-
   const framePx = selectedNode
     ? {
         x: selectedNode.frame.x * pxPerMm,
@@ -278,7 +299,7 @@ export default function Canvas({
       ref={wrapperRef}
       onMouseDown={() => setSelectedId(null)}
     >
-      <div className="flex flex-col items-center ">
+      <div className="flex flex-col items-center">
         {!effectiveOverflowPeek &&
           pages.map((pageIndex) => {
             const pageOffsetMm = pageIndex * A4.heightMm;
@@ -289,16 +310,15 @@ export default function Canvas({
                 style={{ width: pageWrapperPx.w, height: pageWrapperPx.h }}
               >
                 <div
-                  key={pageIndex}
                   ref={pageIndex === 0 ? pageRef : null}
                   className="relative bg-white rounded-xl shadow-2xl ring-1 ring-black/5 overflow-hidden"
-                  style={singlePageStyle}
+                  style={mmPageStyle(A4.heightMm)}
                 >
                   {showGrid && <GridOverlay show />}
 
                   <div className="absolute inset-0 overflow-hidden">
                     <div
-                      className="absolute left-0 top-0 "
+                      className="absolute left-0 top-0"
                       style={{ transform: `translateY(-${pageOffsetMm}mm)` }}
                     >
                       {doc.nodes
@@ -317,6 +337,14 @@ export default function Canvas({
                             onChangeText={onChangeText}
                           />
                         ))}
+
+                      {/* GUIDES – SVG nad całą stroną */}
+                      <SmartGuidesSVG
+                        guides={guides}
+                        pxPerMm={pxPerMm}
+                        pageWidthMm={A4.widthMm}
+                        pageHeightMm={A4.heightMm}
+                      />
 
                       {selectedNode &&
                         !selectedNode.lock &&
@@ -361,7 +389,7 @@ export default function Canvas({
               ref={pageRef}
               id="cv-page"
               className="relative bg-white rounded-xl shadow-2xl ring-1 ring-black/5"
-              style={peekPageStyle}
+              style={mmPageStyle(extendedHeightMm)}
             >
               {showGrid && <GridOverlay show />}
 
@@ -400,6 +428,14 @@ export default function Canvas({
                     onChangeText={onChangeText}
                   />
                 ))}
+
+              {/* GUIDES – SVG nad całą stroną (peek height) */}
+              <SmartGuidesSVG
+                guides={guides}
+                pxPerMm={pxPerMm}
+                pageWidthMm={A4.widthMm}
+                pageHeightMm={extendedHeightMm}
+              />
 
               {selectedNode && !selectedNode.lock && framePx && (
                 <>

@@ -29,6 +29,7 @@ import useAuth from '../../../hooks/useAuth';
 
 import GenerateCvModal from './ui/canva/GenerateCvModal';
 import { buildModernTurquoiseCV } from './templates/modernTurquoiseCv';
+import { buildWhiteElegantMinimalistCV } from './templates/WhiteElegantMinimalistCV';
 
 function isOurDocSchema(x) {
   return x && typeof x === 'object' && x.page && Array.isArray(x.nodes);
@@ -142,7 +143,7 @@ export default function App() {
       },
       {
         key: 'White-Minimalist',
-        title: 'White Minimalist',
+        title: 'White Minimalist [BETA]',
         func: buildWhiteMinimalistCompactCV,
         description: 'Ultra-minimalistyczny design ze sporą ilością bieli.',
         sections: ['Intro', 'Experience', 'Skills', 'Education'],
@@ -163,6 +164,22 @@ export default function App() {
           'Referencje',
         ],
         style: 'Kreatywny, świeży, kontrastowy',
+      },
+      {
+        key: 'white-elegant-minimalist',
+        title: 'White Elegant Minimalist',
+        func: buildWhiteElegantMinimalistCV,
+        description:
+          'Dwukolumnowy układ na jasnym tle z ciemną belką nagłówka (#555D50), beżowym panelem na zdjęcie i subtelnymi paskami akcentowymi. Wierne 1:1 odwzorowanie oryginalnego PDF.',
+        sections: [
+          'Nagłówek',
+          'Doświadczenie',
+          'Edukacja',
+          'O mnie',
+          'Software',
+          'Referencje',
+        ],
+        style: 'Elegancki, minimalistyczny, wyrafinowany',
       },
     ],
     []

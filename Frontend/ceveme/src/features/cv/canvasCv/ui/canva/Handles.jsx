@@ -1,16 +1,15 @@
 import React from 'react';
-
 const dots = ['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w'];
 
 export default function Handles({ framePx, onStartResize, rotation = 0 }) {
   const { x, y, w, h } = framePx;
-  const centerX = x + w / 2,
-    centerY = y + h / 2;
+  const cx = x + w / 2,
+    cy = y + h / 2;
   const pos = {
-    n: { left: centerX, top: y },
-    s: { left: centerX, top: y + h },
-    e: { left: x + w, top: centerY },
-    w: { left: x, top: centerY },
+    n: { left: cx, top: y },
+    s: { left: cx, top: y + h },
+    e: { left: x + w, top: cy },
+    w: { left: x, top: cy },
     nw: { left: x, top: y },
     ne: { left: x + w, top: y },
     sw: { left: x, top: y + h },

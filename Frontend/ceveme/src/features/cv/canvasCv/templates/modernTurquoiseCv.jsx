@@ -14,7 +14,7 @@ export function buildModernTurquoiseCV(api = {}) {
 
   // --- Strona i siatka (mm) ---
   const PAGE_W = 210.08;
-  const PAGE_H = 296.95;
+  const PAGE_H = 296;
 
   const CONTENT = { x: 9.21, y: 82.12, w: 191.67, h: 205.89 };
   const ACCENT = { x: CONTENT.x, y: CONTENT.y, w: CONTENT.w, h: 2.53 };

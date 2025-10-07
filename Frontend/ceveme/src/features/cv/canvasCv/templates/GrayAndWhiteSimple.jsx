@@ -383,12 +383,13 @@ export class GrayAndWhiteResume {
       textAlign: 'right',
       verticalAlign: 'middle',
     };
-    const h = Math.max(3, measureTextHeightMm(String(text), textW, style));
+    const measuredW = this.#textWidth(String(text), style) + 12.5;
+    const w = Math.min(textW, measuredW);
+    const h = Math.max(3, measureTextHeightMm(String(text), w, style));
     const textY = centerY - h / 2;
-    const textX = iconX - GAP - textW;
-
+    const textX = iconX - GAP - w;
     const node = createTextNode({
-      frame: { x: textX, y: textY, w: textW, h },
+      frame: { x: textX, y: textY, w, h },
       text: String(text),
       textStyle: style,
     });
@@ -442,7 +443,7 @@ export class GrayAndWhiteResume {
       y: this.y,
       w: W,
       title: 'PODSUMOWANIE',
-      align: 'center',
+      align: 'left',
     });
     const summaryStyle = {
       ...GrayAndWhiteResume.STYLES.body,

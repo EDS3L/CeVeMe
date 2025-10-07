@@ -1,10 +1,8 @@
 package pl.ceveme.domain.model.entities;
 
 import jakarta.persistence.*;
-import pl.ceveme.domain.services.device.UserAgentBrowser;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "devices")
@@ -15,16 +13,20 @@ public class Device {
     private Long id;
 
     private String ip;
-    @Embedded
-    private UserAgentBrowser.Browser browser;
+
+    private String browserName;
+    private String browserVersion;
+    private String deviceType;
     private LocalDate lastLogin;
 
     public Device() {
     }
 
-    public Device(String ip, UserAgentBrowser.Browser browser, LocalDate lastLogin) {
+    public Device(String ip, String browserName, String browserVersion, String deviceType, LocalDate lastLogin) {
         this.ip = ip;
-        this.browser = browser;
+        this.browserName = browserName;
+        this.browserVersion = browserVersion;
+        this.deviceType = deviceType;
         this.lastLogin = lastLogin;
     }
 
@@ -44,12 +46,28 @@ public class Device {
         this.ip = ip;
     }
 
-    public UserAgentBrowser.Browser getBrowser() {
-        return browser;
+    public String getBrowserName() {
+        return browserName;
     }
 
-    public void setBrowser(UserAgentBrowser.Browser browser) {
-        this.browser = browser;
+    public void setBrowserName(String browserName) {
+        this.browserName = browserName;
+    }
+
+    public String getBrowserVersion() {
+        return browserVersion;
+    }
+
+    public void setBrowserVersion(String browserVersion) {
+        this.browserVersion = browserVersion;
+    }
+
+    public String getDeviceType() {
+        return deviceType;
+    }
+
+    public void setDeviceType(String deviceType) {
+        this.deviceType = deviceType;
     }
 
     public LocalDate getLastLogin() {

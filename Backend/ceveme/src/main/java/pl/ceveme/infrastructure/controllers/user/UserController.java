@@ -8,12 +8,15 @@ import org.springframework.web.multipart.MultipartFile;
 import pl.ceveme.application.dto.cloud.UploadFileResponse;
 import pl.ceveme.application.dto.user.*;
 import pl.ceveme.application.usecase.cv.UploadCvFileUseCase;
+import pl.ceveme.application.usecase.devices.GetInfoAboutDevicesInSession;
 import pl.ceveme.application.usecase.user.*;
+import pl.ceveme.domain.model.entities.Device;
 import pl.ceveme.domain.model.entities.User;
 import pl.ceveme.domain.services.limits.EndpointUsagesService;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
@@ -30,8 +33,9 @@ public class UserController {
     private final GetUserDetailsInfoUseCase getUserDetailsInfoUseCase;
     private final ChangeUserNameSurnameCityUseCase changeUserNameSurnameCityUseCase;
     private final EndpointUsagesService endpointUsagesService;
+    private final GetInfoAboutDevicesInSession getInfoAboutDevicesInSession;
 
-    public UserController(ChangeUsersPasswordUseCase changeUsersPasswordUseCase, ChangeUserNameUseCase changeUserNameUseCase, ChangeUserSurnameUseCase changeUserSurnameUseCase, ChangeUserPhoneNumberUseCase changeUserPhoneNumberUseCase, ChangeUserEmailUseCase changeUserEmailUseCase, UploadProfileImageUseCase uploadProfileImageUseCase, UploadCvFileUseCase uploadCvFileUseCase, DeleteUserUseCase deleteUserUseCase, GetUserDetailsInfoUseCase getUserDetailsInfoUseCase, ChangeUserNameSurnameCityUseCase changeUserNameSurnameCityUseCase, EndpointUsagesService endpointUsagesService) {
+    public UserController(ChangeUsersPasswordUseCase changeUsersPasswordUseCase, ChangeUserNameUseCase changeUserNameUseCase, ChangeUserSurnameUseCase changeUserSurnameUseCase, ChangeUserPhoneNumberUseCase changeUserPhoneNumberUseCase, ChangeUserEmailUseCase changeUserEmailUseCase, UploadProfileImageUseCase uploadProfileImageUseCase, UploadCvFileUseCase uploadCvFileUseCase, DeleteUserUseCase deleteUserUseCase, GetUserDetailsInfoUseCase getUserDetailsInfoUseCase, ChangeUserNameSurnameCityUseCase changeUserNameSurnameCityUseCase, EndpointUsagesService endpointUsagesService, GetInfoAboutDevicesInSession getInfoAboutDevicesInSession) {
         this.changeUsersPasswordUseCase = changeUsersPasswordUseCase;
         this.changeUserNameUseCase = changeUserNameUseCase;
         this.changeUserSurnameUseCase = changeUserSurnameUseCase;
@@ -43,6 +47,7 @@ public class UserController {
         this.getUserDetailsInfoUseCase = getUserDetailsInfoUseCase;
         this.changeUserNameSurnameCityUseCase = changeUserNameSurnameCityUseCase;
         this.endpointUsagesService = endpointUsagesService;
+        this.getInfoAboutDevicesInSession = getInfoAboutDevicesInSession;
     }
 
     @PatchMapping("/password")
@@ -142,6 +147,15 @@ public class UserController {
 
         UserLimitResponse userLimitResponse = endpointUsagesService.userLimits(id);
         return ResponseEntity.ok(userLimitResponse);
+    }
+
+    @GetMapping("/devices")
+    public List<Device> devices(Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        Long id = user.getId();
+
+        return ResponseEntity.ok(getInfoAboutDevicesInSession.allDevicesInSession(id))
+                .getBody();
     }
 
 }

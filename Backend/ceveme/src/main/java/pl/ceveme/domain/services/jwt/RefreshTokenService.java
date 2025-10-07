@@ -46,13 +46,13 @@ public class RefreshTokenService {
         checkDeviceLimit(user);
 
         Device device = deviceService.getDeviceInformation(request);
+        RefreshToken refreshToken = new RefreshToken(jit, user, expiresAt, null);
+        refreshToken.setCreatedAt(Instant.now());
 
-        if (checkingToCreateAnAdditionalDevice(user, device.getIp())) {
-            RefreshToken refreshToken = new RefreshToken(jit, user, expiresAt, device);
-            refreshToken.setCreatedAt(Instant.now());
-            refreshToken.setDevice(device);
-            refreshTokenRepository.save(refreshToken);
-        }
+        if (checkingToCreateAnAdditionalDevice(user, device.getIp())) refreshToken.setDevice(device);
+
+        refreshTokenRepository.save(refreshToken);
+
 
         return jwtService.generateRefreshToken(user.getEmail(), jit);
     }

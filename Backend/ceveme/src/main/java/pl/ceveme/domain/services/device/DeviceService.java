@@ -14,7 +14,7 @@ public class DeviceService {
         UserAgentBrowser.Browser browser = getBrowserInformation(servletRequest);
         LocalDate localDate = LocalDate.now();
 
-        return new Device(ip, browser, localDate);
+        return new Device(ip, browser.name(),browser.version(), browser.deviceType(), localDate);
 
     }
 
