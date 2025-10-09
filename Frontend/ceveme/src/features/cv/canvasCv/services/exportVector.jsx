@@ -6,14 +6,11 @@ const MM_PER_INCH = 25.4;
 const PT_TO_MM = 25.4 / 72;
 const ptToMm = (pt) => pt * PT_TO_MM;
 
-// AKCENT z Twojego zrzutu: R=15, G=118, B=110 → #0F766E
 const ACCENT_HEX = '#0F766E';
 
 let fontsFetched = false;
 let FONT_CACHE = { normalBase64: null, boldBase64: null };
 
-/* ==================== wektorowe SVG dla ikon ==================== */
-/* Uwaga: LinkedIn i GitHub używają 'currentColor', żeby można je było łatwo podbarwić */
 const ICON_SVGS = {
   '☎': `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
@@ -39,7 +36,6 @@ const ICON_SVGS = {
   <circle cx="12" cy="10" r="3"/>
 </svg>`,
 
-  /* NOWE: LinkedIn – używamy symbolu 🔗 w danych jako „etykiety” LinkedIn */
   '🔗': `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
      fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -48,7 +44,6 @@ const ICON_SVGS = {
   <line x1="8" y1="12" x2="16" y2="12"/>
 </svg>`,
 
-  /* NOWE: GitHub – używamy symbolu 🐙 w danych jako „etykiety” GitHuba */
   '🐙': `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
      fill="currentColor">
@@ -66,7 +61,6 @@ const ICON_SVGS = {
            c0-5.523-4.477-10-10-10z"/>
 </svg>`,
 };
-/* ==================================================================================== */
 
 async function loadCustomFonts(pdf) {
   try {
@@ -186,13 +180,11 @@ function mimeFromDataURL(dataUrl) {
   return m ? m[1] : null;
 }
 
-/* === prosty tint: podmień 'currentColor' na HEX === */
 function tintSvg(svg, colorHex) {
   if (!colorHex) return svg;
   return svg.replace(/currentColor/gi, colorHex);
 }
 
-/* ===== ikonka inline (z obsługą koloru) ===== */
 async function drawInlineIcon(
   pdf,
   iconChar,
@@ -215,7 +207,6 @@ async function drawInlineIcon(
     );
     const sizePx = Math.max(12, Math.floor(iconSizeMm * pxPerMm));
 
-    // jeśli podano kolor → wstrzyknij go w miejsca 'currentColor'
     const svg = tintSvg(rawSvg, colorHex);
 
     const dataUrl = await rasterizeSvgToPngDataUrl(svg, sizePx, sizePx);
@@ -260,7 +251,6 @@ function measureMixedLineWidth(pdf, line, fontMm, lineHeight) {
   return width;
 }
 
-/* ===== KOŁO: maska na canvasie (bez problemów z clip i CORS) ===== */
 async function maskImageToCircleDataURL(srcDataUrl, sidePx) {
   const img = new Image();
   if (!/^data:|^blob:/i.test(srcDataUrl)) img.crossOrigin = 'anonymous';
@@ -303,7 +293,6 @@ async function renderDocIntoPdf(pdf, doc, dpi = DEFAULT_DPI) {
   for (const node of sortedNodes) {
     const { x, y, w, h } = node.frame || {};
 
-    // SHAPE
     if (node.type === 'shape') {
       const fill = node.style?.fill?.color ?? 'none';
       const fillOpacity = node.style?.fill?.opacity ?? 1;
@@ -338,7 +327,6 @@ async function renderDocIntoPdf(pdf, doc, dpi = DEFAULT_DPI) {
       pdf.restoreGraphicsState();
     }
 
-    // IMAGE (SVG→PNG, koło przez maskę na canvasie, fallback)
     if (node.type === 'image' && node.src) {
       try {
         const pxPerMm = dpi / MM_PER_INCH;
@@ -383,7 +371,7 @@ async function renderDocIntoPdf(pdf, doc, dpi = DEFAULT_DPI) {
           const iy = y + (h - sideMm) / 2;
 
           if (masked) pdf.addImage(masked, 'PNG', ix, iy, sideMm, sideMm);
-          else pdf.addImage(dataUrl, imgType, ix, iy, sideMm, sideMm); // awaryjnie kwadrat
+          else pdf.addImage(dataUrl, imgType, ix, iy, sideMm, sideMm);
         } else if (cornerRadius > 0) {
           pdf.saveGraphicsState();
           pdf.roundedRect(x, y, w, h, cornerRadius, cornerRadius);
@@ -398,7 +386,6 @@ async function renderDocIntoPdf(pdf, doc, dpi = DEFAULT_DPI) {
       }
     }
 
-    // TEXT (zawijanie / linki / ikonki inline / verticalAlign / node.link)
     if (node.type === 'text') {
       const txt = node.text || '';
       const style = node.textStyle || {};
@@ -450,10 +437,8 @@ async function renderDocIntoPdf(pdf, doc, dpi = DEFAULT_DPI) {
 
         for (const t of tokens) {
           if (t.type === 'icon') {
-            // Kolor ikon: jeśli node.iconColor istnieje → użyj (np. LinkedIn/GitHub)
             const colorHex =
               node.iconColor ||
-              // awaryjnie: dla 🔗 i 🐙 użyj akcentu
               (t.value === '🔗' || t.value === '🐙' ? ACCENT_HEX : null);
             const { drawn, advance } = await drawInlineIcon(
               pdf,
@@ -518,7 +503,6 @@ async function renderDocIntoPdf(pdf, doc, dpi = DEFAULT_DPI) {
   }
 }
 
-// === API: Blob PDF (do uploadu), zapis do pliku, druk PDF ===
 export async function generatePdfBlob(doc, dpi = DEFAULT_DPI) {
   if (!doc || !doc.page) throw new Error('Brak dokumentu do eksportu');
   const { widthMm, heightMm } = doc.page;

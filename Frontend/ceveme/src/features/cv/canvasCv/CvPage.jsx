@@ -340,13 +340,15 @@ export default function App() {
         </main>
 
         {/* Inspector (prawy) */}
-        <aside className="bg-white border border-black/10 rounded-xl p-3 min-h-[200px] [grid-area:unset] max-[1200px]:[grid-area:inspector]">
-          <InspectorPanel
-            node={doc.nodes.find((n) => n.id === selectedId) || null}
-            updateNode={updateNode}
-            removeNode={removeNode}
-          />
-        </aside>
+        {doc && (
+          <aside className="bg-white border border-black/10 rounded-xl p-3 min-h-[200px] [grid-area:unset] max-[1200px]:[grid-area:inspector]">
+            <InspectorPanel
+              node={doc.nodes.find((n) => n.id === selectedId) || null}
+              updateNode={updateNode}
+              removeNode={removeNode}
+            />
+          </aside>
+        )}
       </div>
 
       {/* Modal wyboru szablonu */}

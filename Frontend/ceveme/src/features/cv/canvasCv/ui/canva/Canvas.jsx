@@ -55,6 +55,9 @@ export default function Canvas({
     ? frozen.overflowPeekSnapshot
     : overflowPeek;
 
+  const pageHeightForGuidesMm = effectiveOverflowPeek
+    ? extendedHeightMm
+    : A4.heightMm;
   const dragRef = useRef(null);
   const resizeRef = useRef(null);
 
@@ -122,7 +125,11 @@ export default function Canvas({
       };
       const { guides, snapOffset } = computeSmartGuides(
         candidate,
-        s.allNodes()
+        s.allNodes(),
+        {
+          pageWidthMm: A4.widthMm,
+          pageHeightMm: pageHeightForGuidesMm,
+        }
       );
       setGuides(guides);
 
@@ -139,9 +146,8 @@ export default function Canvas({
         },
       });
     },
-    [pxPerMm, scale, updateNode]
+    [pxPerMm, scale, updateNode, pageHeightForGuidesMm]
   );
-
   const onMouseUpDrag = useCallback(() => {
     dragRef.current = null;
     setGuides([]);
@@ -351,7 +357,7 @@ export default function Canvas({
                         nodeOverlapsPage(selectedNode, pageIndex) && (
                           <>
                             <div
-                              className="absolute pointer-events-none border border-dashed border-blue-600"
+                              className="absolute pointer-events-none border border-dashed border-blue-500/60"
                               style={{
                                 left: selectedNode.frame.x * pxPerMm,
                                 top: selectedNode.frame.y * pxPerMm,

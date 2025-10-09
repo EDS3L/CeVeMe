@@ -1,9 +1,8 @@
+// ui/canva/SmartGuidesSVG.tsx / .jsx
 import React from 'react';
 
-/** mm→px */
 const mm = (v, p) => v * p;
 
-/** Estetyczne, ostre linie pomocnicze jako SVG (lepsze niż <div>) */
 export default function SmartGuidesSVG({
   guides,
   pxPerMm,
@@ -23,10 +22,9 @@ export default function SmartGuidesSVG({
       viewBox={`0 0 ${W} ${H}`}
       style={{ zIndex: 1000 }}
     >
-      {/* defs – gradient glow i strzałki */}
       <defs>
         <filter id="guideGlow" x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur stdDeviation="1.2" result="blur" />
+          <feGaussianBlur stdDeviation="0.8" result="blur" />
           <feMerge>
             <feMergeNode in="blur" />
             <feMergeNode in="SourceGraphic" />
@@ -46,7 +44,7 @@ export default function SmartGuidesSVG({
             width="6"
             height="6"
             transform="rotate(45 3 3)"
-            fill="rgba(168,85,247,0.95)"
+            fill="rgba(147,51,234,0.85)"
           />
         </marker>
       </defs>
@@ -65,9 +63,9 @@ export default function SmartGuidesSVG({
                 y1={isV ? 0 : y}
                 x2={isV ? x : W}
                 y2={isV ? H : y}
-                stroke="rgba(59,130,246,0.95)"
-                strokeWidth="1.25"
-                strokeDasharray="6 4"
+                stroke="rgba(59,130,246,0.85)"
+                strokeWidth="1"
+                strokeDasharray="4 4"
                 strokeLinecap="round"
               />
             </g>
@@ -96,30 +94,67 @@ export default function SmartGuidesSVG({
                 y1={y1}
                 x2={x2}
                 y2={y2}
-                stroke="rgba(168,85,247,0.95)"
-                strokeWidth="1.25"
+                stroke="rgba(147,51,234,0.85)"
+                strokeWidth="1"
                 markerStart="url(#arrowTip)"
                 markerEnd="url(#arrowTip)"
               />
               <rect
-                x={isV ? p + 8 : mid - 18}
-                y={isV ? mid - 9 : p + 8}
-                width="36"
+                x={isV ? p + 7 : mid - 16}
+                y={isV ? mid - 9 : p + 7}
+                width="32"
                 height="18"
                 rx="6"
                 ry="6"
-                fill="rgba(168,85,247,0.95)"
+                fill="rgba(147,51,234,0.9)"
               />
               <text
-                x={isV ? p + 26 : mid}
-                y={isV ? mid + 5 : p + 20}
-                textAnchor={isV ? 'middle' : 'middle'}
+                x={isV ? p + 23 : mid}
+                y={isV ? mid + 4.5 : p + 19}
+                textAnchor="middle"
                 fontFamily="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
-                fontSize="12"
+                fontSize="11"
                 fill="#fff"
               >
                 {g.distance?.toFixed?.(1)}
               </text>
+            </g>
+          );
+        })}
+
+      {/* Narożniki (kąty) */}
+      {guides
+        .filter((g) => g.type === 'corner')
+        .map((g, i) => {
+          const x = mm(g.position.x, pxPerMm);
+          const y = mm(g.position.y, pxPerMm);
+          const r = 5;
+          return (
+            <g key={`corner-${i}`} filter="url(#guideGlow)">
+              <circle
+                cx={x}
+                cy={y}
+                r={r}
+                fill="none"
+                stroke="rgba(59,130,246,0.9)"
+                strokeWidth="1"
+              />
+              <line
+                x1={x - r}
+                y1={y}
+                x2={x + r}
+                y2={y}
+                stroke="rgba(59,130,246,0.9)"
+                strokeWidth="1"
+              />
+              <line
+                x1={x}
+                y1={y - r}
+                x2={x}
+                y2={y + r}
+                stroke="rgba(59,130,246,0.9)"
+                strokeWidth="1"
+              />
             </g>
           );
         })}

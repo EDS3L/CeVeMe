@@ -28,4 +28,5 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken,Long>
 
     @Query("SELECT DISTINCT rt.device FROM RefreshToken rt WHERE rt.user.id = :userId")
     List<Device> findDistinctDevicesByUserId(@Param("userId") Long userId);
+
 }

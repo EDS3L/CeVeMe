@@ -1,3 +1,4 @@
+// ui/canva/Handles.tsx / .jsx
 import React from 'react';
 const dots = ['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w'];
 
@@ -15,22 +16,35 @@ export default function Handles({ framePx, onStartResize, rotation = 0 }) {
     sw: { left: x, top: y + h },
     se: { left: x + w, top: y + h },
   };
+
+  // widoczne kółko 8×8, ale „hit area” 16×16 — wygodny chwyt, subtelny wygląd
   return (
     <>
       {dots.map((k) => (
         <div
           key={k}
           onMouseDown={(e) => onStartResize(e, k)}
-          className="absolute bg-white border-2 border-blue-600 rounded shadow-sm"
+          className="absolute"
           style={{
-            left: pos[k].left - 5,
-            top: pos[k].top - 5,
-            width: 10,
-            height: 10,
+            left: pos[k].left - 8,
+            top: pos[k].top - 8,
+            width: 16,
+            height: 16,
             cursor: `${k}-resize`,
-            transform: `rotate(${rotation}deg)`,
           }}
-        />
+        >
+          <div
+            className="absolute rounded-full bg-white"
+            style={{
+              left: 4,
+              top: 4,
+              width: 8,
+              height: 8,
+              boxShadow: '0 0 0 1.5px rgba(59,130,246,0.9)',
+              transform: `rotate(${rotation}deg)`,
+            }}
+          />
+        </div>
       ))}
     </>
   );
