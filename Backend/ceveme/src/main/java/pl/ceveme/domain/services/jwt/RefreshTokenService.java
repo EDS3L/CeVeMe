@@ -46,35 +46,61 @@ public class RefreshTokenService {
     public String createRefreshToken(User user, HttpServletRequest request) {
 
         checkDeviceLimit(user);
+
         Device device = deviceService.getDeviceInformation(request);
-        RefreshToken refreshToken = null;
-        if(!user.getRefreshTokenList().isEmpty()) checkCurrentDevice(user,device,refreshToken);
 
-        createFirstRefreshTokenForDevice(user,device,refreshToken);
-
+        if (!user.getRefreshTokenList().isEmpty()) {
+            if (!isDeviceRegistered(user, device)) {
+                createNewRefreshToken(user, device);
+            }
+        } else {
+            createNewRefreshToken(user, device);
+        }
 
         return jwtService.generateRefreshToken(user.getEmail(), jit);
     }
 
-    private void createFirstRefreshTokenForDevice(User user, Device device, RefreshToken refreshToken) {
-        refreshToken = new RefreshToken(jit, user, expiresAt, device);
-        deviceRepository.save(device);
-        refreshTokenRepository.save(refreshToken);
-    }
-
-    private void checkCurrentDevice(User user, Device device, RefreshToken refreshToken) {
-        for(RefreshToken rt : user.getRefreshTokenList()) {
-            Device userDevice = rt.getDevice();
-
-            if(!Objects.equals(userDevice.getIp(), device.getIp()) && !Objects.equals(userDevice.getDeviceType(), device.getDeviceType())) {
-                refreshToken = new RefreshToken(jit, user, expiresAt, device);
-                refreshToken.setCreatedAt(Instant.now());
-                deviceRepository.save(device);
-                refreshTokenRepository.save(rt);
-
+    private boolean isDeviceRegistered(User user, Device newDevice) {
+        for (RefreshToken rt : user.getRefreshTokenList()) {
+            Device existing = rt.getDevice();
+            if (Objects.equals(existing.getIp(), newDevice.getIp()) &&
+                    Objects.equals(existing.getDeviceType(), newDevice.getDeviceType())) {
+                return true; // urządzenie już zarejestrowane
             }
         }
+        return false;
     }
+
+    private void createNewRefreshToken(User user, Device device) {
+        String jit = UUID.randomUUID().toString();
+        Instant expiresAt = Instant.now().plusSeconds(30L * 24 * 60 * 60);
+
+        RefreshToken refreshToken = new RefreshToken(jit, user, expiresAt, device);
+        refreshToken.setCreatedAt(Instant.now());
+        deviceRepository.save(device);
+        refreshTokenRepository.save(refreshToken);
+        user.getRefreshTokenList().add(refreshToken);
+    }
+
+//    private void createFirstRefreshTokenForDevice(User user, Device device, RefreshToken refreshToken) {
+//        refreshToken = new RefreshToken(jit, user, expiresAt, device);
+//        deviceRepository.save(device);
+//        refreshTokenRepository.save(refreshToken);
+//    }
+//
+//    private void checkCurrentDevice(User user, Device device, RefreshToken refreshToken) {
+//        for(RefreshToken rt : user.getRefreshTokenList()) {
+//            Device userDevice = rt.getDevice();
+//
+//            if(!Objects.equals(userDevice.getIp(), device.getIp()) && !Objects.equals(userDevice.getDeviceType(), device.getDeviceType())) {
+//                refreshToken = new RefreshToken(jit, user, expiresAt, device);
+//                refreshToken.setCreatedAt(Instant.now());
+//                deviceRepository.save(device);
+//                refreshTokenRepository.save(rt);
+//
+//            }
+//        }
+//    }
 
     public RefreshToken validRefreshToken(String token) {
         String jit = jwtService.extractJtiFromRefreshToken(token);

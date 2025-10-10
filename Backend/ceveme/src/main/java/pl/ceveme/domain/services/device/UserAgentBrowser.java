@@ -6,63 +6,82 @@ import java.util.regex.Pattern;
 
 public class UserAgentBrowser {
 
-    private static final List<Rule> BROWSER_RULES =
-            List.of(
-                    new Rule("(Edg|EdgA|EdgiOS)/([\\d.]+)", "Edge", 2),
-                    new Rule("(OPR)/([\\d.]+)", "Opera", 2),
-                    new Rule("(Chrome|CriOS)/([\\d.]+)", "Chrome", 2),
-                    new Rule("Version/([\\d.]+).*Safari/[\\d.]+", "Safari", 1),
-                    new Rule("Firefox/([\\d.]+)", "Firefox", 1)
-            );
+    private static final List<Rule> BROWSER_RULES = List.of(
+            new Rule("(Edg|EdgA|EdgiOS)/([\\d.]+)", "Edge", 2),
+            new Rule("(OPR|Opera)/([\\d.]+)", "Opera", 2),
+            new Rule("(SamsungBrowser)/([\\d.]+)", "Samsung Internet", 2),
+            new Rule("(Brave)/([\\d.]+)", "Brave", 2),
+            new Rule("(Chrome|CriOS)/([\\d.]+)", "Chrome", 2),
+            new Rule("Version/([\\d.]+).*Safari/[\\d.]+", "Safari", 1),
+            new Rule("Firefox/([\\d.]+)", "Firefox", 1),
+            new Rule("(MSIE) ([\\d.]+)", "Internet Explorer", 2),
+            new Rule("Trident/.*rv:([\\d.]+)", "Internet Explorer", 1)
+    );
 
-    private static final List<DeviceRule> DEVICE_RULES =
-            List.of(
-                    new DeviceRule("iPad|iPod", "iPad/iPod"),
-                    new DeviceRule("iPhone", "iPhone"),
+    private static final List<DeviceRule> DEVICE_RULES = List.of(
+            new DeviceRule("iPad|iPod", "Tablet"),
+            new DeviceRule("iPhone", "Mobile"),
+            new DeviceRule("Android.*Mobile", "Mobile"),
+            new DeviceRule("Android", "Tablet"),
+            new DeviceRule("Windows Phone", "Mobile"),
+            new DeviceRule("Tablet", "Tablet"),
+            new DeviceRule("Mobile", "Mobile"),
+            new DeviceRule("Bot|Crawler|Spider|Robot|Slurp", "Bot")
+    );
 
-                    new DeviceRule("Android", "Mobile (Android)"),
-                    new DeviceRule("Mobile|Tablet", "Mobile (Generic)"),
-                    new DeviceRule("Windows Phone", "Mobile (Windows)")
-            );
-
-
+    /**
+     * Main parsing method
+     */
     public static Browser parse(String ua) {
-        if (ua == null) return new Browser("Unknown", "", "Unknown");
+        if (ua == null || ua.isEmpty()) return new Browser("Unknown", "", "Unknown");
 
         String browserName = "Unknown";
         String browserVersion = "";
 
-        for (Rule r : BROWSER_RULES) {
-            Matcher m = r.pattern.matcher(ua);
-            if (m.find()) {
-                browserName = r.name;
-                browserVersion = m.group(r.versionGroup);
+        for (Rule rule : BROWSER_RULES) {
+            Matcher matcher = rule.pattern.matcher(ua);
+            if (matcher.find()) {
+                browserName = rule.name;
+                browserVersion = matcher.group(rule.versionGroup);
                 break;
             }
         }
 
-        String deviceType = getDeviceType(ua);
 
-        return new Browser(browserName, browserVersion, deviceType);
-    }
-
-    public static String getDeviceType(String ua) {
-        if (ua == null || ua.isEmpty()) {
-            return "Unknown";
+        if ("Unknown".equals(browserName)) {
+            if (ua.contains("Chrome")) browserName = "Chrome";
+            else if (ua.contains("Safari")) browserName = "Safari";
+            else if (ua.contains("Firefox")) browserName = "Firefox";
+            else if (ua.contains("Edg")) browserName = "Edge";
+            else if (ua.contains("OPR")) browserName = "Opera";
+            else if (ua.contains("Brave")) browserName = "Brave";
+            else if (ua.contains("SamsungBrowser")) browserName = "Samsung Internet";
         }
 
-        for (DeviceRule r : DEVICE_RULES) {
-            if (r.pattern.matcher(ua).find()) {
-                return r.deviceType;
+        String deviceType = getDeviceType(ua);
+
+        return new Browser(browserName, browserVersion.isEmpty() ? "Unknown" : browserVersion, deviceType);
+    }
+
+    /**
+     * Detect device type
+     */
+    public static String getDeviceType(String ua) {
+        if (ua == null || ua.isEmpty()) return "Unknown";
+
+        for (DeviceRule rule : DEVICE_RULES) {
+            if (rule.pattern.matcher(ua).find()) {
+                return rule.deviceType;
             }
         }
 
         return "Desktop";
     }
 
-
-    public record Browser(String name, String version, String deviceType) {
-    }
+    /**
+     * Browser info record
+     */
+    public record Browser(String name, String version, String deviceType) {}
 
     private static final class Rule {
         final Pattern pattern;
@@ -70,7 +89,7 @@ public class UserAgentBrowser {
         final int versionGroup;
 
         Rule(String regex, String name, int versionGroup) {
-            this.pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+            this.pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
             this.name = name;
             this.versionGroup = versionGroup;
         }
