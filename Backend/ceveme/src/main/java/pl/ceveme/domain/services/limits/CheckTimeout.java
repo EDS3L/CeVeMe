@@ -5,12 +5,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.ceveme.application.dto.gemini.TimeoutResponse;
+import pl.ceveme.domain.model.entities.LimitUsage;
 import pl.ceveme.domain.model.entities.User;
 import pl.ceveme.domain.model.enums.EndpointType;
 import pl.ceveme.domain.repositories.UserRepository;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @Transactional
@@ -51,12 +53,26 @@ public class CheckTimeout {
         return remaining.isNegative() ? Duration.ZERO : remaining;
     }
 
+//    private LocalDateTime lastUsageEndpointTime(Long userId, EndpointType endpointType) {
+//        User user = userRepository.findById(userId)
+//                .orElseThrow(() -> new IllegalArgumentException("User with id " + userId + " not found"));
+//
+//        if(user.getLimitUsages() == null) return LocalDateTime.now();
+//
+//        return user.getLimitUsages().stream().filter(el -> el.getEndpointType().equals(endpointType)).toList().getLast().getTimestamp();
+//    }
+
+    //TODO poprawic dwa ify (zwracamy czas now() a musi byc minimum 2 minuty do tylu zeby dzialalo dobrze)
     private LocalDateTime lastUsageEndpointTime(Long userId, EndpointType endpointType) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User with id " + userId + " not found"));
 
-        if(user.getLimitUsages() == null) return LocalDateTime.now();
+        if(user.getLimitUsages() == null) return LocalDateTime.now().minusMinutes(5);
 
-        return user.getLimitUsages().stream().filter(el -> el.getEndpointType().equals(endpointType)).toList().getLast().getTimestamp();
+        List<LimitUsage> usages = user.getLimitUsages().stream().filter(el -> el.getEndpointType().equals(endpointType)).toList();
+        if(usages.isEmpty()) {
+            return  LocalDateTime.now().minusMinutes(5);
+        }
+        return usages.getLast().getTimestamp();
     }
 }
