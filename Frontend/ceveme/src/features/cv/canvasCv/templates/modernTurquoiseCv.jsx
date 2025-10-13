@@ -129,6 +129,13 @@ export function buildModernTurquoiseCV(api = {}) {
       color: COLORS.textDark,
       lineHeight: 1.3,
     },
+    skillsList: {
+      fontFamily: 'Montserrat, sans-serif',
+      fontWeight: 400,
+      fontSize: 8.5,
+      color: COLORS.primary,
+      lineHeight: 1.12,
+    },
 
     section15: {
       fontFamily: 'Garet, sans-serif',
@@ -413,8 +420,8 @@ export function buildModernTurquoiseCV(api = {}) {
   // Imię i nazwisko + tytuł
   const nameX = LEFT_COL.x + 57;
   let nameY = 15;
-  if (first) nameY += text(nameX, nameY, 50, first, FONTS.garetBold52);
-  if (last) nameY += text(nameX, nameY - 10, 50, last, FONTS.garetReg45);
+  if (first) nameY += text(nameX, nameY, 80, first, FONTS.garetBold52);
+  if (last) nameY += text(nameX, nameY - 10, 80, last, FONTS.garetReg45);
   const headline = (api?.headline || '').trim();
   if (headline)
     // eslint-disable-next-line no-unused-vars

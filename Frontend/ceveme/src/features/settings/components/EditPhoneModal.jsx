@@ -1,6 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import UserDetailsInfo from '../hooks/useUserDeailsInfo';
 
+const formatPL = (digits) => {
+  const d = (digits || '').replace(/\D/g, '').slice(0, 9);
+  return d.replace(/(\d{3})(?=\d)/g, '$1 ').trim();
+};
+
+const extractNationalDigits = (input) => {
+  const onlyDigits = (input || '').replace(/\D/g, '');
+  return onlyDigits.slice(-9);
+};
+
 export default function EditPhoneModal({
   open,
   onClose,
@@ -8,27 +18,23 @@ export default function EditPhoneModal({
   onSaved,
   fieldLabel = 'Numer telefonu',
 }) {
-  const [value, setValue] = useState(currentValue);
-  const [confirm, setConfirm] = useState('');
+  const [national, setNational] = useState('');
+  const [confirmNational, setConfirmNational] = useState('');
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (open) {
-      setValue(currentValue || '');
-      setConfirm('');
+      setNational(extractNationalDigits(currentValue));
+      setConfirmNational('');
       setError('');
     }
   }, [open, currentValue]);
 
-  const validatePhone = (v) => {
-    const cleaned = v.replace(/[^\d+]/g, '');
-    return cleaned.length >= 6;
-  };
-
   const validate = () => {
-    if (!validatePhone(value)) return 'Nieprawidłowy numer telefonu';
-    if (value !== confirm) return 'Numery nie są zgodne';
+    if (national.length !== 9)
+      return 'Nieprawidłowy numer telefonu (wpisz 9 cyfr).';
+    if (national !== confirmNational) return 'Numery nie są zgodne.';
     return '';
   };
 
@@ -39,16 +45,18 @@ export default function EditPhoneModal({
       return;
     }
 
+    const formattedToSave = `+48 ${formatPL(national)}`;
+
     setSaving(true);
     setError('');
     try {
       const userDetailsInfo = new UserDetailsInfo();
-      const res = await userDetailsInfo.changePhoneNumber(value);
+      const res = await userDetailsInfo.changePhoneNumber(formattedToSave);
       if (!res) throw new Error('Błąd serwera');
-      onSaved?.(value);
+      onSaved?.(formattedToSave);
       onClose();
     } catch (err) {
-      setError(err?.message);
+      setError(err?.message || 'Wystąpił błąd');
     } finally {
       setSaving(false);
     }
@@ -76,24 +84,42 @@ export default function EditPhoneModal({
         <div className="grid gap-3 md:grid-cols-2">
           <div>
             <label className="text-xs text-cloudmedium">Nowy numer</label>
-            <input
-              type="tel"
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
-              className="mt-1 w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-feedbackfocus"
-              placeholder="+48 600 000 000"
-            />
+            <div className="mt-1 relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-cloudmedium pointer-events-none">
+                +48
+              </span>
+              <input
+                type="tel"
+                inputMode="numeric"
+                value={formatPL(national)}
+                onChange={(e) =>
+                  setNational(extractNationalDigits(e.target.value))
+                }
+                className="w-full rounded-lg border px-3 py-2 pl-14 focus:outline-none focus:ring-2 focus:ring-feedbackfocus"
+                placeholder="600 000 000"
+                aria-label="Nowy numer telefonu (9 cyfr)"
+              />
+            </div>
           </div>
 
           <div>
             <label className="text-xs text-cloudmedium">Potwierdź</label>
-            <input
-              type="tel"
-              value={confirm}
-              onChange={(e) => setConfirm(e.target.value)}
-              className="mt-1 w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-feedbackfocus"
-              placeholder="+48 600 000 000"
-            />
+            <div className="mt-1 relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-cloudmedium pointer-events-none">
+                +48
+              </span>
+              <input
+                type="tel"
+                inputMode="numeric"
+                value={formatPL(confirmNational)}
+                onChange={(e) =>
+                  setConfirmNational(extractNationalDigits(e.target.value))
+                }
+                className="w-full rounded-lg border px-3 py-2 pl-14 focus:outline-none focus:ring-2 focus:ring-feedbackfocus"
+                placeholder="600 000 000"
+                aria-label="Potwierdź numer telefonu (9 cyfr)"
+              />
+            </div>
           </div>
         </div>
 

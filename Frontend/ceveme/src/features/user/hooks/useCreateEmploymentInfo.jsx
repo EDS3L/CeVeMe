@@ -24,22 +24,13 @@ class EmploymentInfoCreate {
     }
   }
 
-  async createCertificate(
-    id,
-    email,
-    name,
-    dateOfCertificate,
-    employmentInfoId
-  ) {
+  async createCertificate(name, dateOfCertificate) {
     try {
       const resposne = await axios({
         url: `/api/employmentInfo/create/certificate`,
         data: {
-          id,
-          email,
           name,
           dateOfCertificate,
-          employmentInfoId,
         },
         method: 'POST',
         withCredentials: true,
@@ -52,8 +43,6 @@ class EmploymentInfoCreate {
   }
 
   async createExperience(
-    id,
-    email,
     companyName,
     startingDate,
     endDate,
@@ -67,8 +56,6 @@ class EmploymentInfoCreate {
       const resposne = await axios({
         url: `/api/employmentInfo/create/experience`,
         data: {
-          id,
-          email,
           companyName,
           startingDate,
           endDate,
@@ -88,24 +75,14 @@ class EmploymentInfoCreate {
     }
   }
 
-  async createCourse(
-    id,
-    email,
-    courseName,
-    dateOfCourse,
-    courseDescription,
-    employmentInfoId
-  ) {
+  async createCourse(courseName, dateOfCourse, courseDescription) {
     try {
       const resposne = await axios({
         url: `/api/employmentInfo/create/course`,
         data: {
-          id,
-          email,
           courseName,
           dateOfCourse,
           courseDescription,
-          employmentInfoId,
         },
         method: 'POST',
         withCredentials: true,
@@ -117,16 +94,13 @@ class EmploymentInfoCreate {
     }
   }
 
-  async createSkill(id, email, name, type, employmentInfoId) {
+  async createSkill(name, type) {
     try {
       const resposne = await axios({
         url: `/api/employmentInfo/create/skill`,
         data: {
-          id,
-          email,
           name,
           type,
-          employmentInfoId,
         },
         method: 'POST',
         withCredentials: true,
@@ -181,29 +155,23 @@ class EmploymentInfoCreate {
   }
 
   async createEducation(
-    id,
-    email,
     schoolName,
     degree,
     fieldOfStudy,
     startingDate,
     endDate,
-    currently,
-    employmentInfoId
+    currently
   ) {
     try {
       const resposne = await axios({
         url: `/api/employmentInfo/create/education`,
         data: {
-          id,
-          email,
           schoolName,
           degree,
           fieldOfStudy,
           startingDate,
           endDate,
           currently,
-          employmentInfoId,
         },
         method: 'POST',
         withCredentials: true,

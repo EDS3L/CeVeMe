@@ -5,6 +5,7 @@ function NodeShape({ node, pxPerMm, onMouseDownNode, selected }) {
   const style = node.style || {};
   return (
     <div
+      data-node-id={node.id}
       onMouseDown={(e) => onMouseDownNode(e, node)}
       className="select-none absolute"
       style={{
@@ -37,6 +38,7 @@ function NodeImage({ node, pxPerMm, onMouseDownNode, selected }) {
   const { frame } = node;
   return (
     <div
+      data-node-id={node.id}
       onMouseDown={(e) => onMouseDownNode(e, node)}
       className="overflow-hidden select-none absolute"
       style={{
@@ -68,7 +70,6 @@ function NodeText({ node, pxPerMm, onMouseDownNode, onChangeText, selected }) {
   const editRef = useRef(null);
   const [editing, setEditing] = useState(false);
 
-  // utrzymanie treści bez resetu selekcji
   useEffect(() => {
     const el = editRef.current;
     if (!el) return;
@@ -77,12 +78,10 @@ function NodeText({ node, pxPerMm, onMouseDownNode, onChangeText, selected }) {
     if (now !== next) el.innerText = next;
   }, [node.text]);
 
-  // focus po wejściu w edycję
   useEffect(() => {
     if (editing) {
       requestAnimationFrame(() => {
         editRef.current?.focus();
-        // ustaw kursor na końcu
         const sel = window.getSelection();
         const range = document.createRange();
         range.selectNodeContents(editRef.current);
@@ -95,6 +94,7 @@ function NodeText({ node, pxPerMm, onMouseDownNode, onChangeText, selected }) {
 
   return (
     <div
+      data-node-id={node.id}
       className="absolute bg-transparent p-1.5"
       style={{
         left: frame.x * pxPerMm,
@@ -108,8 +108,8 @@ function NodeText({ node, pxPerMm, onMouseDownNode, onChangeText, selected }) {
         userSelect: editing ? 'text' : 'none',
       }}
       onMouseDown={(e) => {
-        if (editing) return; // w edycji nie łapiemy drag
-        onMouseDownNode(e, node); // łapanie całym boxem
+        if (editing) return;
+        onMouseDownNode(e, node);
       }}
       onDoubleClick={() => setEditing(true)}
     >

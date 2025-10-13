@@ -22,8 +22,8 @@ public class CreatePortfolioItemUseCase {
     }
 
     @Transactional
-    public PortfolioItemsResponse execute(PortfolioItemsRequest request) {
-        User user = userRepository.findByEmail(new Email(request.email()))
+    public PortfolioItemsResponse execute(PortfolioItemsRequest request, Long userId) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         PortfolioItem portfolioItem = new PortfolioItem(request.title(), request.description());

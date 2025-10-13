@@ -1,10 +1,10 @@
 import React from 'react';
 import { Plus, Trash2, Award, Save, Pencil, X } from 'lucide-react';
 import FieldWithAI from '../ui/FieldWithAI';
-import EmploymentInfoCreate from '../../hooks/useCreateEmploymentInfo';
-import UserService from '../../../../hooks/UserService';
+import EmploymentInfoEdit from '../../hooks/useEditEmploymentInfo';
 import { toast } from 'react-toastify';
 import EmploymentInfoDelete from '../../hooks/useDeleteEmploymentInfo';
+import EmploymentInfoCreate from '../../hooks/useCreateEmploymentInfo';
 
 export default function CertificatesList({
   editId,
@@ -23,22 +23,14 @@ export default function CertificatesList({
     return uuidRegex.test(str);
   };
 
-  const create = new EmploymentInfoCreate();
+  const save = new EmploymentInfoCreate();
+  const edit = new EmploymentInfoEdit();
   const remove = new EmploymentInfoDelete();
-  const userService = new UserService();
-  const token = userService.getCookie('accessToken');
-  const email = userService.getEmailFromToken(token);
 
-  const createCertificate = async (name, dateOfCertificate) => {
+  const saveCertificate = async (name, dateOfCertificate) => {
     try {
-      const res = await create.createCertificate(
-        null,
-        email,
-        name,
-        dateOfCertificate,
-        null
-      );
-      toast.success(res.message);
+      const res = await save.createCertificate(name, dateOfCertificate);
+      toast.success(res?.message || 'Zapisano certyfikat');
       return res;
     } catch {
       return null;
@@ -48,6 +40,11 @@ export default function CertificatesList({
   const deleteCertificate = async (itemId) => {
     const res = await remove.deleteCertificate(itemId);
     toast.success(res.message);
+  };
+  const editCertificate = async (id, name, dateOfCertificate) => {
+    const res = await edit.editCertificate(id, name, dateOfCertificate);
+    toast.success(res.message);
+    return res;
   };
 
   return (
@@ -134,7 +131,7 @@ export default function CertificatesList({
                         aria-label="Zapisz certyfikat"
                         className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border text-white cursor-pointer border-kraft hover:bg-bookcloth/90 bg-bookcloth"
                         onClick={async () => {
-                          const result = await createCertificate(
+                          const result = await saveCertificate(
                             c.name,
                             c.dateOfCertificate
                           );
@@ -142,7 +139,7 @@ export default function CertificatesList({
                             onChange(
                               certificates.map((cert) =>
                                 cert.id === c.id
-                                  ? { ...cert, id: result.itemId }
+                                  ? { ...cert, id: result.itemId || result.id }
                                   : cert
                               )
                             );
@@ -158,7 +155,8 @@ export default function CertificatesList({
                         aria-label="Zapisz edycję certyfikatu"
                         className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border text-white cursor-pointer border-kraft hover:bg-bookcloth/90 bg-bookcloth"
                         onClick={async () => {
-                          const result = await createCertificate(
+                          const result = await editCertificate(
+                            c.id,
                             c.name,
                             c.dateOfCertificate
                           );

@@ -22,8 +22,8 @@ public class CreateCourseUseCase {
     }
 
     @Transactional
-    public CourseResponse execute(CourseRequest request) {
-        User user = userRepository.findByEmail(new Email(request.email()))
+    public CourseResponse execute(CourseRequest request, Long userId) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         Course course = new Course(request.courseName(), request.dateOfCourse(), request.courseDescription());

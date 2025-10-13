@@ -5,6 +5,7 @@ import EmploymentInfoCreate from '../../hooks/useCreateEmploymentInfo';
 import UserService from '../../../../hooks/UserService';
 import { toast } from 'react-toastify';
 import EmploymentInfoDelete from '../../hooks/useDeleteEmploymentInfo';
+import EmploymentInfoEdit from '../../hooks/useEditEmploymentInfo';
 
 export default function SkillsList({
   editId,
@@ -19,9 +20,9 @@ export default function SkillsList({
 
   const create = new EmploymentInfoCreate();
   const remove = new EmploymentInfoDelete();
-  const userService = new UserService();
-  const token = userService.getCookie('accessToken');
-  const email = userService.getEmailFromToken(token);
+  // const userService = new UserService();
+  // const token = userService.getCookie('accessToken');
+  // const email = userService.getEmailFromToken(token);
 
   const isUUID = (str) => {
     const uuidRegex =
@@ -31,7 +32,7 @@ export default function SkillsList({
 
   const createSkill = async (name, type) => {
     try {
-      const res = await create.createSkill(null, email, name, type, null);
+      const res = await create.createSkill(name, type);
       toast.success(res.message);
       return res;
     } catch {
@@ -42,6 +43,13 @@ export default function SkillsList({
   const deleteSkill = async (itemId) => {
     const res = await remove.deleteSkill(itemId);
     toast.success(res.message);
+  };
+
+  const edit = new EmploymentInfoEdit();
+  const editSkill = async (id, name, type) => {
+    const res = await edit.editSkill(id, name, type);
+    toast.success(res.message);
+    return res;
   };
 
   return (
@@ -148,7 +156,7 @@ export default function SkillsList({
                         aria-label="Zapisz edycję umiejętności"
                         className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border text-white cursor-pointer border-kraft hover:bg-bookcloth/90 bg-bookcloth"
                         onClick={async () => {
-                          const result = await createSkill(s.name, s.type);
+                          const result = await editSkill(s.id, s.name, s.type);
                           if (result) {
                             setEditId(null);
                           }

@@ -22,8 +22,8 @@ public class CreateLanguageUseCase {
     }
 
     @Transactional
-    public LanguageResponse execute(LanguageRequest request) {
-        User user = userRepository.findByEmail(new Email(request.email()))
+    public LanguageResponse execute(LanguageRequest request, Long userId) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         Language language = new Language(request.name(), request.level());

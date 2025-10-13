@@ -7,6 +7,7 @@ import UserService from '../../../../hooks/UserService';
 import EmploymentInfoDelete from '../../hooks/useDeleteEmploymentInfo';
 import { toast } from 'react-toastify';
 import Refinement from '../../hooks/userAirefinement';
+import EmploymentInfoEdit from '../../hooks/useEditEmploymentInfo';
 
 export default function ExperiencesList({
   editId,
@@ -22,9 +23,6 @@ export default function ExperiencesList({
 
   const create = new EmploymentInfoCreate();
   const remove = new EmploymentInfoDelete();
-  const userService = new UserService();
-  const token = userService.getCookie('accessToken');
-  const email = userService.getEmailFromToken(token);
 
   const isUUID = (str) => {
     const uuidRegex =
@@ -43,16 +41,13 @@ export default function ExperiencesList({
   ) => {
     try {
       const res = await create.createExperience(
-        null,
-        email,
         companyName,
         startingDate,
         endDate,
         currently,
         positionName,
         jobDescription,
-        jobAchievements,
-        null
+        jobAchievements
       );
       toast.success(res.message);
       return res;
@@ -64,6 +59,31 @@ export default function ExperiencesList({
   const deleteExperience = async (itemId) => {
     const res = await remove.deleteExperience(itemId);
     toast.success(res.message);
+  };
+
+  const edit = new EmploymentInfoEdit();
+  const editExperience = async (
+    id,
+    companyName,
+    startingDate,
+    endDate,
+    currently,
+    positionName,
+    jobDescription,
+    jobAchievements
+  ) => {
+    const res = await edit.editExperience(
+      id,
+      companyName,
+      startingDate,
+      endDate,
+      currently,
+      positionName,
+      jobDescription,
+      jobAchievements
+    );
+    toast.success(res.message);
+    return res;
   };
 
   return (
@@ -269,7 +289,8 @@ export default function ExperiencesList({
                         aria-label="Zapisz edycję doświadczenia"
                         className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border text-white cursor-pointer border-kraft hover:bg-bookcloth/90 bg-bookcloth"
                         onClick={async () => {
-                          const result = await createExperience(
+                          const result = await editExperience(
+                            ex.id,
                             ex.companyName,
                             ex.startingDate,
                             ex.endDate,
@@ -278,6 +299,7 @@ export default function ExperiencesList({
                             ex.jobDescription,
                             ex.jobAchievements
                           );
+
                           if (result) {
                             setEditId(null);
                           }

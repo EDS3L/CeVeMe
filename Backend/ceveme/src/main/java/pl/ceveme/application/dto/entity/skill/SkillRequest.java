@@ -7,10 +7,8 @@ import java.util.Optional;
 
 public record SkillRequest(
         Long id,
-        String email,
         String name,
-        Skill.Type type,
-        Long employmentInfoId
+        Skill.Type type, Long userId
 ) {
 
 

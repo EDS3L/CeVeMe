@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 function Row({ label, children }) {
   return (
@@ -10,6 +10,28 @@ function Row({ label, children }) {
 }
 
 export default function InspectorPanel({ node, updateNode, removeNode }) {
+  useEffect(() => {
+    const handleKeyDelete = (e) => {
+      if (!node) return;
+
+      if (e.key === 'Delete' || e.key === 'Backspace') {
+        e.preventDefault();
+
+        const el = document.querySelector(`[data-node-id="${node.id}"]`);
+        const isEditing =
+          el && window.getComputedStyle(el).userSelect === 'text';
+        if (isEditing) return;
+        removeNode(node.id);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDelete);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDelete);
+    };
+  }, [node, removeNode]);
+
   if (!node) return <div className="text-slate-500">Brak zaznaczenia</div>;
 
   const f = node.frame || {};

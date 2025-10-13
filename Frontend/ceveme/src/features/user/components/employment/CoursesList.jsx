@@ -5,6 +5,7 @@ import EmploymentInfoCreate from '../../hooks/useCreateEmploymentInfo';
 import UserService from '../../../../hooks/UserService';
 import { toast } from 'react-toastify';
 import EmploymentInfoDelete from '../../hooks/useDeleteEmploymentInfo';
+import EmploymentInfoEdit from '../../hooks/useEditEmploymentInfo';
 
 export default function CoursesList({
   editId,
@@ -19,10 +20,7 @@ export default function CoursesList({
 
   const create = new EmploymentInfoCreate();
   const remove = new EmploymentInfoDelete();
-  const userService = new UserService();
-  const token = userService.getCookie('accessToken');
-  const email = userService.getEmailFromToken(token);
-
+  const edit = new EmploymentInfoEdit();
   const isUUID = (str) => {
     const uuidRegex =
       /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -32,12 +30,9 @@ export default function CoursesList({
   const createCourse = async (courseName, dateOfCourse, courseDescription) => {
     try {
       const res = await create.createCourse(
-        null,
-        email,
         courseName,
         dateOfCourse,
-        courseDescription,
-        null
+        courseDescription
       );
       toast.success(res.message);
       return res;
@@ -49,6 +44,22 @@ export default function CoursesList({
   const deleteCourse = async (itemId) => {
     const res = await remove.deleteCourse(itemId);
     toast.success(res.message);
+  };
+
+  const editCourse = async (
+    itemId,
+    courseName,
+    dateOfCourse,
+    courseDescription
+  ) => {
+    const res = await edit.editCourse(
+      itemId,
+      courseName,
+      dateOfCourse,
+      courseDescription
+    );
+    toast.success(res.message);
+    return res;
   };
 
   return (
@@ -180,7 +191,8 @@ export default function CoursesList({
                         aria-label="Zapisz edycję kursu"
                         className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border text-white cursor-pointer border-kraft hover:bg-bookcloth/90 bg-bookcloth"
                         onClick={async () => {
-                          const result = await createCourse(
+                          const result = await editCourse(
+                            c.id,
                             c.courseName,
                             c.dateOfCourse,
                             c.courseDescription

@@ -6,6 +6,7 @@ import EmploymentInfoCreate from '../../hooks/useCreateEmploymentInfo';
 import UserService from '../../../../hooks/UserService';
 import { toast } from 'react-toastify';
 import EmploymentInfoDelete from '../../hooks/useDeleteEmploymentInfo';
+import EmploymentInfoEdit from '../../hooks/useEditEmploymentInfo';
 
 export default function EducationsList({
   editId,
@@ -20,9 +21,7 @@ export default function EducationsList({
     onChange(educations.map((e) => (e.id === id ? { ...e, ...patch } : e)));
   const create = new EmploymentInfoCreate();
   const remove = new EmploymentInfoDelete();
-  const userService = new UserService();
-  const token = userService.getCookie('accessToken');
-  const email = userService.getEmailFromToken(token);
+
   const isUUID = (str) => {
     const uuidRegex =
       /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -39,15 +38,12 @@ export default function EducationsList({
   ) => {
     try {
       const res = await create.createEducation(
-        null,
-        email,
         schoolName,
         degree,
         fieldOfStudy,
         startingDate,
         endDate,
-        currently,
-        null
+        currently
       );
       toast.success(res.message);
       return res;
@@ -59,6 +55,29 @@ export default function EducationsList({
   const deleteEducation = async (itemId) => {
     const res = await remove.deleteEducation(itemId);
     toast.success(res.message);
+  };
+
+  const edit = new EmploymentInfoEdit();
+  const editEducation = async (
+    id,
+    schoolName,
+    degree,
+    fieldOfStudy,
+    startingDate,
+    endDate,
+    currently
+  ) => {
+    const res = await edit.editEducation(
+      id,
+      schoolName,
+      degree,
+      fieldOfStudy,
+      startingDate,
+      endDate,
+      currently
+    );
+    toast.success(res.message);
+    return res;
   };
 
   return (
@@ -241,7 +260,8 @@ export default function EducationsList({
                         aria-label="Zapisz edycję edukacji"
                         className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border text-white cursor-pointer border-kraft hover:bg-bookcloth/90 bg-bookcloth"
                         onClick={async () => {
-                          const result = await createEducation(
+                          const result = await editEducation(
+                            ed.id,
                             ed.schoolName,
                             ed.degree,
                             ed.fieldOfStudy,
@@ -249,6 +269,7 @@ export default function EducationsList({
                             ed.endDate,
                             ed.currently
                           );
+                          console.log('zpisz' + result);
                           if (result) {
                             setEditId(null);
                           }

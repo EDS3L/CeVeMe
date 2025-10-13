@@ -2,6 +2,8 @@ package pl.ceveme.application.usecase.auth;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.ceveme.application.dto.auth.RefreshResponse;
@@ -14,6 +16,7 @@ import pl.ceveme.infrastructure.config.jwt.JwtService;
 public class RefreshUseCase {
 
 
+    private static final Logger log = LoggerFactory.getLogger(RefreshUseCase.class);
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
 

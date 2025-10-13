@@ -11,6 +11,7 @@ import EmploymentInfoCreate from '../../hooks/useCreateEmploymentInfo';
 import UserService from '../../../../hooks/UserService';
 import EmploymentInfoDelete from '../../hooks/useDeleteEmploymentInfo';
 import { toast } from 'react-toastify';
+import EmploymentInfoEdit from '../../hooks/useEditEmploymentInfo';
 
 export default function LanguagesList({
   editId,
@@ -27,6 +28,8 @@ export default function LanguagesList({
   const userService = new UserService();
   const token = userService.getCookie('accessToken');
   const email = userService.getEmailFromToken(token);
+
+  const LEVEL_OPTIONS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'NATIVE'];
 
   const isUUID = (str) => {
     const uuidRegex =
@@ -49,6 +52,13 @@ export default function LanguagesList({
     toast.success(res.message);
   };
 
+  const edit = new EmploymentInfoEdit();
+  const editLanguage = async (id, name, level) => {
+    const res = await edit.editLanguage(id, name, level);
+    toast.success(res.message);
+    return res;
+  };
+
   return (
     <div className="grid gap-2">
       <h3 className="font-semibold flex items-center gap-2">
@@ -58,6 +68,11 @@ export default function LanguagesList({
       <ul role="list" className="grid gap-3">
         {languages.map((l) => {
           const isEditing = editId === l.id;
+          const normalizedLevel = (l.level || '').toUpperCase();
+          const levelValue = LEVEL_OPTIONS.includes(normalizedLevel)
+            ? normalizedLevel
+            : '';
+
           return (
             <li
               key={l.id}
@@ -82,23 +97,41 @@ export default function LanguagesList({
                     update(l.id, { name: await onImprove(l.name) })
                   }
                 />
-                <FieldWithAI
-                  id={`lang-level-${l.id}`}
-                  label="Poziom"
-                  value={l.level || ''}
-                  onChange={(v) => update(l.id, { level: v })}
-                  placeholder="np. C1 / Native"
-                  disabled={!isEditing}
-                  onImprove={async () =>
-                    update(l.id, { level: await onImprove(l.level) })
-                  }
-                />
+
+                <div className="grid gap-1">
+                  <label
+                    htmlFor={`lang-level-${l.id}`}
+                    className="text-sm text-graphite"
+                  >
+                    Poziom
+                  </label>
+
+                  <select
+                    id={`lang-level-${l.id}`}
+                    aria-label="Poziom znajomości języka"
+                    className={`rounded-xl border px-3 py-2 outline-none transition focus:ring-2 focus:ring-bookcloth/40 focus:border-bookcloth/50 disabled:opacity-70 disabled:cursor-not-allowed ${
+                      isEditing ? 'bg-white' : 'bg-ivorymedium/40'
+                    }`}
+                    value={levelValue}
+                    onChange={(e) => update(l.id, { level: e.target.value })}
+                    disabled={!isEditing}
+                  >
+                    <option value="" disabled>
+                      — Wybierz poziom —
+                    </option>
+                    {LEVEL_OPTIONS.map((opt) => (
+                      <option key={opt} value={opt} className="uppercase">
+                        {opt}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
                 {!isEditing && !editId && (
                   <div className="flex items-end justify-end">
                     <button
                       type="button"
-                      aria-label="Usuń język"
+                      aria-label="Edytuj język"
                       className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border text-white cursor-pointer border-kraft hover:bg-bookcloth/90 bg-bookcloth"
                       onClick={() => {
                         setEditId(l.id);
@@ -123,7 +156,7 @@ export default function LanguagesList({
                           onChange(
                             languages.map((lang) =>
                               lang.id === l.id
-                                ? { ...lang, id: result.itemId }
+                                ? { ...lang, id: result.id }
                                 : lang
                             )
                           );
@@ -139,7 +172,11 @@ export default function LanguagesList({
                       aria-label="Zapisz edycję języka"
                       className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border text-white cursor-pointer border-kraft hover:bg-bookcloth/90 bg-bookcloth"
                       onClick={async () => {
-                        const result = await createLanguage(l.name, l.level);
+                        const result = await editLanguage(
+                          l.id,
+                          l.name,
+                          l.level
+                        );
                         if (result) {
                           setEditId(null);
                         }

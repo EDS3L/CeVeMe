@@ -1,6 +1,6 @@
 package pl.ceveme.application.dto.entity.link;
 
-public record LinkRequest(Long id, String email, String title, String link, Long employmentInfoId) {
+public record LinkRequest(Long id,String title, String link, Long userId) {
 
     public LinkRequest {
         validate(title, link);

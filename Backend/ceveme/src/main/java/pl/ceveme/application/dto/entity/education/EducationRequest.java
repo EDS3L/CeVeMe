@@ -4,14 +4,12 @@ import java.time.LocalDate;
 
 public record EducationRequest(
         Long id,
-        String email,
         String schoolName,
         String degree,
         String fieldOfStudy,
         LocalDate startingDate,
         LocalDate endDate,
-        Boolean currently,
-        Long employmentInfoId
+        Boolean currently, Long userId
 ) {
 
     public EducationRequest {

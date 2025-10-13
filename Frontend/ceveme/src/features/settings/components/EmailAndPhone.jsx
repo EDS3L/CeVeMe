@@ -52,6 +52,7 @@ function EmailAndPhone({ data = {} }) {
                   label="Email"
                   value={form.email}
                   onChange={handleChange('email')}
+                  disabled={true}
                 ></SettignsField>
                 <div className="flex items-end">
                   <button
@@ -68,6 +69,7 @@ function EmailAndPhone({ data = {} }) {
                   label="Numer Telefonu"
                   value={form.phoneNumber}
                   onChange={handleChange('phoneNumber')}
+                  disabled={true}
                 ></SettignsField>
                 <div className="flex items-end">
                   <button

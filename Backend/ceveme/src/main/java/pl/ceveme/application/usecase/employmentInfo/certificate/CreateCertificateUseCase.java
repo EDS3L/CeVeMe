@@ -23,8 +23,8 @@ public class CreateCertificateUseCase {
     }
 
     @Transactional
-    public CertificateResponse execute(CertificateRequest request) {
-        User user = userRepository.findByEmail(new Email(request.email()))
+    public CertificateResponse execute(CertificateRequest request, Long userId) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         Certificate certificate = new Certificate(request.name(), request.dateOfCertificate());

@@ -17,7 +17,6 @@ export default function Handles({ framePx, onStartResize, rotation = 0 }) {
     se: { left: x + w, top: y + h },
   };
 
-  // widoczne kółko 8×8, ale „hit area” 16×16 — wygodny chwyt, subtelny wygląd
   return (
     <>
       {dots.map((k) => (
@@ -28,8 +27,8 @@ export default function Handles({ framePx, onStartResize, rotation = 0 }) {
           style={{
             left: pos[k].left - 8,
             top: pos[k].top - 8,
-            width: 16,
-            height: 16,
+            width: 4,
+            height: 4,
             cursor: `${k}-resize`,
           }}
         >

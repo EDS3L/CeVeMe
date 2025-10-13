@@ -8,11 +8,14 @@ export default function SettignsField({
   type = 'text',
   multiline = false,
   help,
+  disabled,
 }) {
   const described = `${id}-desc`;
   const errorId = `${id}-err`;
   const baseInput =
-    'w-full rounded-xl border border-cloudlight bg-basewhite text-slatedark px-3 py-2 outline-none ring-offset-2 focus:ring-2 focus:ring-feedbackfocus';
+    'w-full rounded-xl border bg-basewhite text-slatedark px-3 py-2 outline-none ring-offset-2 focus:ring-2 focus:ring-feedbackfocus';
+  const disabledInput =
+    'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed';
 
   return (
     <div className="grid gap-1">
@@ -26,26 +29,32 @@ export default function SettignsField({
             <textarea
               id={id}
               value={value}
-              onChange={(e) => onChange(e.target.value)}
+              onChange={disabled ? undefined : (e) => onChange(e.target.value)}
               onInput={(e) => {
-                e.target.style.height = 'auto';
-                e.target.style.height = `${e.target.scrollHeight}px`;
+                if (!disabled) {
+                  e.target.style.height = 'auto';
+                  e.target.style.height = `${e.target.scrollHeight}px`;
+                }
               }}
               placeholder={placeholder}
+              disabled={disabled}
               aria-invalid={!!error}
               aria-describedby={`${described} ${error ? errorId : ''}`}
-              className={`${baseInput} resize-none overflow-hidden`}
+              className={`${baseInput} resize-none overflow-hidden ${
+                disabled ? disabledInput : ''
+              }`}
             />
           ) : (
             <input
               id={id}
               type={type}
               value={value}
-              onChange={(e) => onChange(e.target.value)}
+              onChange={disabled ? undefined : (e) => onChange(e.target.value)}
               placeholder={placeholder}
+              disabled={disabled}
               aria-invalid={!!error}
               aria-describedby={`${described} ${error ? errorId : ''}`}
-              className={baseInput}
+              className={`${baseInput} ${disabled ? disabledInput : ''}`}
             />
           )}
         </div>

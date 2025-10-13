@@ -3,6 +3,7 @@ package pl.ceveme.infrastructure.controllers.employmentInfo;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import pl.ceveme.application.dto.entity.certificate.CertificateRequest;
 import pl.ceveme.application.dto.entity.certificate.CertificateResponse;
@@ -31,6 +32,7 @@ import pl.ceveme.application.usecase.employmentInfo.language.CreateLanguageUseCa
 import pl.ceveme.application.usecase.employmentInfo.link.CreateLinkUseCase;
 import pl.ceveme.application.usecase.employmentInfo.portfolio.CreatePortfolioItemUseCase;
 import pl.ceveme.application.usecase.employmentInfo.skill.CreateSkillUseCase;
+import pl.ceveme.domain.model.entities.User;
 
 @RestController
 @RequestMapping("/api/employmentInfo/create")
@@ -66,50 +68,66 @@ public class CreateEmploymentInfoController {
     }
 
     @PostMapping("/certificate")
-    public ResponseEntity<CertificateResponse> createCertificate(@Valid @RequestBody CertificateRequest request) {
-        CertificateResponse response = createCertificateUseCase.execute(request);
+    public ResponseEntity<CertificateResponse> createCertificate(@Valid @RequestBody CertificateRequest request, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        Long userId = user.getId();
+        CertificateResponse response = createCertificateUseCase.execute(request,userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PostMapping("/course")
-    public ResponseEntity<CourseResponse> createCourse(@Valid @RequestBody CourseRequest request) {
-        CourseResponse response = createCourseUseCase.execute(request);
+    public ResponseEntity<CourseResponse> createCourse(@Valid @RequestBody CourseRequest request, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        Long userId = user.getId();
+        CourseResponse response = createCourseUseCase.execute(request,userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PostMapping("/experience")
-    public ResponseEntity<ExperienceResponse> createExperience(@Valid @RequestBody ExperienceRequest request) {
-        ExperienceResponse response = createExperienceUseCase.execute(request);
+    public ResponseEntity<ExperienceResponse> createExperience(@Valid @RequestBody ExperienceRequest request, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        Long userId = user.getId();
+        ExperienceResponse response = createExperienceUseCase.execute(request,userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PostMapping("/language")
-    public ResponseEntity<LanguageResponse> createLanguage(@Valid @RequestBody LanguageRequest request) {
-        LanguageResponse response = createLanguageUseCase.execute(request);
+    public ResponseEntity<LanguageResponse> createLanguage(@Valid @RequestBody LanguageRequest request, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        Long userId = user.getId();
+        LanguageResponse response = createLanguageUseCase.execute(request,userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PostMapping("/skill")
-    public ResponseEntity<SkillResponse> createSkill(@Valid @RequestBody SkillRequest request) {
-        SkillResponse response = createSkillUseCase.execute(request);
+    public ResponseEntity<SkillResponse> createSkill(@Valid @RequestBody SkillRequest request, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        Long userId = user.getId();
+        SkillResponse response = createSkillUseCase.execute(request,userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PostMapping("/portfolioItem")
-    public ResponseEntity<PortfolioItemsResponse> createPortfolioItem(@Valid @RequestBody PortfolioItemsRequest request) {
-        PortfolioItemsResponse response = createPortfolioItemUseCase.execute(request);
+    public ResponseEntity<PortfolioItemsResponse> createPortfolioItem(@Valid @RequestBody PortfolioItemsRequest request, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        Long userId = user.getId();
+        PortfolioItemsResponse response = createPortfolioItemUseCase.execute(request,userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PostMapping("/link")
-    public ResponseEntity<LinkResponse> createLink(@Valid @RequestBody LinkRequest request) {
-        LinkResponse response = createLinkUseCase.execute(request);
+    public ResponseEntity<LinkResponse> createLink(@Valid @RequestBody LinkRequest request, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        Long userId = user.getId();
+        LinkResponse response = createLinkUseCase.execute(request,userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PostMapping("/education")
-    public ResponseEntity<EducationResponse> createEducation(@Valid @RequestBody EducationRequest request) {
-        EducationResponse response = createEducationUseCase.execute(request);
+    public ResponseEntity<EducationResponse> createEducation(@Valid @RequestBody EducationRequest request, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        Long userId = user.getId();
+        EducationResponse response = createEducationUseCase.execute(request,userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

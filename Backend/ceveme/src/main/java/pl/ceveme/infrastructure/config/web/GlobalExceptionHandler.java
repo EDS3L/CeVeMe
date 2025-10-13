@@ -31,14 +31,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-
     @ExceptionHandler(TimeoutException.class)
-    public ResponseEntity<ApiError> TimeoutException(TimeoutException ex, HttpServletRequest request) {
+    public ResponseEntity<ApiError> handleTimeoutException(TimeoutException ex, HttpServletRequest request) {
         logger.error("TimeoutException: {}", ex.getMessage());
         ApiError error = new ApiError("TIMEOUT_EXCEPTION", ex.getMessage(), Instant.now(), request.getRequestURI());
         return new ResponseEntity<>(error, HttpStatus.TOO_MANY_REQUESTS);
     }
-
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiError> handleIllegalArgumentException(IllegalArgumentException ex, HttpServletRequest request) {
@@ -48,43 +46,40 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(NoResourceFoundException.class)
-    public ResponseEntity<ApiError> handleNoResourceFoundException(Exception ex, HttpServletRequest request) {
-        logger.error(" No resource found exception: {}", ex.getMessage(), ex);
-        ApiError error = new ApiError("No Resource_Found", "An no resource found exception", Instant.now(), request.getRequestURI());
+    public ResponseEntity<ApiError> handleNoResourceFoundException(NoResourceFoundException ex, HttpServletRequest request) {
+        logger.error("No resource found exception: {}", ex.getMessage());
+        ApiError error = new ApiError("NO_RESOURCE_FOUND", "Resource not found", Instant.now(), request.getRequestURI());
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
-
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ApiError> handleHttpMessageNotReadableException(HttpMediaTypeNotSupportedException ex, HttpServletRequest request) {
+    public ResponseEntity<ApiError> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex, HttpServletRequest request) {
         logger.warn("Malformed JSON request: {}", ex.getMessage());
-        String problem = ex.getMessage();
+        ex.getMostSpecificCause();
+        String problem = ex.getMostSpecificCause()
+                        .getMessage();
         ApiError error = new ApiError("MALFORMED_JSON", problem, Instant.now(), request.getRequestURI());
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(HttpClientErrorException.Forbidden.class)
-    public ResponseEntity<ApiError> handleHttpMessageAccessDeniedException(HttpClientErrorException.Forbidden ex, HttpServletRequest request) {
-        logger.warn("Access denied exception: {}", ex.getMessage());
-        String problem = ex.getMessage();
-        ApiError error = new ApiError("Access denied exception", problem, Instant.now(), request.getRequestURI());
-        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
-    }
-
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
-    public ResponseEntity<ApiError> handleHttpMediaTypeNotSupportedException(HttpMessageNotReadableException ex, HttpServletRequest request) {
-        logger.error(" Media Type Not Supported ");
-        Throwable rootCause = ex.getMostSpecificCause();
-        String problem = rootCause.getMessage();
-        ApiError error = new ApiError("HttpMediaTypeNotSupportedException", "Media type not supported", Instant.now(), request.getRequestURI());
+    public ResponseEntity<ApiError> handleHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException ex, HttpServletRequest request) {
+        logger.error("Media Type Not Supported: {}", ex.getMessage());
+        ApiError error = new ApiError("UNSUPPORTED_MEDIA_TYPE", ex.getMessage(), Instant.now(), request.getRequestURI());
         return new ResponseEntity<>(error, HttpStatus.UNSUPPORTED_MEDIA_TYPE);
     }
 
+    @ExceptionHandler(HttpClientErrorException.Forbidden.class)
+    public ResponseEntity<ApiError> handleForbidden(HttpClientErrorException.Forbidden ex, HttpServletRequest request) {
+        logger.warn("Access denied: {}", ex.getMessage());
+        ApiError error = new ApiError("ACCESS_DENIED", ex.getMessage(), Instant.now(), request.getRequestURI());
+        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+    }
+
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiError> handleGenericException(HttpMessageNotReadableException ex, HttpServletRequest request) {
-        logger.error("An unexpected error occurred: {}", ex.getMessage(), ex);
+    public ResponseEntity<ApiError> handleGenericException(Exception ex, HttpServletRequest request) {
+        logger.error("Unexpected error: {}", ex.getMessage(), ex);
         ApiError error = new ApiError("UNEXPECTED_ERROR", "An unexpected error occurred", Instant.now(), request.getRequestURI());
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
 }

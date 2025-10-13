@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   emptyDocument,
   createTextNode,
@@ -40,6 +40,25 @@ export default function useEngine(initialDoc) {
       setSelectedId(null);
     }
   }, [doc]);
+
+  useEffect(() => {
+    const onKeyDown = (e) => {
+      const mod = e.ctrlKey || e.metaKey;
+      if (!mod) return;
+
+      const k = e.key.toLowerCase();
+      if (k === 'z') {
+        e.preventDefault();
+        undo();
+      } else if (k === 'y') {
+        e.preventDefault();
+        redo();
+      }
+    };
+
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [undo, redo]);
 
   const addText = useCallback(() => {
     setDoc((prev) => {

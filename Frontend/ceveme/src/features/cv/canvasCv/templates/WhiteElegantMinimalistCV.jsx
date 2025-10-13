@@ -2,7 +2,7 @@
 // - Sekcyjne paski akcentowe i linie są idealnie „na siebie” (lekki overlap).
 // - Telefon, e-mail (mailto), adres oraz WSZYSTKIE linki (z ikonami) POD „O MNIE”
 //   w pionowych wierszach: ikona po lewej, tekst po prawej, klikalne.
-// - Umiejętności wyraźnie zmniejszone i ściśnięte.
+// - Umiejętności: zwarta, dużo mniejsza lista — JEDEN node tekstowy na grupę.
 // - Sekcje układają się dynamicznie jedna pod drugą (osobne kursory lewej i prawej kolumny).
 // - Wszystkie nagłówki po polsku.
 
@@ -173,7 +173,7 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
       lineHeight: 1.3,
     },
 
-    // >>> Umiejętności – ZMNIEJSZONE I ŚCIŚNIĘTE <<<
+    // (stary wariant per-item – może zostać, ale nie jest używany po zmianie)
     listItem: {
       fontFamily: 'Montserrat, sans-serif',
       fontWeight: 500,
@@ -230,6 +230,15 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
       color: COLORS.muted,
       lineHeight: 1.2,
       textAlign: 'justify',
+    },
+
+    // >>> NOWE: zwarta, bardzo mała lista umiejętności (jeden node na grupę)
+    skillsList: {
+      fontFamily: 'Montserrat, sans-serif',
+      fontWeight: 400,
+      fontSize: 8.5,
+      color: COLORS.primary,
+      lineHeight: 1.12,
     },
   };
 
@@ -581,7 +590,7 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
         try {
           host = new URL(p.url).hostname.replace(/^www\./, '');
         } catch {
-            console.log("")
+          console.log('');
         }
         leftY += textBlock(
           GRID.leftTextX,
@@ -677,7 +686,7 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
     }
   }
 
-  /* ---------- PRAWA: UMIEJĘTNOŚCI (mocno ściśnięte) ---------- */
+  /* ---------- PRAWA: UMIEJĘTNOŚCI (zwarta lista, jeden node na grupę) ---------- */
   {
     let yStart = drawSectionHeader({
       xTitle: GRID.rightColX,
@@ -701,12 +710,11 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
       { label: 'Miękkie', items: get('Soft') },
     ].filter((b) => b.items.length);
 
-    const bulletSize = pt(2.2);
-    const bulletX = pt(381.044);
-    const textX = GRID.rightTextX;
-    const rowGap = pt(6.8);
+    const afterTitleGap = pt(1);
+    const groupGap = pt(6);
 
     for (const block of blocks) {
+      // tytuł grupy
       rightY +=
         textBlock(
           GRID.rightTextX,
@@ -714,24 +722,18 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
           GRID.rightTextW,
           block.label,
           STYLES.groupTitle
-        ) + pt(1.0);
-      for (const it of block.items) {
-        const tH = measureTextHeightMm(
-          String(it),
+        ) + afterTitleGap;
+
+      // JEDEN node tekstowy z listą punktowaną (brak osobnych nodów na każdy skill)
+      const listText = '• ' + block.items.map(String).join('\n• ');
+      rightY +=
+        textBlock(
+          GRID.rightTextX,
+          rightY,
           GRID.rightTextW,
-          STYLES.listItem
-        );
-        const cy = rightY + (tH - bulletSize) / 2;
-        nodes.push(
-          createShapeNode({
-            frame: { x: bulletX, y: cy, w: bulletSize, h: bulletSize },
-            style: { fill: { color: COLORS.primary }, stroke: null },
-          })
-        );
-        textBlock(textX, rightY, GRID.rightTextW, it, STYLES.listItem);
-        rightY += Math.max(tH, pt(7.0)) + rowGap;
-      }
-      rightY += pt(3);
+          listText,
+          STYLES.skillsList // mała, zwarta czcionka
+        ) + groupGap;
     }
   }
 

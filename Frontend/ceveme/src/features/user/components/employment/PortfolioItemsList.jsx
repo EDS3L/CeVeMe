@@ -1,10 +1,21 @@
 import React from 'react';
-import { Plus, Trash2, FolderGit2, Save, Pencil, X } from 'lucide-react';
+import {
+  Plus,
+  Trash2,
+  FolderGit2,
+  Save,
+  Pencil,
+  X,
+  Link as LinkIcon,
+  ExternalLink,
+  Copy,
+} from 'lucide-react';
 import FieldWithAI from '../ui/FieldWithAI';
 import EmploymentInfoCreate from '../../hooks/useCreateEmploymentInfo';
 import UserService from '../../../../hooks/UserService';
 import EmploymentInfoDelete from '../../hooks/useDeleteEmploymentInfo';
 import { toast } from 'react-toastify';
+import EmploymentInfoEdit from '../../hooks/useEditEmploymentInfo';
 
 export default function PortfolioItemsList({
   editId,
@@ -29,6 +40,41 @@ export default function PortfolioItemsList({
     return uuidRegex.test(str);
   };
 
+  const normalizeUrl = (val) => {
+    if (!val) return '';
+    const trimmed = String(val).trim();
+    if (!trimmed) return '';
+    if (!/^https?:\/\//i.test(trimmed)) return `https://${trimmed}`;
+    return trimmed;
+  };
+
+  const isValidUrl = (val) => {
+    if (!val) return true;
+    try {
+      const u = new URL(normalizeUrl(val));
+      return u.protocol === 'http:' || u.protocol === 'https:';
+    } catch {
+      return false;
+    }
+  };
+
+  const getHostname = (val) => {
+    try {
+      return new URL(normalizeUrl(val)).hostname;
+    } catch {
+      return '';
+    }
+  };
+
+  const copyToClipboard = async (text) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success('Skopiowano adres URL');
+    } catch {
+      toast.error('Nie udało się skopiować URL');
+    }
+  };
+
   const createPortfolio = async (title, description) => {
     try {
       const res = await create.createPortfolio(
@@ -50,6 +96,13 @@ export default function PortfolioItemsList({
     toast.success(res.message);
   };
 
+  const edit = new EmploymentInfoEdit();
+  const editPortfolio = async (id, title, description) => {
+    const res = await edit.editPortfolioItem(id, title, description);
+    toast.success(res.message);
+    return res;
+  };
+
   return (
     <div className="grid gap-2">
       <h3 className="font-semibold flex items-center gap-2">
@@ -60,23 +113,24 @@ export default function PortfolioItemsList({
         {items &&
           items.map((p) => {
             const isEditing = editId === p.id;
+            const urlRaw = p.url || '';
+            const urlValid = isValidUrl(urlRaw);
+            const urlHasValue = Boolean(urlRaw?.trim());
+            const urlNormalized = normalizeUrl(urlRaw);
+            const hostname = getHostname(urlRaw);
 
             return (
               <li
                 key={p.id}
-                className={`grid gap-2 rounded-xl border p-3 transition
-                ${
+                className={`grid gap-2 rounded-xl border p-3 transition ${
                   isEditing
                     ? 'border-bookcloth/20 bg-bookcloth/5'
                     : 'border-cloudlight'
-                }
-              `}
+                }`}
               >
                 <div
                   className={`grid ${
-                    isEditing || editId
-                      ? 'sm:grid-cols-[6fr]'
-                      : 'sm:grid-cols-[6fr]'
+                    isEditing || editId ? 'sm:grid-cols-1' : 'sm:grid-cols-1'
                   } gap-2`}
                 >
                   <FieldWithAI
@@ -107,6 +161,96 @@ export default function PortfolioItemsList({
                       })
                     }
                   />
+
+                  <div className="grid gap-1">
+                    <label
+                      htmlFor={`port-url-${p.id}`}
+                      className="text-sm text-graphite"
+                    >
+                      Adres URL
+                    </label>
+
+                    <div
+                      className={`flex items-center gap-2 rounded-xl border px-3 py-2 transition focus-within:ring-2 focus-within:ring-bookcloth/40 ${
+                        !isEditing ? 'bg-ivorymedium/40' : 'bg-white'
+                      } ${
+                        urlHasValue && !urlValid
+                          ? 'border-red-300'
+                          : 'border-cloudlight focus-within:border-bookcloth/50'
+                      }`}
+                    >
+                      <LinkIcon size={18} className="shrink-0" />
+                      <input
+                        id={`port-url-${p.id}`}
+                        type="url"
+                        inputMode="url"
+                        placeholder="np. https://github.com/moj-projekt"
+                        className="w-full outline-none"
+                        value={urlRaw}
+                        onChange={(e) => update(p.id, { url: e.target.value })}
+                        onBlur={() => {
+                          if (urlHasValue) update(p.id, { url: urlNormalized });
+                        }}
+                        disabled={!isEditing}
+                        aria-invalid={urlHasValue && !urlValid}
+                        aria-describedby={`port-url-hint-${p.id}`}
+                      />
+
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          className="rounded-lg px-2 py-1 text-sm border hover:bg-ivorymedium/60 disabled:opacity-50"
+                          onClick={() => copyToClipboard(urlNormalized)}
+                          disabled={!urlHasValue || !urlValid || !isEditing}
+                          title="Kopiuj URL"
+                        >
+                          <Copy size={16} />
+                        </button>
+                        <a
+                          href={
+                            urlValid && urlHasValue ? urlNormalized : undefined
+                          }
+                          target="_blank"
+                          rel="noreferrer"
+                          className={`rounded-lg px-2 py-1 text-sm border inline-flex items-center gap-1 hover:bg-ivorymedium/60 ${
+                            !urlHasValue || !urlValid
+                              ? 'pointer-events-none opacity-50'
+                              : ''
+                          }`}
+                          title="Otwórz w nowej karcie"
+                        >
+                          <ExternalLink size={16} />
+                        </a>
+                      </div>
+                    </div>
+
+                    {urlHasValue && (
+                      <div
+                        id={`port-url-hint-${p.id}`}
+                        className="flex items-center gap-2 text-xs"
+                      >
+                        {urlValid ? (
+                          <>
+                            {hostname && (
+                              <img
+                                src={`https://www.google.com/s2/favicons?domain=${hostname}&sz=64`}
+                                alt="favicon"
+                                className="h-4 w-4 rounded"
+                                loading="lazy"
+                              />
+                            )}
+                            <span className="text-graphite/80">
+                              {hostname || urlNormalized}
+                            </span>
+                          </>
+                        ) : (
+                          <span className="text-red-500">
+                            Nieprawidłowy adres URL
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
 
                   {!isEditing && !editId && (
                     <div className="flex items-end justify-end">
@@ -154,7 +298,8 @@ export default function PortfolioItemsList({
                         aria-label="Zapisz edycję pozycji"
                         className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border text-white cursor-pointer border-kraft hover:bg-bookcloth/90 bg-bookcloth"
                         onClick={async () => {
-                          const result = await createPortfolio(
+                          const result = await editPortfolio(
+                            p.id,
                             p.title,
                             p.description
                           );
@@ -213,7 +358,7 @@ export default function PortfolioItemsList({
         aria-label="Dodaj pozycję"
         onClick={() => {
           const id = crypto.randomUUID();
-          onChange([...items, { id, title: '', description: '' }]);
+          onChange([...items, { id, title: '', description: '', url: '' }]);
           setEditId(id);
         }}
         className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border border-cloudlight hover:bg-ivorymedium/60"

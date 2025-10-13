@@ -54,6 +54,7 @@ public class LoginUserUseCase {
 
     private void createRefreshCookie(User user, HttpServletRequest servletRequest, HttpServletResponse servletResponse) {
         String refreshToken = refreshTokenService.createRefreshToken(user,servletRequest);
+        System.out.println("REFRESH TOKEN: "+refreshToken);
         Cookie refreshCookie = new Cookie("refreshToken", refreshToken);
         refreshCookie.setHttpOnly(true);
         refreshCookie.setSecure(false);

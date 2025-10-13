@@ -4,10 +4,8 @@ import java.util.Set;
 
 public record LanguageRequest(
         Long id,
-        String email,
         String name,
-        String level,
-        Long employmentInfoId
+        String level, Long userId
 ) {
 
     private static final Set<String> ALLOWED_LEVELS = Set.of(
