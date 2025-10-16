@@ -112,7 +112,7 @@ class EmploymentInfoCreate {
     }
   }
 
-  async createPortfolio(id, email, title, description, employmentInfoId) {
+  async createPortfolio(id, email, title, description, url, employmentInfoId) {
     try {
       const resposne = await axios({
         url: `/api/employmentInfo/create/portfolioItem`,
@@ -121,6 +121,7 @@ class EmploymentInfoCreate {
           email,
           title,
           description,
+          url,
           employmentInfoId,
         },
         method: 'POST',

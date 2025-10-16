@@ -26,7 +26,7 @@ public class CreatePortfolioItemUseCase {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        PortfolioItem portfolioItem = new PortfolioItem(request.title(), request.description());
+        PortfolioItem portfolioItem = new PortfolioItem(request.title(), request.description(), request.url());
 
         user.addPortfolioItems(portfolioItem);
 

@@ -68,12 +68,12 @@ class EmploymentInfoEdit {
     return response.data;
   }
 
-  async editPortfolioItem(id, title, description) {
+  async editPortfolioItem(id, title, description, url) {
     const response = await axios({
       url: `/api/employmentInfo/edit/portfolioItem`,
       method: 'PATCH',
       withCredentials: true,
-      data: { id, title, description },
+      data: { id, title, description, url },
     });
     return response.data;
   }

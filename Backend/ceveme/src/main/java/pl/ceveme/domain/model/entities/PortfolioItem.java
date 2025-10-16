@@ -13,6 +13,7 @@ public class PortfolioItem {
     private String title;
     @Lob
     private String description;
+    private String url;
 
     @ManyToOne
     @JoinColumn(name = "employment_info_id")
@@ -22,9 +23,10 @@ public class PortfolioItem {
     public PortfolioItem() {
     }
 
-    public PortfolioItem(String title, String description) {
+    public PortfolioItem(String title, String description, String url) {
         this.title = title;
         this.description = description;
+        this.url = url;
     }
 
     public void update(String title, String description) {
@@ -64,5 +66,13 @@ public class PortfolioItem {
 
     public void setEmploymentInfo(EmploymentInfo employmentInfo) {
         this.employmentInfo = employmentInfo;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

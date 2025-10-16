@@ -75,13 +75,14 @@ export default function PortfolioItemsList({
     }
   };
 
-  const createPortfolio = async (title, description) => {
+  const createPortfolio = async (title, description, url) => {
     try {
       const res = await create.createPortfolio(
         null,
         email,
         title,
         description,
+        url,
         null
       );
       toast.success(res.message);
@@ -97,8 +98,8 @@ export default function PortfolioItemsList({
   };
 
   const edit = new EmploymentInfoEdit();
-  const editPortfolio = async (id, title, description) => {
-    const res = await edit.editPortfolioItem(id, title, description);
+  const editPortfolio = async (id, title, description, url) => {
+    const res = await edit.editPortfolioItem(id, title, description, url);
     toast.success(res.message);
     return res;
   };
@@ -186,7 +187,7 @@ export default function PortfolioItemsList({
                         inputMode="url"
                         placeholder="np. https://github.com/moj-projekt"
                         className="w-full outline-none"
-                        value={urlRaw}
+                        value={p.url}
                         onChange={(e) => update(p.id, { url: e.target.value })}
                         onBlur={() => {
                           if (urlHasValue) update(p.id, { url: urlNormalized });
@@ -276,7 +277,8 @@ export default function PortfolioItemsList({
                         onClick={async () => {
                           const result = await createPortfolio(
                             p.title,
-                            p.description
+                            p.description,
+                            p.url
                           );
                           if (result) {
                             onChange(
@@ -301,7 +303,8 @@ export default function PortfolioItemsList({
                           const result = await editPortfolio(
                             p.id,
                             p.title,
-                            p.description
+                            p.description,
+                            p.url
                           );
                           if (result) {
                             setEditId(null);
