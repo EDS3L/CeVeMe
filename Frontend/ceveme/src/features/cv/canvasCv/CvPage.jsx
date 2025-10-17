@@ -30,6 +30,8 @@ import useAuth from '../../../hooks/useAuth';
 import GenerateCvModal from './ui/canva/GenerateCvModal';
 import { buildModernTurquoiseCV } from './templates/modernTurquoiseCv';
 import { buildWhiteElegantMinimalistCV } from './templates/WhiteElegantMinimalistCV';
+import { buildPixelPerfectTealSidebarCV } from './templates/TealSidebarCV';
+import { buildBlueCreativeCV } from './templates/BlueCreativeCV';
 
 function isOurDocSchema(x) {
   return x && typeof x === 'object' && x.page && Array.isArray(x.nodes);
@@ -180,6 +182,41 @@ export default function App() {
           'Referencje',
         ],
         style: 'Elegancki, minimalistyczny, wyrafinowany',
+      },
+      {
+        key: 'UrbanLineCV',
+        title: 'Urban Line',
+        func: buildPixelPerfectTealSidebarCV,
+        description:
+          'Jednokolumnowy układ na jasnym tle z dużym nagłówkiem (imię + stanowisko) i kontaktami w linii, z subtelnym pionowym akcentem z nazwą miasta po lewej (“W A R S Z A W A”). Sekcje w wersalikach: Podsumowanie, Doświadczenie, Portfolio, Umiejętności, Edukacja, Języki. Layout 1:1 względem oryginału Maks Makowski – Programista Java.',
+        sections: [
+          'Nagłówek',
+          'Podsumowanie',
+          'Doświadczenie',
+          'Portfolio',
+          'Umiejętności',
+          'Edukacja',
+          'Języki',
+        ],
+        style: 'Klasyczny, czytelny, jednokolumnowy z pionowym akcentem',
+      },
+      {
+        key: 'NavyDiagonalCV',
+        title: 'Navy Diagonal',
+        func: buildBlueCreativeCV,
+        description:
+          'Dwukolumnowy układ: szeroki lewy panel (Doświadczenie, Portfolio, Języki) + węższy prawy sidebar (Kontakt, O mnie, Edukacja, Umiejętności). Charakterystyczny granatowy, ukośny nagłówek z imieniem na środku i podtytułem „PROGRAMISTA JAVA”. Sekcje oddzielone delikatnymi liniami, listy kompetencji w trzech blokach (Technical / Tools & Technologies / Soft Skills). Wierne 1:1 odwzorowanie PDF.',
+        sections: [
+          'Nagłówek',
+          'Doświadczenie',
+          'Portfolio',
+          'Języki',
+          'Kontakt',
+          'O mnie',
+          'Edukacja',
+          'Umiejętności',
+        ],
+        style: 'Nowoczesny, biznesowy, wyraźny kontrast, dwukolumnowy',
       },
     ],
     []

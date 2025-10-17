@@ -29,9 +29,10 @@ public class PortfolioItem {
         this.url = url;
     }
 
-    public void update(String title, String description) {
+    public void update(String title, String description, String url) {
         this.title = title;
         this.description = description;
+        this.url = url;
     }
 
 

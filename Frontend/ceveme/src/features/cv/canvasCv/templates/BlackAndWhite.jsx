@@ -123,6 +123,49 @@ export function buildBlackAndWhiteCV(api = {}) {
     );
   };
 
+  // --- Normalizacja linków projektów (portfolio) ---
+  const normalizeProjectLinks = (p = {}) => {
+    const out = [];
+    const seen = new Set();
+    const push = (url, label) => {
+      if (!url) return;
+      const u = String(url);
+      if (seen.has(u)) return;
+      seen.add(u);
+      let finalLabel = label;
+      if (!finalLabel) {
+        try {
+          finalLabel = new URL(u).hostname.replace(/^www\./, '');
+        } catch {
+          finalLabel = u;
+        }
+      }
+      out.push({ label: finalLabel, url: u });
+    };
+
+    // pojedyncze, najczęściej spotykane pola
+    push(p.url, null);
+    push(p.homepage, 'Strona');
+    push(p.demo, 'Demo');
+    push(p.live, 'Live');
+    push(p.repository || p.repo || p.github, 'GitHub');
+    push(p.docs || p.documentation, 'Dokumentacja');
+
+    // tablica links: string lub obiekt {url|href, label|name|type}
+    if (Array.isArray(p.links)) {
+      for (const l of p.links) {
+        if (!l) continue;
+        const url = typeof l === 'string' ? l : l.url || l.href || '';
+        if (!url) continue;
+        const label =
+          typeof l === 'string' ? '' : l.label || l.name || l.type || '';
+        push(url, label || null);
+      }
+    }
+
+    return out;
+  };
+
   // --- Nagłówek ---
   const name = api?.personalData?.name || 'Imię Nazwisko';
   const title = api?.headline || '';
@@ -303,7 +346,7 @@ export function buildBlackAndWhiteCV(api = {}) {
 
     certs.forEach((c) => {
       const line1 = c?.name ? `• ${c.name}` : null;
-      const meta = [c?.issuer, c?.data].filter(Boolean).join(' • ');
+      const meta = [c?.issuer, c?.data || c?.date].filter(Boolean).join(' • ');
       if (line1)
         leftY += addTextNode(MARGIN, leftY, LEFT_COL_W, line1, BOLD_BODY_STYLE);
       if (meta)
@@ -386,6 +429,22 @@ export function buildBlackAndWhiteCV(api = {}) {
         ITALIC_STYLE
       );
 
+    // >>> ZMIANA 1: zawsze pokaż opis doświadczenia (obsługa pól: jobDescription ORAZ description)
+    const descParts = [];
+    if (exp?.jobDescription) descParts.push(String(exp.jobDescription));
+    if (exp?.description && exp.description !== exp.jobDescription)
+      descParts.push(String(exp.description));
+    if (descParts.length) {
+      rightY += addTextNode(
+        RIGHT_COL_X,
+        rightY,
+        RIGHT_COL_W,
+        descParts.join('\n\n'),
+        BODY_STYLE
+      );
+    }
+
+    // Bullets (osiągnięcia) – po opisach
     if (Array.isArray(exp?.achievements) && exp.achievements.length) {
       const bullets = exp.achievements
         .map((a) => `• ${a?.description || ''}`)
@@ -396,14 +455,6 @@ export function buildBlackAndWhiteCV(api = {}) {
         rightY,
         RIGHT_COL_W,
         bullets,
-        BODY_STYLE
-      );
-    } else if (exp?.jobDescription) {
-      rightY += addTextNode(
-        RIGHT_COL_X,
-        rightY,
-        RIGHT_COL_W,
-        exp.jobDescription,
         BODY_STYLE
       );
     }
@@ -428,7 +479,7 @@ export function buildBlackAndWhiteCV(api = {}) {
     projects.forEach((p) => {
       addTimelineCircle(rightY + 3);
 
-      // Nazwa projektu klikalna, jeśli jest URL
+      // Nazwa projektu klikalna, jeśli jest GŁÓWNY URL
       rightY += addTextNode(
         RIGHT_COL_X,
         rightY,
@@ -451,22 +502,19 @@ export function buildBlackAndWhiteCV(api = {}) {
           ITALIC_STYLE
         );
 
-      // Pokaż URL jako osobną, klikalną linię (skrócenie do hosta opcjonalne)
-      if (p?.url) {
-        let host = '';
-        try {
-          host = new URL(p.url).hostname.replace(/^www\./, '');
-        } catch {
-          console.log('');
+      // >>> ZMIANA 2: dodatkowe linki z API (p.url, p.homepage, p.demo, p.live, p.repo/repository/github, p.docs, p.links[])
+      const extraLinks = normalizeProjectLinks(p);
+      if (extraLinks.length) {
+        for (const ln of extraLinks) {
+          rightY += addTextNode(
+            RIGHT_COL_X,
+            rightY,
+            RIGHT_COL_W,
+            ln.label,
+            DATE_STYLE,
+            { link: ln.url }
+          );
         }
-        rightY += addTextNode(
-          RIGHT_COL_X,
-          rightY,
-          RIGHT_COL_W,
-          host || p.url,
-          DATE_STYLE,
-          { link: p.url }
-        );
       }
 
       const bullets = (p?.achievements || [])
@@ -487,7 +535,7 @@ export function buildBlackAndWhiteCV(api = {}) {
     rightY += GAP_SECTION;
   }
 
-  // Klauzula RODO przy dole prawej kolumny
+  // Klauzula RODO przy dole prawej kolumny (pozostawiamy jak było)
   const gdpr =
     api?.gdprClause || api?.personalData?.gdprClause || api?.gdpr || '';
   if (gdpr) {

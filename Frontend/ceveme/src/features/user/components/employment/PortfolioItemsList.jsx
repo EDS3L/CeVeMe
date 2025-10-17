@@ -300,6 +300,7 @@ export default function PortfolioItemsList({
                         aria-label="Zapisz edycję pozycji"
                         className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border text-white cursor-pointer border-kraft hover:bg-bookcloth/90 bg-bookcloth"
                         onClick={async () => {
+                          console.log(p.url);
                           const result = await editPortfolio(
                             p.id,
                             p.title,

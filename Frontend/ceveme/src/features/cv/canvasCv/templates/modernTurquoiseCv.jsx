@@ -1,4 +1,4 @@
-// modernTurquoiseCv.js — białe SVG, klikalne chipy; poprawione dopasowanie ikon (LinkedIn/telefon)
+// modernTurquoiseCv.js — header płycej (treść wyżej), białe SVG, klikalne chipy, linki do projektów
 import {
   emptyDocument,
   createTextNode,
@@ -16,7 +16,8 @@ export function buildModernTurquoiseCV(api = {}) {
   const PAGE_W = 210.08;
   const PAGE_H = 296;
 
-  const CONTENT = { x: 9.21, y: 82.12, w: 191.67, h: 205.89 };
+  // ⬇ Treść startuje WYŻEJ (mniejszy header) + dynamiczna wysokość arkusza
+  const CONTENT = { x: 9.21, y: 58.0, w: 191.67, h: PAGE_H - 58.0 - 8.0 };
   const ACCENT = { x: CONTENT.x, y: CONTENT.y, w: CONTENT.w, h: 2.53 };
 
   // Siatka
@@ -106,18 +107,18 @@ export function buildModernTurquoiseCV(api = {}) {
     'data:image/svg+xml;charset=utf-8,' +
     encodeURIComponent((ICON_SVGS[k] || ICON_SVGS.link).trim());
 
-  // --- Typografia (bez zmian merytorycznych) ---
+  // --- Typografia ---
   const FONTS = {
     garetBold52: {
       fontFamily: 'Garet, sans-serif',
-      fontSize: 45,
+      fontSize: 40,
       fontWeight: 700,
       color: COLORS.textDark,
       lineHeight: 1.35,
     },
     garetReg45: {
       fontFamily: 'Garet, sans-serif',
-      fontSize: 38,
+      fontSize: 33,
       fontWeight: 400,
       color: COLORS.textDark,
       lineHeight: 1.35,
@@ -253,13 +254,18 @@ export function buildModernTurquoiseCV(api = {}) {
   const measureH = (t, w, style) =>
     Math.max(3.2, measureTextHeightMm(String(t ?? ''), w, style));
 
-  const text = (x, y, w, t, style) => {
+  // ⬇ text() obsługuje teraz klikalne linki
+  const text = (x, y, w, t, style, opts = {}) => {
     const s = (t ?? '').toString();
     if (!s.trim()) return 0;
     const h = measureH(s, w, style);
-    nodes.push(
-      createTextNode({ frame: { x, y, w, h }, text: s, textStyle: style })
-    );
+    const node = createTextNode({
+      frame: { x, y, w, h },
+      text: s,
+      textStyle: style,
+    });
+    if (opts.link) node.link = opts.link;
+    nodes.push(node);
     return h;
   };
 
@@ -275,9 +281,8 @@ export function buildModernTurquoiseCV(api = {}) {
   };
 
   // === CHIP KONTAKTU: powiększona średnica + per-ikona skala, overlay-link ===
-  const CHIP = { D: 6.0, GAP: 2.6, CHIP_GAP: 5.0 }; // ⬅ większe kółko
+  const CHIP = { D: 6.0, GAP: 2.6, CHIP_GAP: 5.0 };
 
-  // Różne SVG mają różne „optyczne” wypełnienie – delikatna korekta skali:
   const ICON_SCALE = {
     linkedin: 0.58,
     phone: 0.6,
@@ -291,7 +296,7 @@ export function buildModernTurquoiseCV(api = {}) {
     facebook: 0.62,
     instagram: 0.62,
   };
-  const fitInner = (key) => Math.max(3.2, CHIP.D * (ICON_SCALE[key] ?? 0.62)); // min zabezpiecza przed zbyt małą ikoną
+  const fitInner = (key) => Math.max(3.2, CHIP.D * (ICON_SCALE[key] ?? 0.62));
 
   const contactChip = (cx, centerY, iconKey, label, labelW, link) => {
     if (!label) return { w: 0, h: 0 };
@@ -314,8 +319,8 @@ export function buildModernTurquoiseCV(api = {}) {
       })
     );
 
-    // ikona SVG (biała)
-    const inner = fitInner(iconKey); // dopasowana do kółka
+    // ikona SVG
+    const inner = fitInner(iconKey);
     nodes.push(
       createImageNode({
         frame: {
@@ -328,7 +333,7 @@ export function buildModernTurquoiseCV(api = {}) {
       })
     );
 
-    // overlay link na kółko (klik na samej ikonie)
+    // overlay link na kółko
     if (link) {
       const overlay = createTextNode({
         frame: { x: cx, y: circleY, w: CHIP.D, h: CHIP.D },
@@ -339,7 +344,7 @@ export function buildModernTurquoiseCV(api = {}) {
       nodes.push(overlay);
     }
 
-    // etykieta (też klikalna)
+    // etykieta (klikalna)
     const labelX = cx + CHIP.D + CHIP.GAP;
     const labelY = topY + (blockH - labelH) / 2;
     const labelNode = createTextNode({
@@ -398,6 +403,45 @@ export function buildModernTurquoiseCV(api = {}) {
     return out;
   };
 
+  // Linki portfolio z wielu pól API
+  const normalizeProjectLinks = (p = {}) => {
+    const out = [];
+    const seen = new Set();
+    const push = (url, label) => {
+      if (!url) return;
+      const u = String(url);
+      if (seen.has(u)) return;
+      seen.add(u);
+      let final = label;
+      if (!final) {
+        try {
+          final = new URL(u).hostname.replace(/^www\./, '');
+        } catch {
+          final = u;
+        }
+      }
+      out.push({ label: final, url: u });
+    };
+
+    push(p.url, null);
+    push(p.homepage, 'Strona');
+    push(p.demo, 'Demo');
+    push(p.live, 'Live');
+    push(p.repository || p.repo || p.github, 'GitHub');
+    push(p.docs || p.documentation, 'Dokumentacja');
+
+    if (Array.isArray(p.links)) {
+      for (const l of p.links) {
+        if (!l) continue;
+        const url = typeof l === 'string' ? l : l.url || l.href || '';
+        const label =
+          typeof l === 'string' ? '' : l.label || l.name || l.type || '';
+        push(url, label || null);
+      }
+    }
+    return out;
+  };
+
   // --- Tło i arkusz ---
   rect(0, 0, PAGE_W, PAGE_H, COLORS.pageBg);
   rect(CONTENT.x, CONTENT.y, CONTENT.w, CONTENT.h, COLORS.sheetBg);
@@ -419,8 +463,8 @@ export function buildModernTurquoiseCV(api = {}) {
 
   // Imię i nazwisko + tytuł
   const nameX = LEFT_COL.x + 57;
-  let nameY = 15;
-  if (first) nameY += text(nameX, nameY, 80, first, FONTS.garetBold52);
+  let nameY = 5;
+  if (first) nameY += text(nameX, nameY, 50, first, FONTS.garetBold52);
   if (last) nameY += text(nameX, nameY - 10, 80, last, FONTS.garetReg45);
   const headline = (api?.headline || '').trim();
   if (headline)
@@ -443,11 +487,11 @@ export function buildModernTurquoiseCV(api = {}) {
   }
 
   if (chips.length) {
-    const centerY = CONTENT.y - 10; // oś paska chipów
+    // ⬇ chipy też bliżej treści (mniejszy header)
+    const centerY = CONTENT.y - 8;
     const areaX = CONTENT.x + 10;
     const areaW = CONTENT.w - 20;
 
-    // policz labelW tak, aby całość zmieściła się w jednej linii (z większym D)
     const fixed =
       chips.length * (CHIP.D + CHIP.GAP) + (chips.length - 1) * CHIP.CHIP_GAP;
     const minLabel = 22;
@@ -477,7 +521,7 @@ export function buildModernTurquoiseCV(api = {}) {
     }
   }
 
-  // --- Treść (bez zmian) ---
+  // --- Treść ---
   const SECTION_GAP = 3.2;
   const ITEM_GAP = 2.4;
 
@@ -542,7 +586,7 @@ export function buildModernTurquoiseCV(api = {}) {
     ly += SECTION_GAP;
   }
 
-  // PROJEKTY — LEWA
+  // PROJEKTY — LEWA (z klikalnymi linkami z API)
   const projects = Array.isArray(api?.portfolio)
     ? api.portfolio.filter(Boolean)
     : [];
@@ -551,12 +595,24 @@ export function buildModernTurquoiseCV(api = {}) {
     for (const p of projects) {
       if (p?.name)
         ly += text(LEFT_COL.x, ly, LEFT_COL.w, p.name, FONTS.lato10b);
+
       const techLine = (p?.technologies || [])
         .map((t) => t?.name)
         .filter(Boolean)
         .join(' • ');
       if (techLine)
         ly += text(LEFT_COL.x, ly, LEFT_COL.w, techLine, FONTS.poppins8);
+
+      // ⬇ wielo-źródłowe linki (klikalne)
+      const links = normalizeProjectLinks(p);
+      if (links.length) {
+        for (const ln of links) {
+          ly += text(LEFT_COL.x, ly, LEFT_COL.w, ln.label, FONTS.poppins8_8b, {
+            link: ln.url,
+          });
+        }
+      }
+
       const ach = (p?.achievements || [])
         .map((a) => a?.description)
         .filter(Boolean);
@@ -568,7 +624,7 @@ export function buildModernTurquoiseCV(api = {}) {
           ach.map((s) => `• ${s}`).join('\n'),
           FONTS.poppins8
         );
-      if (p?.url) ly += text(LEFT_COL.x, ly, LEFT_COL.w, p.url, FONTS.poppins8);
+
       ly += ITEM_GAP;
     }
     ly += SECTION_GAP;

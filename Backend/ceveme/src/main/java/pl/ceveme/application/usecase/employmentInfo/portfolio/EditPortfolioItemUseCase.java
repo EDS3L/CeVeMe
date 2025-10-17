@@ -37,7 +37,8 @@ public class EditPortfolioItemUseCase {
 
         portfolioItem.update(
                 request.title(),
-                request.description()
+                request.description(),
+                request.url()
         );
 
         return new PortfolioItemsResponse(

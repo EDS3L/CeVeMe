@@ -196,7 +196,7 @@ export class GrayAndWhiteResume {
 
     const headerY = this.y + NAME_TOP_OFFSET;
 
-    // zdjęcie (prawy górny róg) — naprawione 'src'
+    // zdjęcie (prawy górny róg)
     const photoUrl = this.api?.personalData?.images;
     const photoSize = GrayAndWhiteResume.PHOTO.SIZE;
     const photoX = PAGE_W - MARGIN - photoSize;
@@ -250,7 +250,7 @@ export class GrayAndWhiteResume {
     );
     const nameH = Math.max(firstH, lastH);
 
-    // podkreślenie tylko pod lewym blokiem (nie zachodzi na kontakt)
+    // podkreślenie tylko pod lewym blokiem
     this.#rect(
       MARGIN,
       headerY + nameH + GrayAndWhiteResume.SPACING.xs,
@@ -262,7 +262,6 @@ export class GrayAndWhiteResume {
     // kontakt (po prawej, pod zdjęciem)
     const C = GrayAndWhiteResume.CONTACT;
     const contactRightEdge = photoX - GrayAndWhiteResume.PHOTO.GAP;
-    // dynamicznie przytnij szerokość tekstu, aby na 100% się mieścił
     const maxTextW = Math.min(
       C.TEXT_W,
       contactRightEdge - MARGIN - C.ICON_SIZE - C.GAP
@@ -322,7 +321,7 @@ export class GrayAndWhiteResume {
       });
     }
 
-    // tytuł — lekko niżej, zostaje w LEWYM bloku (nie wchodzi pod zdjęcie/kontakt)
+    // tytuł — w lewym bloku
     this.y = headerY + nameH + GrayAndWhiteResume.SPACING.sm;
     const title = this.api?.headline || 'Your Title';
     this.y += this.#textBlock(
@@ -338,7 +337,7 @@ export class GrayAndWhiteResume {
       GrayAndWhiteResume.CONTACT.HEADER_H + GrayAndWhiteResume.SPACING.sm;
   }
 
-  // jedna linia kontaktu: kółko + wektorowa ikona (białe) + tekst do prawej
+  // jedna linia kontaktu: kółko + ikona SVG (białe) + tekst do prawej
   #contactRow({ iconX, y, text, icon, link, textW }) {
     const { ICON_SIZE, GAP, ROW_SPACING } = GrayAndWhiteResume.CONTACT;
     const centerY = y + ICON_SIZE / 2;
@@ -360,11 +359,11 @@ export class GrayAndWhiteResume {
       })
     );
 
-    // IKONA SVG (biała) w środku kółka — rasteryzowana przez renderer (image node)
+    // IKONA SVG
     const svg = GrayAndWhiteResume.ICONS[icon] || GrayAndWhiteResume.ICONS.link;
     const svgDataUrl =
       'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg.trim());
-    const iconInner = ICON_SIZE * 0.62; // odrobinkę marginesu w kółku
+    const iconInner = ICON_SIZE * 0.62;
     this.nodes.push(
       createImageNode({
         frame: {
@@ -377,7 +376,7 @@ export class GrayAndWhiteResume {
       })
     );
 
-    // Tekst: po lewej od kółka, wyrównany do PRAWEJ i wycentrowany pionowo do linii
+    // tekst
     const style = {
       ...GrayAndWhiteResume.STYLES.contact,
       textAlign: 'right',
@@ -399,7 +398,7 @@ export class GrayAndWhiteResume {
     return centerY + ICON_SIZE / 2 + ROW_SPACING;
   }
 
-  // etykiety linków: krótkie i czytelne
+  // etykiety linków (LinkedIn/GitHub/WWW)
   #normalizeLinks(raw) {
     const out = [];
     const arr = Array.isArray(raw) ? raw : [];
@@ -427,6 +426,48 @@ export class GrayAndWhiteResume {
         /* noop */
       }
       out.push({ label, key, url });
+    }
+    return out;
+  }
+
+  // linki projektów (portfolio) — wiele źródeł w API
+  #normalizeProjectLinks(p = {}) {
+    const out = [];
+    const seen = new Set();
+    const push = (url, label) => {
+      if (!url) return;
+      const u = String(url);
+      if (seen.has(u)) return;
+      seen.add(u);
+      let finalLabel = label;
+      if (!finalLabel) {
+        try {
+          finalLabel = new URL(u).hostname.replace(/^www\./, '');
+        } catch {
+          finalLabel = u;
+        }
+      }
+      out.push({ label: finalLabel, url: u });
+    };
+
+    // typowe pola
+    push(p.url, null);
+    push(p.homepage, 'Strona');
+    push(p.demo, 'Demo');
+    push(p.live, 'Live');
+    push(p.repository || p.repo || p.github, 'GitHub');
+    push(p.docs || p.documentation, 'Dokumentacja');
+
+    // tablica p.links
+    if (Array.isArray(p.links)) {
+      for (const l of p.links) {
+        if (!l) continue;
+        const url = typeof l === 'string' ? l : l.url || l.href || '';
+        if (!url) continue;
+        const label =
+          typeof l === 'string' ? '' : l.label || l.name || l.type || '';
+        push(url, label || null);
+      }
     }
     return out;
   }
@@ -478,7 +519,7 @@ export class GrayAndWhiteResume {
       GrayAndWhiteResume.COLORS.line
     );
 
-    // prawa: Doświadczenie + RODO
+    // PRAWA: Doświadczenie → Języki → RODO
     let ry = topY;
     ry += this.#section({
       x: rightX,
@@ -491,6 +532,23 @@ export class GrayAndWhiteResume {
       ry +=
         this.#experience(rightX, ry, rightW, exp) +
         GrayAndWhiteResume.SPACING.lg;
+    }
+
+    // >>> JĘZYKI przeniesione tutaj, bezpośrednio pod doświadczeniem
+    const languagesLine = (this.api?.languages || [])
+      .map((l) => [l?.language, l?.level].filter(Boolean).join(' — '))
+      .filter(Boolean)
+      .join(', ');
+    if (languagesLine) {
+      ry += this.#section({ x: rightX, y: ry, w: rightW, title: 'JĘZYKI' });
+      ry +=
+        this.#textBlock(
+          rightX,
+          ry,
+          rightW,
+          languagesLine,
+          GrayAndWhiteResume.STYLES.compact
+        ) + GrayAndWhiteResume.SPACING.xs;
     }
 
     const gdpr = this.api?.gdprClause || '';
@@ -510,7 +568,7 @@ export class GrayAndWhiteResume {
       );
     }
 
-    // lewa: Edukacja / Umiejętności / Projekty / Certyfikaty / Języki
+    // LEWA: Edukacja / Umiejętności / Projekty / Certyfikaty
     let ly = topY;
 
     const educations = this.api?.educations || [];
@@ -556,21 +614,7 @@ export class GrayAndWhiteResume {
         ) + GrayAndWhiteResume.SPACING.xs;
     }
 
-    const languagesLine = (this.api?.languages || [])
-      .map((l) => [l?.language, l?.level].filter(Boolean).join(' — '))
-      .filter(Boolean)
-      .join(', ');
-    if (languagesLine) {
-      ly += this.#section({ x: leftX, y: ly, w: leftW, title: 'JĘZYKI' });
-      ly +=
-        this.#textBlock(
-          leftX,
-          ly,
-          leftW,
-          languagesLine,
-          GrayAndWhiteResume.STYLES.compact
-        ) + GrayAndWhiteResume.SPACING.xs;
-    }
+    // UWAGA: blok JĘZYKI został usunięty z lewej kolumny (przeniesiony na prawą)
   }
 
   /* ------------------------ EDUKACJA ----------------------- */
@@ -640,7 +684,6 @@ export class GrayAndWhiteResume {
       .filter(Boolean)
       .join(' • ');
     const desc = p?.description || '';
-    const url = p?.url || '';
     const ach = (p?.achievements || [])
       .map((a) => a?.description)
       .filter(Boolean);
@@ -665,22 +708,19 @@ export class GrayAndWhiteResume {
         this.#textBlock(x, y + used, w, desc, GrayAndWhiteResume.STYLES.body) +
         GrayAndWhiteResume.SPACING.xs;
 
-    if (url) {
-      let host = '';
-      try {
-        host = new URL(url).hostname.replace(/^www\./, '');
-      } catch {
-        console.log('');
+    // >>> Linki portfolio: wiele źródeł + lista klikanych etykiet
+    const links = this.#normalizeProjectLinks(p);
+    if (links.length) {
+      for (const ln of links) {
+        used += this.#textBlock(
+          x,
+          y + used,
+          w,
+          ln.label,
+          GrayAndWhiteResume.STYLES.rowSubtle,
+          { link: ln.url }
+        );
       }
-      const nodeText = host ? `URL: ${host}` : `URL: ${url}`;
-      used += this.#textBlock(
-        x,
-        y + used,
-        w,
-        nodeText,
-        GrayAndWhiteResume.STYLES.rowSubtle,
-        { link: url }
-      );
     }
 
     if (ach.length)
@@ -774,8 +814,6 @@ export class GrayAndWhiteResume {
       })
     );
   }
-
-  // obraz (node typu "image"); renderer obsłuży cornerRadius + clipCircle
 
   // tekst z auto-pomiarem wysokości; respektuje textAlign; obsługa node.link
   #textBlock(x, y, w, text, style, opts = {}) {

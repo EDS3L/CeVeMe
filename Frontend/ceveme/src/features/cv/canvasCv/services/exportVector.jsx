@@ -169,12 +169,52 @@ function getFontStyle(weight) {
   const w = parseInt(weight) || 400;
   return w >= 700 ? 'bold' : 'normal';
 }
-function hexToRgb(hex) {
-  const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  return m
-    ? { r: parseInt(m[1], 16), g: parseInt(m[2], 16), b: parseInt(m[3], 16) }
-    : { r: 0, g: 0, b: 0 };
+// function hexToRgb(hex) {
+//   const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+//   return m
+//     ? { r: parseInt(m[1], 16), g: parseInt(m[2], 16), b: parseInt(m[3], 16) }
+//     : { r: 0, g: 0, b: 0 };
+// }
+
+function hexToRgb(colorString) {
+  if (!colorString || typeof colorString !== 'string') {
+    return { r: 0, g: 0, b: 0 }; // Domyślnie czarny
+  }
+
+  // 1. Sprawdź format RGBA: rgba(r, g, b, a)
+  let match = colorString.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/i);
+  if (match) {
+    return {
+      r: parseInt(match[1]),
+      g: parseInt(match[2]),
+      b: parseInt(match[3]),
+    };
+  }
+
+  // 2. Sprawdź format HEX: #RRGGBB lub #RGB
+  match = colorString.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i);
+  if (match) {
+    return {
+      r: parseInt(match[1], 16),
+      g: parseInt(match[2], 16),
+      b: parseInt(match[3], 16),
+    };
+  }
+
+  // Krótki HEX: #F0C
+  match = colorString.match(/^#?([a-f\d])([a-f\d])([a-f\d])$/i);
+  if (match) {
+    return {
+      r: parseInt(match[1] + match[1], 16),
+      g: parseInt(match[2] + match[2], 16),
+      b: parseInt(match[3] + match[3], 16),
+    };
+  }
+
+  // 3. Zwróć domyślny kolor, jeśli format jest nieznany
+  return { r: 0, g: 0, b: 0 };
 }
+
 function mimeFromDataURL(dataUrl) {
   const m = /^data:(image\/[a-zA-Z0-9.+-]+);base64,/.exec(dataUrl || '');
   return m ? m[1] : null;
