@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react'; // <--- 1. Dodano useRef
+import { FONT_STACKS } from './fonts';
 
 function Row({ label, children }) {
   return (
@@ -10,27 +11,44 @@ function Row({ label, children }) {
 }
 
 export default function InspectorPanel({ node, updateNode, removeNode }) {
+  // <--- 2. Stworzenie refa
+  const originalFontRef = useRef(null);
+
   useEffect(() => {
+    const isEditableTarget = (el) => {
+      if (!el) return false;
+      const tag = el.tagName?.toLowerCase();
+      if (tag === 'input' || tag === 'textarea' || tag === 'select')
+        return true;
+      if (el.isContentEditable) return true;
+      if (el.closest?.('[contenteditable="true"]')) return true;
+      if (el.getAttribute?.('role') === 'textbox') return true;
+      return false;
+    };
+
     const handleKeyDelete = (e) => {
       if (!node) return;
+      if (e.key !== 'Backspace' && e.key !== 'Delete') return;
 
-      if (e.key === 'Delete' || e.key === 'Backspace') {
-        e.preventDefault();
+      const active = document.activeElement;
+      if (isEditableTarget(active)) return;
 
-        const el = document.querySelector(`[data-node-id="${node.id}"]`);
-        const isEditing =
-          el && window.getComputedStyle(el).userSelect === 'text';
-        if (isEditing) return;
-        removeNode(node.id);
-      }
+      const sel = window.getSelection?.();
+      if (sel && !sel.isCollapsed) return;
+
+      e.preventDefault();
+      removeNode(node.id);
     };
 
     window.addEventListener('keydown', handleKeyDelete);
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyDelete);
-    };
+    return () => window.removeEventListener('keydown', handleKeyDelete);
   }, [node, removeNode]);
+
+  // <--- 3. Efekt czyszczący ref przy zmianie węzła
+  useEffect(() => {
+    // Resetuj stan podglądu czcionki, jeśli zmieni się węzeł
+    originalFontRef.current = null;
+  }, [node?.id]);
 
   if (!node) return <div className="text-slate-500">Brak zaznaczenia</div>;
 
@@ -102,25 +120,82 @@ export default function InspectorPanel({ node, updateNode, removeNode }) {
       {node.type === 'text' && (
         <>
           <hr className="my-3 border-black/10" />
-          <Row label="Tekst">
-            <textarea
-              className={`${inputBase} h-20`}
-              rows={3}
-              value={node.text || ''}
-              onChange={(e) => updateNode(node.id, { text: e.target.value })}
-            />
+
+          {/* Popularne fonty: LISTA z hover-apply (bez osobnego podglądu) */}
+          <Row label="Popularne">
+            {/* <--- 6. Dodano onMouseLeave do kontenera */}
+            <div
+              className="rounded-lg border border-black/10 p-1 max-h-56 overflow-auto"
+              onMouseLeave={() => {
+                // Jeśli ref nie jest pusty (był podgląd, ale nie było kliknięcia)
+                if (originalFontRef.current !== null) {
+                  // Przywróć oryginalną czcionkę
+                  updateNode(node.id, {
+                    textStyle: { fontFamily: originalFontRef.current },
+                  });
+                  originalFontRef.current = null; // Wyczyść ref
+                }
+              }}
+            >
+              <ul className="grid grid-cols-1 gap-1">
+                {FONT_STACKS.map(({ label, stack }) => (
+                  <li key={label}>
+                    <button
+                      type="button"
+                      className={`w-full text-left px-2 py-1 rounded hover:bg-blue-50 focus:bg-blue-50 focus:outline-none ${
+                        (ts.label || '').toLowerCase() === stack.toLowerCase()
+                          ? 'bg-blue-100'
+                          : ''
+                      }`}
+                      style={{
+                        // etykieta może być w swojej rodzinie – to nie jest osobny „podgląd”, tylko wygląd opcji
+                        fontFamily: stack,
+                      }}
+                      title={stack}
+                      // <--- 4. Zmodyfikowano onMouseEnter
+                      onMouseEnter={() => {
+                        // Zapisz oryginalną czcionkę tylko przy pierwszym najechaniu
+                        if (originalFontRef.current === null) {
+                          originalFontRef.current = ts.fontFamily || '';
+                        }
+                        // Zastosuj podgląd
+                        updateNode(node.id, {
+                          textStyle: { fontFamily: stack },
+                        });
+                      }}
+                      // <--- 5. Zmodyfikowano onClick
+                      onClick={() => {
+                        // Zastosuj zmianę
+                        updateNode(node.id, {
+                          textStyle: { fontFamily: stack },
+                        });
+                        // "Zatwierdź" zmianę, czyszcząc ref
+                        // (zapobiega to przywróceniu przez onMouseLeave)
+                        originalFontRef.current = null;
+                      }}
+                    >
+                      {label}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </Row>
+
+          {/* Ręczne wpisanie stacku (opcjonalne) */}
           <Row label="Czcionka">
             <input
               className={inputBase}
               value={ts.fontFamily || ''}
               onChange={(e) =>
                 updateNode(node.id, {
-                  textStyle: { fontFamily: e.target.value },
+                  textStyle: { originalFontRef: e.target.value },
                 })
               }
+              placeholder="np. Arial, Helvetica, sans-serif"
             />
           </Row>
+
           <Row label="Rozmiar (pt)">
             <input
               className={inputBase}
@@ -137,10 +212,10 @@ export default function InspectorPanel({ node, updateNode, removeNode }) {
             <input
               className={inputBase}
               type="range"
-              min={500}
-              max={800}
+              min={300}
+              max={900}
               step={100}
-              value={num(ts.fontWeight || '')}
+              value={typeof ts.fontWeight === 'number' ? ts.fontWeight : 400}
               onChange={(e) =>
                 updateNode(node.id, {
                   textStyle: { fontWeight: +e.target.value },

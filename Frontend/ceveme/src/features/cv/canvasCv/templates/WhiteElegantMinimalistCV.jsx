@@ -345,6 +345,7 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
       createImageNode({
         frame: { x, y: y - size * 0.1, w: size, h: size },
         src: SVG(iconKey),
+        style: { cornerRadius: 0 },
       })
     );
     const h = textBlock(

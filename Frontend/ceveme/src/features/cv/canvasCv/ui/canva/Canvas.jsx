@@ -1,9 +1,9 @@
 import React, {
-	useCallback,
-	useMemo,
-	useRef,
-	useEffect,
-	useState,
+  useCallback,
+  useMemo,
+  useRef,
+  useEffect,
+  useState,
 } from 'react';
 import useCanvasScale from '../../hooks/useCanvasScale';
 import { A4 } from '../../core/mm';
@@ -15,467 +15,467 @@ import { maxContentYMm } from '../../utils/overflow';
 import { computeSmartGuides } from '../../hooks/useSmartGuides';
 
 export default function Canvas({
-	doc,
-	selectedId,
-	setSelectedId,
-	updateNode,
-	pageRef,
-	showGrid = false,
-	overflowPeek = false,
-	onMetricsChange = () => {},
+  doc,
+  selectedId,
+  setSelectedId,
+  updateNode,
+  pageRef,
+  showGrid = false,
+  overflowPeek = false,
+  onMetricsChange = () => {},
 }) {
-	const wrapperRef = useRef(null);
-	const { scale, pxPerMm } = useCanvasScale(A4, wrapperRef, { min: 1, max: 5 });
+  const wrapperRef = useRef(null);
+  const { scale, pxPerMm } = useCanvasScale(A4, wrapperRef, { min: 1, max: 5 });
 
-	useEffect(() => {
-		onMetricsChange({ scale, pxPerMm });
-	}, [scale, pxPerMm, onMetricsChange]);
+  useEffect(() => {
+    onMetricsChange({ scale, pxPerMm });
+  }, [scale, pxPerMm, onMetricsChange]);
 
-	const [layoutFrozen, setLayoutFrozen] = useState(false);
-	const liveContentMaxY = useMemo(
-		() => maxContentYMm(doc) || A4.heightMm,
-		[doc]
-	);
-	const [frozen, setFrozen] = useState({
-		contentMaxY: liveContentMaxY,
-		overflowPeekSnapshot: overflowPeek,
-	});
-	const [guides, setGuides] = useState([]);
-	const [dragPreview, setDragPreview] = useState({});
+  const [layoutFrozen, setLayoutFrozen] = useState(false);
+  const liveContentMaxY = useMemo(
+    () => maxContentYMm(doc) || A4.heightMm,
+    [doc]
+  );
+  const [frozen, setFrozen] = useState({
+    contentMaxY: liveContentMaxY,
+    overflowPeekSnapshot: overflowPeek,
+  });
+  const [guides, setGuides] = useState([]);
+  const [dragPreview, setDragPreview] = useState({});
 
-	useEffect(() => {
-		if (!layoutFrozen) {
-			setFrozen({
-				contentMaxY: liveContentMaxY,
-				overflowPeekSnapshot: overflowPeek,
-			});
-		}
-	}, [layoutFrozen, liveContentMaxY, overflowPeek]);
+  useEffect(() => {
+    if (!layoutFrozen) {
+      setFrozen({
+        contentMaxY: liveContentMaxY,
+        overflowPeekSnapshot: overflowPeek,
+      });
+    }
+  }, [layoutFrozen, liveContentMaxY, overflowPeek]);
 
-	const contentMaxY = layoutFrozen ? frozen.contentMaxY : liveContentMaxY;
-	const effectiveOverflowPeek = layoutFrozen
-		? frozen.overflowPeekSnapshot
-		: overflowPeek;
-	const extendedHeightMm = useMemo(
-		() => Math.max(A4.heightMm, contentMaxY + 6),
-		[contentMaxY]
-	);
-	const pageHeightForGuidesMm = effectiveOverflowPeek
-		? extendedHeightMm
-		: A4.heightMm;
+  const contentMaxY = layoutFrozen ? frozen.contentMaxY : liveContentMaxY;
+  const effectiveOverflowPeek = layoutFrozen
+    ? frozen.overflowPeekSnapshot
+    : overflowPeek;
+  const extendedHeightMm = useMemo(
+    () => Math.max(A4.heightMm, contentMaxY + 6),
+    [contentMaxY]
+  );
+  const pageHeightForGuidesMm = effectiveOverflowPeek
+    ? extendedHeightMm
+    : A4.heightMm;
 
-	const dragRef = useRef(null);
-	const resizeRef = useRef(null);
-	const dragTempRef = useRef({});
+  const dragRef = useRef(null);
+  const resizeRef = useRef(null);
+  const dragTempRef = useRef({});
 
-	const PAGE_BUFFER_MM = 1;
-	const pageCount = useMemo(
-		() => Math.max(1, Math.ceil((contentMaxY + PAGE_BUFFER_MM) / A4.heightMm)),
-		[contentMaxY]
-	);
-	const pages = useMemo(
-		() => Array.from({ length: pageCount }, (_, i) => i),
-		[pageCount]
-	);
+  const PAGE_BUFFER_MM = 1;
+  const pageCount = useMemo(
+    () => Math.max(1, Math.ceil((contentMaxY + PAGE_BUFFER_MM) / A4.heightMm)),
+    [contentMaxY]
+  );
+  const pages = useMemo(
+    () => Array.from({ length: pageCount }, (_, i) => i),
+    [pageCount]
+  );
 
-	const pageWrapperPx = useMemo(
-		() => ({
-			w: Math.ceil(A4.widthMm * pxPerMm * scale),
-			h: Math.ceil(A4.heightMm * pxPerMm * scale + 10),
-		}),
-		[pxPerMm, scale]
-	);
-	const peekWrapperPx = useMemo(
-		() => ({
-			w: Math.ceil(A4.widthMm * pxPerMm * scale),
-			h: Math.ceil(extendedHeightMm * pxPerMm * scale + 10),
-		}),
-		[pxPerMm, scale, extendedHeightMm]
-	);
+  const pageWrapperPx = useMemo(
+    () => ({
+      w: Math.ceil(A4.widthMm * pxPerMm * scale),
+      h: Math.ceil(A4.heightMm * pxPerMm * scale + 10),
+    }),
+    [pxPerMm, scale]
+  );
+  const peekWrapperPx = useMemo(
+    () => ({
+      w: Math.ceil(A4.widthMm * pxPerMm * scale),
+      h: Math.ceil(extendedHeightMm * pxPerMm * scale + 10),
+    }),
+    [pxPerMm, scale, extendedHeightMm]
+  );
 
-	const nodeOverlapsPage = useCallback((node, pageIndex) => {
-		const top = node.frame.y;
-		const bottom = node.frame.y + node.frame.h;
-		const pageTop = pageIndex * A4.heightMm;
-		const pageBottom = pageTop + A4.heightMm;
-		return bottom > pageTop && top < pageBottom;
-	}, []);
+  const nodeOverlapsPage = useCallback((node, pageIndex) => {
+    const top = node.frame.y;
+    const bottom = node.frame.y + node.frame.h;
+    const pageTop = pageIndex * A4.heightMm;
+    const pageBottom = pageTop + A4.heightMm;
+    return bottom > pageTop && top < pageBottom;
+  }, []);
 
-	const mmPageStyle = (hMm) => ({
-		width: `${A4.widthMm}mm`,
-		height: `${hMm}mm`,
-		transform: `scale(${scale})`,
-		transformOrigin: 'top left',
-	});
-	const mmRound = (v) => Math.round(v * 10) / 10;
+  const mmPageStyle = (hMm) => ({
+    width: `${A4.widthMm}mm`,
+    height: `${hMm}mm`,
+    transform: `scale(${scale})`,
+    transformOrigin: 'top left',
+  });
+  const mmRound = (v) => Math.round(v * 10) / 10;
 
-	// --- DRAG HANDLERS ---
-	const onMouseMoveDrag = useCallback(
-		(e) => {
-			const s = dragRef.current;
-			if (!s) return;
+  // --- DRAG HANDLERS ---
+  const onMouseMoveDrag = useCallback(
+    (e) => {
+      const s = dragRef.current;
+      if (!s) return;
 
-			const denom = pxPerMm * scale;
-			const dxMm = (e.clientX - s.mx) / denom;
-			const dyMm = (e.clientY - s.my) / denom;
-			const node = s.nodeRef();
-			if (!node) return;
+      const denom = pxPerMm * scale;
+      const dxMm = (e.clientX - s.mx) / denom;
+      const dyMm = (e.clientY - s.my) / denom;
+      const node = s.nodeRef();
+      if (!node) return;
 
-			const candidate = {
-				...node,
-				frame: { ...node.frame, x: s.x + dxMm, y: s.y + dyMm },
-			};
-			const { guides, snapOffset } = computeSmartGuides(
-				candidate,
-				s.allNodes(),
-				{
-					pageWidthMm: A4.widthMm,
-					pageHeightMm: pageHeightForGuidesMm,
-				}
-			);
-			setGuides(guides);
+      const candidate = {
+        ...node,
+        frame: { ...node.frame, x: s.x + dxMm, y: s.y + dyMm },
+      };
+      const { guides, snapOffset } = computeSmartGuides(
+        candidate,
+        s.allNodes(),
+        {
+          pageWidthMm: A4.widthMm,
+          pageHeightMm: pageHeightForGuidesMm,
+        }
+      );
+      setGuides(guides);
 
-			const nx = mmRound(candidate.frame.x + (snapOffset.x || 0));
-			const ny = mmRound(candidate.frame.y + (snapOffset.y || 0));
-			dragTempRef.current = { x: nx, y: ny };
-			setDragPreview({ [s.id]: { x: nx, y: ny } });
-		},
-		[pxPerMm, scale, pageHeightForGuidesMm]
-	);
+      const nx = mmRound(candidate.frame.x + (snapOffset.x || 0));
+      const ny = mmRound(candidate.frame.y + (snapOffset.y || 0));
+      dragTempRef.current = { x: nx, y: ny };
+      setDragPreview({ [s.id]: { x: nx, y: ny } });
+    },
+    [pxPerMm, scale, pageHeightForGuidesMm]
+  );
 
-	const onMouseUpDrag = useCallback(() => {
-		const s = dragRef.current;
-		if (s && dragTempRef.current) {
-			const node = s.nodeRef();
-			if (node) {
-				updateNode(s.id, {
-					frame: {
-						...node.frame,
-						x: dragTempRef.current.x ?? node.frame.x,
-						y: dragTempRef.current.y ?? node.frame.y,
-					},
-				});
-			}
-		}
-		dragRef.current = null;
-		dragTempRef.current = {};
-		setDragPreview({});
-		setGuides([]);
-		window.removeEventListener('mousemove', onMouseMoveDrag);
-		setLayoutFrozen(false);
-	}, [onMouseMoveDrag, updateNode]);
+  const onMouseUpDrag = useCallback(() => {
+    const s = dragRef.current;
+    if (s && dragTempRef.current) {
+      const node = s.nodeRef();
+      if (node) {
+        updateNode(s.id, {
+          frame: {
+            ...node.frame,
+            x: dragTempRef.current.x ?? node.frame.x,
+            y: dragTempRef.current.y ?? node.frame.y,
+          },
+        });
+      }
+    }
+    dragRef.current = null;
+    dragTempRef.current = {};
+    setDragPreview({});
+    setGuides([]);
+    window.removeEventListener('mousemove', onMouseMoveDrag);
+    setLayoutFrozen(false);
+  }, [onMouseMoveDrag, updateNode]);
 
-	const onMouseDownNode = useCallback(
-		(e, node) => {
-			e.stopPropagation();
-			if (node.lock) return;
+  const onMouseDownNode = useCallback(
+    (e, node) => {
+      e.stopPropagation();
+      if (node.lock) return;
 
-			setSelectedId(node.id);
-			setLayoutFrozen(true);
-			setFrozen({
-				contentMaxY: liveContentMaxY,
-				overflowPeekSnapshot: overflowPeek,
-			});
+      setSelectedId(node.id);
+      setLayoutFrozen(true);
+      setFrozen({
+        contentMaxY: liveContentMaxY,
+        overflowPeekSnapshot: overflowPeek,
+      });
 
-			dragRef.current = {
-				id: node.id,
-				mx: e.clientX,
-				my: e.clientY,
-				x: node.frame.x,
-				y: node.frame.y,
-				nodeRef: () => doc.nodes.find((n) => n.id === node.id),
-				allNodes: () => doc.nodes,
-			};
+      dragRef.current = {
+        id: node.id,
+        mx: e.clientX,
+        my: e.clientY,
+        x: node.frame.x,
+        y: node.frame.y,
+        nodeRef: () => doc.nodes.find((n) => n.id === node.id),
+        allNodes: () => doc.nodes,
+      };
 
-			dragTempRef.current = { x: node.frame.x, y: node.frame.y };
-			setDragPreview({ [node.id]: { x: node.frame.x, y: node.frame.y } });
+      dragTempRef.current = { x: node.frame.x, y: node.frame.y };
+      setDragPreview({ [node.id]: { x: node.frame.x, y: node.frame.y } });
 
-			window.addEventListener('mousemove', onMouseMoveDrag);
-			window.addEventListener('mouseup', onMouseUpDrag, { once: true });
-		},
-		[
-			setSelectedId,
-			liveContentMaxY,
-			overflowPeek,
-			onMouseMoveDrag,
-			onMouseUpDrag,
-			doc.nodes,
-		]
-	);
+      window.addEventListener('mousemove', onMouseMoveDrag);
+      window.addEventListener('mouseup', onMouseUpDrag, { once: true });
+    },
+    [
+      setSelectedId,
+      liveContentMaxY,
+      overflowPeek,
+      onMouseMoveDrag,
+      onMouseUpDrag,
+      doc.nodes,
+    ]
+  );
 
-	// --- RESIZE HANDLERS ---
-	const onMouseMoveResize = useCallback(
-		(e) => {
-			const r = resizeRef.current;
-			if (!r) return;
-			const denom = pxPerMm * scale;
-			const dxMm = (e.clientX - r.mx) / denom;
-			const dyMm = (e.clientY - r.my) / denom;
-			let { x, y, w, h } = r.frame;
+  // --- RESIZE HANDLERS ---
+  const onMouseMoveResize = useCallback(
+    (e) => {
+      const r = resizeRef.current;
+      if (!r) return;
+      const denom = pxPerMm * scale;
+      const dxMm = (e.clientX - r.mx) / denom;
+      const dyMm = (e.clientY - r.my) / denom;
+      let { x, y, w, h } = r.frame;
 
-			switch (r.dir) {
-				case 'e':
-					w = Math.max(5, r.frame.w + dxMm);
-					break;
-				case 's':
-					h = Math.max(5, r.frame.h + dyMm);
-					break;
-				case 'se':
-					w = Math.max(5, r.frame.w + dxMm);
-					h = Math.max(5, r.frame.h + dyMm);
-					break;
-				case 'w':
-					x = r.frame.x + dxMm;
-					w = Math.max(5, r.frame.w - dxMm);
-					break;
-				case 'n':
-					y = r.frame.y + dyMm;
-					h = Math.max(5, r.frame.h - dyMm);
-					break;
-				case 'nw':
-					x = r.frame.x + dxMm;
-					y = r.frame.y + dyMm;
-					w = Math.max(5, r.frame.w - dxMm);
-					h = Math.max(5, r.frame.h - dyMm);
-					break;
-				case 'ne':
-					y = r.frame.y + dyMm;
-					w = Math.max(5, r.frame.w + dxMm);
-					h = Math.max(5, r.frame.h - dyMm);
-					break;
-				case 'sw':
-					x = r.frame.x + dxMm;
-					w = Math.max(5, r.frame.w - dxMm);
-					h = Math.max(5, r.frame.h + dyMm);
-					break;
-				default:
-					break;
-			}
+      switch (r.dir) {
+        case 'e':
+          w = Math.max(5, r.frame.w + dxMm);
+          break;
+        case 's':
+          h = Math.max(5, r.frame.h + dyMm);
+          break;
+        case 'se':
+          w = Math.max(5, r.frame.w + dxMm);
+          h = Math.max(5, r.frame.h + dyMm);
+          break;
+        case 'w':
+          x = r.frame.x + dxMm;
+          w = Math.max(5, r.frame.w - dxMm);
+          break;
+        case 'n':
+          y = r.frame.y + dyMm;
+          h = Math.max(5, r.frame.h - dyMm);
+          break;
+        case 'nw':
+          x = r.frame.x + dxMm;
+          y = r.frame.y + dyMm;
+          w = Math.max(5, r.frame.w - dxMm);
+          h = Math.max(5, r.frame.h - dyMm);
+          break;
+        case 'ne':
+          y = r.frame.y + dyMm;
+          w = Math.max(5, r.frame.w + dxMm);
+          h = Math.max(5, r.frame.h - dyMm);
+          break;
+        case 'sw':
+          x = r.frame.x + dxMm;
+          w = Math.max(5, r.frame.w - dxMm);
+          h = Math.max(5, r.frame.h + dyMm);
+          break;
+        default:
+          break;
+      }
 
-			updateNode(r.id, {
-				frame: {
-					x: mmRound(x),
-					y: mmRound(y),
-					w: mmRound(w),
-					h: mmRound(h),
-					rotation: r.frame.rotation || 0,
-				},
-			});
-		},
-		[pxPerMm, scale, updateNode]
-	);
+      updateNode(r.id, {
+        frame: {
+          x: mmRound(x),
+          y: mmRound(y),
+          w: mmRound(w),
+          h: mmRound(h),
+          rotation: r.frame.rotation || 0,
+        },
+      });
+    },
+    [pxPerMm, scale, updateNode]
+  );
 
-	const onMouseUpResize = useCallback(() => {
-		resizeRef.current = null;
-		window.removeEventListener('mousemove', onMouseMoveResize);
-		setLayoutFrozen(false);
-	}, [onMouseMoveResize]);
+  const onMouseUpResize = useCallback(() => {
+    resizeRef.current = null;
+    window.removeEventListener('mousemove', onMouseMoveResize);
+    setLayoutFrozen(false);
+  }, [onMouseMoveResize]);
 
-	const startResize = useCallback(
-		(e, dir, node) => {
-			e.stopPropagation();
-			setLayoutFrozen(true);
-			setFrozen({
-				contentMaxY: liveContentMaxY,
-				overflowPeekSnapshot: overflowPeek,
-			});
-			resizeRef.current = {
-				id: node.id,
-				dir,
-				mx: e.clientX,
-				my: e.clientY,
-				frame: { ...node.frame },
-			};
-			window.addEventListener('mousemove', onMouseMoveResize);
-			window.addEventListener('mouseup', onMouseUpResize, { once: true });
-		},
-		[liveContentMaxY, overflowPeek, onMouseMoveResize, onMouseUpResize]
-	);
+  const startResize = useCallback(
+    (e, dir, node) => {
+      e.stopPropagation();
+      setLayoutFrozen(true);
+      setFrozen({
+        contentMaxY: liveContentMaxY,
+        overflowPeekSnapshot: overflowPeek,
+      });
+      resizeRef.current = {
+        id: node.id,
+        dir,
+        mx: e.clientX,
+        my: e.clientY,
+        frame: { ...node.frame },
+      };
+      window.addEventListener('mousemove', onMouseMoveResize);
+      window.addEventListener('mouseup', onMouseUpResize, { once: true });
+    },
+    [liveContentMaxY, overflowPeek, onMouseMoveResize, onMouseUpResize]
+  );
 
-	const onChangeText = useCallback(
-		(id, text) => updateNode(id, { text }),
-		[updateNode]
-	);
-	const selectedNode = Array.isArray(doc?.nodes)
-		? doc.nodes.find((n) => n.id === selectedId)
-		: null;
-	const overflowMm = Math.max(0, contentMaxY - A4.heightMm);
+  const onChangeText = useCallback(
+    (id, text) => updateNode(id, { text }),
+    [updateNode]
+  );
+  const selectedNode = Array.isArray(doc?.nodes)
+    ? doc.nodes.find((n) => n.id === selectedId)
+    : null;
+  const overflowMm = Math.max(0, contentMaxY - A4.heightMm);
 
-	useEffect(() => {
-		return () => {
-			window.removeEventListener('mousemove', onMouseMoveDrag);
-			window.removeEventListener('mousemove', onMouseMoveResize);
-		};
-	}, [onMouseMoveDrag, onMouseMoveResize]);
+  useEffect(() => {
+    return () => {
+      window.removeEventListener('mousemove', onMouseMoveDrag);
+      window.removeEventListener('mousemove', onMouseMoveResize);
+    };
+  }, [onMouseMoveDrag, onMouseMoveResize]);
 
-	return (
-		<div
-			className='w-full h-full flex justify-center items-start bg-slate-50 overflow-auto'
-			ref={wrapperRef}
-			onMouseDown={() => setSelectedId(null)}
-		>
-			<div className='flex flex-col items-center'>
-				{!effectiveOverflowPeek &&
-					pages.map((pageIndex) => {
-						const pageOffsetMm = pageIndex * A4.heightMm;
-						return (
-							<div
-								key={`wrap-${pageIndex}`}
-								className='relative'
-								style={{ width: pageWrapperPx.w, height: pageWrapperPx.h }}
-							>
-								<div
-									ref={pageIndex === 0 ? pageRef : null}
-									className='relative bg-white rounded-xl shadow-2xl ring-1 ring-black/5 overflow-hidden'
-									style={mmPageStyle(A4.heightMm)}
-								>
-									{showGrid && <GridOverlay show />}
-									<div className='absolute inset-0 overflow-hidden'>
-										<div
-											className='absolute left-0 top-0'
-											style={{ transform: `translateY(-${pageOffsetMm}mm)` }}
-										>
-											{Array.isArray(doc?.nodes) &&
-												doc.nodes
-													.filter(
-														(n) =>
-															n.visible !== false &&
-															nodeOverlapsPage(n, pageIndex)
-													)
-													.map((node) => {
-														const displayFrame =
-															dragPreview[node.id] || node.frame;
-														return (
-															<NodeView
-																key={`${node.id}@p${pageIndex}`}
-																node={{ ...node, frame: displayFrame }}
-																pxPerMm={pxPerMm}
-																selected={selectedId === node.id}
-																onMouseDownNode={onMouseDownNode}
-																onChangeText={onChangeText}
-															/>
-														);
-													})}
+  return (
+    <div
+      className="w-full h-full flex justify-center items-start bg-slate-50 overflow-auto"
+      ref={wrapperRef}
+      onMouseDown={() => setSelectedId(null)}
+    >
+      <div className="flex flex-col items-center">
+        {!effectiveOverflowPeek &&
+          pages.map((pageIndex) => {
+            const pageOffsetMm = pageIndex * A4.heightMm;
+            return (
+              <div
+                key={`wrap-${pageIndex}`}
+                className="relative"
+                style={{ width: pageWrapperPx.w, height: pageWrapperPx.h }}
+              >
+                <div
+                  ref={pageIndex === 0 ? pageRef : null}
+                  className="relative bg-white rounded-xl shadow-2xl ring-1 ring-black/5 overflow-hidden"
+                  style={mmPageStyle(A4.heightMm)}
+                >
+                  {showGrid && <GridOverlay show />}
+                  <div className="absolute inset-0 overflow-hidden">
+                    <div
+                      className="absolute left-0 top-0"
+                      style={{ transform: `translateY(-${pageOffsetMm}mm)` }}
+                    >
+                      {Array.isArray(doc?.nodes) &&
+                        doc.nodes
+                          .filter(
+                            (n) =>
+                              n.visible !== false &&
+                              nodeOverlapsPage(n, pageIndex)
+                          )
+                          .map((node) => {
+                            const displayFrame =
+                              dragPreview[node.id] || node.frame;
+                            return (
+                              <NodeView
+                                key={`${node.id}@p${pageIndex}`}
+                                node={{ ...node, frame: displayFrame }}
+                                pxPerMm={pxPerMm}
+                                selected={selectedId === node.id}
+                                onMouseDownNode={onMouseDownNode}
+                                onChangeText={onChangeText}
+                              />
+                            );
+                          })}
 
-											<SmartGuidesSVG
-												guides={guides}
-												pxPerMm={pxPerMm}
-												pageWidthMm={A4.widthMm}
-												pageHeightMm={A4.heightMm}
-											/>
+                      <SmartGuidesSVG
+                        guides={guides}
+                        pxPerMm={pxPerMm}
+                        pageWidthMm={A4.widthMm}
+                        pageHeightMm={A4.heightMm}
+                      />
 
-											{selectedNode &&
-												!selectedNode.lock &&
-												nodeOverlapsPage(selectedNode, pageIndex) && (
-													<Handles
-														framePx={{
-															x:
-																(dragPreview[selectedNode.id]?.x ??
-																	selectedNode.frame.x) * pxPerMm,
-															y:
-																(dragPreview[selectedNode.id]?.y ??
-																	selectedNode.frame.y) * pxPerMm,
-															w: selectedNode.frame.w * pxPerMm,
-															h: selectedNode.frame.h * pxPerMm,
-														}}
-														rotation={selectedNode.frame.rotation || 0}
-														onStartResize={(e, dir) =>
-															startResize(e, dir, selectedNode)
-														}
-													/>
-												)}
-										</div>
-									</div>
-								</div>
-							</div>
-						);
-					})}
+                      {selectedNode &&
+                        !selectedNode.lock &&
+                        nodeOverlapsPage(selectedNode, pageIndex) && (
+                          <Handles
+                            framePx={{
+                              x:
+                                (dragPreview[selectedNode.id]?.x ??
+                                  selectedNode.frame.x) * pxPerMm,
+                              y:
+                                (dragPreview[selectedNode.id]?.y ??
+                                  selectedNode.frame.y) * pxPerMm,
+                              w: selectedNode.frame.w * pxPerMm,
+                              h: selectedNode.frame.h * pxPerMm,
+                            }}
+                            rotation={selectedNode.frame.rotation || 0}
+                            onStartResize={(e, dir) =>
+                              startResize(e, dir, selectedNode)
+                            }
+                          />
+                        )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
 
-				{effectiveOverflowPeek && (
-					<div
-						className='relative'
-						style={{ width: peekWrapperPx.w, height: peekWrapperPx.h }}
-					>
-						<div
-							ref={pageRef}
-							id='cv-page'
-							className='relative bg-white rounded-xl shadow-2xl ring-1 ring-black/5'
-							style={mmPageStyle(extendedHeightMm)}
-						>
-							{showGrid && <GridOverlay show />}
+        {effectiveOverflowPeek && (
+          <div
+            className="relative"
+            style={{ width: peekWrapperPx.w, height: peekWrapperPx.h }}
+          >
+            <div
+              ref={pageRef}
+              id="cv-page"
+              className="relative bg-white rounded-xl shadow-2xl ring-1 ring-black/5"
+              style={mmPageStyle(extendedHeightMm)}
+            >
+              {showGrid && <GridOverlay show />}
 
-							<div
-								className='absolute left-0 right-0'
-								style={{
-									top: `${A4.heightMm}mm`,
-									height: 0,
-									borderTop: '1px dashed rgba(239, 68, 68, 0.9)',
-								}}
-							/>
-							{extendedHeightMm > A4.heightMm && (
-								<div
-									aria-hidden
-									className='absolute inset-x-0 pointer-events-none'
-									style={{
-										top: `${A4.heightMm}mm`,
-										height: `${extendedHeightMm - A4.heightMm}mm`,
-										background:
-											'repeating-linear-gradient(0deg, rgba(239,68,68,.06), rgba(239,68,68,.06) 6mm, rgba(239,68,68,0) 6mm, rgba(239,68,68,0) 12mm)',
-									}}
-								/>
-							)}
+              <div
+                className="absolute left-0 right-0"
+                style={{
+                  top: `${A4.heightMm}mm`,
+                  height: 0,
+                  borderTop: '1px dashed rgba(239, 68, 68, 0.9)',
+                }}
+              />
+              {extendedHeightMm > A4.heightMm && (
+                <div
+                  aria-hidden
+                  className="absolute inset-x-0 pointer-events-none"
+                  style={{
+                    top: `${A4.heightMm}mm`,
+                    height: `${extendedHeightMm - A4.heightMm}mm`,
+                    background:
+                      'repeating-linear-gradient(0deg, rgba(239,68,68,.06), rgba(239,68,68,.06) 6mm, rgba(239,68,68,0) 6mm, rgba(239,68,68,0) 12mm)',
+                  }}
+                />
+              )}
 
-							{doc.nodes
-								.filter((n) => n.visible !== false)
-								.map((node) => (
-									<NodeView
-										key={node.id}
-										node={node}
-										pxPerMm={pxPerMm}
-										selected={selectedId === node.id}
-										onMouseDownNode={onMouseDownNode}
-										onChangeText={onChangeText}
-									/>
-								))}
+              {doc.nodes
+                .filter((n) => n.visible !== false)
+                .map((node) => (
+                  <NodeView
+                    key={node.id}
+                    node={node}
+                    pxPerMm={pxPerMm}
+                    selected={selectedId === node.id}
+                    onMouseDownNode={onMouseDownNode}
+                    onChangeText={onChangeText}
+                  />
+                ))}
 
-							<SmartGuidesSVG
-								guides={guides}
-								pxPerMm={pxPerMm}
-								pageWidthMm={A4.widthMm}
-								pageHeightMm={extendedHeightMm}
-							/>
+              <SmartGuidesSVG
+                guides={guides}
+                pxPerMm={pxPerMm}
+                pageWidthMm={A4.widthMm}
+                pageHeightMm={extendedHeightMm}
+              />
 
-							{selectedNode && !selectedNode.lock && (
-								<Handles
-									framePx={{
-										x:
-											(dragPreview[selectedNode.id]?.x ??
-												selectedNode.frame.x) * pxPerMm,
-										y:
-											(dragPreview[selectedNode.id]?.y ??
-												selectedNode.frame.y) * pxPerMm,
-										w: selectedNode.frame.w * pxPerMm,
-										h: selectedNode.frame.h * pxPerMm,
-									}}
-									rotation={selectedNode.frame.rotation || 0}
-									onStartResize={(e, dir) => startResize(e, dir, selectedNode)}
-								/>
-							)}
+              {selectedNode && !selectedNode.lock && (
+                <Handles
+                  framePx={{
+                    x:
+                      (dragPreview[selectedNode.id]?.x ??
+                        selectedNode.frame.x) * pxPerMm,
+                    y:
+                      (dragPreview[selectedNode.id]?.y ??
+                        selectedNode.frame.y) * pxPerMm,
+                    w: selectedNode.frame.w * pxPerMm,
+                    h: selectedNode.frame.h * pxPerMm,
+                  }}
+                  rotation={selectedNode.frame.rotation || 0}
+                  onStartResize={(e, dir) => startResize(e, dir, selectedNode)}
+                />
+              )}
 
-							{effectiveOverflowPeek && overflowMm > 0 && (
-								<div
-									className='absolute right-2'
-									style={{ top: `${A4.heightMm - 8}mm` }}
-								>
-									<span className='px-2 py-1 rounded bg-white/90 border border-red-200 text-xs text-red-700 font-semibold shadow-sm'>
-										+{overflowMm.toFixed(1)} mm
-									</span>
-								</div>
-							)}
-						</div>
-					</div>
-				)}
-			</div>
-		</div>
-	);
+              {effectiveOverflowPeek && overflowMm > 0 && (
+                <div
+                  className="absolute right-2"
+                  style={{ top: `${A4.heightMm - 8}mm` }}
+                >
+                  <span className="px-2 py-1 rounded bg-white/90 border border-red-200 text-xs text-red-700 font-semibold shadow-sm">
+                    +{overflowMm.toFixed(1)} mm
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }

@@ -143,7 +143,7 @@ export class GrayAndWhiteResume {
     GAP: 3.2, // mniejszy odstęp
     TEXT_W: 68, // węższe pole tekstowe
     ROW_SPACING: 2.2, // ciaśniej w pionie
-    UNDERLINE_H: 0.7,
+    UNDERLINE_H: 0.35,
     HEADER_H: 45,
   };
 
@@ -180,7 +180,7 @@ export class GrayAndWhiteResume {
     const H = GrayAndWhiteResume.CONTACT.HEADER_H;
     const { W } = GrayAndWhiteResume.PAGE;
     this.#rect(0, 0, W, H, GrayAndWhiteResume.COLORS.bg);
-    this.#rect(0, H - 0.6, W, 1, GrayAndWhiteResume.COLORS.line);
+    this.#rect(0, H - 0.3, W, 0.5, GrayAndWhiteResume.COLORS.line);
   }
 
   #header() {
@@ -373,6 +373,7 @@ export class GrayAndWhiteResume {
           h: iconInner,
         },
         src: svgDataUrl,
+        style: { cornerRadius: 0 },
       })
     );
 
@@ -511,10 +512,11 @@ export class GrayAndWhiteResume {
     const topY = this.y;
     const bottomY = H - MARGIN;
 
+    const sepThickness = 0.2;
     this.#rect(
       leftX + leftW + (GAP - SEPARATOR_W) / 2,
       topY,
-      SEPARATOR_W,
+      sepThickness,
       bottomY - topY,
       GrayAndWhiteResume.COLORS.line
     );
@@ -794,7 +796,7 @@ export class GrayAndWhiteResume {
     return h + GrayAndWhiteResume.SPACING.md;
   }
 
-  #line(x, y, w, h = 0.6) {
+  #line(x, y, w, h = 0.3) {
     this.nodes.push(
       createShapeNode({
         frame: { x, y, w, h },

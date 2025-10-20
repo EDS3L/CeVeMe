@@ -21,7 +21,7 @@ function LimitCard({ title, activeCount, totalCount, endpointName }) {
 
       <div className="flex justify-between items-end mb-2">
         <p className="text-3xl font-bold text-gray-900">
-          {activeCount}/{totalCount}{' '}
+          {activeCount} /{totalCount}{' '}
           <span className="text-xl text-gray-500">{endpointName}</span>
         </p>
       </div>

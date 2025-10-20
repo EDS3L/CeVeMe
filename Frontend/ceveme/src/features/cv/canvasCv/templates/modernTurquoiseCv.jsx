@@ -134,7 +134,7 @@ export function buildModernTurquoiseCV(api = {}) {
       fontFamily: 'Montserrat, sans-serif',
       fontWeight: 400,
       fontSize: 8.5,
-      color: COLORS.primary,
+      color: COLORS.accent, // fix: COLORS.primary → accent
       lineHeight: 1.12,
     },
 
@@ -240,6 +240,16 @@ export function buildModernTurquoiseCV(api = {}) {
       color: COLORS.textDark,
       lineHeight: 1.2,
     },
+
+    // RODO (stopka)
+    gdpr: {
+      fontFamily: 'Open Sans, sans-serif',
+      fontSize: 7.2,
+      fontWeight: 400,
+      color: COLORS.textMuted,
+      lineHeight: 1.28,
+      textAlign: 'justify',
+    },
   };
 
   // --- Helpers ---
@@ -284,9 +294,9 @@ export function buildModernTurquoiseCV(api = {}) {
   const CHIP = { D: 6.0, GAP: 2.6, CHIP_GAP: 5.0 };
 
   const ICON_SCALE = {
-    linkedin: 0.58,
-    phone: 0.6,
-    mail: 0.62,
+    linkedin: 0.62,
+    phone: 0.5,
+    mail: 0.58,
     pin: 0.6,
     globe: 0.62,
     link: 0.62,
@@ -297,6 +307,7 @@ export function buildModernTurquoiseCV(api = {}) {
     instagram: 0.62,
   };
   const fitInner = (key) => Math.max(3.2, CHIP.D * (ICON_SCALE[key] ?? 0.62));
+  // const fitInner = (key) => CHIP.D * (ICON_SCALE[key] ?? 0.62);
 
   const contactChip = (cx, centerY, iconKey, label, labelW, link) => {
     if (!label) return { w: 0, h: 0 };
@@ -319,7 +330,7 @@ export function buildModernTurquoiseCV(api = {}) {
       })
     );
 
-    // ikona SVG
+    // ikona SVG (z lekkim przesunięciem w dół)
     const inner = fitInner(iconKey);
     nodes.push(
       createImageNode({
@@ -330,6 +341,7 @@ export function buildModernTurquoiseCV(api = {}) {
           h: inner,
         },
         src: SVG(iconKey),
+        style: { cornerRadius: 0 },
       })
     );
 
@@ -458,8 +470,8 @@ export function buildModernTurquoiseCV(api = {}) {
     first = parts.join(' ') || last;
   }
 
-  // Foto (opcjonalnie)
-  imageCircle(pd.images, 15.3, 14.8, 42.84);
+  // Foto (opcjonalnie) — PODNIESIONE WYŻEJ
+  imageCircle(pd.images, 15.3, 2, 42.84); // ⬅️ było ~14.8, jest 9.8
 
   // Imię i nazwisko + tytuł
   const nameX = LEFT_COL.x + 57;
@@ -494,7 +506,7 @@ export function buildModernTurquoiseCV(api = {}) {
 
     const fixed =
       chips.length * (CHIP.D + CHIP.GAP) + (chips.length - 1) * CHIP.CHIP_GAP;
-    const minLabel = 22;
+    const minLabel = 25;
     let labelW = Math.max(minLabel, (areaW - fixed) / chips.length);
 
     let total =
@@ -570,7 +582,9 @@ export function buildModernTurquoiseCV(api = {}) {
         );
 
       const ach = Array.isArray(exp?.achievements)
-        ? exp.achievements.map((a) => a?.description).filter(Boolean)
+        ? exp.achievements
+            .map((a) => a?.description || a?.title)
+            .filter(Boolean)
         : [];
       if (ach.length)
         ly += text(
@@ -597,7 +611,7 @@ export function buildModernTurquoiseCV(api = {}) {
         ly += text(LEFT_COL.x, ly, LEFT_COL.w, p.name, FONTS.lato10b);
 
       const techLine = (p?.technologies || [])
-        .map((t) => t?.name)
+        .map((t) => (typeof t === 'string' ? t : t?.name))
         .filter(Boolean)
         .join(' • ');
       if (techLine)
@@ -614,7 +628,7 @@ export function buildModernTurquoiseCV(api = {}) {
       }
 
       const ach = (p?.achievements || [])
-        .map((a) => a?.description)
+        .map((a) => a?.description || a?.title)
         .filter(Boolean);
       if (ach.length)
         ly += text(
@@ -642,16 +656,16 @@ export function buildModernTurquoiseCV(api = {}) {
     let rmax = ly;
     for (let i = 0; i < Math.min(2, refs.length); i++) {
       const r = refs[i];
-      let ry = ly + 2;
-      ry += text(rx, ry, colW, r?.name || '', FONTS.lato12b);
+      let ry2 = ly + 2;
+      ry2 += text(rx, ry2, colW, r?.name || '', FONTS.lato12b);
       const role =
         [r?.company, r?.position].filter(Boolean).join(' / ') || r?.role || '';
-      ry += text(rx, ry, colW, role, FONTS.lato10b) + 1.0;
+      ry2 += text(rx, ry2, colW, role, FONTS.lato10b) + 1.0;
       if (r?.phone)
-        ry += text(rx, ry, colW, `Telefon: ${r.phone}`, FONTS.poppins8b);
+        ry2 += text(rx, ry2, colW, `Telefon: ${r.phone}`, FONTS.poppins8b);
       if (r?.email)
-        ry += text(rx, ry, colW, `Email: ${r.email}`, FONTS.poppins8b);
-      rmax = Math.max(rmax, ry);
+        ry2 += text(rx, ry2, colW, `Email: ${r.email}`, FONTS.poppins8b);
+      rmax = Math.max(rmax, ry2);
       rx += colW + gap;
     }
     ly = rmax + SECTION_GAP;
@@ -687,16 +701,24 @@ export function buildModernTurquoiseCV(api = {}) {
     ry += SECTION_GAP;
   }
 
-  // UMIEJĘTNOŚCI
+  // UMIEJĘTNOŚCI (po PRAWEJ) + lekkie fallbacki, gdy brak grup w API
   const groups = Array.isArray(api?.skills) ? api.skills : [];
   const listBy = (name) =>
     groups
       .find((g) => (g?.category || '').toLowerCase() === name.toLowerCase())
-      ?.items?.map((i) => i?.name || i)
+      ?.items?.map((i) => (typeof i === 'string' ? i : i?.name))
       .filter(Boolean) || [];
-  const tech = listBy('Technical'),
+  // klasyczne grupy
+  let tech = listBy('Technical'),
     tools = listBy('Tools'),
     soft = listBy('Soft');
+  // fallback: wyciągnij technologie z portfolio, jeśli brak
+  if (!tech.length && projects.length) {
+    tech = projects
+      .flatMap((p) => p?.technologies || [])
+      .map((t) => (typeof t === 'string' ? t : t?.name))
+      .filter(Boolean);
+  }
 
   if (tech.length || tools.length || soft.length) {
     ry +=
@@ -758,6 +780,28 @@ export function buildModernTurquoiseCV(api = {}) {
         ry += text(RIGHT_COL.x + 3, ry, RIGHT_COL.w - 3, meta, FONTS.poppins8);
       ry += 1.0;
     }
+  }
+
+  // --- RODO na dole arkusza ---
+  const DEFAULT_GDPR_PL =
+    'Wyrażam zgodę na przetwarzanie moich danych osobowych zawartych w przesłanych dokumentach rekrutacyjnych przez administratora danych w celu prowadzenia rekrutacji. ' +
+    'Jeżeli wyraziłem/wyraziłam dodatkową zgodę na przetwarzanie danych w przyszłych rekrutacjach, moje dane będą przetwarzane również w tym celu. ' +
+    'Zgoda może zostać cofnięta w dowolnym momencie.';
+  const gdprText =
+    (api?.gdprClause || api?.personalData?.gdprClause || api?.gdpr || '')
+      .toString()
+      .trim() || DEFAULT_GDPR_PL;
+
+  if (gdprText) {
+    const padX = 8;
+    const padBottom = 6;
+    const w = CONTENT.w - 2 * padX;
+    const h = measureH(gdprText, w, FONTS.gdpr);
+    const y = CONTENT.y + CONTENT.h - padBottom - h;
+
+    // delikatny separator nad klauzulą
+    rect(CONTENT.x + padX, y - 2.0, w, 0.45, '#E6E9F0');
+    text(CONTENT.x + padX, y, w, gdprText, FONTS.gdpr);
   }
 
   doc.nodes = nodes;

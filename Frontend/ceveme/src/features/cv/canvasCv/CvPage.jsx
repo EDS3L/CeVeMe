@@ -32,6 +32,7 @@ import { buildModernTurquoiseCV } from './templates/modernTurquoiseCv';
 import { buildWhiteElegantMinimalistCV } from './templates/WhiteElegantMinimalistCV';
 import { buildPixelPerfectTealSidebarCV } from './templates/TealSidebarCV';
 import { buildBlueCreativeCV } from './templates/BlueCreativeCV';
+import { buildPixelPerfectAttachmentCV } from './templates/professionalResume';
 
 function isOurDocSchema(x) {
   return x && typeof x === 'object' && x.page && Array.isArray(x.nodes);
@@ -218,6 +219,25 @@ export default function App() {
         ],
         style: 'Nowoczesny, biznesowy, wyraźny kontrast, dwukolumnowy',
       },
+      {
+        key: 'pixel-perfect-attachment',
+        title: 'Szaro-Biały z Lewym Panelem',
+        func: buildPixelPerfectAttachmentCV,
+        description:
+          'Dwukolumnowy, stonowany szablon inspirowany załącznikiem: po prawej szeroka kolumna z dużym nazwiskiem (Lora) i treścią, po lewej zaokrąglony panel w szarości z „kapslami” sekcji, białymi ikonami w kółkach i klikalnymi wierszami kontaktu. RODO osadzone na dole prawej kolumny.',
+        sections: [
+          'Nagłówek',
+          'Podsumowanie',
+          'Doświadczenie',
+          'Projekty',
+          'Kontakt (lewy panel)',
+          'Umiejętności (lewy panel)',
+          'Wykształcenie (lewy panel)',
+          'Języki (lewy panel)',
+          'RODO',
+        ],
+        style: 'Elegancki, czytelny, pixel-perfect, stonowany',
+      },
     ],
     []
   );
@@ -335,9 +355,9 @@ export default function App() {
             onJumpToMm={jumpToMm}
           />
 
-          <div className="h-px w-full bg-black/10 my-2" />
+          {/* <div className="h-px w-full bg-black/10 my-2" /> */}
 
-          <MiniMap doc={doc} onJumpToMm={jumpToMm} />
+          {/* <MiniMap doc={doc} onJumpToMm={jumpToMm} /> */}
 
           <div className="h-px w-full bg-black/10 my-2" />
 

@@ -10,6 +10,19 @@ function Limits({ data }) {
   const userService = new UserService();
   const role = userService.getRoleFromToken(token);
   console.log(role);
+
+  if (data.cvDailyLimit === -1) {
+    data.cvDailyLimit = ' Nielimitowany';
+  }
+  if (data.refinementDailyLimit === -1) {
+    data.refinementDailyLimit = ' Nielimitowany';
+  }
+  if (data.cvMonthlyLimit === -1) {
+    data.cvMonthlyLimit = ' Nielimitowany';
+  }
+  if (data.refinementMonthlyLimit === -1) {
+    data.refinementMonthlyLimit = ' Nielimitowany';
+  }
   return (
     <div className="border-b border-gray-300 p-3">
       <div className="font-semibold items-center grid gap-3 p-2 ">
@@ -56,7 +69,7 @@ function Limits({ data }) {
               totalCount={data.refinementDailyLimit}
             />
             <LimitCard
-              title="Dzienny limit CV"
+              title="Miesięczny limit poprawy tekstu"
               activeCount={data.userRefinementMonthlyLimit}
               totalCount={data.refinementMonthlyLimit}
             />

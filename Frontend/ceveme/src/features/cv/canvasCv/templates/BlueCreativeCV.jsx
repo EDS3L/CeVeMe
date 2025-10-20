@@ -359,6 +359,7 @@ export function buildBlueCreativeCV(api = {}) {
       createImageNode({
         frame: { x: RIGHT_X, y: ry + (h - ICON_D) / 2, w: ICON_D, h: ICON_D },
         src: SVG('phone'),
+        style: { cornerRadius: 0 },
       })
     );
     ry += text(
@@ -438,6 +439,7 @@ export function buildBlueCreativeCV(api = {}) {
       createImageNode({
         frame: { x: RIGHT_X, y: ry + (h - ICON_D) / 2, w: ICON_D, h: ICON_D },
         src: SVG(key),
+        style: { cornerRadius: 0 },
       })
     );
     ry += text(

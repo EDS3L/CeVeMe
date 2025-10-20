@@ -23,13 +23,12 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
 
   /* ============ KOLORY I STYLE ============ */
   const COLORS = {
-    // brak zewnętrznego tła – całość bez otoczki
     sheetBg: '#FFFFFF',
     text: '#333132',
     muted: '#727272',
     divider: '#D9DEE6',
-    link: '#006666', // <<< nowy akcent/link
-    sidebar: '#006666', // <<< nowy kolor paska
+    link: '#006666', // akcent/link
+    sidebar: '#006666', // kolor paska
     sidebarLine: 'rgba(255,255,255,0.45)',
     sidebarText: '#FFFFFF',
     sidebarMuted: 'rgba(255,255,255,0.85)',
@@ -196,9 +195,21 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
       color: COLORS.sidebarMuted,
       lineHeight: 1.1,
     },
+
+    // RODO (stopka)
+    gdpr: {
+      fontFamily: 'Open Sans, Inter, Arial, sans-serif',
+      fontSize: 7.4,
+      fontWeight: 400,
+      color: COLORS.muted,
+      lineHeight: 1.2,
+      textAlign: 'justify',
+    },
   };
 
   const SECTION = { hLine: 0.5, gapTitleToLine: 1.6, gapAfterLine: 4.2 };
+  // zagęszczenie tylko dla lewej kolumny
+  const SECTION_LEFT = { gapTitleToLine: 1.2, gapAfterLine: 2.8 };
 
   /* ============ HELPERY ============ */
   const rect = (x, y, w, h, color) =>
@@ -222,7 +233,6 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
     if (!s.trim()) return 0;
     const h = Math.max(3.4, measureTextHeightMm(s, w, style));
 
-    // normalize style -> tekstowy obiekt, usuń ewentualne rgba w kolorze (konwertuj do hex)
     const textStyle = { ...(style || {}) };
     if (
       typeof textStyle.color === 'string' &&
@@ -236,8 +246,6 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
         textStyle.color = `#${toHex(m[1])}${toHex(m[2])}${toHex(m[3])}`;
       }
     }
-
-    // wymuś brak podkreślenia dla linków (niektóre renderer'y rysują domyślnie niepożądane niebieskie podkreślenie)
     if (opts.link) {
       textStyle.textDecoration = 'none';
       textStyle.textDecorationLine = 'none';
@@ -248,7 +256,6 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
       text: s,
       textStyle,
     });
-
     if (opts.link) node.link = opts.link;
     nodes.push(node);
     return h;
@@ -319,10 +326,7 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
   };
 
   /* ============ TŁA ============ */
-  // białe pole lewej kolumny — tu akurat nie musimy nic rysować,
-  // ale jeśli renderer wymaga tła, odkomentuj:
   rect(LEFT_X, 0, LEFT_W, PAGE_H, COLORS.sheetBg);
-  // prawy pasek do krawędzi strony
   rect(RIGHT_X, 0, RIGHT_W, PAGE_H, COLORS.sidebar);
 
   /* ============ DANE ============ */
@@ -339,59 +343,54 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
             ? { title: a }
             : { title: a?.name, description: a?.description }
         );
+  const pdLinks = Array.isArray(pd?.links) ? pd.links : [];
 
-  /* ============ LEWA KOLUMNA ============ */
+  /* ============ LEWA KOLUMNA (ZCIAŚNIONA) ============ */
+  const LEFT_PAD = 5.0; // węższe wewnętrzne marginesy
+  const Lx = LEFT_X + LEFT_PAD;
+  const Lw = LEFT_W - 2 * LEFT_PAD;
+
+  // „dense” style wyłącznie dla lewej kolumny
+  const DENSE = {
+    summary: { ...STYLES.summary, fontSize: 8.5, lineHeight: 1.35 },
+    role: { ...STYLES.role, fontSize: 9.4, lineHeight: 1.18 },
+    period: { ...STYLES.period, fontSize: 9.1 },
+    companyLink: { ...STYLES.companyLink, fontSize: 9.3 },
+    cityMuted: { ...STYLES.cityMuted, fontSize: 9.1 },
+    bullets: { ...STYLES.bullets, fontSize: 8.3, lineHeight: 1.34 },
+    projName: { ...STYLES.projName, fontSize: 9.4 },
+    projTech: { ...STYLES.projTech, fontSize: 8.0 },
+    linkMuted: { ...STYLES.linkMuted, fontSize: 8.2 },
+  };
+
   let ly = 8.0;
 
   const fullName = String(pd?.name || 'Imię Nazwisko').trim();
   const headline = String(api?.headline || 'Stanowisko').trim();
 
-  ly += tblock(
-    LEFT_X + 6,
-    ly,
-    LEFT_W - 12,
-    fullName.toUpperCase(),
-    STYLES.name
-  );
-  ly += tblock(LEFT_X + 6, ly - 1.2, LEFT_W - 12, headline, STYLES.title) + 3.2;
-
-  // kontakty przeniesione do prawego paska — tutaj nic nie rysujemy
-  // (left column continues)
+  ly += tblock(Lx, ly, Lw, fullName.toUpperCase(), STYLES.name);
+  ly += tblock(Lx, ly - 1.2, Lw, headline, STYLES.title) + 2.4;
 
   // PODSUMOWANIE
-  ly += tblock(LEFT_X + 6, ly, LEFT_W - 12, 'PODSUMOWANIE', STYLES.section);
-  ly += SECTION.gapTitleToLine;
-  hLine(LEFT_X + 6, ly, LEFT_W - 12);
-  ly += SECTION.gapAfterLine;
-  if (api?.summary)
-    ly +=
-      tblock(LEFT_X + 6, ly, LEFT_W - 12, api.summary, STYLES.summary) + 6.0;
+  ly += tblock(Lx, ly, Lw, 'PODSUMOWANIE', STYLES.section);
+  ly += SECTION_LEFT.gapTitleToLine;
+  hLine(Lx, ly, Lw);
+  ly += SECTION_LEFT.gapAfterLine;
+  if (api?.summary) ly += tblock(Lx, ly, Lw, api.summary, DENSE.summary) + 4.0;
 
   // DOŚWIADCZENIE ZAWODOWE
-  ly += tblock(
-    LEFT_X + 6,
-    ly,
-    LEFT_W - 12,
-    'DOŚWIADCZENIE ZAWODOWE',
-    STYLES.section
-  );
-  ly += SECTION.gapTitleToLine;
-  hLine(LEFT_X + 6, ly, LEFT_W - 12);
-  ly += SECTION.gapAfterLine + 1.0;
+  ly += tblock(Lx, ly, Lw, 'DOŚWIADCZENIE ZAWODOWE', STYLES.section);
+  ly += SECTION_LEFT.gapTitleToLine;
+  hLine(Lx, ly, Lw);
+  ly += SECTION_LEFT.gapAfterLine + 0.6;
 
   for (const exp of experiences) {
-    const leftW = (LEFT_W - 12) * 0.62;
-    const rightW = LEFT_W - 12 - leftW;
+    const leftW = Lw * 0.62;
+    const rightW = Lw - leftW;
 
-    const h1 = tblock(LEFT_X + 6, ly, leftW, exp?.title || '', STYLES.role);
-    tblock(
-      LEFT_X + 6 + leftW,
-      ly,
-      rightW,
-      fmtPeriod(exp?.period || ''),
-      STYLES.period
-    );
-    ly += Math.max(h1, 6.8);
+    const h1 = tblock(Lx, ly, leftW, exp?.title || '', DENSE.role);
+    tblock(Lx + leftW, ly, rightW, fmtPeriod(exp?.period || ''), DENSE.period);
+    ly += Math.max(h1, 6.2);
 
     const company = String(exp?.company || '').trim();
     const companyUrl =
@@ -399,30 +398,25 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
       exp?.url ||
       (typeof exp?.website === 'string' ? exp.website : '');
     const ch = tblock(
-      LEFT_X + 6,
+      Lx,
       ly,
       leftW,
       company,
-      STYLES.companyLink,
+      DENSE.companyLink,
       companyUrl ? { link: companyUrl } : {}
     );
     tblock(
-      LEFT_X + 6 + leftW,
+      Lx + leftW,
       ly,
       rightW,
       String(exp?.location || ''),
-      STYLES.cityMuted
+      DENSE.cityMuted
     );
-    ly += Math.max(ch, 5.6);
+    ly += Math.max(ch, 5.0);
 
-    if (exp?.jobDescription)
-      ly += tblock(
-        LEFT_X + 6,
-        ly,
-        LEFT_W - 12,
-        exp.jobDescription,
-        STYLES.summary
-      );
+    if (exp?.jobDescription) {
+      ly += tblock(Lx, ly, Lw, exp.jobDescription, DENSE.summary);
+    }
 
     const bullets =
       Array.isArray(exp?.achievements) && exp.achievements.length
@@ -434,32 +428,32 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
         : [];
     if (bullets.length) {
       ly += tblock(
-        LEFT_X + 6,
+        Lx,
         ly,
-        LEFT_W - 12,
+        Lw,
         bullets.map((b) => `• ${b}`).join('\n'),
-        STYLES.bullets
+        DENSE.bullets
       );
     }
-    ly += 6.0;
+    ly += 4.0;
   }
 
   // PORTFOLIO (zamiast EDUKACJI w lewej kolumnie)
   if (projects.length) {
-    ly += tblock(LEFT_X + 6, ly, LEFT_W - 12, 'PORTFOLIO', STYLES.section);
-    ly += SECTION.gapTitleToLine;
-    hLine(LEFT_X + 6, ly, LEFT_W - 12);
-    ly += SECTION.gapAfterLine + 1.0;
+    ly += tblock(Lx, ly, Lw, 'PORTFOLIO', STYLES.section);
+    ly += SECTION_LEFT.gapTitleToLine;
+    hLine(Lx, ly, Lw);
+    ly += SECTION_LEFT.gapAfterLine + 0.8;
 
     for (const p of projects) {
       const nm = p?.name || 'Projekt';
       const nmLink = p?.url || p?.homepage || '';
       ly += tblock(
-        LEFT_X + 6,
+        Lx,
         ly,
-        LEFT_W - 12,
+        Lw,
         nm,
-        STYLES.projName,
+        DENSE.projName,
         nmLink ? { link: nmLink } : {}
       );
 
@@ -467,22 +461,14 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
         .map((t) => (typeof t === 'string' ? t : t?.name))
         .filter(Boolean)
         .join(' • ');
-      if (tech)
-        ly += tblock(LEFT_X + 6, ly, LEFT_W - 12, tech, STYLES.projTech);
+      if (tech) ly += tblock(Lx, ly, Lw, tech, DENSE.projTech);
 
       if (p?.description)
-        ly += tblock(
-          LEFT_X + 6,
-          ly,
-          LEFT_W - 12,
-          p.description,
-          STYLES.summary
-        );
+        ly += tblock(Lx, ly, Lw, p.description, DENSE.summary);
 
-      // linki
       const linksP = normalizeProjectLinks(p);
       for (const l of linksP.slice(0, 3)) {
-        ly += tblock(LEFT_X + 8, ly, LEFT_W - 14, l.label, STYLES.linkMuted, {
+        ly += tblock(Lx + 2, ly, Lw - 2, l.label, DENSE.linkMuted, {
           link: l.url,
         });
       }
@@ -495,20 +481,19 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
           : [];
       if (ach.length)
         ly += tblock(
-          LEFT_X + 6,
+          Lx,
           ly,
-          LEFT_W - 12,
+          Lw,
           ach.map((s) => `• ${s}`).join('\n'),
-          STYLES.bullets
+          DENSE.bullets
         );
 
-      ly += 6.0;
+      ly += 4.0;
     }
   }
 
   /* ============ PRAWY PASEK ============ */
-  // tło paska już narysowane; zróbmy miejsce na zdjęcie
-  const PHOTO = { size: 38, top: 10 }; // zawsze rezerwujemy miejsce u góry
+  const PHOTO = { size: 38, top: 10 }; // rezerwacja miejsca u góry
   const photoSrc = pd?.images;
   const cx = RIGHT_X + RIGHT_W / 2 - PHOTO.size / 2;
   const cy = PHOTO.top;
@@ -607,7 +592,7 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
     }
   }
 
-  // MOCNE STRONY (opcjonalne)
+  // MOCNE STRONY
   if (Array.isArray(strengths) && strengths.length) {
     sidebarHeader('MOCNE STRONY');
     for (const s of strengths.slice(0, 4)) {
@@ -627,7 +612,7 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
     }
   }
 
-  // EDUKACJA (przeniesiona do paska)
+  // EDUKACJA
   if (educations.length) {
     sidebarHeader('EDUKACJA');
     for (const e of educations) {
@@ -669,6 +654,7 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
     }
   }
 
+  // KONTAKT
   const sidebarContacts = [];
   if (pd?.phoneNumber) {
     sidebarContacts.push({
@@ -698,7 +684,7 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
     'youtube.com': 'YouTube',
     'stackoverflow.com': 'StackOverflow',
   };
-  for (const l of pd.links) {
+  for (const l of pdLinks) {
     const url = typeof l === 'string' ? l : l?.url || l?.href || '';
     if (!url) continue;
     let label = '';
@@ -762,7 +748,6 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
 
   // render ładnej, ciasnej listy kontaktów jako "chipy" w pasku
   if (sidebarContacts.length) {
-    // nagłówek sekcji Kontakt w pasku (jeśli chcesz inny label, zmień)
     ry += tblock(
       RIGHT_X + 6,
       ry,
@@ -789,7 +774,6 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
       );
       const chipH = th + CHIP_PAD_Y * 2;
 
-      // tło chip
       const chipFill = parseColor(COLORS.contactShape);
       nodes.push(
         createShapeNode({
@@ -802,7 +786,6 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
         })
       );
 
-      // ikonka (biała)
       nodes.push(
         createImageNode({
           frame: {
@@ -812,10 +795,10 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
             h: ICON_SIZE,
           },
           src: sidebarSvg(c.icon),
+          style: { cornerRadius: 0 },
         })
       );
 
-      // etykieta (klikana jeśli link)
       const textX = RIGHT_X + 6 + CHIP_PAD_X + ICON_SIZE + 4;
       const opts = c.link ? { link: c.link } : {};
       tblock(
@@ -831,6 +814,19 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
     }
 
     ry += 2.0;
+  }
+
+  /* ============ RODO NA SAMYM DOLE (LEWA KOLUMNA) ============ */
+  const gdpr =
+    api?.gdprClause || api?.personalData?.gdprClause || api?.gdpr || '';
+  if (gdpr) {
+    const bottomMargin = 6; // oddech od krawędzi
+    const w = Lw;
+    const h = Math.max(3.4, measureTextHeightMm(gdpr, w, STYLES.gdpr));
+    const y = PAGE_H - bottomMargin - h;
+    // Opcjonalna cienka linia nad klauzulą:
+    // rect(Lx, y - 2, w, 0.4, COLORS.divider);
+    tblock(Lx, y, w, gdpr, STYLES.gdpr);
   }
 
   /* ============ FINALIZACJA ============ */

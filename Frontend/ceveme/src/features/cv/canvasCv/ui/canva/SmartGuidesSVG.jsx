@@ -24,7 +24,6 @@ export default function SmartGuidesSVG({
     >
       <defs>
         <filter id="guideGlow" x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur stdDeviation="0.8" result="blur" />
           <feMerge>
             <feMergeNode in="blur" />
             <feMergeNode in="SourceGraphic" />
@@ -57,7 +56,7 @@ export default function SmartGuidesSVG({
           const x = isV ? mm(g.position, pxPerMm) : 0;
           const y = !isV ? mm(g.position, pxPerMm) : 0;
           return (
-            <g key={`line-${i}`} filter="url(#guideGlow)">
+            <g key={`line-${i}`}>
               <line
                 x1={isV ? x : 0}
                 y1={isV ? 0 : y}
@@ -88,7 +87,7 @@ export default function SmartGuidesSVG({
           const y2 = isV ? e : p;
 
           return (
-            <g key={`space-${i}`} filter="url(#guideGlow)">
+            <g key={`space-${i}`}>
               <line
                 x1={x1}
                 y1={y1}
@@ -130,7 +129,7 @@ export default function SmartGuidesSVG({
           const y = mm(g.position.y, pxPerMm);
           const r = 5;
           return (
-            <g key={`corner-${i}`} filter="url(#guideGlow)">
+            <g key={`corner-${i}`}>
               <circle
                 cx={x}
                 cy={y}
