@@ -1,16 +1,138 @@
+// services/exportVector.jsx
+// Frontend-only: pobiera TTF-y z Google Fonts Developer API, rejestruje warianty w jsPDF
 import jsPDF from 'jspdf';
 import 'jspdf/dist/polyfills.es.js';
-
+// todo: dac api
+const GFONTS_API_KEY = '?????';
 const DEFAULT_DPI = 300;
 const MM_PER_INCH = 25.4;
 const PT_TO_MM = 25.4 / 72;
-const ptToMm = (pt) => pt * PT_TO_MM;
-
 const ACCENT_HEX = '#0F766E';
 
-let fontsFetched = false;
-let FONT_CACHE = { normalBase64: null, boldBase64: null };
+const ptToMm = (pt) => pt * PT_TO_MM;
 
+// ====== Google Fonts helpers ======
+/** prosta pamięć procesu */
+const memFontBase64 = new Map();
+/** weź pierwszą rodzinę z CSS stacka */
+const pickFirstFamily = (cssFamily) =>
+  (cssFamily || '').split(',')[0].replace(/['"]/g, '').trim();
+/** mapowanie wagi/kursywy na wariant nazwany w GF API */
+const gfVariant = (w, italic) =>
+  italic
+    ? w === 400
+      ? 'italic'
+      : `${w}italic`
+    : w === 400
+    ? 'regular'
+    : String(w);
+/** czy generyk (nie pobieramy z GF) */
+const isGenericFamily = (f) =>
+  [
+    'serif',
+    'sans-serif',
+    'monospace',
+    'cursive',
+    'fantasy',
+    'system-ui',
+  ].includes((f || '').toLowerCase());
+
+async function cacheGet(key) {
+  if (!('caches' in window)) return memFontBase64.get(key) || null;
+  const cache = await caches.open('font-ttf-cache');
+  const res = await cache.match(new Request(`/__fontcache__/${key}`));
+  if (!res) return memFontBase64.get(key) || null;
+  const val = await res.text();
+  memFontBase64.set(key, val);
+  return val;
+}
+async function cachePut(key, base64) {
+  memFontBase64.set(key, base64);
+  if (!('caches' in window)) return;
+  const cache = await caches.open('font-ttf-cache');
+  await cache.put(
+    new Request(`/__fontcache__/${key}`),
+    new Response(base64, { headers: { 'Content-Type': 'text/plain' } })
+  );
+}
+
+/** Zbiera unikalne {family, weight, italic} z dokumentu */
+function collectDocFonts(doc) {
+  const map = new Map();
+  for (const n of doc?.nodes || []) {
+    if (n.type !== 'text') continue;
+    const ts = n.textStyle || {};
+    const family = pickFirstFamily(ts.fontFamily || 'Inter, Arial, sans-serif');
+    const weight = Number(ts.fontWeight || 400) || 400;
+    const italic = String(ts.fontStyle || '').toLowerCase() === 'italic';
+    if (isGenericFamily(family)) continue; // nie ściągamy generyków
+    const key = `${family}::${weight}::${italic ? 1 : 0}`;
+    if (!map.has(key)) map.set(key, { family, weight, italic });
+  }
+  return [...map.values()];
+}
+
+/** Pobiera base64 TTF konkretnego wariantu z Google Fonts Developer API */
+async function fetchGFontsTTFBase64(family, weight, italic, apiKey) {
+  const variant = gfVariant(weight, italic);
+  const cacheKey = btoa(`${family}|${variant}`);
+
+  const cached = await cacheGet(cacheKey);
+  if (cached)
+    return { name: `${family}-${variant}`, base64: cached, hasLatinExt: true };
+
+  const metaUrl = `https://www.googleapis.com/webfonts/v1/webfonts?family=${encodeURIComponent(
+    family
+  )}&key=${apiKey}`;
+  const metaResp = await fetch(metaUrl);
+  if (!metaResp.ok) throw new Error(`Google Fonts meta ${metaResp.status}`);
+  const meta = await metaResp.json();
+
+  const item = meta?.items?.[0];
+  if (!item) throw new Error(`Nie znaleziono rodziny: ${family}`);
+
+  const files = item.files || {};
+  const ttfUrl = files[variant] || files[italic ? 'italic' : 'regular'];
+  if (!ttfUrl) throw new Error(`Brak wariantu ${variant} dla ${family}`);
+
+  const hasLatinExt = (item.subsets || []).includes('latin-ext');
+
+  const fontResp = await fetch(ttfUrl, { mode: 'cors' });
+  if (!fontResp.ok)
+    throw new Error(`Pobieranie TTF nieudane: ${fontResp.status}`);
+  const buf = await fontResp.arrayBuffer();
+  // arrayBuffer → base64
+  let binary = '';
+  const bytes = new Uint8Array(buf);
+  for (let i = 0; i < bytes.length; i++)
+    binary += String.fromCharCode(bytes[i]);
+  const base64 = btoa(binary);
+
+  await cachePut(cacheKey, base64);
+  return { name: `${family}-${variant}`, base64, hasLatinExt };
+}
+
+/** Rejestruje wszystkie potrzebne warianty w jsPDF */
+async function ensureFontsForDocFrontOnly(pdf, doc, apiKey) {
+  const specs = collectDocFonts(doc);
+  for (const s of specs) {
+    try {
+      const { name, base64 } = await fetchGFontsTTFBase64(
+        s.family,
+        s.weight,
+        s.italic,
+        apiKey
+      );
+      const ttfFile = `${name}.ttf`; // np. "Lora-700italic.ttf"
+      pdf.addFileToVFS(ttfFile, base64);
+      pdf.addFont(ttfFile, name, 'normal'); // każdy wariant jako osobna rodzina
+    } catch (e) {
+      console.warn('Font load failed, fallback to core font:', s, e);
+    }
+  }
+}
+
+// ====== Twoje utilsy / ikony (pełne) ======
 const ICON_SVGS = {
   '☎': `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
@@ -35,7 +157,6 @@ const ICON_SVGS = {
   <path d="M21 10c0 5.5-9 12-9 12s-9-6.5-9-12a9 9 0 1 1 18 0z"/>
   <circle cx="12" cy="10" r="3"/>
 </svg>`,
-
   '🔗': `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
      fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -43,7 +164,6 @@ const ICON_SVGS = {
   <path d="M9 17H6a5 5 0 1 1 0-10h3"/>
   <line x1="8" y1="12" x2="16" y2="12"/>
 </svg>`,
-
   '🐙': `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
      fill="currentColor">
@@ -61,46 +181,6 @@ const ICON_SVGS = {
            c0-5.523-4.477-10-10-10z"/>
 </svg>`,
 };
-
-async function loadCustomFonts(pdf) {
-  try {
-    if (!fontsFetched) {
-      const fontUrls = {
-        normal: 'https://fonts.gstatic.com/s/roboto/v30/KFOmCnqEu92Fr1Me5Q.ttf',
-        bold: 'https://fonts.gstatic.com/s/roboto/v30/KFOlCnqEu92Fr1MmWUlvAw.ttf',
-      };
-      const [normalRes, boldRes] = await Promise.all([
-        fetch(fontUrls.normal),
-        fetch(fontUrls.bold),
-      ]);
-      const [normalBuffer, boldBuffer] = await Promise.all([
-        normalRes.arrayBuffer(),
-        boldRes.arrayBuffer(),
-      ]);
-      FONT_CACHE.normalBase64 = arrayBufferToBase64(normalBuffer);
-      FONT_CACHE.boldBase64 = arrayBufferToBase64(boldBuffer);
-      fontsFetched = true;
-    }
-    if (FONT_CACHE.normalBase64) {
-      pdf.addFileToVFS('Roboto-Regular.ttf', FONT_CACHE.normalBase64);
-      pdf.addFont('Roboto-Regular.ttf', 'Roboto', 'normal');
-    }
-    if (FONT_CACHE.boldBase64) {
-      pdf.addFileToVFS('Roboto-Bold.ttf', FONT_CACHE.boldBase64);
-      pdf.addFont('Roboto-Bold.ttf', 'Roboto', 'bold');
-    }
-  } catch (error) {
-    console.error('Błąd ładowania fontów:', error);
-  }
-}
-
-function arrayBufferToBase64(buffer) {
-  let binary = '';
-  const bytes = new Uint8Array(buffer);
-  for (let i = 0; i < bytes.byteLength; i++)
-    binary += String.fromCharCode(bytes[i]);
-  return btoa(binary);
-}
 
 async function fetchAsDataURL(src) {
   try {
@@ -126,10 +206,12 @@ function isSvgSource(srcOrDataUrl = '') {
     return srcOrDataUrl.toLowerCase().endsWith('.svg');
   }
 }
+
 async function fetchSvgText(src) {
   const res = await fetch(src, { mode: 'cors' });
   return await res.text();
 }
+
 async function rasterizeSvgToPngDataUrl(svgString, widthPx, heightPx) {
   const svgBlob = new Blob([svgString], {
     type: 'image/svg+xml;charset=utf-8',
@@ -165,53 +247,30 @@ function detectUrls(text) {
   return parts.length ? parts : [{ text, isUrl: false }];
 }
 
-function getFontStyle(weight) {
-  const w = parseInt(weight) || 400;
-  return w >= 700 ? 'bold' : 'normal';
-}
-// function hexToRgb(hex) {
-//   const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-//   return m
-//     ? { r: parseInt(m[1], 16), g: parseInt(m[2], 16), b: parseInt(m[3], 16) }
-//     : { r: 0, g: 0, b: 0 };
-// }
-
 function hexToRgb(colorString) {
-  if (!colorString || typeof colorString !== 'string') {
-    return { r: 0, g: 0, b: 0 }; // Domyślnie czarny
-  }
-
-  // 1. Sprawdź format RGBA: rgba(r, g, b, a)
+  if (!colorString || typeof colorString !== 'string')
+    return { r: 0, g: 0, b: 0 };
   let match = colorString.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/i);
-  if (match) {
+  if (match)
     return {
       r: parseInt(match[1]),
       g: parseInt(match[2]),
       b: parseInt(match[3]),
     };
-  }
-
-  // 2. Sprawdź format HEX: #RRGGBB lub #RGB
   match = colorString.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i);
-  if (match) {
+  if (match)
     return {
       r: parseInt(match[1], 16),
       g: parseInt(match[2], 16),
       b: parseInt(match[3], 16),
     };
-  }
-
-  // Krótki HEX: #F0C
   match = colorString.match(/^#?([a-f\d])([a-f\d])([a-f\d])$/i);
-  if (match) {
+  if (match)
     return {
       r: parseInt(match[1] + match[1], 16),
       g: parseInt(match[2] + match[2], 16),
       b: parseInt(match[3] + match[3], 16),
     };
-  }
-
-  // 3. Zwróć domyślny kolor, jeśli format jest nieznany
   return { r: 0, g: 0, b: 0 };
 }
 
@@ -240,7 +299,7 @@ async function drawInlineIcon(
   if (!rawSvg) return { drawn: false, advance: 0 };
 
   try {
-    const pxPerMm = dpi / MM_PER_INCH;
+    const pxPerMm = DEFAULT_DPI / MM_PER_INCH;
     const iconSizeMm = Math.max(
       3,
       Math.min(lineBoxHeight * 0.95, fontMm * 1.05)
@@ -322,10 +381,107 @@ async function maskImageToCircleDataURL(srcDataUrl, sidePx) {
   return canvas.toDataURL('image/png');
 }
 
+// ====== shape/image — wyciągnięte do funkcji dla czytelności ======
+function drawShape(pdf, node) {
+  const { x, y, w, h } = node.frame || {};
+  const fill = node.style?.fill?.color ?? 'none';
+  const fillOpacity = node.style?.fill?.opacity ?? 1;
+  const stroke = node.style?.stroke?.color ?? 'none';
+  const strokeWidth = node.style?.stroke?.width ?? 0;
+  const cornerRadius = node.style?.cornerRadius ?? 0;
+
+  pdf.saveGraphicsState();
+
+  if (fill !== 'none') {
+    const rgb = hexToRgb(fill);
+    pdf.setFillColor(rgb.r, rgb.g, rgb.b);
+    if (typeof pdf.GState === 'function' && fillOpacity < 1) {
+      // niektóre bundlery mają pdf.GState dostępne, inne nie — sprawdzamy
+      pdf.setGState(new pdf.GState({ opacity: fillOpacity }));
+    }
+  }
+  if (stroke !== 'none' && strokeWidth > 0) {
+    const rgb = hexToRgb(stroke);
+    pdf.setDrawColor(rgb.r, rgb.g, rgb.b);
+    pdf.setLineWidth(strokeWidth);
+  }
+  const style =
+    fill !== 'none' && stroke !== 'none' && strokeWidth > 0
+      ? 'FD'
+      : fill !== 'none'
+      ? 'F'
+      : 'S';
+  if (cornerRadius > 0)
+    pdf.roundedRect(x, y, w, h, cornerRadius, cornerRadius, style);
+  else pdf.rect(x, y, w, h, style);
+
+  pdf.restoreGraphicsState();
+}
+
+async function drawImage(pdf, node, dpi) {
+  const { x, y, w, h } = node.frame || {};
+  const pxPerMm = dpi / MM_PER_INCH;
+  const widthPx = Math.max(1, Math.floor(w * pxPerMm));
+  const heightPx = Math.max(1, Math.floor(h * pxPerMm));
+
+  let dataUrl;
+  if (isSvgSource(node.src)) {
+    const svgText = await fetchSvgText(node.src);
+    dataUrl = await rasterizeSvgToPngDataUrl(svgText, widthPx, heightPx);
+  } else {
+    dataUrl = await fetchAsDataURL(node.src);
+  }
+
+  const mime = mimeFromDataURL(dataUrl);
+  const imgType = mime === 'image/png' ? 'PNG' : 'JPEG';
+  const cornerRadius = node.style?.cornerRadius ?? 0;
+
+  const circleByRadius =
+    Math.abs(cornerRadius - Math.min(w, h) / 2) <= 0.6 ||
+    cornerRadius >= Math.min(w, h) * 0.49;
+  const clipCircle =
+    node.style?.clipCircle === true ||
+    node.style?.shape === 'circle' ||
+    circleByRadius;
+
+  if (clipCircle) {
+    const sideMm = Math.min(w, h);
+    const sidePx = Math.max(1, Math.floor(sideMm * (dpi / MM_PER_INCH)));
+    let masked = null;
+    try {
+      const ensured = dataUrl.startsWith('data:')
+        ? dataUrl
+        : await fetchAsDataURL(node.src);
+      if (ensured && ensured.startsWith('data:'))
+        masked = await maskImageToCircleDataURL(ensured, sidePx);
+    } catch {
+      masked = null;
+    }
+
+    const ix = x + (w - sideMm) / 2;
+    const iy = y + (h - sideMm) / 2;
+
+    if (masked) pdf.addImage(masked, 'PNG', ix, iy, sideMm, sideMm);
+    else pdf.addImage(dataUrl, imgType, ix, iy, sideMm, sideMm);
+  } else if (cornerRadius > 0) {
+    pdf.saveGraphicsState();
+    pdf.roundedRect(x, y, w, h, cornerRadius, cornerRadius);
+    pdf.clip();
+    pdf.addImage(dataUrl, imgType, x, y, w, h);
+    pdf.restoreGraphicsState();
+  } else {
+    pdf.addImage(dataUrl, imgType, x, y, w, h);
+  }
+}
+
+// ====== GŁÓWNY RENDER ======
 async function renderDocIntoPdf(pdf, doc, dpi = DEFAULT_DPI) {
   if (!doc || !doc.page) throw new Error('Brak dokumentu do renderu');
-  await loadCustomFonts(pdf);
 
+  // 1) Pobierz i zarejestruj wszystkie potrzebne warianty z Google Fonts (frontend only)
+  await ensureFontsForDocFrontOnly(pdf, doc, GFONTS_API_KEY);
+
+  // 2) Renderuj warstwy
   const sortedNodes = [...doc.nodes].sort(
     (a, b) => (a.frame?.zIndex ?? 0) - (b.frame?.zIndex ?? 0)
   );
@@ -334,96 +490,13 @@ async function renderDocIntoPdf(pdf, doc, dpi = DEFAULT_DPI) {
     const { x, y, w, h } = node.frame || {};
 
     if (node.type === 'shape') {
-      const fill = node.style?.fill?.color ?? 'none';
-      const fillOpacity = node.style?.fill?.opacity ?? 1;
-      const stroke = node.style?.stroke?.color ?? 'none';
-      const strokeWidth = node.style?.stroke?.width ?? 0;
-      const cornerRadius = node.style?.cornerRadius ?? 0;
-
-      pdf.saveGraphicsState();
-
-      if (fill !== 'none') {
-        const rgb = hexToRgb(fill);
-        pdf.setFillColor(rgb.r, rgb.g, rgb.b);
-        if (typeof pdf.GState === 'function' && fillOpacity < 1) {
-          pdf.setGState(new pdf.GState({ opacity: fillOpacity }));
-        }
-      }
-      if (stroke !== 'none' && strokeWidth > 0) {
-        const rgb = hexToRgb(stroke);
-        pdf.setDrawColor(rgb.r, rgb.g, rgb.b);
-        pdf.setLineWidth(strokeWidth);
-      }
-      const style =
-        fill !== 'none' && stroke !== 'none' && strokeWidth > 0
-          ? 'FD'
-          : fill !== 'none'
-          ? 'F'
-          : 'S';
-      if (cornerRadius > 0)
-        pdf.roundedRect(x, y, w, h, cornerRadius, cornerRadius, style);
-      else pdf.rect(x, y, w, h, style);
-
-      pdf.restoreGraphicsState();
+      drawShape(pdf, node);
+      continue;
     }
 
     if (node.type === 'image' && node.src) {
-      try {
-        const pxPerMm = dpi / MM_PER_INCH;
-        const widthPx = Math.max(1, Math.floor(w * pxPerMm));
-        const heightPx = Math.max(1, Math.floor(h * pxPerMm));
-
-        let dataUrl;
-        if (isSvgSource(node.src)) {
-          const svgText = await fetchSvgText(node.src);
-          dataUrl = await rasterizeSvgToPngDataUrl(svgText, widthPx, heightPx);
-        } else {
-          dataUrl = await fetchAsDataURL(node.src);
-        }
-
-        const mime = mimeFromDataURL(dataUrl);
-        const imgType = mime === 'image/png' ? 'PNG' : 'JPEG';
-        const cornerRadius = node.style?.cornerRadius ?? 0;
-
-        const circleByRadius =
-          Math.abs(cornerRadius - Math.min(w, h) / 2) <= 0.6 ||
-          cornerRadius >= Math.min(w, h) * 0.49;
-        const clipCircle =
-          node.style?.clipCircle === true ||
-          node.style?.shape === 'circle' ||
-          circleByRadius;
-
-        if (clipCircle) {
-          const sideMm = Math.min(w, h);
-          const sidePx = Math.max(1, Math.floor(sideMm * pxPerMm));
-          let masked = null;
-          try {
-            const ensured = dataUrl.startsWith('data:')
-              ? dataUrl
-              : await fetchAsDataURL(node.src);
-            if (ensured && ensured.startsWith('data:'))
-              masked = await maskImageToCircleDataURL(ensured, sidePx);
-          } catch {
-            masked = null;
-          }
-
-          const ix = x + (w - sideMm) / 2;
-          const iy = y + (h - sideMm) / 2;
-
-          if (masked) pdf.addImage(masked, 'PNG', ix, iy, sideMm, sideMm);
-          else pdf.addImage(dataUrl, imgType, ix, iy, sideMm, sideMm);
-        } else if (cornerRadius > 0) {
-          pdf.saveGraphicsState();
-          pdf.roundedRect(x, y, w, h, cornerRadius, cornerRadius);
-          pdf.clip();
-          pdf.addImage(dataUrl, imgType, x, y, w, h);
-          pdf.restoreGraphicsState();
-        } else {
-          pdf.addImage(dataUrl, imgType, x, y, w, h);
-        }
-      } catch (e) {
-        console.warn('Nie udało się dodać obrazu:', e);
-      }
+      await drawImage(pdf, node, dpi);
+      continue;
     }
 
     if (node.type === 'text') {
@@ -432,19 +505,29 @@ async function renderDocIntoPdf(pdf, doc, dpi = DEFAULT_DPI) {
       const fontPt = style.fontSize ?? 12;
       const fontMm = ptToMm(fontPt);
       const lineHeight = style.lineHeight ?? 1.35;
-      const fontWeight = style.fontWeight ?? 400;
-      const align = style.textAlign ?? 'left';
       const color = style.color ?? '#0f172a';
       const rgb = hexToRgb(color);
+      const align = style.textAlign ?? 'left';
+
+      const familyCss = style.fontFamily || 'Inter, Arial, sans-serif';
+      const fam = pickFirstFamily(familyCss);
+      const weight = Number(style.fontWeight || 400) || 400;
+      const italic = String(style.fontStyle || '').toLowerCase() === 'italic';
+      const variantName = isGenericFamily(fam)
+        ? 'helvetica'
+        : `${fam}-${gfVariant(weight, italic)}`;
 
       pdf.setTextColor(rgb.r, rgb.g, rgb.b);
       pdf.setFontSize(fontPt);
-      pdf.setFont(
-        fontsFetched && (FONT_CACHE.normalBase64 || FONT_CACHE.boldBase64)
-          ? 'Roboto'
-          : 'helvetica',
-        getFontStyle(fontWeight)
-      );
+      try {
+        pdf.setFont(variantName, 'normal');
+      } catch {
+        // fallback do core fontu
+        pdf.setFont(
+          'helvetica',
+          italic ? 'italic' : weight >= 700 ? 'bold' : 'normal'
+        );
+      }
 
       const lines = pdf.splitTextToSize(txt, w);
       const lhMm = fontMm * lineHeight;
@@ -474,7 +557,6 @@ async function renderDocIntoPdf(pdf, doc, dpi = DEFAULT_DPI) {
         else if (align === 'right') currentX = x + w - lineWidth;
 
         const tokens = tokenizeLineForIcons(line);
-
         for (const t of tokens) {
           if (t.type === 'icon') {
             const colorHex =
@@ -489,7 +571,7 @@ async function renderDocIntoPdf(pdf, doc, dpi = DEFAULT_DPI) {
               lhMm,
               fontMm,
               dpi,
-              colorHex
+              colorHex || undefined
             );
             if (drawn) currentX += advance;
           } else {
@@ -513,7 +595,7 @@ async function renderDocIntoPdf(pdf, doc, dpi = DEFAULT_DPI) {
               for (const p of parts) {
                 const partWidth = pdf.getTextWidth(p.text);
                 if (p.isUrl) {
-                  const originalColor = { ...rgb };
+                  const oc = { ...rgb };
                   pdf.setTextColor(0, 102, 204);
                   pdf.textWithLink(p.text, currentX, currentY, { url: p.text });
                   pdf.setDrawColor(0, 102, 204);
@@ -524,11 +606,7 @@ async function renderDocIntoPdf(pdf, doc, dpi = DEFAULT_DPI) {
                     currentX + partWidth,
                     currentY + fontMm * 0.15
                   );
-                  pdf.setTextColor(
-                    originalColor.r,
-                    originalColor.g,
-                    originalColor.b
-                  );
+                  pdf.setTextColor(oc.r, oc.g, oc.b);
                 } else if (p.text) {
                   pdf.text(p.text, currentX, currentY);
                 }
@@ -543,6 +621,7 @@ async function renderDocIntoPdf(pdf, doc, dpi = DEFAULT_DPI) {
   }
 }
 
+// ====== API eksportu ======
 export async function generatePdfBlob(doc, dpi = DEFAULT_DPI) {
   if (!doc || !doc.page) throw new Error('Brak dokumentu do eksportu');
   const { widthMm, heightMm } = doc.page;

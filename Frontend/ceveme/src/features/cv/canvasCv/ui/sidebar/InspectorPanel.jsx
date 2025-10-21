@@ -1,5 +1,16 @@
-import React, { useEffect, useRef } from 'react'; // <--- 1. Dodano useRef
+import React, { useEffect, useRef } from 'react';
 import { FONT_STACKS } from './fonts';
+import { ensureGoogleFont } from './googleFontsLoader';
+
+/* Prosty helper do debounce, żeby nie odpalać wielu pobrań fontu
+   przy szybkim przejechaniu myszką po liście. */
+function debounce(fn, ms = 180) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
 
 function Row({ label, children }) {
   return (
@@ -11,9 +22,29 @@ function Row({ label, children }) {
 }
 
 export default function InspectorPanel({ node, updateNode, removeNode }) {
-  // <--- 2. Stworzenie refa
   const originalFontRef = useRef(null);
 
+  // debounce'owany loader podglądu
+  const previewHover = useRef(null);
+  if (!previewHover.current) {
+    previewHover.current = debounce(async (stack, weight, italic, apply) => {
+      const family = String(stack)
+        .split(',')[0]
+        ?.replace(/(^"|"$)/g, '')
+        .trim();
+      if (!family) return apply();
+      try {
+        await ensureGoogleFont(
+          family,
+          [typeof weight === 'number' ? weight : 400, 700],
+          italic === 'italic'
+        );
+      } catch {}
+      apply();
+    }, 160);
+  }
+
+  // kasowanie elementu DEL/Backspace poza inputami
   useEffect(() => {
     const isEditableTarget = (el) => {
       if (!el) return false;
@@ -44,9 +75,8 @@ export default function InspectorPanel({ node, updateNode, removeNode }) {
     return () => window.removeEventListener('keydown', handleKeyDelete);
   }, [node, removeNode]);
 
-  // <--- 3. Efekt czyszczący ref przy zmianie węzła
+  // reset podglądu przy zmianie węzła
   useEffect(() => {
-    // Resetuj stan podglądu czcionki, jeśli zmieni się węzeł
     originalFontRef.current = null;
   }, [node?.id]);
 
@@ -61,6 +91,14 @@ export default function InspectorPanel({ node, updateNode, removeNode }) {
     'w-full rounded-lg border border-black/10 px-2 py-1 text-sm outline-none focus:ring-2 focus:ring-blue-500/40';
   const btnDanger =
     'w-full px-3 py-2 rounded-lg border border-red-500 bg-red-100 text-red-700 font-semibold';
+
+  // Wyciągamy pierwszą rodzinę z font-family (do ładowania)
+  const currentFamily = (ts.fontFamily || '')
+    .split(',')[0]
+    ?.replace(/(^"|"$)/g, '')
+    .trim();
+  const currentWeight = typeof ts.fontWeight === 'number' ? ts.fontWeight : 400;
+  const currentItalic = ts.fontStyle === 'italic' ? 'italic' : 'normal';
 
   return (
     <div>
@@ -121,56 +159,52 @@ export default function InspectorPanel({ node, updateNode, removeNode }) {
         <>
           <hr className="my-3 border-black/10" />
 
-          {/* Popularne fonty: LISTA z hover-apply (bez osobnego podglądu) */}
-          <Row label="Popularne">
-            {/* <--- 6. Dodano onMouseLeave do kontenera */}
+          {/* Popularne (tylko Google Fonts) */}
+          <Row label="Google Fonts">
             <div
               className="rounded-lg border border-black/10 p-1 max-h-56 overflow-auto"
               onMouseLeave={() => {
-                // Jeśli ref nie jest pusty (był podgląd, ale nie było kliknięcia)
                 if (originalFontRef.current !== null) {
-                  // Przywróć oryginalną czcionkę
                   updateNode(node.id, {
                     textStyle: { fontFamily: originalFontRef.current },
                   });
-                  originalFontRef.current = null; // Wyczyść ref
+                  originalFontRef.current = null;
                 }
               }}
             >
               <ul className="grid grid-cols-1 gap-1">
-                {FONT_STACKS.map(({ label, stack }) => (
+                {FONT_STACKS.map(({ label, family, stack }) => (
                   <li key={label}>
                     <button
                       type="button"
-                      className={`w-full text-left px-2 py-1 rounded hover:bg-blue-50 focus:bg-blue-50 focus:outline-none ${
-                        (ts.label || '').toLowerCase() === stack.toLowerCase()
-                          ? 'bg-blue-100'
-                          : ''
-                      }`}
-                      style={{
-                        // etykieta może być w swojej rodzinie – to nie jest osobny „podgląd”, tylko wygląd opcji
-                        fontFamily: stack,
-                      }}
+                      className={`w-full text-left px-2 py-1 rounded hover:bg-blue-50 focus:bg-blue-50 focus:outline-none`}
+                      style={{ fontFamily: stack }}
                       title={stack}
-                      // <--- 4. Zmodyfikowano onMouseEnter
                       onMouseEnter={() => {
-                        // Zapisz oryginalną czcionkę tylko przy pierwszym najechaniu
                         if (originalFontRef.current === null) {
                           originalFontRef.current = ts.fontFamily || '';
                         }
-                        // Zastosuj podgląd
-                        updateNode(node.id, {
-                          textStyle: { fontFamily: stack },
-                        });
+                        previewHover.current(
+                          stack,
+                          currentWeight,
+                          currentItalic,
+                          () =>
+                            updateNode(node.id, {
+                              textStyle: { fontFamily: stack },
+                            })
+                        );
                       }}
-                      // <--- 5. Zmodyfikowano onClick
-                      onClick={() => {
-                        // Zastosuj zmianę
+                      onClick={async () => {
+                        try {
+                          await ensureGoogleFont(
+                            family,
+                            [currentWeight, 700],
+                            currentItalic === 'italic'
+                          );
+                        } catch {}
                         updateNode(node.id, {
                           textStyle: { fontFamily: stack },
                         });
-                        // "Zatwierdź" zmianę, czyszcząc ref
-                        // (zapobiega to przywróceniu przez onMouseLeave)
                         originalFontRef.current = null;
                       }}
                     >
@@ -182,17 +216,17 @@ export default function InspectorPanel({ node, updateNode, removeNode }) {
             </div>
           </Row>
 
-          {/* Ręczne wpisanie stacku (opcjonalne) */}
+          {/* Ręczne wpisanie (stack) */}
           <Row label="Czcionka">
             <input
               className={inputBase}
               value={ts.fontFamily || ''}
               onChange={(e) =>
                 updateNode(node.id, {
-                  textStyle: { originalFontRef: e.target.value },
+                  textStyle: { fontFamily: e.target.value },
                 })
               }
-              placeholder="np. Arial, Helvetica, sans-serif"
+              placeholder='np. "Inter", system-ui, -apple-system, sans-serif'
             />
           </Row>
 
@@ -208,11 +242,12 @@ export default function InspectorPanel({ node, updateNode, removeNode }) {
               }
             />
           </Row>
-          <Row label="Grubość Tekstu">
+
+          <Row label="Grubość">
             <input
               className={inputBase}
               type="range"
-              min={300}
+              min={100}
               max={900}
               step={100}
               value={typeof ts.fontWeight === 'number' ? ts.fontWeight : 400}
@@ -223,6 +258,22 @@ export default function InspectorPanel({ node, updateNode, removeNode }) {
               }
             />
           </Row>
+
+          <Row label="Kursywa">
+            <select
+              className={inputBase}
+              value={ts.fontStyle || 'normal'}
+              onChange={(e) =>
+                updateNode(node.id, {
+                  textStyle: { fontStyle: e.target.value },
+                })
+              }
+            >
+              <option value="normal">normal</option>
+              <option value="italic">italic</option>
+            </select>
+          </Row>
+
           <Row label="Kolor">
             <input
               className={inputBase}
@@ -233,20 +284,24 @@ export default function InspectorPanel({ node, updateNode, removeNode }) {
               }
             />
           </Row>
+
           <Row label="Wyrównanie">
             <select
               className={inputBase}
-              value={ts.align || 'left'}
+              value={ts.textAlign || 'left'}
               onChange={(e) =>
-                updateNode(node.id, { textStyle: { align: e.target.value } })
+                updateNode(node.id, {
+                  textStyle: { textAlign: e.target.value },
+                })
               }
             >
-              <option>left</option>
-              <option>center</option>
-              <option>right</option>
-              <option>justify</option>
+              <option value="left">left</option>
+              <option value="center">center</option>
+              <option value="right">right</option>
+              <option value="justify">justify</option>
             </select>
           </Row>
+
           <Row label="Interlinia">
             <input
               className={inputBase}
@@ -258,6 +313,15 @@ export default function InspectorPanel({ node, updateNode, removeNode }) {
                   textStyle: { lineHeight: +e.target.value },
                 })
               }
+            />
+          </Row>
+
+          <Row label="Link (URL)">
+            <input
+              className={inputBase}
+              value={node.link || ''}
+              onChange={(e) => updateNode(node.id, { link: e.target.value })}
+              placeholder="https://..."
             />
           </Row>
         </>
