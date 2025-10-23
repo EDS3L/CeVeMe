@@ -15,6 +15,19 @@ class ApplicationHistories {
 			toast.error(error.response?.data?.message);
 		}
 	}
+	async editApplicationHistories(request) {
+		try {
+			const response = await axios({
+				url: `/api/applicationHistory/edit`,
+				method: "PATCH",
+				data:request,
+				withCredentials: true,
+			});
+			return response.data;
+		} catch (error) {
+			toast.error(error.response?.data?.message);
+		}
+	}
 
 	async saveApplicationHistory(request) {
 		try {

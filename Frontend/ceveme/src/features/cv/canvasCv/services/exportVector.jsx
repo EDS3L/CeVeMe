@@ -2,8 +2,8 @@
 // Frontend-only: pobiera TTF-y z Google Fonts Developer API, rejestruje warianty w jsPDF
 import jsPDF from 'jspdf';
 import 'jspdf/dist/polyfills.es.js';
-// todo: dac api
-const GFONTS_API_KEY = '?????';
+
+const GFONTS_API_KEY = import.meta.env.VITE_GFONTS_API_KEY;
 const DEFAULT_DPI = 300;
 const MM_PER_INCH = 25.4;
 const PT_TO_MM = 25.4 / 72;

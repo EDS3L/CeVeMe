@@ -39,6 +39,10 @@ public class ApplicationHistory {
         this.status = status;
     }
 
+    public void changeStatus(STATUS status) {
+        this.status = status;
+    }
+
     public long getId() {
         return id;
     }
@@ -88,6 +92,6 @@ public class ApplicationHistory {
     }
 
     public enum STATUS {
-        PENDING, SUBMITTED, REJECTED, REQUESTED, SCREENING, INTERVIEW, ASSIGNMENT, OFFERED, ACCEPTED, DECLINED, CLOSED,
+        PENDING, SUBMITTED, REJECTED, REQUESTED, SCREENING, INTERVIEW, ASSIGNMENT, OFFERED, ACCEPTED, DECLINED, CLOSED
     }
 }

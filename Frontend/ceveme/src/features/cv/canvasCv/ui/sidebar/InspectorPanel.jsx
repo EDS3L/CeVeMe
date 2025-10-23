@@ -1,9 +1,8 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { FONT_STACKS } from './fonts';
 import { ensureGoogleFont } from './googleFontsLoader';
+import { ensureGoogleFontPreview } from './googleFontsPreviewLoader';
 
-/* Prosty helper do debounce, żeby nie odpalać wielu pobrań fontu
-   przy szybkim przejechaniu myszką po liście. */
 function debounce(fn, ms = 180) {
   let t;
   return (...args) => {
@@ -21,36 +20,105 @@ function Row({ label, children }) {
   );
 }
 
-export default function InspectorPanel({ node, updateNode, removeNode }) {
-  const originalFontRef = useRef(null);
+// Krótki, realny sample PL/EN — pokryty subsetem z loadera preview
+const PREVIEW_TEXT = 'Zażółć gęślą jaźń — 123';
 
-  // debounce'owany loader podglądu
-  const previewHover = useRef(null);
-  if (!previewHover.current) {
-    previewHover.current = debounce(async (stack, weight, italic, apply) => {
-      const family = String(stack)
-        .split(',')[0]
-        ?.replace(/(^"|"$)/g, '')
-        .trim();
-      if (!family) return apply();
+function FontItem({ family, label, stack, currentWeight, currentItalic, onPick, rootEl }) {
+  const [ready, setReady] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    let observer;
+    const loadPreview = debounce(async () => {
       try {
-        await ensureGoogleFont(
-          family,
-          [typeof weight === 'number' ? weight : 400, 700],
-          italic === 'italic'
-        );
+        // 1) Najpierw LEKKI subset do natychmiastowego, wiernego podglądu
+        await ensureGoogleFontPreview(family, {
+          weight: typeof currentWeight === 'number' ? currentWeight : 400,
+          italic: currentItalic === 'italic',
+          // ⬇️ bardzo ważne: etykieta + sample => glify na pewno są w subsecie
+          text: `${label} ${PREVIEW_TEXT}`,
+        });
+        setReady(true);
+
+        // 2) W tle PREFETCH pełnego 400 normal — żeby klik był natychmiastowy
+        // (bez await — nie blokujemy UI; italic false, bo to najczęstszy przypadek)
+        ensureGoogleFont(family, [400], false).catch(() => {});
       } catch {}
-      apply();
-    }, 160);
-  }
+    }, 10);
+
+    if ('IntersectionObserver' in window) {
+      observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              loadPreview();
+              observer.disconnect();
+            }
+          });
+        },
+        { root: rootEl || null, rootMargin: '120px 0px', threshold: 0.01 }
+      );
+      observer.observe(el);
+      return () => observer && observer.disconnect();
+    } else {
+      // bez IO – ładuj od razu
+      loadPreview();
+      return () => {};
+    }
+  }, [family, currentWeight, currentItalic, label, rootEl]);
+
+  // dodatkowo — na hover dociągnij warianty, które mogą być potrzebne po kliknięciu
+  const prefetchOnHover = async () => {
+    try {
+      const wantItalic = currentItalic === 'italic';
+      const wantWeights = [
+        typeof currentWeight === 'number' ? currentWeight : 400,
+        700,
+      ];
+      // Jeżeli 400 już jest (prefetch z IO), to dociągniemy szybko brakujące
+      ensureGoogleFont(family, wantWeights, wantItalic).catch(() => {});
+    } catch {}
+  };
+
+  const fallbackStack = stack.split(',').slice(1).join(',').trim() || 'inherit';
+
+  return (
+    <li>
+      <button
+        ref={ref}
+        type="button"
+        className="w-full text-left px-2 py-2 rounded hover:bg-blue-50 focus:bg-blue-50 focus:outline-none"
+        onMouseEnter={prefetchOnHover}
+        onFocus={prefetchOnHover}
+        onClick={onPick}
+        title={stack}
+      >
+        {/* Linia 1: etykieta (nie musi być w kroju; to label) */}
+        <div className="text-[11px] leading-4 text-slate-500">{label}</div>
+        {/* Linia 2: mini-sample w docelowym kroju — od razu po preview */}
+        <div
+          className="text-sm leading-tight"
+          style={{ fontFamily: ready ? stack : fallbackStack }}
+        >
+          {PREVIEW_TEXT}
+        </div>
+      </button>
+    </li>
+  );
+}
+
+export default function InspectorPanel({ node, updateNode, removeNode }) {
+  const listRootRef = useRef(null);
 
   // kasowanie elementu DEL/Backspace poza inputami
   useEffect(() => {
     const isEditableTarget = (el) => {
       if (!el) return false;
       const tag = el.tagName?.toLowerCase();
-      if (tag === 'input' || tag === 'textarea' || tag === 'select')
-        return true;
+      if (tag === 'input' || tag === 'textarea' || tag === 'select') return true;
       if (el.isContentEditable) return true;
       if (el.closest?.('[contenteditable="true"]')) return true;
       if (el.getAttribute?.('role') === 'textbox') return true;
@@ -60,13 +128,10 @@ export default function InspectorPanel({ node, updateNode, removeNode }) {
     const handleKeyDelete = (e) => {
       if (!node) return;
       if (e.key !== 'Backspace' && e.key !== 'Delete') return;
-
       const active = document.activeElement;
       if (isEditableTarget(active)) return;
-
       const sel = window.getSelection?.();
       if (sel && !sel.isCollapsed) return;
-
       e.preventDefault();
       removeNode(node.id);
     };
@@ -74,11 +139,6 @@ export default function InspectorPanel({ node, updateNode, removeNode }) {
     window.addEventListener('keydown', handleKeyDelete);
     return () => window.removeEventListener('keydown', handleKeyDelete);
   }, [node, removeNode]);
-
-  // reset podglądu przy zmianie węzła
-  useEffect(() => {
-    originalFontRef.current = null;
-  }, [node?.id]);
 
   if (!node) return <div className="text-slate-500">Brak zaznaczenia</div>;
 
@@ -92,11 +152,6 @@ export default function InspectorPanel({ node, updateNode, removeNode }) {
   const btnDanger =
     'w-full px-3 py-2 rounded-lg border border-red-500 bg-red-100 text-red-700 font-semibold';
 
-  // Wyciągamy pierwszą rodzinę z font-family (do ładowania)
-  const currentFamily = (ts.fontFamily || '')
-    .split(',')[0]
-    ?.replace(/(^"|"$)/g, '')
-    .trim();
   const currentWeight = typeof ts.fontWeight === 'number' ? ts.fontWeight : 400;
   const currentItalic = ts.fontStyle === 'italic' ? 'italic' : 'normal';
 
@@ -159,72 +214,45 @@ export default function InspectorPanel({ node, updateNode, removeNode }) {
         <>
           <hr className="my-3 border-black/10" />
 
-          {/* Popularne (tylko Google Fonts) */}
+          {/* Google Fonts — podgląd: subset + natychmiastowe sample, prefetch 400 normal */}
           <Row label="Google Fonts">
             <div
+              ref={listRootRef}
               className="rounded-lg border border-black/10 p-1 max-h-56 overflow-auto"
-              onMouseLeave={() => {
-                if (originalFontRef.current !== null) {
-                  updateNode(node.id, {
-                    textStyle: { fontFamily: originalFontRef.current },
-                  });
-                  originalFontRef.current = null;
-                }
-              }}
             >
               <ul className="grid grid-cols-1 gap-1">
                 {FONT_STACKS.map(({ label, family, stack }) => (
-                  <li key={label}>
-                    <button
-                      type="button"
-                      className={`w-full text-left px-2 py-1 rounded hover:bg-blue-50 focus:bg-blue-50 focus:outline-none`}
-                      style={{ fontFamily: stack }}
-                      title={stack}
-                      onMouseEnter={() => {
-                        if (originalFontRef.current === null) {
-                          originalFontRef.current = ts.fontFamily || '';
-                        }
-                        previewHover.current(
-                          stack,
-                          currentWeight,
-                          currentItalic,
-                          () =>
-                            updateNode(node.id, {
-                              textStyle: { fontFamily: stack },
-                            })
+                  <FontItem
+                    key={label}
+                    label={label}
+                    family={family}
+                    stack={stack}
+                    currentWeight={currentWeight}
+                    currentItalic={currentItalic}
+                    rootEl={listRootRef.current}
+                    onPick={async () => {
+                      try {
+                        // Po kliknięciu mamy już 400 w cache; dociągnij brakujące warianty i dopiero ustaw rodzinę
+                        await ensureGoogleFont(
+                          family,
+                          [currentWeight, 700],
+                          currentItalic === 'italic'
                         );
-                      }}
-                      onClick={async () => {
-                        try {
-                          await ensureGoogleFont(
-                            family,
-                            [currentWeight, 700],
-                            currentItalic === 'italic'
-                          );
-                        } catch {}
-                        updateNode(node.id, {
-                          textStyle: { fontFamily: stack },
-                        });
-                        originalFontRef.current = null;
-                      }}
-                    >
-                      {label}
-                    </button>
-                  </li>
+                      } catch {}
+                      updateNode(node.id, { textStyle: { fontFamily: stack } });
+                    }}
+                  />
                 ))}
               </ul>
             </div>
           </Row>
 
-          {/* Ręczne wpisanie (stack) */}
           <Row label="Czcionka">
             <input
               className={inputBase}
               value={ts.fontFamily || ''}
               onChange={(e) =>
-                updateNode(node.id, {
-                  textStyle: { fontFamily: e.target.value },
-                })
+                updateNode(node.id, { textStyle: { fontFamily: e.target.value } })
               }
               placeholder='np. "Inter", system-ui, -apple-system, sans-serif'
             />
@@ -236,9 +264,7 @@ export default function InspectorPanel({ node, updateNode, removeNode }) {
               type="number"
               value={num(ts.fontSize || 12)}
               onChange={(e) =>
-                updateNode(node.id, {
-                  textStyle: { fontSize: +e.target.value },
-                })
+                updateNode(node.id, { textStyle: { fontSize: +e.target.value } })
               }
             />
           </Row>
@@ -252,9 +278,7 @@ export default function InspectorPanel({ node, updateNode, removeNode }) {
               step={100}
               value={typeof ts.fontWeight === 'number' ? ts.fontWeight : 400}
               onChange={(e) =>
-                updateNode(node.id, {
-                  textStyle: { fontWeight: +e.target.value },
-                })
+                updateNode(node.id, { textStyle: { fontWeight: +e.target.value } })
               }
             />
           </Row>
@@ -264,9 +288,7 @@ export default function InspectorPanel({ node, updateNode, removeNode }) {
               className={inputBase}
               value={ts.fontStyle || 'normal'}
               onChange={(e) =>
-                updateNode(node.id, {
-                  textStyle: { fontStyle: e.target.value },
-                })
+                updateNode(node.id, { textStyle: { fontStyle: e.target.value } })
               }
             >
               <option value="normal">normal</option>
@@ -290,9 +312,7 @@ export default function InspectorPanel({ node, updateNode, removeNode }) {
               className={inputBase}
               value={ts.textAlign || 'left'}
               onChange={(e) =>
-                updateNode(node.id, {
-                  textStyle: { textAlign: e.target.value },
-                })
+                updateNode(node.id, { textStyle: { textAlign: e.target.value } })
               }
             >
               <option value="left">left</option>
@@ -309,9 +329,7 @@ export default function InspectorPanel({ node, updateNode, removeNode }) {
               step="0.05"
               value={ts.lineHeight || 1.3}
               onChange={(e) =>
-                updateNode(node.id, {
-                  textStyle: { lineHeight: +e.target.value },
-                })
+                updateNode(node.id, { textStyle: { lineHeight: +e.target.value } })
               }
             />
           </Row>
@@ -341,9 +359,7 @@ export default function InspectorPanel({ node, updateNode, removeNode }) {
             <select
               className={inputBase}
               value={node.objectFit || 'cover'}
-              onChange={(e) =>
-                updateNode(node.id, { objectFit: e.target.value })
-              }
+              onChange={(e) => updateNode(node.id, { objectFit: e.target.value })}
             >
               <option>cover</option>
               <option>contain</option>
@@ -358,9 +374,7 @@ export default function InspectorPanel({ node, updateNode, removeNode }) {
               type="number"
               value={st.cornerRadius || 0}
               onChange={(e) =>
-                updateNode(node.id, {
-                  style: { cornerRadius: +e.target.value },
-                })
+                updateNode(node.id, { style: { cornerRadius: +e.target.value } })
               }
             />
           </Row>
@@ -378,11 +392,7 @@ export default function InspectorPanel({ node, updateNode, removeNode }) {
               onChange={(e) =>
                 updateNode(node.id, {
                   style: {
-                    fill: {
-                      ...(st.fill || {}),
-                      color: e.target.value,
-                      opacity: st.fill?.opacity ?? 1,
-                    },
+                    fill: { ...(st.fill || {}), color: e.target.value, opacity: st.fill?.opacity ?? 1 },
                   },
                 })
               }
@@ -397,11 +407,7 @@ export default function InspectorPanel({ node, updateNode, removeNode }) {
               step="0.05"
               value={st.fill?.opacity ?? 1}
               onChange={(e) =>
-                updateNode(node.id, {
-                  style: {
-                    fill: { ...(st.fill || {}), opacity: +e.target.value },
-                  },
-                })
+                updateNode(node.id, { style: { fill: { ...(st.fill || {}), opacity: +e.target.value } } })
               }
             />
           </Row>
@@ -431,11 +437,7 @@ export default function InspectorPanel({ node, updateNode, removeNode }) {
               step="0.1"
               value={st.stroke?.width ?? 0.6}
               onChange={(e) =>
-                updateNode(node.id, {
-                  style: {
-                    stroke: { ...(st.stroke || {}), width: +e.target.value },
-                  },
-                })
+                updateNode(node.id, { style: { stroke: { ...(st.stroke || {}), width: +e.target.value } } })
               }
             />
           </Row>
@@ -445,9 +447,7 @@ export default function InspectorPanel({ node, updateNode, removeNode }) {
               type="number"
               value={st.cornerRadius || 0}
               onChange={(e) =>
-                updateNode(node.id, {
-                  style: { cornerRadius: +e.target.value },
-                })
+                updateNode(node.id, { style: { cornerRadius: +e.target.value } })
               }
             />
           </Row>
