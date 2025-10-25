@@ -89,7 +89,9 @@ export default function Toolbar(props) {
 			const wantWeight =
 				typeof ts.fontWeight === 'number' ? ts.fontWeight : 400;
 			await ensureGoogleFont(opt.family, [wantWeight, 700], wantItalic);
-		} catch (e) {}
+		} catch (e) {
+      console.log(e)
+    }
 		patchText({ fontFamily: stack });
 	};
 
