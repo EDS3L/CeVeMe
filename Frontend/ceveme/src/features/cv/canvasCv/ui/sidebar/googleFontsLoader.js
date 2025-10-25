@@ -1,231 +1,123 @@
-/* eslint-disable no-empty */
-// src/fonts/googleFontsLoader.js
-const LS_KEY = 'GF_LAST_USED_V1'; // { family: { weights:[...], italic:true/false, ts:number }, ... }
-const MAX_FAMILIES_REMEMBERED = 24; // LRU limit
-const inflight = new Map(); // "Family|400,700|i0" -> Promise
-const loaded = new Map(); // family -> {weights:Set<number>, italic:Set<0|1>}
-let preconnected = false;
+// googleFontsLoader.js — pełny loader ital,wght + lekki subsetowy podgląd
+
+const loadedHrefs = new Set();
+const previewInflight = new Map(); // "Family|400|i0|text=..." -> Promise
 
 function toCss2Family(f) {
-  return String(f || '')
-    .trim()
-    .replace(/\s+/g, '+');
+	return String(f || '')
+		.trim()
+		.replace(/\s+/g, '+');
 }
 function normalizeWeight(w) {
-  const n = parseInt(w, 10);
-  if (Number.isFinite(n)) return Math.min(900, Math.max(100, n));
-  return w === 'bold' ? 700 : 400;
+	const n = parseInt(w, 10);
+	if (Number.isFinite(n)) return Math.min(900, Math.max(100, n));
+	return w === 'bold' ? 700 : 400;
 }
-function weightsToParam(arr) {
-  const uniq = [...new Set((arr || []).map(normalizeWeight))].sort(
-    (a, b) => a - b
-  );
-  return uniq.length ? uniq : [400];
-}
-function buildCssHrefSingle(family, weights = [400], italic = false) {
-  const fam = toCss2Family(family);
-  const w = weightsToParam(weights);
-  const axis = italic ? 'ital,wght@' : 'wght@';
-  const vals = italic ? w.map((v) => `1,${v}`).join(';') : w.join(';');
-  return `https://fonts.googleapis.com/css2?family=${fam}:${axis}${vals}&display=swap`;
-}
-function buildCssHrefMulti(requests /* [{family, weights, italic}] */) {
-  const parts = requests.map((r) => {
-    const fam = toCss2Family(r.family);
-    const w = weightsToParam(r.weights);
-    const axis = r.italic ? 'ital,wght@' : 'wght@';
-    const vals = r.italic ? w.map((v) => `1,${v}`).join(';') : w.join(';');
-    return `family=${fam}:${axis}${vals}`;
-  });
-  return `https://fonts.googleapis.com/css2?${parts.join('&')}&display=swap`;
-}
-
 function addPreconnects() {
-  if (preconnected) return;
-  preconnected = true;
-  for (const href of [
-    'https://fonts.googleapis.com',
-    'https://fonts.gstatic.com',
-  ]) {
-    if (!document.querySelector(`link[rel="preconnect"][href="${href}"]`)) {
-      const l = document.createElement('link');
-      l.rel = 'preconnect';
-      l.href = href;
-      l.crossOrigin = 'anonymous';
-      document.head.appendChild(l);
-    }
-  }
+	for (const href of [
+		'https://fonts.googleapis.com',
+		'https://fonts.gstatic.com',
+	]) {
+		if (!document.querySelector(`link[rel="preconnect"][href="${href}"]`)) {
+			const l = document.createElement('link');
+			l.rel = 'preconnect';
+			l.href = href;
+			l.crossOrigin = 'anonymous';
+			document.head.appendChild(l);
+		}
+	}
+}
+function injectCssLink(href, attr = 'data-gf') {
+	if (loadedHrefs.has(href)) return;
+	const link = document.createElement('link');
+	link.rel = 'stylesheet';
+	link.href = href;
+	link.setAttribute(attr, href);
+	document.head.appendChild(link);
+	loadedHrefs.add(href);
 }
 
-function injectCssLink(href) {
-  if (document.querySelector(`link[data-gf="${href}"]`)) return;
-  const link = document.createElement('link');
-  link.rel = 'stylesheet';
-  link.href = href;
-  link.setAttribute('data-gf', href);
-  document.head.appendChild(link);
-}
-
-async function waitVariant(family, weight = 400, italic = false) {
-  const s = `${italic ? 'italic ' : ''}${normalizeWeight(
-    weight
-  )} 1em "${family}"`;
-  try {
-    await document.fonts.load(s);
-  } catch {}
-}
-
-function keyFor(family, weights, italic) {
-  return `${family}|${weightsToParam(weights).join(',')}|i${italic ? 1 : 0}`;
-}
-
-function readLRU() {
-  try {
-    return JSON.parse(localStorage.getItem(LS_KEY) || '{}');
-  } catch {
-    return {};
-  }
-}
-function writeLRU(obj) {
-  try {
-    localStorage.setItem(LS_KEY, JSON.stringify(obj));
-  } catch {}
-}
-function remember(family, weights = [400], italic = false) {
-  const lru = readLRU();
-  const now = Date.now();
-  const prev = lru[family] || { weights: [], italic: false, ts: 0 };
-  const mergedWeights = [
-    ...new Set([...(prev.weights || []), ...weightsToParam(weights)]),
-  ];
-  const mergedItalic = Boolean(prev.italic || italic);
-  lru[family] = { weights: mergedWeights, italic: mergedItalic, ts: now };
-
-  // LRU trim
-  const entries = Object.entries(lru).sort((a, b) => b[1].ts - a[1].ts);
-  const trimmed = entries.slice(0, MAX_FAMILIES_REMEMBERED);
-  const out = Object.fromEntries(trimmed);
-  writeLRU(out);
-}
-
-function markLoaded(family, weights = [400], italic = false) {
-  const e = loaded.get(family) || { weights: new Set(), italic: new Set() };
-  for (const w of weightsToParam(weights)) e.weights.add(w);
-  e.italic.add(italic ? 1 : 0);
-  loaded.set(family, e);
-}
-
-function isLoaded(family, weight = 400, italic = false) {
-  const e = loaded.get(family);
-  if (!e) return false;
-  return e.weights.has(normalizeWeight(weight)) && e.italic.has(italic ? 1 : 0);
-}
-
-/** Ładuje jedną rodzinę (dedupe + cache + waitForFont) */
+/** Pełny loader (użycie w dokumencie) */
 export async function ensureGoogleFont(
-  family,
-  weights = [400],
-  italic = false
+	family,
+	weights = [400, 700],
+	italic = false
 ) {
-  addPreconnects();
-  const k = keyFor(family, weights, italic);
-  if (inflight.has(k)) return inflight.get(k);
+	if (!family) return;
+	addPreconnects();
 
-  // jeżeli wszystkie warianty są już załadowane – kończymy
-  const allLoaded = weightsToParam(weights).every((w) =>
-    isLoaded(family, w, italic)
-  );
-  if (allLoaded) return Promise.resolve();
+	const uniq = Array.from(new Set(weights.map(normalizeWeight))).sort(
+		(a, b) => a - b
+	);
+	const fam = toCss2Family(family);
+	const axis = 'ital,wght@';
+	const normalRow = `0,${uniq.join(';0,')}`; // roman
+	const italicRow = `1,${uniq.join(';1,')}`; // italic
+	const rows = italic ? `${normalRow};${italicRow}` : normalRow;
 
-  const href = buildCssHrefSingle(family, weights, italic);
-  injectCssLink(href);
+	const href = `https://fonts.googleapis.com/css2?family=${fam}:${axis}${rows}&display=swap`;
+	injectCssLink(href, 'data-gf');
 
-  const p = (async () => {
-    // poczekaj na każdą odmianę
-    await Promise.all(
-      weightsToParam(weights).map((w) => waitVariant(family, w, italic))
-    );
-    markLoaded(family, weights, italic);
-    remember(family, weights, italic);
-  })();
-
-  inflight.set(k, p);
-  try {
-    await p;
-  } finally {
-    inflight.delete(k);
-  }
+	const loads = [];
+	for (const w of uniq) {
+		loads.push(document.fonts.load(`${w} 1em "${family}"`));
+		if (italic) loads.push(document.fonts.load(`italic ${w} 1em "${family}"`));
+	}
+	try {
+		await Promise.allSettled(loads);
+	} catch {}
 }
 
-/** Ładuje hurtowo wiele rodzin w jednym CSS2 request (szybciej) */
-export async function ensureManyGoogleFonts(
-  requests /* [{family, weights, italic}] */
+/** 🔎 Lekki loader podglądu (subset przez &text=...) */
+const BASE_PREVIEW_CHARSET =
+	'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz' +
+	'ĄąĆćĘęŁłŃńÓóŚśŹźŻż' +
+	'0123456789' +
+	' -_()[]{}.,:;!?„”"\'/\\+&@#%';
+
+function uniqChars(s) {
+	return Array.from(new Set(String(s || ''))).join('');
+}
+
+function buildCssHrefPreview(family, weight = 400, italic = false, text = '') {
+	const fam = toCss2Family(family);
+	const w = normalizeWeight(weight);
+	const axis = italic ? 'ital,wght@' : 'wght@';
+	const vals = italic ? `1,${w}` : `${w}`;
+	const subset = uniqChars(BASE_PREVIEW_CHARSET + String(text || ''));
+	const encoded = encodeURIComponent(subset);
+	return `https://fonts.googleapis.com/css2?family=${fam}:${axis}${vals}&display=swap&text=${encoded}`;
+}
+
+export async function ensureGoogleFontPreview(
+	family,
+	{ weight = 400, italic = false, text = '' } = {}
 ) {
-  addPreconnects();
-  const need = [];
-  for (const r of requests) {
-    const ws = weightsToParam(r.weights);
-    const pending = ws.some((w) => !isLoaded(r.family, w, !!r.italic));
-    if (pending)
-      need.push({ family: r.family, weights: ws, italic: !!r.italic });
-  }
-  if (!need.length) return;
+	if (!family) return;
+	addPreconnects();
+	const key = `${family}|${normalizeWeight(weight)}|i${
+		italic ? 1 : 0
+	}|text=${text}`;
+	if (previewInflight.has(key)) return previewInflight.get(key);
 
-  const href = buildCssHrefMulti(need);
-  injectCssLink(href);
-  await Promise.all(
-    need.flatMap((r) =>
-      r.weights.map((w) => waitVariant(r.family, w, r.italic))
-    )
-  );
-  for (const r of need) {
-    markLoaded(r.family, r.weights, r.italic);
-    remember(r.family, r.weights, r.italic);
-  }
+	const href = buildCssHrefPreview(family, weight, italic, text);
+	injectCssLink(href, 'data-gf-preview');
+
+	const p = (async () => {
+		try {
+			const s = `${italic ? 'italic ' : ''}${normalizeWeight(
+				weight
+			)} 1em "${family}"`;
+			await document.fonts.load(s);
+		} catch {}
+	})();
+
+	previewInflight.set(key, p);
+	try {
+		await p;
+	} finally {
+		previewInflight.delete(key);
+	}
 }
 
-/** Skanuje Twój doc.nodes i robi warm-up wszystkich używanych rodzin/wag */
-export async function warmupFontsFromDoc(doc) {
-  if (!doc || !Array.isArray(doc.nodes)) return;
-  const map = new Map(); // family -> {weights:Set, italic:boolean}
-  for (const n of doc.nodes) {
-    if (n.type !== 'text') continue;
-    const ts = n.textStyle || {};
-    const fam = (ts.fontFamily || '')
-      .split(',')[0]
-      ?.replace(/(^"|"$)/g, '')
-      .trim();
-    if (!fam) continue;
-    const w = normalizeWeight(ts.fontWeight || 400);
-    const i = (ts.fontStyle || 'normal') === 'italic';
-    const rec = map.get(fam) || { weights: new Set(), italic: false };
-    rec.weights.add(w);
-    rec.italic = rec.italic || i;
-    map.set(fam, rec);
-  }
-  const req = [...map.entries()].map(([family, v]) => ({
-    family,
-    weights: [...v.weights],
-    italic: v.italic,
-  }));
-  await ensureManyGoogleFonts(req);
-}
-
-/** Z pamięci LRU preładuje ostatnio używane rodziny (idle) */
-export function warmupFontsFromCacheIdle() {
-  addPreconnects();
-  const lru = readLRU();
-  const req = Object.keys(lru)
-    .sort((a, b) => lru[b].ts - lru[a].ts)
-    .slice(0, 8) // nie przesadzaj
-    .map((f) => ({
-      family: f,
-      weights: lru[f].weights,
-      italic: lru[f].italic,
-    }));
-  if (!req.length) return;
-  const run = () => ensureManyGoogleFonts(req).catch(() => {});
-  if ('requestIdleCallback' in window)
-    window.requestIdleCallback(run, { timeout: 2000 });
-  else setTimeout(run, 300);
-}
+export default { ensureGoogleFont, ensureGoogleFontPreview };
