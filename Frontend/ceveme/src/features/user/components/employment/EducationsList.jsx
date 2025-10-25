@@ -7,13 +7,13 @@ import UserService from '../../../../hooks/UserService';
 import { toast } from 'react-toastify';
 import EmploymentInfoDelete from '../../hooks/useDeleteEmploymentInfo';
 import EmploymentInfoEdit from '../../hooks/useEditEmploymentInfo';
+import MonthYearPicker from './MonthYearPicker';
 
 export default function EducationsList({
   editId,
   educations,
   onChange,
   setConfirm,
-  errors,
   onImprove,
   setEditId,
 }) {
@@ -27,6 +27,10 @@ export default function EducationsList({
       /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     return uuidRegex.test(str);
   };
+
+  const hasUnsavedNew = educations.some(
+    (l) => isUUID(l.id) && !(l.name || '').trim()
+  );
 
   const createEducation = async (
     schoolName,
@@ -170,15 +174,14 @@ export default function EducationsList({
                     >
                       Data rozpoczęcia
                     </label>
-                    <input
+                    <MonthYearPicker
                       id={`edu-start-${ed.id}`}
-                      type="date"
                       value={ed.startingDate || ''}
-                      onChange={(e) =>
-                        update(ed.id, { startingDate: e.target.value })
-                      }
+                      onChange={(e) => update(ed.id, { startingDate: e })}
                       disabled={!isEditing}
-                      className="w-full rounded-xl border border-cloudlight bg-basewhite text-slatedark px-3 py-2 outline-none ring-offset-2 focus:ring-2 focus:ring-feedbackfocus"
+                      min="1980-01"
+                      max="2100-12"
+                      className="w-full"
                     />
                   </div>
 
@@ -189,22 +192,15 @@ export default function EducationsList({
                     >
                       Data zakończenia
                     </label>
-                    <input
+                    <MonthYearPicker
                       id={`edu-end-${ed.id}`}
-                      type="date"
                       value={ed.endDate || ''}
-                      onChange={(e) =>
-                        update(ed.id, { endDate: e.target.value })
-                      }
+                      onChange={(e) => update(ed.id, { endDate: e })}
                       disabled={!isEditing || ed.currently}
-                      aria-invalid={!!errors[`edu-dates-${ed.id}`]}
-                      className="w-full rounded-xl border border-cloudlight bg-basewhite text-slatedark px-3 py-2 outline-none ring-offset-2 focus:ring-2 focus:ring-feedbackfocus disabled:opacity-60"
+                      min="1980-01"
+                      max="2100-12"
+                      className="w-full"
                     />
-                    {errors[`edu-dates-${ed.id}`] && (
-                      <p className="text-xs text-feedbackerror">
-                        {errors[`edu-dates-${ed.id}`]}
-                      </p>
-                    )}
                   </div>
 
                   <Toggle
@@ -326,6 +322,7 @@ export default function EducationsList({
         type="button"
         aria-label="Dodaj edukację"
         onClick={() => {
+          if (hasUnsavedNew) return;
           const id = crypto.randomUUID();
           onChange([
             ...educations,
@@ -341,7 +338,12 @@ export default function EducationsList({
           ]);
           setEditId(id);
         }}
-        className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border border-cloudlight hover:bg-ivorymedium/60"
+        disabled={hasUnsavedNew}
+        className={`inline-flex items-center gap-2 rounded-xl px-3 py-2 border border-cloudlight transition ${
+          hasUnsavedNew
+            ? 'opacity-50 cursor-not-allowed'
+            : 'hover:bg-ivorymedium/60'
+        }`}
       >
         <Plus size={18} strokeWidth={2} /> Dodaj edukację
       </button>

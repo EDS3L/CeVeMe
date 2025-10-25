@@ -406,6 +406,10 @@ export default function LinksList({
       str
     );
 
+  const hasUnsavedNew = links.some(
+    (l) => isUUID(l.id) && !(l.name || '').trim()
+  );
+
   const createLink = async (title, link) => {
     try {
       const res = await create.createLink(null, email, title, link, null);
@@ -619,6 +623,7 @@ export default function LinksList({
         type="button"
         aria-label="Dodaj link"
         onClick={() => {
+          if (hasUnsavedNew) return;
           const id = crypto.randomUUID();
           onChange([
             ...links,
@@ -626,7 +631,12 @@ export default function LinksList({
           ]);
           setEditId(id);
         }}
-        className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border border-cloudlight hover:bg-ivorymedium/60"
+        disabled={hasUnsavedNew}
+        className={`inline-flex items-center gap-2 rounded-xl px-3 py-2 border border-cloudlight transition ${
+          hasUnsavedNew
+            ? 'opacity-50 cursor-not-allowed'
+            : 'hover:bg-ivorymedium/60'
+        }`}
       >
         <Plus size={18} strokeWidth={2} /> Dodaj link
       </button>

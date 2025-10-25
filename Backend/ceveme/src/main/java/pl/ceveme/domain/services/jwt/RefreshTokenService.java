@@ -128,9 +128,7 @@ public class RefreshTokenService {
 
         RefreshToken refreshToken = refreshTokenRepository.findByJit(jit)
                 .orElseThrow(() -> new IllegalArgumentException("Refresh token not found by " + jit));
-        log.info("Token refresh for: {}  at time: {}", refreshToken.getUser()
-                .getEmail()
-                .email(), Instant.now());
+
         if (refreshToken.getExpiresAt()
                 .isBefore(Instant.now())) {
             expiredTokenCleanerService.deleteExpiredToken(jit);

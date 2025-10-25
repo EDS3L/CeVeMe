@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from 'react';
 import PersonalData from './PersonalData';
 import PasswordDetails from './PasswordDetails';

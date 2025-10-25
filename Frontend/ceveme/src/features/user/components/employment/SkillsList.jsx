@@ -52,6 +52,10 @@ export default function SkillsList({
     return res;
   };
 
+  const hasUnsavedNew = skills.some(
+    (l) => isUUID(l.id) && !(l.name || '').trim()
+  );
+
   return (
     <div className="grid gap-2">
       <h3 className="font-semibold flex items-center gap-2">
@@ -211,11 +215,23 @@ export default function SkillsList({
         type="button"
         aria-label="Dodaj umiejętność"
         onClick={() => {
+          if (hasUnsavedNew) return;
+
           const id = crypto.randomUUID();
           onChange([...skills, { id, name: '', type: '' }]);
           setEditId(id);
         }}
-        className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border border-cloudlight hover:bg-ivorymedium/60"
+        disabled={hasUnsavedNew}
+        className={`inline-flex items-center gap-2 rounded-xl px-3 py-2 border border-cloudlight hover:bg-ivorymedium/60 ${
+          hasUnsavedNew
+            ? 'opacity-50 cursor-not-allowed'
+            : 'hover:bg-ivorymedium/60'
+        }`}
+        title={
+          hasUnsavedNew
+            ? 'Zapisz istniejący nowy język zanim dodasz kolejny'
+            : 'Dodaj język'
+        }
       >
         <Plus size={18} strokeWidth={2} /> Dodaj umiejętność
       </button>

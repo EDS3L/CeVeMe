@@ -39,6 +39,10 @@ public class LoginUserUseCase {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
+        if(!user.isActive()) {
+            throw new IllegalArgumentException("Your account is not activated");
+        }
+
         if (!bCryptPasswordEncoderAdapter.matches(request.password(), user.getPassword())) {
             throw new IllegalArgumentException("Invalid credentials");
         }
@@ -73,8 +77,5 @@ public class LoginUserUseCase {
 
         servletResponse.addCookie(accessCookie);
     }
-
-
-
 
 }

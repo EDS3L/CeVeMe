@@ -1,3 +1,4 @@
+/* eslint-disable no-empty */
 // src/fonts/googleFontsLoader.js
 const LS_KEY = 'GF_LAST_USED_V1'; // { family: { weights:[...], italic:true/false, ts:number }, ... }
 const MAX_FAMILIES_REMEMBERED = 24; // LRU limit

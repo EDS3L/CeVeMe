@@ -18,7 +18,7 @@ import { extraBottomMm } from './utils/overflow';
 
 import { buildBlackAndWhiteCV } from './templates/BlackAndWhite';
 import { buildWhiteMinimalistCompactCV } from './templates/WhiteMinimalistNodes';
-import { buildDocFromAI } from './templates/SideBarTemplate';
+import { buildDocFromAI } from './templates/SidebarTemplate';
 import { buildGrayAndWhite } from './templates/GrayAndWhiteSimple';
 
 import { generatePdfBlob } from './services/exportVector';
@@ -330,6 +330,8 @@ export default function App() {
         onGenerateAndSave={handleSaveAndHistory}
         // otwarcie modala „Wygeneruj CV”
         onOpenGenerateModal={openGenerateModal}
+        selectedId={selectedId}
+        updateNode={updateNode}
       />
 
       <div className="grid gap-3 p-3 [grid-template-columns:280px_1fr_320px] max-[1400px]:[grid-template-columns:240px_1fr_280px] max-[1200px]:[grid-template-columns:240px_1fr] max-[1200px]:[grid-template-areas:'sidebar_canvas''inspector_inspector'] max-[900px]:grid-cols-1 max-[900px]:[grid-template-areas:'canvas''sidebar''inspector']">

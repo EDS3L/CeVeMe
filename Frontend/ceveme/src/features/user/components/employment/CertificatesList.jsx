@@ -5,6 +5,7 @@ import EmploymentInfoEdit from '../../hooks/useEditEmploymentInfo';
 import { toast } from 'react-toastify';
 import EmploymentInfoDelete from '../../hooks/useDeleteEmploymentInfo';
 import EmploymentInfoCreate from '../../hooks/useCreateEmploymentInfo';
+import MonthYearPicker from './MonthYearPicker';
 
 export default function CertificatesList({
   editId,
@@ -26,6 +27,10 @@ export default function CertificatesList({
   const save = new EmploymentInfoCreate();
   const edit = new EmploymentInfoEdit();
   const remove = new EmploymentInfoDelete();
+
+  const hasUnsavedNew = certificates.some(
+    (l) => isUUID(l.id) && !(l.name || '').trim()
+  );
 
   const saveCertificate = async (name, dateOfCertificate) => {
     try {
@@ -95,15 +100,16 @@ export default function CertificatesList({
                     >
                       Data uzyskania
                     </label>
-                    <input
+                    <MonthYearPicker
                       id={`cert-date-${c.id}`}
-                      type="date"
-                      value={c.dateOfCertificate || ''}
-                      onChange={(e) =>
-                        update(c.id, { dateOfCertificate: e.target.value })
-                      }
+                      value={c.dateOfCertificate || ''} // może być "YYYY-MM" albo "YYYY-MM-DD"
+                      onChange={(iso) =>
+                        update(c.id, { dateOfCertificate: iso })
+                      } // zapis "YYYY-MM-01"
                       disabled={!isEditing}
-                      className="w-full rounded-xl border border-cloudlight bg-basewhite text-slatedark px-3 py-2 outline-none ring-offset-2 focus:ring-2 focus:ring-feedbackfocus"
+                      min="1980-01"
+                      max="2100-12"
+                      className="w-full"
                     />
                   </div>
 
@@ -216,11 +222,17 @@ export default function CertificatesList({
         type="button"
         aria-label="Dodaj certyfikat"
         onClick={() => {
+          if (hasUnsavedNew) return;
           const id = crypto.randomUUID();
           onChange([...certificates, { id, name: '', dateOfCertificate: '' }]);
           setEditId(id);
         }}
-        className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border border-cloudlight hover:bg-ivorymedium/60"
+        disabled={hasUnsavedNew}
+        className={`inline-flex items-center gap-2 rounded-xl px-3 py-2 border border-cloudlight transition ${
+          hasUnsavedNew
+            ? 'opacity-50 cursor-not-allowed'
+            : 'hover:bg-ivorymedium/60'
+        }`}
       >
         <Plus size={18} strokeWidth={2} /> Dodaj certyfikat
       </button>

@@ -54,6 +54,13 @@ const RoutersConfig = {
     component: React.lazy(() => import('../features/cv/canvasCv/CvPage')),
     requiredRole: null,
   },
+  active: {
+    path: '/auth/active',
+    component: React.lazy(() =>
+      import('../features/auth/pages/ActivateAccount')
+    ),
+    requiredRole: null,
+  },
 };
 
 export default RoutersConfig;

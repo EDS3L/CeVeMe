@@ -1,27 +1,28 @@
-import React, { useState } from 'react';
+import React, { useMemo, useRef, useState, useEffect } from 'react';
 import { exportDocumentToPdf, openPdfPrint } from '../services/exportVector';
 import AddElementDialog from './canva/AddElementDialog';
 import SaveMenu from './canva/SaveMenu';
-
-const IconUndo = () => (
-  <svg viewBox="0 0 24 24" className="w-5 h-5">
-    <path
-      fill="currentColor"
-      d="M7 7l-4 4 4 4V12h6a4 4 0 014 4v1h2v-1a6 6 0 00-6-6H7V7z"
-    />
-  </svg>
-);
-const IconRedo = () => (
-  <svg viewBox="0 0 24 24" className="w-5 h-5">
-    <path
-      fill="currentColor"
-      d="M17 7v4h-6a6 6 0 00-6 6v1h2v-1a4 4 0 014-4h6v4l4-4-4-4z"
-    />
-  </svg>
-);
+import { FONT_STACKS } from './sidebar/fonts';
+import { ensureGoogleFont } from './sidebar/googleFontsLoader';
+import {
+  RiArrowGoBackLine,
+  RiArrowGoForwardLine,
+  RiBold,
+  RiItalic,
+  RiAlignLeft,
+  RiAlignCenter,
+  RiAlignRight,
+  RiAlignJustify,
+  RiFontSize2,
+  RiPaletteLine,
+  RiImageEditLine,
+} from 'react-icons/ri';
+import { FaFont } from 'react-icons/fa';
 
 export default function Toolbar({
   doc,
+  selectedId, // ⬅︎ dostajemy ID
+  updateNode, // ⬅︎ i patcher
   addText,
   addImage,
   addRect,
@@ -37,22 +38,102 @@ export default function Toolbar({
   onOpenGenerateModal,
 }) {
   const [addOpen, setAddOpen] = useState(false);
+  const fileInputRef = useRef(null);
 
-  const onAddImage = async () => {
-    if (loading) return;
-    const url = prompt('URL obrazka:');
-    if (url) addImage(url);
+  // ⬇︎ WYLICZAMY ZAZNACZONY ELEMENT
+  const n = useMemo(
+    () =>
+      (doc?.nodes || []).find((x) => String(x.id) === String(selectedId)) ||
+      null,
+    [doc?.nodes, selectedId]
+  );
+
+  const isText = n?.type === 'text';
+  const isImage = n?.type === 'image';
+  const isShape = n?.type === 'shape';
+
+  const ts = useMemo(() => n?.textStyle || {}, [n]);
+  const st = useMemo(() => n?.style || {}, [n]);
+
+  const num = (v, d) => (typeof v === 'number' ? v : d);
+  const patchText = (patch) => n && updateNode(n.id, { textStyle: patch });
+  const patchStyle = (patch) => n && updateNode(n.id, { style: patch });
+  const patchNode = (patch) => n && updateNode(n.id, patch);
+
+  const changeFontSize = (delta) => {
+    if (!isText) return;
+    const next = Math.max(6, num(ts.fontSize, 12) + delta);
+    patchText({ fontSize: next });
   };
+  const toggleBold = () =>
+    isText &&
+    patchText({
+      fontWeight:
+        (typeof ts.fontWeight === 'number' ? ts.fontWeight : 400) >= 700
+          ? 400
+          : 700,
+    });
+  const toggleItalic = () =>
+    isText &&
+    patchText({ fontStyle: ts.fontStyle === 'italic' ? 'normal' : 'italic' });
+  const setAlign = (align) => isText && patchText({ textAlign: align });
+
+  const handleFontChange = async (e) => {
+    if (!isText) return;
+    const key = e.target.value;
+    const item = FONT_STACKS.find((i) => i.label === key);
+    if (!item) return;
+    try {
+      const wantItalic = ts.fontStyle === 'italic';
+      const wantWeight =
+        typeof ts.fontWeight === 'number' ? ts.fontWeight : 400;
+      await ensureGoogleFont(item.family, [wantWeight, 700], wantItalic);
+    } catch {}
+    patchText({ fontFamily: item.stack });
+  };
+
+  const setSrcFromFile = async (file) => {
+    if (!isImage || !file) return;
+    try {
+      const dataUrl = await new Promise((res, rej) => {
+        const r = new FileReader();
+        r.onload = () => res(r.result);
+        r.onerror = rej;
+        r.readAsDataURL(file);
+      });
+      patchNode({ src: String(dataUrl) });
+    } catch {
+      const url = URL.createObjectURL(file);
+      patchNode({ src: url });
+    }
+  };
+
+  const IconBtn = ({ active, title, onClick, children }) => (
+    <button
+      onClick={onClick}
+      title={title}
+      className={`px-2 py-2 rounded-lg border border-black/15 bg-white text-slate-700 hover:text-slate-900 hover:bg-slate-50 ${
+        active ? 'bg-slate-900 text-white hover:bg-slate-900' : ''
+      }`}
+    >
+      <span className="w-5 h-5 inline-flex items-center justify-center">
+        {children}
+      </span>
+    </button>
+  );
 
   return (
     <>
-      <div className="sticky top-0 z-10 flex items-center gap-2 p-2 bg-white border-b border-black/10 overflow-x-auto">
-        {/* LEWA GRUPA */}
-        <div className="flex flex-wrap items-center gap-2">
+      {/* fix na globalne resety svg */}
+      <style>{`.toolbar svg{width:1.25rem;height:1.25rem;display:inline-block}.toolbar svg,.toolbar svg *{fill:currentColor!important;stroke:none!important}`}</style>
+
+      <div className="toolbar sticky top-0 z-20 flex items-center gap-2 p-2 bg-white border-b border-black/10 overflow-x-auto">
+        {/* LEWA */}
+        <div className="flex items-center gap-2">
           <button
             disabled={loading}
             onClick={() => setAddOpen(true)}
-            className="px-3 py-2 rounded-lg bg-slate-900 text-white font-semibold hover:bg-slate-800"
+            className="px-3 py-2 rounded-lg bg-slate-900 text-white font-semibold hover:bg-slate-800 disabled:opacity-60"
           >
             Dodaj
           </button>
@@ -62,46 +143,315 @@ export default function Toolbar({
           <button
             disabled={!canUndo || loading}
             onClick={undo}
-            className="px-2 py-2 rounded-lg border border-black/15 bg-white hover:bg-slate-50 disabled:opacity-60"
+            className="px-2 py-2 rounded-lg border border-black/15 bg-white text-slate-700 hover:bg-slate-900 hover:bg-slate-50 disabled:opacity-60"
+            title="Cofnij"
           >
-            <IconUndo />
+            <RiArrowGoBackLine />
           </button>
           <button
             disabled={!canRedo || loading}
             onClick={redo}
-            className="px-2 py-2 rounded-lg border border-black/15 bg-white hover:bg-slate-50 disabled:opacity-60"
+            className="px-2 py-2 rounded-lg border border-black/15 bg-white text-slate-700 hover:text-slate-900 hover:bg-slate-50 disabled:opacity-60"
+            title="Ponów"
           >
-            <IconRedo />
+            <RiArrowGoForwardLine />
           </button>
 
           <div className="w-px h-7 bg-black/10" />
-
           <button
             disabled={loading}
             onClick={onToggleGrid}
-            className="px-3 py-2 rounded-lg border border-black/15 bg-white text-sm font-semibold hover:bg-slate-50"
+            className="px-3 py-2 rounded-lg border border-black/15 bg-white text-sm font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-50 disabled:opacity-60"
           >
             {showGrid ? 'Ukryj siatkę' : 'Pokaż siatkę'}
           </button>
 
-          {/* <button
-            disabled={loading}
-            onClick={onToggleOverflowPeek}
-            className="px-3 py-2 rounded-lg border border-black/15 bg-white text-sm font-semibold hover:bg-slate-50"
-          >
-            {overflowPeek
-              ? 'Wyłącz podgląd przepełnienia'
-              : 'Podgląd przepełnienia'}
-          </button> */}
+          <span className="ml-2 px-2 py-1 text-[11px] rounded bg-slate-100 text-slate-600 border border-slate-200">
+            sel: {selectedId ?? '—'} | found: {n ? 'yes' : 'no'}
+            {n ? ` | type: ${n.type}` : ''}
+          </span>
+        </div>
 
-          {overflowMm > 0 && (
-            <span className="px-2 py-1 rounded bg-red-50 text-red-700 border border-red-200 text-xs">
-              Wystaje: +{overflowMm.toFixed(1)} mm
-            </span>
+        {/* ŚRODEK – KONTEKST */}
+        <div className="flex items-center gap-2 mx-auto">
+          {/* TEXT */}
+          {isText && (
+            <>
+              <label className="flex items-center gap-2 px-2 py-1 rounded-lg border border-black/15 bg-white text-slate-700">
+                <FaFont />
+                <select
+                  className="px-1 py-[6px] text-sm rounded-md outline-none"
+                  value={
+                    FONT_STACKS.find((i) => i.stack === n.textStyle?.fontFamily)
+                      ?.label || ''
+                  }
+                  onChange={handleFontChange}
+                >
+                  <option value="">(system)</option>
+                  {FONT_STACKS.map(({ label }) => (
+                    <option key={label} value={label}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <div className="inline-flex items-stretch rounded-lg border border-black/15 overflow-hidden text-slate-700">
+                <button
+                  onClick={() => changeFontSize(-1)}
+                  className="px-2 py-2 hover:bg-slate-50"
+                  title="Mniejszy"
+                >
+                  −
+                </button>
+                <div className="px-2 py-2 flex items-center gap-1">
+                  <RiFontSize2 />
+                  <input
+                    className="w-14 text-center rounded-md border border-black/10 px-2 py-[6px] text-sm outline-none focus:ring-2 focus:ring-blue-500/40"
+                    type="number"
+                    min={6}
+                    value={num(ts.fontSize, 12)}
+                    onChange={(e) =>
+                      patchText({
+                        fontSize: Math.max(6, +e.target.value || 12),
+                      })
+                    }
+                  />
+                </div>
+                <button
+                  onClick={() => changeFontSize(+1)}
+                  className="px-2 py-2 hover:bg-slate-50"
+                  title="Większy"
+                >
+                  +
+                </button>
+              </div>
+
+              <label className="flex items-center gap-2 px-2 py-1 rounded-lg border border-black/15 bg-white text-slate-700">
+                <RiBold />
+                <select
+                  className="px-1 py-[6px] text-sm rounded-md outline-none"
+                  value={
+                    typeof ts.fontWeight === 'number' ? ts.fontWeight : 400
+                  }
+                  onChange={(e) =>
+                    patchText({ fontWeight: +e.target.value || 400 })
+                  }
+                >
+                  {[100, 200, 300, 400, 500, 600, 700, 800, 900].map((w) => (
+                    <option key={w} value={w}>
+                      {w === 400
+                        ? 'Normal (400)'
+                        : w === 700
+                        ? 'Bold (700)'
+                        : w}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <div className="inline-flex items-center gap-1">
+                <IconBtn
+                  onClick={toggleBold}
+                  title="Pogrubienie"
+                  active={
+                    (typeof ts.fontWeight === 'number' ? ts.fontWeight : 400) >=
+                    700
+                  }
+                >
+                  <RiBold />
+                </IconBtn>
+                <IconBtn
+                  onClick={toggleItalic}
+                  title="Kursywa"
+                  active={ts.fontStyle === 'italic'}
+                >
+                  <RiItalic />
+                </IconBtn>
+              </div>
+
+              <div
+                className="inline-flex items-stretch rounded-lg border border-black/15 overflow-hidden text-slate-700"
+                title="Wyrównanie"
+              >
+                <button
+                  className={`px-2 py-2 border-r border-black/10 hover:bg-slate-50 ${
+                    (ts.textAlign || 'left') === 'left'
+                      ? 'bg-slate-900 text-white hover:bg-slate-900'
+                      : ''
+                  }`}
+                  onClick={() => setAlign('left')}
+                  aria-label="Wyrównanie: left"
+                >
+                  <RiAlignLeft />
+                </button>
+                <button
+                  className={`px-2 py-2 border-r border-black/10 hover:bg-slate-50 ${
+                    (ts.textAlign || 'left') === 'center'
+                      ? 'bg-slate-900 text-white hover:bg-slate-900'
+                      : ''
+                  }`}
+                  onClick={() => setAlign('center')}
+                  aria-label="Wyrównanie: center"
+                >
+                  <RiAlignCenter />
+                </button>
+                <button
+                  className={`px-2 py-2 border-r border-black/10 hover:bg-slate-50 ${
+                    (ts.textAlign || 'left') === 'right'
+                      ? 'bg-slate-900 text-white hover:bg-slate-900'
+                      : ''
+                  }`}
+                  onClick={() => setAlign('right')}
+                  aria-label="Wyrównanie: right"
+                >
+                  <RiAlignRight />
+                </button>
+                <button
+                  className={`px-2 py-2 border-r border-black/10 hover:bg-slate-50 ${
+                    (ts.textAlign || 'left') === 'justify'
+                      ? 'bg-slate-900 text-white hover:bg-slate-900'
+                      : ''
+                  }`}
+                  onClick={() => setAlign('justify')}
+                  aria-label="Wyrównanie: justify"
+                >
+                  <RiAlignJustify />
+                </button>
+              </div>
+
+              <label
+                className="px-2 py-2 rounded-lg border border-black/15 bg-white text-slate-700 hover:text-slate-900 hover:bg-slate-50 cursor-pointer"
+                title="Kolor tekstu"
+              >
+                <RiPaletteLine />
+                <input
+                  type="color"
+                  className="sr-only"
+                  value={ts.color || '#0f172a'}
+                  onChange={(e) => patchText({ color: e.target.value })}
+                />
+              </label>
+            </>
+          )}
+
+          {/* IMAGE */}
+          {isImage && (
+            <>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={async (e) => {
+                  const f = e.target.files?.[0];
+                  if (f) {
+                    await setSrcFromFile(f);
+                  }
+                  e.target.value = '';
+                }}
+              />
+              <button
+                className="px-2 py-2 rounded-lg border border-black/15 bg-white text-slate-700 hover:text-slate-900 hover:bg-slate-50"
+                title="Podmień obraz z pliku"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <RiImageEditLine />
+              </button>
+              <select
+                className="px-2 py-[6px] text-sm rounded-lg border border-black/15 bg-white outline-none"
+                value={n.objectFit || 'cover'}
+                onChange={(e) => patchNode({ objectFit: e.target.value })}
+                title="Dopasowanie"
+              >
+                <option>cover</option>
+                <option>contain</option>
+                <option>fill</option>
+                <option>none</option>
+                <option>scale-down</option>
+              </select>
+              <input
+                title="Zaokrąglenie (mm)"
+                className="w-20 rounded-lg border border-black/15 px-2 py-[6px] text-sm outline-none"
+                type="number"
+                value={st.cornerRadius || 0}
+                onChange={(e) => patchStyle({ cornerRadius: +e.target.value })}
+              />
+            </>
+          )}
+
+          {/* SHAPE */}
+          {isShape && (
+            <>
+              <input
+                title="Kolor wypełnienia"
+                type="color"
+                className="rounded-lg border border-black/15 px-1 py-[6px] text-sm outline-none"
+                value={st.fill?.color || '#e2e8f0'}
+                onChange={(e) =>
+                  patchStyle({
+                    fill: {
+                      ...(st.fill || {}),
+                      color: e.target.value,
+                      opacity: st.fill?.opacity ?? 1,
+                    },
+                  })
+                }
+              />
+              <input
+                title="Krycie (0–1)"
+                className="w-20 rounded-lg border border-black/15 px-2 py-[6px] text-sm outline-none"
+                type="number"
+                min="0"
+                max="1"
+                step="0.05"
+                value={st.fill?.opacity ?? 1}
+                onChange={(e) =>
+                  patchStyle({
+                    fill: { ...(st.fill || {}), opacity: +e.target.value },
+                  })
+                }
+              />
+              <input
+                title="Kolor obrysu"
+                type="color"
+                className="rounded-lg border border-black/15 px-1 py-[6px] text-sm outline-none"
+                value={st.stroke?.color || '#94a3b8'}
+                onChange={(e) =>
+                  patchStyle({
+                    stroke: {
+                      ...(st.stroke || {}),
+                      color: e.target.value,
+                      width: st.stroke?.width ?? 0.6,
+                      dash: st.stroke?.dash || [],
+                    },
+                  })
+                }
+              />
+              <input
+                title="Grubość obrysu (mm)"
+                className="w-24 rounded-lg border border-black/15 px-2 py-[6px] text-sm outline-none"
+                type="number"
+                step="0.1"
+                value={st.stroke?.width ?? 0.6}
+                onChange={(e) =>
+                  patchStyle({
+                    stroke: { ...(st.stroke || {}), width: +e.target.value },
+                  })
+                }
+              />
+              <input
+                title="Promień narożników (mm)"
+                className="w-24 rounded-lg border border-black/15 px-2 py-[6px] text-sm outline-none"
+                type="number"
+                value={st.cornerRadius || 0}
+                onChange={(e) => patchStyle({ cornerRadius: +e.target.value })}
+              />
+            </>
           )}
         </div>
 
-        {/* PRAWA GRUPA */}
+        {/* PRAWA */}
         <div className="flex items-center gap-2 ml-auto">
           <button
             className="px-3 py-2 rounded-lg text-white font-semibold border disabled:opacity-60"
@@ -114,7 +464,6 @@ export default function Toolbar({
           >
             {loading ? 'Pracuję…' : 'Wygeneruj CV'}
           </button>
-
           <SaveMenu
             disabled={loading}
             onGeneratePdf={() => exportDocumentToPdf(doc, 'CV.pdf')}
@@ -128,7 +477,7 @@ export default function Toolbar({
         open={addOpen}
         onClose={() => setAddOpen(false)}
         onAddText={addText}
-        onAddImage={onAddImage}
+        onAddImage={addImage}
         onAddRect={addRect}
       />
     </>

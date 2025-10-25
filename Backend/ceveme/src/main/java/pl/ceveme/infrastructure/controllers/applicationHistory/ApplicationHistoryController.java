@@ -5,10 +5,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import pl.ceveme.application.dto.applicationHistories.ApplicationHistoriesRequest;
 import pl.ceveme.application.dto.applicationHistories.ApplicationHistoriesResponse;
+import pl.ceveme.application.dto.applicationHistories.ApplicationStatusCounts;
 import pl.ceveme.application.dto.entity.applicationHistory.ApplicationHistoryRequest;
 import pl.ceveme.application.dto.entity.applicationHistory.ApplicationHistoryResponse;
 import pl.ceveme.application.usecase.applicationHistory.ChangeAppliactanionHistoriesStatus;
 import pl.ceveme.application.usecase.applicationHistory.GetApplicationHistoriesUseCase;
+import pl.ceveme.application.usecase.applicationHistory.GetTheCountedStatuses;
 import pl.ceveme.application.usecase.applicationHistory.SaveApplicationHistoryUseCase;
 import pl.ceveme.domain.model.entities.User;
 
@@ -22,11 +24,13 @@ public class ApplicationHistoryController {
     private final SaveApplicationHistoryUseCase saveApplicationHistoryUseCase;
     private final GetApplicationHistoriesUseCase getApplicationHistoriesUseCase;
     private final ChangeAppliactanionHistoriesStatus changeAppliactanionHistoriesStatus;
+    private final GetTheCountedStatuses getTheCountedStatuses;
 
-    public ApplicationHistoryController(SaveApplicationHistoryUseCase saveApplicationHistoryUseCase, GetApplicationHistoriesUseCase getApplicationHistoriesUseCase, ChangeAppliactanionHistoriesStatus changeAppliactanionHistoriesStatus) {
+    public ApplicationHistoryController(SaveApplicationHistoryUseCase saveApplicationHistoryUseCase, GetApplicationHistoriesUseCase getApplicationHistoriesUseCase, ChangeAppliactanionHistoriesStatus changeAppliactanionHistoriesStatus, GetTheCountedStatuses getTheCountedStatuses) {
         this.saveApplicationHistoryUseCase = saveApplicationHistoryUseCase;
         this.getApplicationHistoriesUseCase = getApplicationHistoriesUseCase;
         this.changeAppliactanionHistoriesStatus = changeAppliactanionHistoriesStatus;
+        this.getTheCountedStatuses = getTheCountedStatuses;
     }
 
     @PostMapping("/save")
@@ -51,6 +55,14 @@ public class ApplicationHistoryController {
 
         ApplicationHistoriesResponse response = changeAppliactanionHistoriesStatus.changeStatus(request, userId);
         return ResponseEntity.ok(response);
+    }
 
+    @GetMapping("/status/count")
+    public ResponseEntity<ApplicationStatusCounts> statusCount(Authentication authentication) {
+        User user= (User) authentication.getPrincipal();
+        Long userId = user.getId();
+
+        ApplicationStatusCounts applicationStatusCounts = getTheCountedStatuses.execute(userId);
+        return ResponseEntity.ok(applicationStatusCounts);
     }
 }

@@ -29,7 +29,7 @@ export default function LanguagesList({
   const token = userService.getCookie('accessToken');
   const email = userService.getEmailFromToken(token);
 
-  const LEVEL_OPTIONS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'NATIVE'];
+  const LEVEL_OPTIONS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'Native'];
 
   const isUUID = (str) => {
     const uuidRegex =
@@ -59,6 +59,10 @@ export default function LanguagesList({
     return res;
   };
 
+  const hasUnsavedNew = languages.some(
+    (l) => isUUID(l.id) && !(l.name || '').trim()
+  );
+
   return (
     <div className="grid gap-2">
       <h3 className="font-semibold flex items-center gap-2">
@@ -68,7 +72,7 @@ export default function LanguagesList({
       <ul role="list" className="grid gap-3">
         {languages.map((l) => {
           const isEditing = editId === l.id;
-          const normalizedLevel = (l.level || '').toUpperCase();
+          const normalizedLevel = l.level || '';
           const levelValue = LEVEL_OPTIONS.includes(normalizedLevel)
             ? normalizedLevel
             : '';
@@ -230,11 +234,22 @@ export default function LanguagesList({
         type="button"
         aria-label="Dodaj język"
         onClick={() => {
+          if (hasUnsavedNew) return;
           const id = crypto.randomUUID();
           onChange([...languages, { id: id, name: '', level: '' }]);
           setEditId(id);
         }}
-        className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border border-cloudlight hover:bg-ivorymedium/60"
+        disabled={hasUnsavedNew}
+        className={`inline-flex items-center gap-2 rounded-xl px-3 py-2 border border-cloudlight transition ${
+          hasUnsavedNew
+            ? 'opacity-50 cursor-not-allowed'
+            : 'hover:bg-ivorymedium/60'
+        }`}
+        title={
+          hasUnsavedNew
+            ? 'Zapisz istniejący nowy język zanim dodasz kolejny'
+            : 'Dodaj język'
+        }
       >
         <Plus size={18} strokeWidth={2} /> Dodaj język
       </button>

@@ -1,6 +1,18 @@
 spring:
   application:
     name: ceveme
+  mail:
+    host: ${MAIL_HOST}
+    port: 465
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    smtp:
+      auth: true
+      starttls:
+        enable: true
+        socketFactory:
+          class: javax.net.ssl.SSLSocketFactory
+          port: 465
 
   datasource:
     url: ${DATASOURCE_URL}

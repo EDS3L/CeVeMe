@@ -8,6 +8,7 @@ import EmploymentInfoDelete from '../../hooks/useDeleteEmploymentInfo';
 import { toast } from 'react-toastify';
 import Refinement from '../../hooks/userAirefinement';
 import EmploymentInfoEdit from '../../hooks/useEditEmploymentInfo';
+import MonthYearPicker from './MonthYearPicker';
 
 export default function ExperiencesList({
   editId,
@@ -29,6 +30,10 @@ export default function ExperiencesList({
       /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     return uuidRegex.test(str);
   };
+
+  const hasUnsavedNew = experiences.some(
+    (l) => isUUID(l.id) && !(l.name || '').trim()
+  );
 
   const createExperience = async (
     companyName,
@@ -164,15 +169,14 @@ export default function ExperiencesList({
                     >
                       Data rozpoczęcia
                     </label>
-                    <input
+                    <MonthYearPicker
                       id={`exp-start-${ex.id}`}
-                      type="date"
                       value={ex.startingDate || ''}
-                      onChange={(e) =>
-                        update(ex.id, { startingDate: e.target.value })
-                      }
+                      onChange={(e) => update(ex.id, { startingDate: e })}
                       disabled={!editing}
-                      className="w-full rounded-xl border border-cloudlight bg-basewhite text-slatedark px-3 py-2 outline-none ring-offset-2 focus:ring-2 focus:ring-feedbackfocus"
+                      min="1980-01"
+                      max="2100-12"
+                      className="w-full"
                     />
                   </div>
 
@@ -183,16 +187,14 @@ export default function ExperiencesList({
                     >
                       Data zakończenia
                     </label>
-                    <input
+                    <MonthYearPicker
                       id={`exp-end-${ex.id}`}
-                      type="date"
                       value={ex.endDate || ''}
-                      onChange={(e) =>
-                        update(ex.id, { endDate: e.target.value })
-                      }
-                      disabled={!editing || ex.currently}
-                      aria-invalid={!!errors[`exp-dates-${ex.id}`]}
-                      className="w-full rounded-xl border border-cloudlight bg-basewhite text-slatedark px-3 py-2 outline-none ring-offset-2 focus:ring-2 focus:ring-feedbackfocus disabled:opacity-60"
+                      onChange={(e) => update(ex.id, { endDate: e })}
+                      disabled={!editing}
+                      min="1980-01"
+                      max="2100-12"
+                      className="w-full"
                     />
                     {errors[`exp-dates-${ex.id}`] && (
                       <p className="text-xs text-feedbackerror">
@@ -356,6 +358,7 @@ export default function ExperiencesList({
         type="button"
         aria-label="Dodaj doświadczenie"
         onClick={() => {
+          if (hasUnsavedNew) return;
           const id = crypto.randomUUID();
           onChange([
             ...experiences,
@@ -372,7 +375,12 @@ export default function ExperiencesList({
           ]);
           setEditId(id);
         }}
-        className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border border-cloudlight hover:bg-ivorymedium/60"
+        disabled={hasUnsavedNew}
+        className={`inline-flex items-center gap-2 rounded-xl px-3 py-2 border border-cloudlight transition ${
+          hasUnsavedNew
+            ? 'opacity-50 cursor-not-allowed'
+            : 'hover:bg-ivorymedium/60'
+        }`}
       >
         <Plus size={18} strokeWidth={2} /> Dodaj doświadczenie
       </button>

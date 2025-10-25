@@ -6,6 +6,7 @@ import UserService from '../../../../hooks/UserService';
 import { toast } from 'react-toastify';
 import EmploymentInfoDelete from '../../hooks/useDeleteEmploymentInfo';
 import EmploymentInfoEdit from '../../hooks/useEditEmploymentInfo';
+import MonthYearPicker from './MonthYearPicker';
 
 export default function CoursesList({
   editId,
@@ -26,6 +27,10 @@ export default function CoursesList({
       /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     return uuidRegex.test(str);
   };
+
+  const hasUnsavedNew = courses.some(
+    (l) => isUUID(l.id) && !(l.name || '').trim()
+  );
 
   const createCourse = async (courseName, dateOfCourse, courseDescription) => {
     try {
@@ -112,15 +117,14 @@ export default function CoursesList({
                     >
                       Data
                     </label>
-                    <input
+                    <MonthYearPicker
                       id={`course-date-${c.id}`}
-                      type="date"
                       value={c.dateOfCourse || ''}
-                      onChange={(e) =>
-                        update(c.id, { dateOfCourse: e.target.value })
-                      }
+                      onChange={(e) => update(c.id, { dateOfCourse: e })}
                       disabled={!isEditing}
-                      className="w-full rounded-xl border border-cloudlight bg-basewhite text-slatedark px-3 py-2 outline-none ring-offset-2 focus:ring-2 focus:ring-feedbackfocus"
+                      min="1980-01"
+                      max="2100-12"
+                      className="w-full"
                     />
                   </div>
 
@@ -251,6 +255,7 @@ export default function CoursesList({
         type="button"
         aria-label="Dodaj kurs"
         onClick={() => {
+          if (hasUnsavedNew) return;
           const id = crypto.randomUUID();
           onChange([
             ...courses,
@@ -258,7 +263,12 @@ export default function CoursesList({
           ]);
           setEditId(id);
         }}
-        className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border border-cloudlight hover:bg-ivorymedium/60"
+        disabled={hasUnsavedNew}
+        className={`inline-flex items-center gap-2 rounded-xl px-3 py-2 border border-cloudlight transition ${
+          hasUnsavedNew
+            ? 'opacity-50 cursor-not-allowed'
+            : 'hover:bg-ivorymedium/60'
+        }`}
       >
         <Plus size={18} strokeWidth={2} /> Dodaj kurs
       </button>
