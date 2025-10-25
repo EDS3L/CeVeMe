@@ -125,11 +125,11 @@ function NodeText({ node, pxPerMm, onMouseDownNode, onChangeText, selected }) {
 					fontFamily: style.fontFamily || 'Inter, Arial, sans-serif',
 					fontWeight:
 						typeof style.fontWeight === 'number' ? style.fontWeight : 400,
-					fontStyle: style.fontStyle === 'italic' ? 'italic' : 'normal', // ✅ kursywa
+					fontStyle: style.fontStyle === 'italic' ? 'italic' : 'normal',
 					fontSize: `${style.fontSize || 12}pt`,
 					lineHeight: style.lineHeight ?? 1.35,
-					textAlign: style.textAlign || 'left', // ✅ wyrównanie
-					display: 'block', // ✅ żeby textAlign miał pełną szerokość
+					textAlign: style.textAlign || 'left',
+					display: 'block',
 					width: '100%',
 					height: '100%',
 					whiteSpace: 'pre-wrap',
