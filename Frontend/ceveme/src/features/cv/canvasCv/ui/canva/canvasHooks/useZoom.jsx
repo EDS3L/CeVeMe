@@ -1,64 +1,79 @@
-import { useState, useEffect, useRef } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useRef, useState } from 'react';
 
-export default function useZoom(
-	wrapperRef,
-	min = 0.5,
-	max = 2,
-	step = 0.1,
-	smooth = 0.2
-) {
-	const [zoom, setZoom] = useState(1);
-	const targetZoomRef = useRef(zoom);
-	const animRef = useRef(null);
+export default function useZoom(wrapperRef, min = 0.5, max = 4, step = 0.12) {
+  const [zoom, setZoom] = useState(1);
+  const zoomRef = useRef(zoom);
+  zoomRef.current = zoom;
 
-	useEffect(() => {
-		const el = wrapperRef.current;
-		if (!el) return;
+  useEffect(() => {
+    const el = wrapperRef?.current;
+    if (!el) return;
 
-		const updateZoom = () => {
-			setZoom((prev) => {
-				const diff = targetZoomRef.current - prev;
-				if (Math.abs(diff) < 0.001) return targetZoomRef.current;
-				return prev + diff * smooth;
-			});
-			animRef.current = requestAnimationFrame(updateZoom);
-		};
+    const clamp = (v) => Math.min(max, Math.max(min, v));
 
-		animRef.current = requestAnimationFrame(updateZoom);
+    const onWheel = (e) => {
+      // Zoom tylko z CTRL/Cmd (jak prosiłeś)
+      const isZoomGesture = e.ctrlKey || e.metaKey;
+      if (!isZoomGesture) return;
 
-		return () => cancelAnimationFrame(animRef.current);
-	}, [smooth, wrapperRef]);
+      e.preventDefault();
 
-	useEffect(() => {
-		const el = wrapperRef.current;
-		if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
 
-		const handleWheel = (e) => {
-			if (!e.ctrlKey) return;
-			e.preventDefault();
+      const prev = zoomRef.current;
 
-			const rect = el.getBoundingClientRect();
-			const cx = e.clientX - rect.left;
-			const cy = e.clientY - rect.top;
+      // Skala wykładnicza = płynniejsza
+      const factor = Math.exp(-e.deltaY * 0.0016);
+      const next = clamp(prev * factor);
 
-			const currentZoom = targetZoomRef.current;
-			let newZoom = currentZoom - Math.sign(e.deltaY) * step;
-			newZoom = Math.max(min, Math.min(max, newZoom));
+      // Kotwice względem aktualnego scrolla
+      const sx = el.scrollLeft;
+      const sy = el.scrollTop;
+      const anchorX = (sx + mouseX) / prev;
+      const anchorY = (sy + mouseY) / prev;
 
-			const ratio = newZoom / currentZoom;
+      setZoom(next);
 
-			el.scrollLeft = (el.scrollLeft + cx) * ratio - cx;
-			el.scrollTop = (el.scrollTop + cy) * ratio - cy;
+      // Utrzymujemy punkt pod kursorem w miejscu
+      requestAnimationFrame(() => {
+        el.scrollLeft = anchorX * next - mouseX;
+        el.scrollTop = anchorY * next - mouseY;
+      });
+    };
 
-			targetZoomRef.current = newZoom;
-		};
+    const onKeyDown = (e) => {
+      const mod = e.ctrlKey || e.metaKey;
+      if (!mod) return;
 
-		el.addEventListener('wheel', handleWheel, { passive: false });
-		return () => el.removeEventListener('wheel', handleWheel);
-	}, [min, max, step, wrapperRef]);
+      if (e.key === '=' || e.key === '+') {
+        e.preventDefault();
+        setZoom((z) => clamp(z * (1 + step)));
+        return;
+      }
+      if (e.key === '-') {
+        e.preventDefault();
+        setZoom((z) => clamp(z * (1 - step)));
+        return;
+      }
+      if (e.key === '0') {
+        e.preventDefault();
+        setZoom(1);
+        el.scrollLeft = 0;
+        el.scrollTop = 0;
+      }
+    };
 
-	return [
-		zoom,
-		(value) => (targetZoomRef.current = Math.max(min, Math.min(max, value))),
-	];
+    el.addEventListener('wheel', onWheel, { passive: false });
+    window.addEventListener('keydown', onKeyDown);
+
+    return () => {
+      el.removeEventListener('wheel', onWheel);
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  }, [wrapperRef, min, max, step]);
+
+  return [zoom, setZoom];
 }

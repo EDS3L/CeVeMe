@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback, useMemo } from 'react';
+import React, { useRef, useCallback, useMemo, useState } from 'react';
 
 import TemplateModal from './ui/sidebar/templateChooser/TemplateModal';
 import TemplateSelectButton from './ui/sidebar/templateChooser/TemplateSelectButton';
@@ -13,7 +13,6 @@ import ApiService from '../generativeCv/hooks/Gemini';
 import Navbar from '../../../components/Navbar';
 
 import OverflowTray from './ui/sidebar/OverflowTray';
-import MiniMap from './ui/canva/MiniMap';
 import { extraBottomMm } from './utils/overflow';
 
 import { buildBlackAndWhiteCV } from './templates/BlackAndWhite';
@@ -55,7 +54,6 @@ export default function App() {
     return buildDocFromAI(cv);
   }, []);
 
-  // Silnik edycji
   const engine = useEngine(initial);
   const {
     doc,
@@ -94,16 +92,13 @@ export default function App() {
     }
   });
 
-  // Modal wyboru szablonu
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTemplateName, setSelectedTemplateName] = useState(null);
 
-  // Modal „Wygeneruj CV”
   const [isGenModalOpen, setIsGenModalOpen] = useState(false);
   const openGenerateModal = useCallback(() => setIsGenModalOpen(true), []);
   const closeGenerateModal = useCallback(() => setIsGenModalOpen(false), []);
 
-  // Lista szablonów (do TemplateModal)
   const cvTemplates = useMemo(
     () => [
       {
@@ -173,7 +168,7 @@ export default function App() {
         title: 'White Elegant Minimalist',
         func: buildWhiteElegantMinimalistCV,
         description:
-          'Dwukolumnowy układ na jasnym tle z ciemną belką nagłówka (#555D50), beżowym panelem na zdjęcie i subtelnymi paskami akcentowymi. Wierne 1:1 odwzorowanie oryginalnego PDF.',
+          'Dwukolumnowy układ na jasnym tle z ciemną belką nagłówka (#555D50)...',
         sections: [
           'Nagłówek',
           'Doświadczenie',
@@ -189,7 +184,7 @@ export default function App() {
         title: 'Urban Line',
         func: buildPixelPerfectTealSidebarCV,
         description:
-          'Jednokolumnowy układ na jasnym tle z dużym nagłówkiem (imię + stanowisko) i kontaktami w linii, z subtelnym pionowym akcentem z nazwą miasta po lewej (“W A R S Z A W A”). Sekcje w wersalikach: Podsumowanie, Doświadczenie, Portfolio, Umiejętności, Edukacja, Języki. Layout 1:1 względem oryginału Maks Makowski – Programista Java.',
+          'Jednokolumnowy układ... Maks Makowski – Programista Java.',
         sections: [
           'Nagłówek',
           'Podsumowanie',
@@ -199,14 +194,13 @@ export default function App() {
           'Edukacja',
           'Języki',
         ],
-        style: 'Klasyczny, czytelny, jednokolumnowy z pionowym akcentem',
+        style: 'Klasyczny, czytelny, jednokolumnowy',
       },
       {
         key: 'NavyDiagonalCV',
         title: 'Navy Diagonal',
         func: buildBlueCreativeCV,
-        description:
-          'Dwukolumnowy układ: szeroki lewy panel (Doświadczenie, Portfolio, Języki) + węższy prawy sidebar (Kontakt, O mnie, Edukacja, Umiejętności). Charakterystyczny granatowy, ukośny nagłówek z imieniem na środku i podtytułem „PROGRAMISTA JAVA”. Sekcje oddzielone delikatnymi liniami, listy kompetencji w trzech blokach (Technical / Tools & Technologies / Soft Skills). Wierne 1:1 odwzorowanie PDF.',
+        description: 'Dwukolumnowy układ... „PROGRAMISTA JAVA”.',
         sections: [
           'Nagłówek',
           'Doświadczenie',
@@ -217,14 +211,13 @@ export default function App() {
           'Edukacja',
           'Umiejętności',
         ],
-        style: 'Nowoczesny, biznesowy, wyraźny kontrast, dwukolumnowy',
+        style: 'Nowoczesny, biznesowy, dwukolumnowy',
       },
       {
         key: 'pixel-perfect-attachment',
         title: 'Szaro-Biały z Lewym Panelem',
         func: buildPixelPerfectAttachmentCV,
-        description:
-          'Dwukolumnowy, stonowany szablon inspirowany załącznikiem: po prawej szeroka kolumna z dużym nazwiskiem (Lora) i treścią, po lewej zaokrąglony panel w szarości z „kapslami” sekcji, białymi ikonami w kółkach i klikalnymi wierszami kontaktu. RODO osadzone na dole prawej kolumny.',
+        description: 'Dwukolumnowy, stonowany szablon...',
         sections: [
           'Nagłówek',
           'Podsumowanie',
@@ -242,16 +235,13 @@ export default function App() {
     []
   );
 
-  // Generowanie CV z linku (z modala) — wykorzystuje e-mail z useAuth
   const handleGenerateFromLink = useCallback(
     async (link) => {
       if (!email || !link) return;
       try {
         setLoading(true);
         setOfferLink(link);
-
         localStorage.setItem('CV_OFFER_LINK', link);
-
         const data = await ApiService.generateCv(email, link);
         const baseDoc = isOurDocSchema(data) ? data : '';
         setDocument(baseDoc);
@@ -267,14 +257,10 @@ export default function App() {
     [email, setDocument]
   );
 
-  // (Opcjonalnie) wybór oferty z listy — podłącz swoje UI; tu przykład z alertem
   const handlePickOffer = useCallback(() => {
-    // TODO: otwórz picker ofert i po wyborze wywołaj:
-    // setOfferLink(wybranyLink); localStorage.setItem('CV_OFFER_LINK', wybranyLink);
     alert('Tu podłącz picker ofert. Po wyborze wywołaj setOfferLink(link).');
   }, []);
 
-  // Zmiana szablonu
   const handleSelectTemplate = useCallback(
     (template) => {
       const newDoc = template.func(cvData);
@@ -284,14 +270,40 @@ export default function App() {
     [cvData, setDocument]
   );
 
-  // Hook zapisu — użyje aktualnego offerLink
   const { savingMode, handleSaveAndHistory } = useCvSave({
     cvData,
     offerLink,
     generatePdfBlob: () => generatePdfBlob(doc),
   });
 
-  // Skok do pozycji (mm) w podglądzie
+  // ---- SELEKCJA / GRUPOWANIE ----
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [activeGroupIds, setActiveGroupIds] = useState(null);
+
+  // Używaj tego, gdy chcesz wyczyścić multiselekt (np. klik z panelu).
+  const setSelectedIdSync = useCallback(
+    (id) => {
+      setSelectedId(id);
+      setSelectedIds(id ? [id] : []);
+      setActiveGroupIds(null);
+    },
+    [setSelectedId]
+  );
+
+  // Używaj tego wszędzie tam, gdzie NIE chcesz ruszać multiselektu (Canvas!)
+  const setSelectedIdOnly = useCallback(
+    (id) => {
+      setSelectedId(id);
+    },
+    [setSelectedId]
+  );
+
+  const handleGroup = useCallback(() => {
+    if (selectedIds.length >= 2) setActiveGroupIds([...selectedIds]);
+  }, [selectedIds]);
+
+  const handleUngroup = useCallback(() => setActiveGroupIds(null), []);
+
   const jumpToMm = useCallback(
     (yMm) => {
       const cont = scrollRef.current;
@@ -304,8 +316,10 @@ export default function App() {
     [metrics]
   );
 
-  // Przepełnienie strony (mm)
   const overflowMm = useMemo(() => extraBottomMm(doc), [doc]);
+  const inspectorSelectedId = selectedIds.length
+    ? selectedIds[selectedIds.length - 1]
+    : selectedId;
 
   return (
     <div className="flex flex-col min-h-full">
@@ -313,6 +327,8 @@ export default function App() {
 
       <Toolbar
         doc={doc}
+        selectedIds={selectedIds}
+        selectedId={inspectorSelectedId}
         addText={addText}
         addImage={addImage}
         addRect={addRect}
@@ -326,16 +342,12 @@ export default function App() {
         overflowPeek={overflowPeek}
         onToggleOverflowPeek={() => setOverflowPeek((v) => !v)}
         overflowMm={overflowMm}
-        // zapis
         onGenerateAndSave={handleSaveAndHistory}
-        // otwarcie modala „Wygeneruj CV”
         onOpenGenerateModal={openGenerateModal}
-        selectedId={selectedId}
         updateNode={updateNode}
       />
 
       <div className="grid gap-3 p-3 [grid-template-columns:280px_1fr_320px] max-[1400px]:[grid-template-columns:240px_1fr_280px] max-[1200px]:[grid-template-columns:240px_1fr] max-[1200px]:[grid-template-areas:'sidebar_canvas''inspector_inspector'] max-[900px]:grid-cols-1 max-[900px]:[grid-template-areas:'canvas''sidebar''inspector']">
-        {/* Sidebar lewy */}
         <aside className="bg-white border border-black/10 rounded-xl p-3 min-h-[200px] [grid-area:unset] max-[1200px]:[grid-area:sidebar]">
           <div className="mb-4">
             <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--color-clouddark)]">
@@ -353,20 +365,19 @@ export default function App() {
           <OverflowTray
             doc={doc}
             updateNode={updateNode}
-            setSelectedId={setSelectedId}
+            setSelectedId={setSelectedIdSync} // tutaj chcemy czyścić multiselekt
             onJumpToMm={jumpToMm}
           />
-
-          {/* <div className="h-px w-full bg-black/10 my-2" /> */}
-
-          {/* <MiniMap doc={doc} onJumpToMm={jumpToMm} /> */}
 
           <div className="h-px w-full bg-black/10 my-2" />
 
           <LayersPanel
             nodes={doc.nodes}
-            selectedId={selectedId}
-            setSelectedId={setSelectedId}
+            selectedIds={selectedIds}
+            setSelectedIds={setSelectedIds}
+            activeGroupIds={activeGroupIds}
+            onGroup={handleGroup}
+            onUngroup={handleUngroup}
             reorder={reorder}
             updateNode={updateNode}
           />
@@ -374,7 +385,6 @@ export default function App() {
           <div className="h-px w-full bg-black/10 my-2" />
         </aside>
 
-        {/* Canvas (środek) */}
         <main
           ref={scrollRef}
           className="relative bg-slate-50 border p-3 border-black/20 rounded-xl w-full h-full md:min-h-[50vh] md:max-h-[1200px] overflow-auto flex items-center justify-center [grid-area:unset] max-[1200px]:[grid-area:canvas]"
@@ -388,9 +398,14 @@ export default function App() {
           )}
           <Canvas
             doc={doc}
-            selectedId={selectedId}
-            setSelectedId={setSelectedId}
+            selectedIds={selectedIds}
+            setDocument={setDocument}
+            setSelectedIds={setSelectedIds}
+            activeGroupIds={activeGroupIds}
+            setActiveGroupIds={setActiveGroupIds}
+            setSelectedId={setSelectedIdOnly} // KLUCZOWE: nie czyści multiselektu
             updateNode={updateNode}
+            removeNode={removeNode}
             pageRef={pageRef}
             showGrid={showGrid}
             overflowPeek={overflowPeek}
@@ -398,11 +413,10 @@ export default function App() {
           />
         </main>
 
-        {/* Inspector (prawy) */}
         {doc && (
           <aside className="bg-white border border-black/10 rounded-xl p-3 min-h-[200px] [grid-area:unset] max-[1200px]:[grid-area:inspector]">
             <InspectorPanel
-              node={doc.nodes.find((n) => n.id === selectedId) || null}
+              node={doc.nodes.find((n) => n.id === inspectorSelectedId) || null}
               updateNode={updateNode}
               removeNode={removeNode}
             />
@@ -410,7 +424,6 @@ export default function App() {
         )}
       </div>
 
-      {/* Modal wyboru szablonu */}
       <TemplateModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -418,7 +431,6 @@ export default function App() {
         onSelectTemplate={handleSelectTemplate}
       />
 
-      {/* Modal „Wygeneruj CV” */}
       <GenerateCvModal
         open={isGenModalOpen}
         onClose={closeGenerateModal}
