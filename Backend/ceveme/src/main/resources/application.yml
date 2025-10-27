@@ -6,13 +6,13 @@ spring:
     port: 465
     username: ${MAIL_USERNAME}
     password: ${MAIL_PASSWORD}
-    smtp:
-      auth: true
-      starttls:
-        enable: true
-        socketFactory:
-          class: javax.net.ssl.SSLSocketFactory
-          port: 465
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          ssl:
+            enable: true
 
   datasource:
     url: ${DATASOURCE_URL}
