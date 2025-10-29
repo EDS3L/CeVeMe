@@ -72,6 +72,8 @@ export default function Canvas({
   pageRef,
   showGrid = false,
   onMetricsChange = () => {},
+  // props używane wyżej w drzewie – pozostawione dla kompatybilności:
+  overflowPeek, // eslint-disable-line no-unused-vars
 }) {
   const safeDoc = useMemo(() => {
     if (!doc || !Array.isArray(doc.nodes)) return { nodes: [] };
@@ -95,8 +97,8 @@ export default function Canvas({
   const contentRef = useRef(null);
 
   const { scale, pxPerMm } = useCanvasScale(A4, wrapperRef, { min: 1, max: 5 });
-  const [viewZoom] = useZoom(wrapperRef, 0.5, 2, 0.1);
 
+  // ====== Layout dynamiczny (ile stron i wysokość z "gapami") ======
   const [layoutFrozen, setLayoutFrozen] = useState(false);
   const liveContentMaxY = useMemo(
     () => maxContentYMm(doc) || A4.heightMm,
@@ -109,6 +111,33 @@ export default function Canvas({
   const contentMaxY = layoutFrozen ? frozenState.contentMaxY : liveContentMaxY;
 
   const PAGE_GAP_MM = 8;
+  const pageCount = Math.max(1, Math.ceil(contentMaxY / A4.heightMm));
+  const contentMaxYWithGaps = contentMaxY + (pageCount - 1) * PAGE_GAP_MM;
+  const pages = Array.from({ length: pageCount }, (_, i) => i);
+
+  // ====== Zoom z centrowaniem (guttery) ======
+  const viewZoomRef = useRef(1);
+  const [viewZoom, setViewZoom] = useZoom(
+    wrapperRef,
+    0.5,
+    2,
+    0.1,
+    () => {
+      const el = wrapperRef.current;
+      if (!el) return { left: 0, top: 0 };
+      const vz = viewZoomRef.current || 1;
+      const visualW = A4.widthMm * pxPerMm * vz;
+      const visualH = contentMaxYWithGaps * pxPerMm * vz;
+      const left = Math.max(0, (el.clientWidth - visualW) / 2);
+      const top = Math.max(0, (el.clientHeight - visualH) / 2);
+      return { left, top };
+    }
+  );
+  useEffect(() => {
+    viewZoomRef.current = viewZoom;
+  }, [viewZoom]);
+
+  // Konwersje mm → px (Y z uwzględnieniem wizualnych "gapów" między stronami)
   const logicYToViewYmm = (yMm) =>
     yMm + Math.floor(yMm / A4.heightMm) * PAGE_GAP_MM;
   const mmToPxX = (mm) => mm * pxPerMm;
@@ -118,11 +147,7 @@ export default function Canvas({
     [mmToPxY]
   );
 
-  const pageCount = Math.max(1, Math.ceil(contentMaxY / A4.heightMm));
-  const contentMaxYWithGaps = contentMaxY + (pageCount - 1) * PAGE_GAP_MM;
-  const pages = Array.from({ length: pageCount }, (_, i) => i);
-
-  // HOOKI: drag & resize
+  // HOOKI: drag & resize (pozostają jak były)
   const {
     dragPreview,
     guides: dragGuides,
@@ -135,7 +160,7 @@ export default function Canvas({
     updateNode,
     contentMaxY,
     contentRef,
-    PAGE_GAP_MM
+    PAGE_GAP_MM // argument nadmiarowy dla kompatybilności – ignorowany przez hook
   );
   const { resizePreview, startResize } = useResizeNode(
     pxPerMm,
@@ -144,7 +169,7 @@ export default function Canvas({
     updateNode,
     setLayoutFrozen,
     contentRef,
-    PAGE_GAP_MM
+    PAGE_GAP_MM // argument nadmiarowy dla kompatybilności – ignorowany przez hook
   );
 
   const activeGuides = dragGuides;
@@ -440,176 +465,202 @@ export default function Canvas({
     zIndex: LAYER_Z.page,
   });
 
+  // Bieżące "guttery" (centrowanie) w pikselach layoutu
+  const guttersNow = (() => {
+    const el = wrapperRef.current;
+    if (!el) return { left: 0, top: 0 };
+    const visualW = A4.widthMm * pxPerMm * viewZoom;
+    const visualH = contentMaxYWithGaps * pxPerMm * viewZoom;
+    const left = Math.max(0, (el.clientWidth - visualW) / 2);
+    const top = Math.max(0, (el.clientHeight - visualH) / 2);
+    return { left, top };
+  })();
+
   return (
     <div
       ref={wrapperRef}
-      className="w-full h-full overflow-auto bg-slate-50 flex justify-start items-start"
+      className="w-full h-full overflow-auto bg-slate-50 relative"
     >
+      {/* pad-container: NIE jest skalowany – dodaje paddingi dla wizualnego centrowania */}
       <div
         style={{
-          transform: `scale(${viewZoom})`,
-          transformOrigin: 'top left',
+          paddingLeft: guttersNow.left,
+          paddingRight: guttersNow.left,
+          paddingTop: guttersNow.top,
+          paddingBottom: guttersNow.top,
+          minWidth: '100%',
+          minHeight: '100%',
+          boxSizing: 'border-box',
         }}
       >
+        {/* właściwa zawartość, skalowana od lewego-górnego rogu */}
         <div
-          ref={contentRef}
-          onMouseDown={onMouseDownBackground}
           style={{
-            position: 'relative',
-            width: `${A4.widthMm}mm`,
-            height: `${contentMaxYWithGaps}mm`,
+            transform: `scale(${viewZoom})`,
+            transformOrigin: 'top left',
+            width: 'fit-content',
           }}
         >
-          {pages.map((pageIndex) => (
-            <div
-              key={`page-${pageIndex}`}
-              className="absolute left-0"
-              style={{
-                top: `${pageIndex * (A4.heightMm + PAGE_GAP_MM)}mm`,
-                width: `${A4.widthMm}mm`,
-                height: `${A4.heightMm}mm`,
-              }}
-            >
+          <div
+            ref={contentRef}
+            onMouseDown={onMouseDownBackground}
+            style={{
+              position: 'relative',
+              width: `${A4.widthMm}mm`,
+              height: `${contentMaxYWithGaps}mm`,
+            }}
+          >
+            {pages.map((pageIndex) => (
               <div
-                ref={pageIndex === 0 ? pageRef : null}
-                className="relative w-full h-full"
-                style={mmPageStyle(A4.heightMm)}
-              >
-                {showGrid && <GridOverlay show />}
-              </div>
-            </div>
-          ))}
-
-          {/* Nody */}
-          {nodes.filter(Boolean).map((node) => {
-            const df = displayFrameOf(node) || node.frame;
-            if (!df) return null;
-            return (
-              <NodeView
-                key={node.id}
-                node={{ ...node, frame: { ...df, rotation: df.rotation || 0 } }}
-                mmToPxX={mmToPxX}
-                mmToPxY={mmToPxY}
-                selected={selectedIds.includes(node.id)}
-                onMouseDownNode={onMouseDownNode}
-                onChangeText={onChangeText}
-              />
-            );
-          })}
-
-          {/* Grupa + uchwyty */}
-          {isGrouped && groupBBox && (
-            <>
-              <div
-                onMouseDown={(e) => {
-                  e.stopPropagation();
-                  const any = nodes.find((n) => n && groupSet.has(n.id));
-                  const frames = Object.fromEntries(
-                    groupNodes.map((n) => [n.id, { ...n.frame }])
-                  );
-                  const bbox = groupBBox;
-                  startDrag(e, any, null, {
-                    ids: activeGroupIds,
-                    frames,
-                    bbox,
-                  });
-                }}
+                key={`page-${pageIndex}`}
+                className="absolute left-0"
                 style={{
-                  position: 'absolute',
-                  left: mmToPxX(groupBBox.x),
-                  top: mmToPxY(groupBBox.y),
-                  width: mmToPxX(groupBBox.w),
-                  height: heightPxFromMmRect(groupBBox.y, groupBBox.h),
-                  cursor: 'move',
-                  background: 'transparent',
-                  border: '1px dashed rgba(100,116,139,.85)',
-                  borderRadius: 2,
-                  zIndex: LAYER_Z.groupOverlay,
+                  top: `${pageIndex * (A4.heightMm + PAGE_GAP_MM)}mm`,
+                  width: `${A4.widthMm}mm`,
+                  height: `${A4.heightMm}mm`,
                 }}
-                title="Przeciągnij, aby przesunąć grupę"
-              />
+              >
+                <div
+                  ref={pageIndex === 0 ? pageRef : null}
+                  className="relative w-full h-full"
+                  style={mmPageStyle(A4.heightMm)}
+                >
+                  {showGrid && <GridOverlay show />}
+                </div>
+              </div>
+            ))}
 
-              <Handles
-                framePx={{
-                  x: mmToPxX(groupBBox.x),
-                  y: mmToPxY(groupBBox.y),
-                  w: mmToPxX(groupBBox.w),
-                  h: heightPxFromMmRect(groupBBox.y, groupBBox.h),
-                }}
-                rotation={0}
-                onStartResize={(e, dir) => {
-                  const any = nodes.find((n) => n && groupSet.has(n.id));
-                  const frames = Object.fromEntries(
-                    groupNodes.map((n) => [n.id, { ...n.frame }])
-                  );
-                  const bbox = groupBBox;
-                  startResize(e, dir, any, {
-                    ids: activeGroupIds,
-                    frames,
-                    bbox,
-                  });
-                }}
-                zIndex={LAYER_Z.handles}
-              />
-            </>
-          )}
-
-          {/* PROWADNICE */}
-          {activeGuides && activeGuides.length > 0 && (
-            <SmartGuidesSVG
-              guides={activeGuides}
-              pxPerMm={pxPerMm}
-              pageWidthMm={A4.widthMm}
-              pageHeightMm={contentMaxYWithGaps}
-              yMapMm={logicYToViewYmm}
-            />
-          )}
-
-          {/* Uchwyty pojedynczego */}
-          {!isGrouped &&
-            selectedIds.length === 1 &&
-            (() => {
-              const selectedNode = nodes.find((n) => n && n.id === selectedIds[0]);
-              if (!selectedNode || selectedNode.lock) return null;
-              const df = displayFrameOf(selectedNode) || selectedNode.frame;
+            {/* Nody */}
+            {nodes.filter(Boolean).map((node) => {
+              const df = displayFrameOf(node) || node.frame;
+              if (!df) return null;
               return (
-                <Handles
-                  framePx={{
-                    x: mmToPxX(df.x),
-                    y: mmToPxY(df.y),
-                    w: mmToPxX(df.w),
-                    h: heightPxFromMmRect(df.y, df.h),
-                  }}
-                  rotation={df.rotation || 0}
-                  onStartResize={(e, dir) => onStartResize(e, dir, selectedNode)}
-                  zIndex={LAYER_Z.handles}
+                <NodeView
+                  key={node.id}
+                  node={{ ...node, frame: { ...df, rotation: df.rotation || 0 } }}
+                  mmToPxX={mmToPxX}
+                  mmToPxY={mmToPxY}
+                  selected={selectedIds.includes(node.id)}
+                  onMouseDownNode={onMouseDownNode}
+                  onChangeText={onChangeText}
                 />
               );
-            })()}
+            })}
 
-          {/* Marquee */}
-          {marquee &&
-            (() => {
-              const x = Math.min(marquee.x1, marquee.x2);
-              const y = Math.min(marquee.y1, marquee.y2);
-              const w = Math.abs(marquee.x2 - marquee.x1);
-              const h = Math.abs(marquee.y2 - marquee.y1);
-              return (
+            {/* Grupa + uchwyty */}
+            {isGrouped && groupBBox && (
+              <>
                 <div
+                  onMouseDown={(e) => {
+                    e.stopPropagation();
+                    const any = nodes.find((n) => n && groupSet.has(n.id));
+                    const frames = Object.fromEntries(
+                      groupNodes.map((n) => [n.id, { ...n.frame }])
+                    );
+                    const bbox = groupBBox;
+                    startDrag(e, any, null, {
+                      ids: activeGroupIds,
+                      frames,
+                      bbox,
+                    });
+                  }}
                   style={{
                     position: 'absolute',
-                    left: mmToPxX(x),
-                    top: mmToPxY(y),
-                    width: mmToPxX(w),
-                    height: heightPxFromMmRect(y, h),
-                    border: '1px dashed rgba(37,99,235,.9)',
-                    background: 'rgba(59,130,246,.08)',
-                    pointerEvents: 'none',
-                    zIndex: LAYER_Z.marquee,
+                    left: mmToPxX(groupBBox.x),
+                    top: mmToPxY(groupBBox.y),
+                    width: mmToPxX(groupBBox.w),
+                    height: heightPxFromMmRect(groupBBox.y, groupBBox.h),
+                    cursor: 'move',
+                    background: 'transparent',
+                    border: '1px dashed rgba(100,116,139,.85)',
+                    borderRadius: 2,
+                    zIndex: LAYER_Z.groupOverlay,
                   }}
+                  title="Przeciągnij, aby przesunąć grupę"
                 />
-              );
-            })()}
+
+                <Handles
+                  framePx={{
+                    x: mmToPxX(groupBBox.x),
+                    y: mmToPxY(groupBBox.y),
+                    w: mmToPxX(groupBBox.w),
+                    h: heightPxFromMmRect(groupBBox.y, groupBBox.h),
+                  }}
+                  rotation={0}
+                  onStartResize={(e, dir) => {
+                    const any = nodes.find((n) => n && groupSet.has(n.id));
+                    const frames = Object.fromEntries(
+                      groupNodes.map((n) => [n.id, { ...n.frame }])
+                    );
+                    const bbox = groupBBox;
+                    startResize(e, dir, any, {
+                      ids: activeGroupIds,
+                      frames,
+                      bbox,
+                    });
+                  }}
+                  zIndex={LAYER_Z.handles}
+                />
+              </>
+            )}
+
+            {/* PROWADNICE */}
+            {activeGuides && activeGuides.length > 0 && (
+              <SmartGuidesSVG
+                guides={activeGuides}
+                pxPerMm={pxPerMm}
+                pageWidthMm={A4.widthMm}
+                pageHeightMm={contentMaxYWithGaps}
+                yMapMm={logicYToViewYmm}
+              />
+            )}
+
+            {/* Uchwyty pojedynczego */}
+            {!isGrouped &&
+              selectedIds.length === 1 &&
+              (() => {
+                const selectedNode = nodes.find((n) => n && n.id === selectedIds[0]);
+                if (!selectedNode || selectedNode.lock) return null;
+                const df = displayFrameOf(selectedNode) || selectedNode.frame;
+                return (
+                  <Handles
+                    framePx={{
+                      x: mmToPxX(df.x),
+                      y: mmToPxY(df.y),
+                      w: mmToPxX(df.w),
+                      h: heightPxFromMmRect(df.y, df.h),
+                    }}
+                    rotation={df.rotation || 0}
+                    onStartResize={(e, dir) => onStartResize(e, dir, selectedNode)}
+                    zIndex={LAYER_Z.handles}
+                  />
+                );
+              })()}
+
+            {/* Marquee */}
+            {marquee &&
+              (() => {
+                const x = Math.min(marquee.x1, marquee.x2);
+                const y = Math.min(marquee.y1, marquee.y2);
+                const w = Math.abs(marquee.x2 - marquee.x1);
+                const h = Math.abs(marquee.y2 - marquee.y1);
+                return (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      left: mmToPxX(x),
+                      top: mmToPxY(y),
+                      width: mmToPxX(w),
+                      height: heightPxFromMmRect(y, h),
+                      border: '1px dashed rgba(37,99,235,.9)',
+                      background: 'rgba(59,130,246,.08)',
+                      pointerEvents: 'none',
+                      zIndex: LAYER_Z.marquee,
+                    }}
+                  />
+                );
+              })()}
+          </div>
         </div>
       </div>
     </div>

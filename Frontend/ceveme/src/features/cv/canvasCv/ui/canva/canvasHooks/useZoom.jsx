@@ -1,12 +1,25 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 // canvasHooks/useZoom.js
 import { useEffect, useRef, useState } from 'react';
 
 /**
- * Zoom z kotwicą dokładnie pod kursorem (Ctrl/Cmd + scroll).
+ * Zoom z kotwicą dokładnie pod kursorem (Ctrl/Cmd + scroll),
+ * z uwzględnieniem dynamicznych "gutterów" (paddingów) centrowania.
+ *
  * WAŻNE: Skalowany wewnętrzny kontener musi mieć CSS: transformOrigin: 'top left'.
+ *
+ * @param {React.RefObject<HTMLElement>} wrapperRef  scroll-container
+ * @param {number} min
+ * @param {number} max
+ * @param {number} step
+ * @param {() => {left:number, top:number}} getGutters  Zwraca aktualne paddingi (w px, layout), nie skalowane transformem
  */
-export default function useZoom(wrapperRef, min = 0.5, max = 4, step = 0.12) {
+export default function useZoom(
+  wrapperRef,
+  min = 0.5,
+  max = 4,
+  step = 0.12,
+  getGutters = () => ({ left: 0, top: 0 })
+) {
   const [zoom, setZoom] = useState(1);
   const zoomRef = useRef(1);
   zoomRef.current = zoom;
@@ -40,15 +53,18 @@ export default function useZoom(wrapperRef, min = 0.5, max = 4, step = 0.12) {
       const vx = clientX - rect.left;
       const vy = clientY - rect.top;
 
-      const anchorX = (el.scrollLeft + vx) / prev;
-      const anchorY = (el.scrollTop  + vy) / prev;
+      const { left: padL = 0, top: padT = 0 } = getGutters?.() || {};
+
+      // współrzędne kotwicy w układzie layout (nie-skaluje-transform)
+      const anchorX = (el.scrollLeft + vx - padL) / prev;
+      const anchorY = (el.scrollTop  + vy - padT) / prev;
 
       setZoom(next);
 
       // Po reflow ustaw scroll tak, żeby anchor pozostał pod kursorem
       requestAnimationFrame(() => {
-        const targetLeft = anchorX * next - vx;
-        const targetTop  = anchorY * next - vy;
+        const targetLeft = anchorX * next + padL - vx;
+        const targetTop  = anchorY * next + padT - vy;
         clampScroll(el, targetLeft, targetTop);
       });
     };
@@ -84,9 +100,7 @@ export default function useZoom(wrapperRef, min = 0.5, max = 4, step = 0.12) {
         setZoomAnchored(next, cx, cy);
       } else if (e.key === '0') {
         e.preventDefault();
-        setZoom(1);
-        el.scrollLeft = 0;
-        el.scrollTop = 0;
+        setZoomAnchored(1, cx, cy);
       }
     };
 
@@ -96,7 +110,7 @@ export default function useZoom(wrapperRef, min = 0.5, max = 4, step = 0.12) {
       el.removeEventListener('wheel', onWheel);
       window.removeEventListener('keydown', onKeyDown);
     };
-  }, [wrapperRef, min, max, step]);
+  }, [wrapperRef, min, max, step, getGutters]);
 
   return [zoom, setZoom];
 }
