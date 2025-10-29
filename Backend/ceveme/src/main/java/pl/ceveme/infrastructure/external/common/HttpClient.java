@@ -12,6 +12,9 @@ import org.apache.hc.core5.util.TimeValue;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 
 @Component
@@ -85,6 +88,25 @@ public class HttpClient implements AutoCloseable {
         get.setHeader("x-ga", "GA1.1.1025044341.1740338523");
         get.setHeader("x-snowplow", "eyJ1c2VySWQiOiJiOTE3MGVkZS03MDliLTQ3MDgtYTdiZS00ZmQ2YzQ5ZWFkM2EiLCJzZXNzaW9uSWQiOiJiM2FiMmY4Ni1hZDgyLTQ2OGYtOTA4Yi03NzNlMDNhYTc3NDMifQ==");
         return get;
+    }
+
+    public HttpResponse<String> createHttpGetLinkedIn(String url) throws IOException, InterruptedException {
+        String li_at = "";
+        String li_rm = "";
+        String cookieHeader = String.format("li_at=%s; li_rm=%s", li_at, li_rm);
+
+        java.net.http.HttpClient client = java.net.http.HttpClient.newBuilder()
+                .followRedirects(java.net.http.HttpClient.Redirect.NORMAL)
+                .build();
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("Cookie", cookieHeader)
+                .GET()
+                .build();
+
+        return client.send(request, HttpResponse.BodyHandlers.ofString());
+
     }
 
     private HttpGet createHttpGetSolidJobs(String url) {

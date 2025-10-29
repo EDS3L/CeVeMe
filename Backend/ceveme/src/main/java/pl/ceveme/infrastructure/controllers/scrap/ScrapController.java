@@ -1,11 +1,13 @@
 package pl.ceveme.infrastructure.controllers.scrap;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.ceveme.application.dto.scrap.ScrapResponse;
 import pl.ceveme.application.usecase.scrap.*;
+import pl.ceveme.infrastructure.external.scrap.linkedin.LinkedInScrapper;
 
 import java.io.IOException;
 
@@ -19,8 +21,9 @@ public class ScrapController {
     private final ScrapRocketJobsUseCase scrapRocketJobsUseCase;
     private final ScrapNoFluffJobsUseCase scrapNoFluffJobsUseCase;
     private final ScrapSolidJobsUseCase scrapSolidJobsUseCase;
+    private final LinkedInScrapper linkedInScrapper;
 
-    public ScrapController(ScrapJustJoinItUseCase scrapJustJoinItUseCase, ScrapPracujPlUseCase scrapPracujPlUseCase, ScrapBulldogJobUseCase scrapBulldogJobUseCase, ScrapTheProtocolITUseCase scrapProtocolItUseCase, ScrapRocketJobsUseCase scrapRocketJobsUseCase, ScrapNoFluffJobsUseCase scrapNoFluffJobsUseCase, ScrapSolidJobsUseCase scrapSolidJobsUseCase) {
+    public ScrapController(ScrapJustJoinItUseCase scrapJustJoinItUseCase, ScrapPracujPlUseCase scrapPracujPlUseCase, ScrapBulldogJobUseCase scrapBulldogJobUseCase, ScrapTheProtocolITUseCase scrapProtocolItUseCase, ScrapRocketJobsUseCase scrapRocketJobsUseCase, ScrapNoFluffJobsUseCase scrapNoFluffJobsUseCase, ScrapSolidJobsUseCase scrapSolidJobsUseCase, LinkedInScrapper linkedInScrapper) {
         this.scrapJustJoinItUseCase = scrapJustJoinItUseCase;
         this.scrapPracujPlUseCase = scrapPracujPlUseCase;
         this.scrapBulldogJobUseCase = scrapBulldogJobUseCase;
@@ -28,6 +31,7 @@ public class ScrapController {
         this.scrapRocketJobsUseCase = scrapRocketJobsUseCase;
         this.scrapNoFluffJobsUseCase = scrapNoFluffJobsUseCase;
         this.scrapSolidJobsUseCase = scrapSolidJobsUseCase;
+        this.linkedInScrapper = linkedInScrapper;
     }
 
     @GetMapping("/justJointIt")
@@ -77,6 +81,12 @@ public class ScrapController {
 
         return ResponseEntity.ok(scrapSolidJobsUseCase.execute());
 
+    }
+
+
+    @GetMapping("/linkedIn")
+    public ResponseEntity<JsonNode> linkedIn() throws IOException, InterruptedException {
+        return ResponseEntity.ok(linkedInScrapper.test());
     }
 
 
