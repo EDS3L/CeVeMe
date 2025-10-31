@@ -50,9 +50,10 @@ public class LinkedInScrapper extends AbstractJobScraper {
 
         int totalPage = getTotalPageNumber();
         log.info("Total pages for LinkedIn = {}", totalPage);
-        for (int p = 0; p <= 8; p++) {
-            String url = "https://www.linkedin.com/jobs/search?keywords=&location=Poland&geoId=105072130&trk=public_jobs_jobs-search-bar_search-submit&position="+p+"&pageNum=" + p + ";";
-            Document document = fetchDocument(url);
+        for (int start = 25; start <= 750; start += 25) {
+            String url2 = "https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords=&location=Poland&geoId=105072130&trk=public_jobs_jobs-search-bar_search-submit&position=1&pageNum=0&start=" + start;
+//            String url = "https://www.linkedin.com/jobs/search?keywords=&location=Poland&geoId=105072130&trk=public_jobs_jobs-search-bar_search-submit&position="+p+"&pageNum=" + p + ";";
+            Document document = fetchDocument(url2);
             Elements links = document.select("a[class*=base-card__full-link]");
             links.forEach(e -> {
                 String href = e.attr("href");
