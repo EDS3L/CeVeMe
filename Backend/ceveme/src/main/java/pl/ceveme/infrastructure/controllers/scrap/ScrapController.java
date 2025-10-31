@@ -1,15 +1,20 @@
 package pl.ceveme.infrastructure.controllers.scrap;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import pl.ceveme.application.dto.scrap.ScrapResponse;
 import pl.ceveme.application.usecase.scrap.*;
+import pl.ceveme.domain.model.entities.JobOffer;
 import pl.ceveme.infrastructure.external.scrap.linkedin.LinkedInScrapper;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/scrap")
@@ -83,10 +88,9 @@ public class ScrapController {
 
     }
 
-
     @GetMapping("/linkedIn")
-    public ResponseEntity<JsonNode> linkedIn() throws IOException, InterruptedException {
-        return ResponseEntity.ok(linkedInScrapper.test());
+    public ResponseEntity<List<String>> linkedIn() {
+        return ResponseEntity.ok(linkedInScrapper.getAllJobOfferUrls());
     }
 
 
