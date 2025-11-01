@@ -9,6 +9,7 @@ import org.apache.hc.core5.http.HttpHeaders;
 import org.apache.hc.core5.http.ParseException;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.util.TimeValue;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -20,6 +21,11 @@ import java.nio.charset.StandardCharsets;
 @Component
 public class HttpClient implements AutoCloseable {
     private final CloseableHttpClient client;
+
+    @Value("${linkedIn.li-at}")
+    private String li_at;
+    @Value("${linkedIn.li-rm}")
+    private String li_rm;
 
     public HttpClient() {
         var retryStrategy = new DefaultHttpRequestRetryStrategy(3, TimeValue.ofSeconds(2));
@@ -91,8 +97,6 @@ public class HttpClient implements AutoCloseable {
     }
 
     public HttpResponse<String> createHttpGetLinkedIn(String url) throws IOException, InterruptedException {
-        String li_at = "";
-        String li_rm = "";
         String cookieHeader = String.format("li_at=%s; li_rm=%s", li_at, li_rm);
 
         java.net.http.HttpClient client = java.net.http.HttpClient.newBuilder()

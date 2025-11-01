@@ -59,3 +59,7 @@ stripe:
 
 cloudinary:
   url: ${CLOUDINARY_URL}
+
+linkedIn:
+  li-at: ${LI_AT}
+  li-rm: ${LI_RM}

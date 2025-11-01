@@ -21,7 +21,9 @@ import pl.ceveme.infrastructure.external.common.HttpClient;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,11 +34,15 @@ public class LinkedInScrapper extends AbstractJobScraper {
 
     private static final Logger log = LoggerFactory.getLogger(LinkedInScrapper.class);
     private final HttpClient httpClient;
-    private final String BASE_URL = "https://www.linkedin.com/jobs/search?keywords=&location=Poland&geoId=105072130&trk=public_jobs_jobs-search-bar_search-submit&position=1&pageNum=";
 
     public LinkedInScrapper(HttpClient httpClient, ObjectMapper objectMapper, JobOfferRepository jobOfferRepository, HttpClient httpClient1) {
         super(httpClient, objectMapper, jobOfferRepository);
         this.httpClient = httpClient1;
+    }
+
+    public List<JobOffer> createJobs() throws IOException {
+        List<String> urls = getAllJobOfferUrls();
+        return processUrls(urls);
     }
 
     private String getHtml(String url) throws IOException, InterruptedException {
@@ -45,31 +51,59 @@ public class LinkedInScrapper extends AbstractJobScraper {
     }
 
     public List<String> getAllJobOfferUrls() {
-        List<String> allUrls = new ArrayList<>();
         Map<Long, String> idToUrl = new HashMap<>();
+        List<String> seeds = Arrays.asList(
+                "https://www.linkedin.com/jobs/search?keywords=&location=Poland&geoId=105072130&f_PP=102560051&f_TPR=&position=1&pageNum=0", // Warszawa
+                "https://www.linkedin.com/jobs/search?keywords=&location=Poland&geoId=105072130&f_PP=103348205&f_TPR=&position=1&pageNum=0", // Kraków
+                "https://www.linkedin.com/jobs/search?keywords=&location=Poland&geoId=105072130&f_PP=101832192&f_TPR=&position=1&pageNum=0", // Wrocław
+                "https://www.linkedin.com/jobs/search?keywords=&location=Poland&geoId=105072130&f_PP=101496088&f_TPR=&position=1&pageNum=0", // Gdańsk
+                "https://www.linkedin.com/jobs/search?keywords=&location=Poland&geoId=105072130&f_PP=101782795&f_TPR=&position=1&pageNum=0", // Łódź
+                "https://www.linkedin.com/jobs/search?keywords=&location=Poland&geoId=105072130&f_TPR=&position=1&pageNum=0"                  // bez niczego
+        );
 
-        int totalPage = getTotalPageNumber();
-        log.info("Total pages for LinkedIn = {}", totalPage);
-        for (int start = 25; start <= 750; start += 25) {
-            String url2 = "https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords=&location=Poland&geoId=105072130&trk=public_jobs_jobs-search-bar_search-submit&position=1&pageNum=0&start=" + start;
-//            String url = "https://www.linkedin.com/jobs/search?keywords=&location=Poland&geoId=105072130&trk=public_jobs_jobs-search-bar_search-submit&position="+p+"&pageNum=" + p + ";";
-            Document document = fetchDocument(url2);
-            Elements links = document.select("a[class*=base-card__full-link]");
-            links.forEach(e -> {
-                String href = e.attr("href");
-                log.info("ID: {}", extractIdFromUrl(href));
-                log.info("HREF: {}", href);
-                idToUrl.putAll(extractIdFromUrl(href));
-                allUrls.add(href);
-            });
-            delay();
+        final String SEE_MORE_BASE = "https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search";
+        final int PAGE_STEP = 25;
+        final int MAX_START = 2000;
+
+        for (String seed : seeds) {
+            URI u = URI.create(seed);
+            String query = u.getQuery();
+
+            String baseQuery = Arrays.stream(query.split("&"))
+                    .filter(p -> !p.startsWith("position=") && !p.startsWith("pageNum="))
+                    .collect(java.util.stream.Collectors.joining("&"));
+
+            boolean anyOnFirstPage = false;
+
+            for (int start = 0; start <= MAX_START; start += PAGE_STEP) {
+                String seeMoreUrl = SEE_MORE_BASE + "?" + baseQuery + "&start=" + start;
+
+                Document document = fetchDocument(seeMoreUrl);
+                if (document == null) {
+                    delay();
+                    continue;
+                }
+
+                Elements links = document.select("a[class*=base-card__full-link][href*='/jobs/view/']");
+                if (links.isEmpty()) {
+                    if (!anyOnFirstPage) break;
+                    break;
+                }
+                anyOnFirstPage = true;
+
+                links.forEach(a -> {
+                    String href = a.attr("href").replace("pl.linkedin.com", "www.linkedin.com").trim();
+                    idToUrl.putAll(extractIdFromUrl(href));
+                });
+
+                if (links.size() < PAGE_STEP) break;
+                delay();
+            }
         }
 
-        log.info("List before dist = {}", allUrls.size());
-        log.info("Mpa size {}", idToUrl.size());
-        return allUrls;
+        log.info("Zebrane unikalne oferty: {}", idToUrl.size());
+        return new ArrayList<>(idToUrl.values());
     }
-
 
 
     private Map<Long, String> extractIdFromUrl(String url) {
@@ -92,34 +126,8 @@ public class LinkedInScrapper extends AbstractJobScraper {
         return map;
     }
 
-    private Integer getTotalPageNumber() {
-        Document doc = fetchDocument(BASE_URL + "0;");
-        Element elementTotalResults = doc.selectFirst("code#totalResults");
-        Element elementResultsPerPage = doc.selectFirst("code#resultsPerPage");
-
-        int totalResults;
-        int resultPerPage;
-        if (elementTotalResults != null && elementResultsPerPage != null) {
-
-            Node totalResultsNode = elementTotalResults.childNode(0);
-            Node resultsPerPageNode = elementResultsPerPage.childNode(0);
-
-            totalResults = Integer.parseInt(((Comment) totalResultsNode).getData().trim());
-            resultPerPage = Integer.parseInt(((Comment) resultsPerPageNode).getData().trim());
-
-            log.info("Total Results: {}", totalResults);
-            log.info("Results Per Page: {}", resultPerPage);
-        } else {
-            throw new IllegalArgumentException("Nodes are null!");
-        }
-
-
-        return (int) Math.ceil((double) totalResults / resultPerPage);
-
-    }
-
     private static Optional<JsonNode> extractJobJson(String html) {
-        Document doc = org.jsoup.Jsoup.parse(html);
+        Document doc = Jsoup.parse(html);
         ObjectMapper om = new ObjectMapper();
 
         for (Element s : doc.select("script[type=application/ld+json]")) {
@@ -193,7 +201,7 @@ public class LinkedInScrapper extends AbstractJobScraper {
 
     public JobOfferRequest getJobDetails(String url) throws Exception {
         JobOffer jobOffer = extractJobData(url);
-        log.info("Job offer {}", jobOffer);
+        log.info("Job: {}", jobOffer);
         return new JobOfferRequest(jobOffer.getTitle(), jobOffer.getCompany(), jobOffer.getRequirements(), jobOffer.getCompany(), jobOffer.getResponsibilities(), jobOffer.getExperienceLevel(), jobOffer.getSalary(), jobOffer.getLocation(), jobOffer.getBenefits(), jobOffer.getEmploymentType(), jobOffer.getDateAdded(), jobOffer.getDateEnding(), "Scrap successful");
     }
 

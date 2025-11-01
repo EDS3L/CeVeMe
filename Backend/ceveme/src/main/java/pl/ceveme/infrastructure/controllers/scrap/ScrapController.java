@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import pl.ceveme.application.dto.scrap.JobOfferRequest;
 import pl.ceveme.application.dto.scrap.ScrapResponse;
 import pl.ceveme.application.usecase.scrap.*;
 import pl.ceveme.domain.model.entities.JobOffer;
@@ -26,9 +27,9 @@ public class ScrapController {
     private final ScrapRocketJobsUseCase scrapRocketJobsUseCase;
     private final ScrapNoFluffJobsUseCase scrapNoFluffJobsUseCase;
     private final ScrapSolidJobsUseCase scrapSolidJobsUseCase;
-    private final LinkedInScrapper linkedInScrapper;
+    private final ScrapLinkedInUseCase scrapLinkedInUseCase;
 
-    public ScrapController(ScrapJustJoinItUseCase scrapJustJoinItUseCase, ScrapPracujPlUseCase scrapPracujPlUseCase, ScrapBulldogJobUseCase scrapBulldogJobUseCase, ScrapTheProtocolITUseCase scrapProtocolItUseCase, ScrapRocketJobsUseCase scrapRocketJobsUseCase, ScrapNoFluffJobsUseCase scrapNoFluffJobsUseCase, ScrapSolidJobsUseCase scrapSolidJobsUseCase, LinkedInScrapper linkedInScrapper) {
+    public ScrapController(ScrapJustJoinItUseCase scrapJustJoinItUseCase, ScrapPracujPlUseCase scrapPracujPlUseCase, ScrapBulldogJobUseCase scrapBulldogJobUseCase, ScrapTheProtocolITUseCase scrapProtocolItUseCase, ScrapRocketJobsUseCase scrapRocketJobsUseCase, ScrapNoFluffJobsUseCase scrapNoFluffJobsUseCase, ScrapSolidJobsUseCase scrapSolidJobsUseCase, ScrapLinkedInUseCase scrapLinkedInUseCase) {
         this.scrapJustJoinItUseCase = scrapJustJoinItUseCase;
         this.scrapPracujPlUseCase = scrapPracujPlUseCase;
         this.scrapBulldogJobUseCase = scrapBulldogJobUseCase;
@@ -36,7 +37,7 @@ public class ScrapController {
         this.scrapRocketJobsUseCase = scrapRocketJobsUseCase;
         this.scrapNoFluffJobsUseCase = scrapNoFluffJobsUseCase;
         this.scrapSolidJobsUseCase = scrapSolidJobsUseCase;
-        this.linkedInScrapper = linkedInScrapper;
+        this.scrapLinkedInUseCase = scrapLinkedInUseCase;
     }
 
     @GetMapping("/justJointIt")
@@ -89,9 +90,10 @@ public class ScrapController {
     }
 
     @GetMapping("/linkedIn")
-    public ResponseEntity<List<String>> linkedIn() {
-        return ResponseEntity.ok(linkedInScrapper.getAllJobOfferUrls());
+    public ResponseEntity<ScrapResponse> linkedIn() throws Exception {
+        return ResponseEntity.ok(scrapLinkedInUseCase.execute());
     }
+
 
 
 }
