@@ -63,7 +63,7 @@ public class LinkedInScrapper extends AbstractJobScraper {
 
         final String SEE_MORE_BASE = "https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search";
         final int PAGE_STEP = 25;
-        final int MAX_START = 2000;
+        final int MAX_START = 975;
 
         for (String seed : seeds) {
             URI u = URI.create(seed);

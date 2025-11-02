@@ -13,6 +13,7 @@ import pl.ceveme.domain.repositories.ActivationTokenRepository;
 import pl.ceveme.domain.repositories.EmploymentInfoRepository;
 import pl.ceveme.domain.repositories.UserRepository;
 import pl.ceveme.infrastructure.adapter.security.BCryptPasswordEncoderAdapter;
+import pl.ceveme.infrastructure.external.email.ConfirmationRegisterEmail;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -23,11 +24,13 @@ public class RegisterUserUseCase {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoderAdapter bCryptPasswordEncoderAdapter;
     private final EmploymentInfoRepository employmentInfoRepository;
+    private final ConfirmationRegisterEmail confirmationRegisterEmail;
 
-    public RegisterUserUseCase(UserRepository userRepository, BCryptPasswordEncoderAdapter bCryptPasswordEncoderAdapter, EmploymentInfoRepository employmentInfoRepository) {
+    public RegisterUserUseCase(UserRepository userRepository, BCryptPasswordEncoderAdapter bCryptPasswordEncoderAdapter, EmploymentInfoRepository employmentInfoRepository, ConfirmationRegisterEmail confirmationRegisterEmail) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoderAdapter = bCryptPasswordEncoderAdapter;
         this.employmentInfoRepository = employmentInfoRepository;
+        this.confirmationRegisterEmail = confirmationRegisterEmail;
     }
 
     @Transactional
@@ -51,6 +54,7 @@ public class RegisterUserUseCase {
         employmentInfoRepository.save(employmentInfo);
         userRepository.save(user);
 
+        confirmationRegisterEmail.send(activationToken.getUuid(), email.email());
 
         return new RegisterUserResponse(name.name(),surname.surname(),email.email(), request.city(), "Register successful!");
     }

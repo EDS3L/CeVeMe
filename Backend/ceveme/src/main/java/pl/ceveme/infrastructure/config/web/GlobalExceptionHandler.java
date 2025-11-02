@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 import pl.ceveme.application.dto.exception.ApiError;
+import pl.ceveme.infrastructure.external.exception.EmailException;
 import pl.ceveme.infrastructure.external.exception.TimeoutException;
 
 import java.io.IOException;
@@ -74,6 +75,13 @@ public class GlobalExceptionHandler {
         logger.warn("Access denied: {}", ex.getMessage());
         ApiError error = new ApiError("ACCESS_DENIED", ex.getMessage(), Instant.now(), request.getRequestURI());
         return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(EmailException.class)
+    public ResponseEntity<ApiError> handleGenericException(EmailException ex, HttpServletRequest request) {
+        logger.error("Unexpected error: {}", ex.getMessage(), ex);
+        ApiError error = new ApiError("EMAIL_EXCEPTION", ex.getMessage(), Instant.now(), request.getRequestURI());
+        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(Exception.class)

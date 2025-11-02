@@ -1,40 +1,51 @@
-import React, { useState } from 'react';
-import UseAuth from '../hooks/UseAuth';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import UseAuth from "../hooks/UseAuth";
+import { useNavigate } from "react-router-dom";
 
 const formatPL = (digits) => {
-  const d = (digits || '').replace(/\D/g, '').slice(0, 9);
-  return d.replace(/(\d{3})(?=\d)/g, '$1 ').trim();
+  const d = (digits || "").replace(/\D/g, "").slice(0, 9);
+  return d.replace(/(\d{3})(?=\d)/g, "$1 ").trim();
 };
 
 const extractNationalDigits = (input) => {
-  const onlyDigits = (input || '').replace(/\D/g, '');
+  const onlyDigits = (input || "").replace(/\D/g, "");
   return onlyDigits.slice(-9);
 };
 
 const RegisterForm = () => {
-  const [name, setName] = useState('');
-  const [surname, setSurname] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState(''); // store only national digits
-  const [city, setCity] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [name, setName] = useState("");
+  const [surname, setSurname] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [city, setCity] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
   const useAuth = new UseAuth();
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    const formattedPhone = phoneNumber ? `+48 ${formatPL(phoneNumber)}` : '';
-    await useAuth.register(
-      name,
-      surname,
-      formattedPhone,
-      email,
-      password,
-      city,
-      navigate
-    );
+    const formattedPhone = phoneNumber ? `+48 ${formatPL(phoneNumber)}` : "";
+    try {
+      await useAuth.register(
+        name,
+        surname,
+        formattedPhone,
+        email,
+        password,
+        city,
+        navigate
+      );
+      try {
+        localStorage.setItem("activationEmail", email);
+        // eslint-disable-next-line no-empty
+      } catch {}
+      navigate(`/auth/activate?email=${encodeURIComponent(email)}`, {
+        state: { email },
+        replace: true,
+      });
+      // eslint-disable-next-line no-empty
+    } catch {}
   };
 
   return (
@@ -64,6 +75,7 @@ const RegisterForm = () => {
               className="w-full px-4 py-3 bg-slatelight border border-clouddark rounded-md text-ivorylight placeholder-cloudmedium focus:outline-none focus:ring-2 focus:ring-feedbackfocus focus:border-transparent transition duration-200"
             />
           </div>
+
           <div>
             <label
               htmlFor="surname"
@@ -75,15 +87,12 @@ const RegisterForm = () => {
               type="text"
               id="surname"
               name="surname"
-              onChange={(e) => {
-                setSurname(e.target.value);
-              }}
+              onChange={(e) => setSurname(e.target.value)}
               placeholder="Twoje nazwisko"
               className="w-full px-4 py-3 bg-slatelight border border-clouddark rounded-md text-ivorylight placeholder-cloudmedium focus:outline-none focus:ring-2 focus:ring-feedbackfocus focus:border-transparent transition duration-200"
             />
           </div>
 
-          {/* Miasto - estetyczne pole */}
           <div>
             <label
               htmlFor="city"
@@ -112,15 +121,12 @@ const RegisterForm = () => {
               type="email"
               id="email"
               name="email"
-              onChange={(e) => {
-                setEmail(e.target.value);
-              }}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="email@przyklad.com"
               className="w-full px-4 py-3 bg-slatelight border border-clouddark rounded-md text-ivorylight placeholder-cloudmedium focus:outline-none focus:ring-2 focus:ring-feedbackfocus focus:border-transparent transition duration-200"
             />
           </div>
 
-          {/* Telefon z domyślnym +48 i zabezpieczeniem */}
           <div>
             <label
               htmlFor="phoneNumber"
@@ -159,9 +165,7 @@ const RegisterForm = () => {
               type="password"
               id="password"
               name="password"
-              onChange={(e) => {
-                setPassword(e.target.value);
-              }}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="Minimum 8 znaków"
               className="w-full px-4 py-3 bg-slatelight border border-clouddark rounded-md text-ivorylight placeholder-cloudmedium focus:outline-none focus:ring-2 focus:ring-feedbackfocus focus:border-transparent transition duration-200"
             />
@@ -179,7 +183,7 @@ const RegisterForm = () => {
 
         <div className="text-center">
           <p className="text-sm text-cloudmedium">
-            Masz już konto?{' '}
+            Masz już konto?{" "}
             <a
               href="/auth/login"
               className="font-medium text-kraft hover:underline focus:outline-none focus:ring-1 focus:ring-kraft rounded"

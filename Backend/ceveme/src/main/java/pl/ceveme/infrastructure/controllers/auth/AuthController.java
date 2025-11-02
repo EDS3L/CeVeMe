@@ -7,7 +7,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.ceveme.application.dto.auth.*;
+import pl.ceveme.application.dto.email.EmailResponse;
 import pl.ceveme.application.usecase.auth.*;
+import pl.ceveme.application.usecase.email.SendConfirmationCodeAgainUseCase;
+import pl.ceveme.domain.model.vo.Email;
 import pl.ceveme.infrastructure.config.jwt.JwtService;
 
 @RestController
@@ -22,15 +25,17 @@ public class AuthController {
     private final RefreshUseCase refreshUseCase;
     private final JwtService jwtService;
     private final LogoutUseCase logoutUseCase;
+    private final SendConfirmationCodeAgainUseCase sendConfirmationCodeAgainUseCase;
 
 
-    public AuthController(LoginUserUseCase loginUserUseCase, RegisterUserUseCase registerUserUseCase, ActiveUserUseCase activeUserUseCase, RefreshUseCase refreshUseCase, JwtService jwtService, LogoutUseCase logoutUseCase) {
+    public AuthController(LoginUserUseCase loginUserUseCase, RegisterUserUseCase registerUserUseCase, ActiveUserUseCase activeUserUseCase, RefreshUseCase refreshUseCase, JwtService jwtService, LogoutUseCase logoutUseCase, SendConfirmationCodeAgainUseCase sendConfirmationCodeAgainUseCase) {
         this.loginUserUseCase = loginUserUseCase;
         this.registerUserUseCase = registerUserUseCase;
         this.activeUserUseCase = activeUserUseCase;
         this.refreshUseCase = refreshUseCase;
         this.jwtService = jwtService;
         this.logoutUseCase = logoutUseCase;
+        this.sendConfirmationCodeAgainUseCase = sendConfirmationCodeAgainUseCase;
     }
 
     @PostMapping("/login")
@@ -75,6 +80,12 @@ public class AuthController {
         ActiveUserRequest request = new ActiveUserRequest(uuid);
         ActiveUserResponse response = activeUserUseCase.execute(request);
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/active/sendConfirmationCode")
+    public ResponseEntity<EmailResponse> sendActiveCode(@RequestBody Email email) {
+        EmailResponse emailResponse = sendConfirmationCodeAgainUseCase.send(email);
+        return ResponseEntity.ok(emailResponse);
     }
 
 

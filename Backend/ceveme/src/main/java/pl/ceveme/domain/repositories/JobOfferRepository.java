@@ -67,4 +67,20 @@ public interface JobOfferRepository extends JpaRepository<JobOffer, Long> {
     Page<JobOffer> findByDateEndingGreaterThanEqual(LocalDate date, Pageable pageable);
 
     Optional<JobOffer> findByLink(String link);
+
+    @Query("""
+           select (count(o) > 0)
+           from JobOffer o
+           where lower(trim(o.link)) = lower(trim(:link))
+           """)
+    boolean existsByLinkNormalized(@Param("link") String link);
+
+    @Query("""
+           select (count(o) > 0)
+           from JobOffer o
+           where lower(trim(o.title)) = lower(trim(:title))
+             and lower(trim(o.company)) = lower(trim(:company))
+           """)
+    boolean existsByTitleAndCompanyNormalized(@Param("title") String title,
+                                              @Param("company") String company);
 }

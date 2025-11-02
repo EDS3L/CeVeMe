@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 // Canvas.jsx
 import React, {
   useRef,
@@ -117,7 +118,7 @@ export default function Canvas({
 
   // ====== Zoom z centrowaniem (guttery) ======
   const viewZoomRef = useRef(1);
-  const [viewZoom, setViewZoom] = useZoom(
+  const [viewZoom] = useZoom(
     wrapperRef,
     0.5,
     2,
