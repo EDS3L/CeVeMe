@@ -5,13 +5,20 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import pl.ceveme.application.dto.auth.*;
 import pl.ceveme.application.dto.email.EmailResponse;
+import pl.ceveme.application.dto.user.ChangePasswordRequest;
+import pl.ceveme.application.dto.user.ChangePasswordResponse;
 import pl.ceveme.application.usecase.auth.*;
 import pl.ceveme.application.usecase.email.SendConfirmationCodeAgainUseCase;
+import pl.ceveme.application.usecase.user.ChangeUsersPasswordUseCase;
+import pl.ceveme.domain.model.entities.User;
 import pl.ceveme.domain.model.vo.Email;
 import pl.ceveme.infrastructure.config.jwt.JwtService;
+
+import java.nio.file.AccessDeniedException;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -26,9 +33,10 @@ public class AuthController {
     private final JwtService jwtService;
     private final LogoutUseCase logoutUseCase;
     private final SendConfirmationCodeAgainUseCase sendConfirmationCodeAgainUseCase;
+    private final PasswordTokenUseCase passwordTokenUseCase;
+    private final RemindPasswordUseCase remindPasswordUseCase;
 
-
-    public AuthController(LoginUserUseCase loginUserUseCase, RegisterUserUseCase registerUserUseCase, ActiveUserUseCase activeUserUseCase, RefreshUseCase refreshUseCase, JwtService jwtService, LogoutUseCase logoutUseCase, SendConfirmationCodeAgainUseCase sendConfirmationCodeAgainUseCase) {
+    public AuthController(LoginUserUseCase loginUserUseCase, RegisterUserUseCase registerUserUseCase, ActiveUserUseCase activeUserUseCase, RefreshUseCase refreshUseCase, JwtService jwtService, LogoutUseCase logoutUseCase, SendConfirmationCodeAgainUseCase sendConfirmationCodeAgainUseCase, PasswordTokenUseCase passwordTokenUseCase, RemindPasswordUseCase remindPasswordUseCase) {
         this.loginUserUseCase = loginUserUseCase;
         this.registerUserUseCase = registerUserUseCase;
         this.activeUserUseCase = activeUserUseCase;
@@ -36,6 +44,8 @@ public class AuthController {
         this.jwtService = jwtService;
         this.logoutUseCase = logoutUseCase;
         this.sendConfirmationCodeAgainUseCase = sendConfirmationCodeAgainUseCase;
+        this.passwordTokenUseCase = passwordTokenUseCase;
+        this.remindPasswordUseCase = remindPasswordUseCase;
     }
 
     @PostMapping("/login")
@@ -88,5 +98,16 @@ public class AuthController {
         return ResponseEntity.ok(emailResponse);
     }
 
+    @PostMapping("/passwordToken")
+    public ResponseEntity<PasswordTokenResponse> sendPasswordToken(@RequestBody Email email) {
+        PasswordTokenResponse emailResponse = passwordTokenUseCase.createToken(email);
+        return ResponseEntity.ok(emailResponse);
+    }
+
+    @PatchMapping("/password/{token}")
+    public ResponseEntity<ChangePasswordResponse> changePassword(@RequestBody RemindPasswordRequest request, @RequestParam String passwordToken) {
+        ChangePasswordResponse response = remindPasswordUseCase.remindPassword(request, passwordToken);
+        return ResponseEntity.ok(response);
+    }
 
 }

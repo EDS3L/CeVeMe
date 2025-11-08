@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { X } from 'lucide-react';
-import Input from '../ui/Input';
-import Select from '../ui/Select';
-import Button from '../ui/Button';
-import Card from '../ui/Card';
+/* eslint-disable react-hooks/exhaustive-deps */
+// src/components/search/FiltersSheet.jsx
+import React, { useEffect, useState } from "react";
+import { X } from "lucide-react";
+import Input from "../ui/Input";
+import Select from "../ui/Select";
+import Button from "../ui/Button";
+import Card from "../ui/Card";
 
 export default function FiltersSheet({
   open,
@@ -13,34 +15,42 @@ export default function FiltersSheet({
   sort,
   setSort,
 }) {
-  const [local, setLocal] = useState(filters);
+  const [local, setLocal] = useState({
+    city: "",
+    experience: "",
+    employmentType: "",
+    company: "",
+    title: "",
+    dateAddedFrom: undefined,
+    dateAddedTo: undefined,
+    ...filters,
+  });
   const [localSort, setLocalSort] = useState(sort);
 
-  useEffect(() => setLocal(filters), [filters]);
+  useEffect(() => setLocal({ ...local, ...filters }), [filters]);
   useEffect(() => setLocalSort(sort), [sort]);
 
   const apply = () => {
     setFilters(local);
     setSort(localSort);
     onClose();
-    console.log('apply', local, localSort);
   };
 
   return (
     <div
       className={`fixed inset-0 z-40 ${
-        open ? 'pointer-events-auto' : 'pointer-events-none'
+        open ? "pointer-events-auto" : "pointer-events-none"
       }`}
     >
       <div
         className={`absolute inset-0 bg-slatedark/60 transition-opacity ${
-          open ? 'opacity-100' : 'opacity-0'
+          open ? "opacity-100" : "opacity-0"
         }`}
         onClick={onClose}
       />
       <div
         className={`absolute left-1/2 -translate-x-1/2 top-10 w-[min(92vw,900px)] transition-transform ${
-          open ? 'translate-y-0' : '-translate-y-8'
+          open ? "translate-y-0" : "-translate-y-8"
         }`}
       >
         <Card className="relative top-20">
@@ -63,7 +73,7 @@ export default function FiltersSheet({
                   Miasto
                 </label>
                 <Input
-                  value={local.city}
+                  value={local.city || ""}
                   onChange={(e) => setLocal({ ...local, city: e.target.value })}
                   placeholder="np. Warszawa"
                 />
@@ -73,7 +83,7 @@ export default function FiltersSheet({
                   Poziom doświadczenia
                 </label>
                 <Select
-                  value={local.experience}
+                  value={local.experience || ""}
                   onChange={(e) =>
                     setLocal({ ...local, experience: e.target.value })
                   }
@@ -89,7 +99,7 @@ export default function FiltersSheet({
                   Forma zatrudnienia
                 </label>
                 <Select
-                  value={local.employmentType}
+                  value={local.employmentType || ""}
                   onChange={(e) =>
                     setLocal({ ...local, employmentType: e.target.value })
                   }
@@ -106,11 +116,24 @@ export default function FiltersSheet({
                   Firma
                 </label>
                 <Input
-                  value={local.company}
+                  value={local.company || ""}
                   onChange={(e) =>
                     setLocal({ ...local, company: e.target.value })
                   }
                   placeholder="np. Google, Microsoft"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm text-clouddark mb-1">
+                  Tytuł
+                </label>
+                <Input
+                  value={local.title || ""}
+                  onChange={(e) =>
+                    setLocal({ ...local, title: e.target.value })
+                  }
+                  placeholder="np. Frontend Developer"
                 />
               </div>
             </div>
@@ -136,8 +159,16 @@ export default function FiltersSheet({
               <Button
                 variant="ghost"
                 onClick={() => {
-                  setLocal({ city: '', experience: '', employmentType: '' });
-                  setLocalSort('newest');
+                  setLocal({
+                    city: "",
+                    experience: "",
+                    employmentType: "",
+                    company: "",
+                    title: "",
+                    dateAddedFrom: undefined,
+                    dateAddedTo: undefined,
+                  });
+                  setLocalSort("newest");
                 }}
               >
                 Wyczyść

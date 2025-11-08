@@ -7,6 +7,7 @@ import pl.ceveme.domain.model.vo.*;
 import pl.ceveme.infrastructure.adapter.security.BCryptPasswordEncoderAdapter;
 
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "users")
@@ -47,6 +48,9 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private ActivationToken activationToken;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private PasswordToken passwordToken;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<RefreshToken> refreshTokenList;
 
@@ -76,10 +80,22 @@ public class User {
         return new User(name, surname, phoneNumber, email, image, password, cvList, applicationHistoryList, employmentInfo, false, activationToken, city, UserRole.FREE);
     }
 
-    public void changePassword(String currentPassword, String newPassword, BCryptPasswordEncoderAdapter passwordEncoder) {
+    public void changePassword(String currentPassword, String newPassword, String confirmNewPassword, BCryptPasswordEncoderAdapter passwordEncoder) {
+        if(!newPassword.equals(confirmNewPassword))throw new IllegalArgumentException("Passwords must match each other");
+
         if (!passwordEncoder.matches(currentPassword, this.password)) {
             throw new IllegalArgumentException("Incorrect current password");
         }
+
+        if (passwordEncoder.matches(newPassword, this.password)) {
+            throw new IllegalArgumentException("New password cannot be the same as the current password");
+        }
+        Password pass = new Password(newPassword);
+        this.password = passwordEncoder.encode(pass);
+    }
+
+    public void remindPassword(String newPassword,String confirmNewPassword, BCryptPasswordEncoderAdapter passwordEncoder) {
+        if(!newPassword.equals(confirmNewPassword))throw new IllegalArgumentException("Passwords must match each other");
 
         if (passwordEncoder.matches(newPassword, this.password)) {
             throw new IllegalArgumentException("New password cannot be the same as the current password");
@@ -103,7 +119,6 @@ public class User {
     public void changePhoneNumber(PhoneNumber phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
-
 
     public long getId() {
         return id;
@@ -295,6 +310,14 @@ public class User {
             this.employmentInfo.setUser(this);
         }
         this.employmentInfo.addEducation(education);
+    }
+
+    public PasswordToken getPasswordToken() {
+        return passwordToken;
+    }
+
+    public void setPasswordToken(PasswordToken passwordToken) {
+        this.passwordToken = passwordToken;
     }
 
     @Override

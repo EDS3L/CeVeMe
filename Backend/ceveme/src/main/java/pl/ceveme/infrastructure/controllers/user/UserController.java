@@ -22,7 +22,6 @@ import java.util.List;
 @RequestMapping("/api/users")
 public class UserController {
 
-    private final ChangeUsersPasswordUseCase changeUsersPasswordUseCase;
     private final ChangeUserNameUseCase changeUserNameUseCase;
     private final ChangeUserSurnameUseCase changeUserSurnameUseCase;
     private final ChangeUserPhoneNumberUseCase changeUserPhoneNumberUseCase;
@@ -34,9 +33,9 @@ public class UserController {
     private final ChangeUserNameSurnameCityUseCase changeUserNameSurnameCityUseCase;
     private final EndpointUsagesService endpointUsagesService;
     private final GetInfoAboutDevicesInSession getInfoAboutDevicesInSession;
+    private final ChangeUsersPasswordUseCase changeUsersPasswordUseCase;
 
-    public UserController(ChangeUsersPasswordUseCase changeUsersPasswordUseCase, ChangeUserNameUseCase changeUserNameUseCase, ChangeUserSurnameUseCase changeUserSurnameUseCase, ChangeUserPhoneNumberUseCase changeUserPhoneNumberUseCase, ChangeUserEmailUseCase changeUserEmailUseCase, UploadProfileImageUseCase uploadProfileImageUseCase, UploadCvFileUseCase uploadCvFileUseCase, DeleteUserUseCase deleteUserUseCase, GetUserDetailsInfoUseCase getUserDetailsInfoUseCase, ChangeUserNameSurnameCityUseCase changeUserNameSurnameCityUseCase, EndpointUsagesService endpointUsagesService, GetInfoAboutDevicesInSession getInfoAboutDevicesInSession) {
-        this.changeUsersPasswordUseCase = changeUsersPasswordUseCase;
+    public UserController(ChangeUserNameUseCase changeUserNameUseCase, ChangeUserSurnameUseCase changeUserSurnameUseCase, ChangeUserPhoneNumberUseCase changeUserPhoneNumberUseCase, ChangeUserEmailUseCase changeUserEmailUseCase, UploadProfileImageUseCase uploadProfileImageUseCase, UploadCvFileUseCase uploadCvFileUseCase, DeleteUserUseCase deleteUserUseCase, GetUserDetailsInfoUseCase getUserDetailsInfoUseCase, ChangeUserNameSurnameCityUseCase changeUserNameSurnameCityUseCase, EndpointUsagesService endpointUsagesService, GetInfoAboutDevicesInSession getInfoAboutDevicesInSession, ChangeUsersPasswordUseCase changeUsersPasswordUseCase) {
         this.changeUserNameUseCase = changeUserNameUseCase;
         this.changeUserSurnameUseCase = changeUserSurnameUseCase;
         this.changeUserPhoneNumberUseCase = changeUserPhoneNumberUseCase;
@@ -48,6 +47,15 @@ public class UserController {
         this.changeUserNameSurnameCityUseCase = changeUserNameSurnameCityUseCase;
         this.endpointUsagesService = endpointUsagesService;
         this.getInfoAboutDevicesInSession = getInfoAboutDevicesInSession;
+        this.changeUsersPasswordUseCase = changeUsersPasswordUseCase;
+    }
+
+    @PatchMapping("/name")
+    public ResponseEntity<UpdateUserResponse> changeName( @RequestBody ChangeNameRequest request, Authentication authentication) throws AccessDeniedException {
+        User user = (User) authentication.getPrincipal();
+        Long userId = user.getId();
+        UpdateUserResponse response = changeUserNameUseCase.execute(userId, request.name());
+        return ResponseEntity.ok(response);
     }
 
     @PatchMapping("/password")
@@ -58,13 +66,6 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @PatchMapping("/name")
-    public ResponseEntity<UpdateUserResponse> changeName( @RequestBody ChangeNameRequest request, Authentication authentication) throws AccessDeniedException {
-        User user = (User) authentication.getPrincipal();
-        Long userId = user.getId();
-        UpdateUserResponse response = changeUserNameUseCase.execute(userId, request.name());
-        return ResponseEntity.ok(response);
-    }
 
     @PatchMapping("/surname")
     public ResponseEntity<UpdateUserResponse> changeSurname(@RequestBody ChangeSurnameRequest request, Authentication authentication) throws AccessDeniedException{

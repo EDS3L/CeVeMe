@@ -3,15 +3,12 @@ package pl.ceveme.infrastructure.external.scrap.linkedin;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import org.checkerframework.checker.units.qual.A;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.*;
 import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Component;
 import pl.ceveme.application.dto.scrap.JobOfferRequest;
 import pl.ceveme.domain.model.entities.JobOffer;
@@ -21,13 +18,10 @@ import pl.ceveme.infrastructure.external.common.HttpClient;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URLEncoder;
 import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 @Component
 public class LinkedInScrapper extends AbstractJobScraper {
@@ -52,20 +46,12 @@ public class LinkedInScrapper extends AbstractJobScraper {
 
     public List<String> getAllJobOfferUrls() {
         Map<Long, String> idToUrl = new HashMap<>();
-        List<String> seeds = Arrays.asList(
-                "https://www.linkedin.com/jobs/search?keywords=&location=Poland&geoId=105072130&f_PP=102560051&f_TPR=&position=1&pageNum=0", // Warszawa
-                "https://www.linkedin.com/jobs/search?keywords=&location=Poland&geoId=105072130&f_PP=103348205&f_TPR=&position=1&pageNum=0", // Kraków
-                "https://www.linkedin.com/jobs/search?keywords=&location=Poland&geoId=105072130&f_PP=101832192&f_TPR=&position=1&pageNum=0", // Wrocław
-                "https://www.linkedin.com/jobs/search?keywords=&location=Poland&geoId=105072130&f_PP=101496088&f_TPR=&position=1&pageNum=0", // Gdańsk
-                "https://www.linkedin.com/jobs/search?keywords=&location=Poland&geoId=105072130&f_PP=101782795&f_TPR=&position=1&pageNum=0", // Łódź
-                "https://www.linkedin.com/jobs/search?keywords=&location=Poland&geoId=105072130&f_TPR=&position=1&pageNum=0"                  // bez niczego
-        );
 
         final String SEE_MORE_BASE = "https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search";
         final int PAGE_STEP = 25;
         final int MAX_START = 975;
 
-        for (String seed : seeds) {
+        for (String seed : LinkedInSeeds.seeds) {
             URI u = URI.create(seed);
             String query = u.getQuery();
 
@@ -77,6 +63,7 @@ public class LinkedInScrapper extends AbstractJobScraper {
 
             for (int start = 0; start <= MAX_START; start += PAGE_STEP) {
                 String seeMoreUrl = SEE_MORE_BASE + "?" + baseQuery + "&start=" + start;
+                log.info("See more URLS {}", seeMoreUrl);
 
                 Document document = fetchDocument(seeMoreUrl);
                 if (document == null) {
@@ -96,7 +83,7 @@ public class LinkedInScrapper extends AbstractJobScraper {
                     idToUrl.putAll(extractIdFromUrl(href));
                 });
 
-                if (links.size() < PAGE_STEP) break;
+                log.info("Links size {}", links.size());
                 delay();
             }
         }
@@ -201,7 +188,6 @@ public class LinkedInScrapper extends AbstractJobScraper {
 
     public JobOfferRequest getJobDetails(String url) throws Exception {
         JobOffer jobOffer = extractJobData(url);
-        log.info("Job: {}", jobOffer);
         return new JobOfferRequest(jobOffer.getTitle(), jobOffer.getCompany(), jobOffer.getRequirements(), jobOffer.getCompany(), jobOffer.getResponsibilities(), jobOffer.getExperienceLevel(), jobOffer.getSalary(), jobOffer.getLocation(), jobOffer.getBenefits(), jobOffer.getEmploymentType(), jobOffer.getDateAdded(), jobOffer.getDateEnding(), "Scrap successful");
     }
 

@@ -17,6 +17,8 @@ public class JobOffer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Lob
+    @JdbcTypeCode(SqlTypes.LONGVARCHAR)
     private String link;
 
     private String title;

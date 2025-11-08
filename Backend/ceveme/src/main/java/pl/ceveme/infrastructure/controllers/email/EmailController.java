@@ -23,4 +23,5 @@ public class EmailController {
         emailSenderService.sendEmail(request);
         return ResponseEntity.ok("Wysłano");
     }
+
 }
