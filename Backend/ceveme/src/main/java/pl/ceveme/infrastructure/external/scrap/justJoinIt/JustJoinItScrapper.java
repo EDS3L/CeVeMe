@@ -101,7 +101,7 @@ private String extractExperienceLevel(Document doc) {
             return first.path("meta")
                     .path("totalPages")
                     .asInt();
-        } catch (IOException | ParseException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
 

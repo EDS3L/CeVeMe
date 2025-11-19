@@ -70,7 +70,7 @@ public class RocketJobsScrapper extends AbstractJobScraper {
                 delay();
             }
             return processUrls(allUrls);
-        } catch (IOException | ParseException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -103,7 +103,7 @@ public class RocketJobsScrapper extends AbstractJobScraper {
             return firstPage.path("meta")
                     .path("totalPages")
                     .asInt();
-        } catch (IOException | ParseException e) {
+        } catch (IOException  e) {
             throw new RuntimeException(e);
         }
     }

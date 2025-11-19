@@ -50,7 +50,7 @@ public class SolidJobsScrapper extends AbstractJobScraper {
         try {
             String response = httpClient.fetchContentSolidJobs(API_ENDPOINT);
             return parseJobOfferUrls(response);
-        } catch (IOException | ParseException e) {
+        } catch (IOException  e) {
             log.error("Failed to fetch job offers list from API: {}", e.getMessage());
             throw e;
         }
