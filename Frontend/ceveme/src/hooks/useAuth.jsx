@@ -16,7 +16,7 @@ function useAuth() {
 				const decoded = jwtDecode(decodedToken);
 				setEmail(decoded.sub);
 			} catch (error) {
-				console.error("Invalid JWT token:", error);
+				console.error("Invalid JWT token:", error + " !");
 				console.error("Token value:", token);
 				try {
 					const decoded = jwtDecode(token);
