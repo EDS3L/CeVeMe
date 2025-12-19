@@ -81,7 +81,6 @@ class LoginUserUseCaseTest {
         when(userRepository.existsByEmail(email)).thenReturn(true);
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
         when(passwordEncoderAdapter.matches(request.password(), user.getPassword())).thenReturn(false);
-
         // when + then
         var exception = assertThrows(IllegalArgumentException.class, () -> loginUserUseCase.login(request, servletResponse, servletRequest));
         assertThat(exception.getMessage()).isEqualTo("Invalid credentials");

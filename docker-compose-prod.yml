@@ -34,10 +34,10 @@ services:
       - web
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.ceveme-frontend.rule=Host(`ceveme.pl`)"
       - "traefik.http.routers.ceveme-api.rule=Host(`ceveme.pl`) && PathPrefix(`/api`)" 
       - "traefik.http.routers.ceveme-api.entrypoints=websecure"
       - "traefik.http.routers.ceveme-api.tls.certresolver=my-resolver"
+      - "traefik.http.routers.ceveme-api.priority=20"
       - "traefik.http.services.ceveme-api.loadbalancer.server.port=8080"
 
 networks:
