@@ -7,9 +7,9 @@ on:
       - 'Backend/ceveme/src/**'
       - 'Backend/ceveme/build.gradle'
       - 'Backend/ceveme/Dockerfile'
-      - 'frontend/ceveme/src/**'
-      - 'frontend/ceveme/package.json'
-      - 'frontend/ceveme/Dockerfile'
+      - 'Frontend/ceveme/src/**'
+      - 'Frontend/ceveme/package.json'
+      - 'Frontend/ceveme/Dockerfile'
       - 'docker-compose-prod.yml'
 
 jobs:
@@ -31,9 +31,9 @@ jobs:
               - 'Backend/ceveme/build.gradle'
               - 'Backend/ceveme/Dockerfile'
             frontend:
-              - 'frontend/ceveme/src/**'
-              - 'frontend/ceveme/package.json'
-              - 'frontend/ceveme/Dockerfile'
+              - 'Frontend/ceveme/src/**'
+              - 'Frontend/ceveme/package.json'
+              - 'Frontend/ceveme/Dockerfile'
             compose:
               - 'docker-compose-prod.yml'
 
@@ -112,8 +112,8 @@ jobs:
       - name: Build and push frontend
         uses: docker/build-push-action@v6
         with:
-          context: ./frontend/ceveme
-          file: ./frontend/ceveme/Dockerfile
+          context: ./Frontend/ceveme
+          file: ./Frontend/ceveme/Dockerfile
           push: true
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/eds3l:ceveme-frontend
