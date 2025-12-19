@@ -15,9 +15,9 @@ spring:
             enable: true
 
   datasource:
-    url: ${DATASOURCE_URL}
-    username: ${DATASOURCE_USERNAME}
-    password: ${DATASOURCE_PASSWORD}
+    url: ${SPRING_DATASOURCE_URL:${DATASOURCE_URL}}
+    username: ${SPRING_DATASOURCE_USERNAME:${DATASOURCE_USERNAME}}
+    password: ${SPRING_DATASOURCE_PASSWORD:${DATASOURCE_PASSWORD}}
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       max-lifetime: 600000
