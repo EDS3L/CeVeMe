@@ -162,9 +162,9 @@ jobs:
             export MAIL_USERNAME="${{ secrets.MAIL_USERNAME }}"
             export MAIL_PASSWORD="${{ secrets.MAIL_PASSWORD }}"
 
-            export DATASOURCE_URL="${{ secrets.DATASOURCE_URL }}"
-            export DATASOURCE_USERNAME="${{ secrets.DATASOURCE_USERNAME }}"
-            export DATASOURCE_PASSWORD="${{ secrets.DATASOURCE_PASSWORD }}"
+            export DB_URL="${{ secrets.DB_URL }}"
+            export DB_USERNAME="${{ secrets.DB_USERNAME }}"
+            export DB_PASSWORD="${{ secrets.DB_PASSWORD }}"
 
             export TOKEN_SECRETKEY="${{ secrets.TOKEN_SECRETKEY }}"
 

@@ -28,7 +28,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IOException.class)
     public ResponseEntity<ApiError> handleIOException(IOException ex, HttpServletRequest request) {
         logger.error("IOException occurred: {}", ex.getMessage());
-        ApiError error = new ApiError("IO_ERROR", "An input/output error occurred while processing the request.", Instant.now(), request.getRequestURI());
+        ApiError error = new ApiError("IO_ERROR", "An input/output error occurred while processing the request!", Instant.now(), request.getRequestURI());
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
