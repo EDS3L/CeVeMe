@@ -9,8 +9,10 @@ import pl.ceveme.application.dto.entity.language.LanguageRequest;
 import pl.ceveme.application.dto.entity.language.LanguageResponse;
 import pl.ceveme.domain.model.entities.EmploymentInfo;
 import pl.ceveme.domain.model.entities.Language;
-import pl.ceveme.domain.repositories.EmploymentInfoRepository;
+import pl.ceveme.domain.model.entities.User;
+import pl.ceveme.domain.repositories.UserRepository;
 
+import java.nio.file.AccessDeniedException;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,15 +23,15 @@ import static org.mockito.Mockito.when;
 class EditLanguageUseCaseTest {
 
     @Mock
-    private EmploymentInfoRepository employmentInfoRepository;
+    private UserRepository userRepository;
 
     @InjectMocks
     private EditLanguageUseCase editLanguageUseCase;
 
     @Test
-    void should_editLanguage_when_languageExists() {
+    void should_editLanguage_when_languageExists() throws AccessDeniedException {
         // given
-        Long employmentInfoId = 1L;
+        Long userId = 1L;
         Long languageId = 10L;
         Language language = new Language("Old Language", "C1");
         try {
@@ -40,14 +42,18 @@ class EditLanguageUseCaseTest {
             throw new RuntimeException(e);
         }
 
-        LanguageRequest request = new LanguageRequest(languageId, "test@wp.pl", "Updated Language", "B2");
+        LanguageRequest request = new LanguageRequest(languageId, "Updated Language", "B2", userId);
         EmploymentInfo info = new EmploymentInfo();
         info.addLanguage(language);
+        User user = new User();
+        user.setEmploymentInfo(info);
+        info.setUser(user);
+        setUserId(user, userId);
 
-        when(employmentInfoRepository.findById(employmentInfoId)).thenReturn(Optional.of(info));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
         // when
-        LanguageResponse response = editLanguageUseCase.execute(request, employmentInfoId);
+        LanguageResponse response = editLanguageUseCase.execute(request, userId);
 
         // then
         assertThat(response.name()).isEqualTo("Updated Language");
@@ -57,31 +63,45 @@ class EditLanguageUseCaseTest {
     @Test
     void should_throwException_when_languageNotFound() {
         // given
-        Long employmentInfoId = 1L;
-        LanguageRequest request = new LanguageRequest(99L, "test@wp.pl", "Language", "C1");
+        Long userId = 1L;
+        LanguageRequest request = new LanguageRequest(99L, "Language", "C1", userId);
         EmploymentInfo info = new EmploymentInfo();
+        User user = new User();
+        user.setEmploymentInfo(info);
+        info.setUser(user);
+        setUserId(user, userId);
 
-        when(employmentInfoRepository.findById(employmentInfoId)).thenReturn(Optional.of(info));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
         // when & then
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> editLanguageUseCase.execute(request, employmentInfoId));
+                () -> editLanguageUseCase.execute(request, userId));
 
         assertThat(ex.getMessage()).isEqualTo("Language not found");
     }
 
     @Test
-    void should_throwException_when_employmentInfoNotFound() {
+    void should_throwException_when_userNotFound() {
         // given
-        Long employmentInfoId = 999L;
-        LanguageRequest request = new LanguageRequest(1L, "test@wp.pl", "Any", "C1");
+        Long userId = 999L;
+        LanguageRequest request = new LanguageRequest(1L, "Any", "C1", userId);
 
-        when(employmentInfoRepository.findById(employmentInfoId)).thenReturn(Optional.empty());
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
         // when & then
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> editLanguageUseCase.execute(request, employmentInfoId));
+                () -> editLanguageUseCase.execute(request, userId));
 
-        assertThat(ex.getMessage()).isEqualTo("EmploymentInfo not found");
+        assertThat(ex.getMessage()).isEqualTo("User not found");
+    }
+
+    private void setUserId(User user, Long id) {
+        try {
+            java.lang.reflect.Field field = User.class.getDeclaredField("id");
+            field.setAccessible(true);
+            field.set(user, id);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

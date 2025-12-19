@@ -6,23 +6,28 @@ import pl.ceveme.application.dto.entity.course.CourseRequest;
 import pl.ceveme.application.dto.entity.course.CourseResponse;
 import pl.ceveme.domain.model.entities.Course;
 import pl.ceveme.domain.model.entities.EmploymentInfo;
+import pl.ceveme.domain.model.entities.User;
+import pl.ceveme.domain.model.vo.Email;
 import pl.ceveme.domain.repositories.EmploymentInfoRepository;
+import pl.ceveme.domain.repositories.UserRepository;
 
 import java.nio.file.AccessDeniedException;
 
 @Service
 public class EditCourseUseCase {
 
-    private final EmploymentInfoRepository employmentInfoRepository;
+    private final UserRepository userRepository;
 
-    public EditCourseUseCase(EmploymentInfoRepository employmentInfoRepository) {
-        this.employmentInfoRepository = employmentInfoRepository;
+    public EditCourseUseCase(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Transactional
     public CourseResponse execute(CourseRequest request, Long userId) throws AccessDeniedException {
-        EmploymentInfo info = employmentInfoRepository.findById(request.employmentInfoId())
-                .orElseThrow(() -> new IllegalArgumentException("EmploymentInfo not found"));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        EmploymentInfo info = user.getEmploymentInfo();
 
         if(info.getUser().getId() != userId) {
             throw new AccessDeniedException("Access Denied!");

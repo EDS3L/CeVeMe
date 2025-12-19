@@ -23,8 +23,8 @@ public class CreateEducationUseCase {
     }
 
     @Transactional
-    public EducationResponse execute(EducationRequest request) {
-        User user = userRepository.findByEmail(new Email(request.email()))
+    public EducationResponse execute(EducationRequest request, Long userId) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         Education education = new Education(

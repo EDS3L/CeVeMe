@@ -8,8 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import pl.ceveme.application.dto.entity.portfolioItems.PortfolioItemsRequest;
 import pl.ceveme.application.dto.entity.portfolioItems.PortfolioItemsResponse;
 import pl.ceveme.domain.model.entities.User;
-import pl.ceveme.domain.model.vo.Email;
-import pl.ceveme.domain.repositories.EmploymentInfoRepository;
+import pl.ceveme.domain.repositories.PortfolioItemRepository;
 import pl.ceveme.domain.repositories.UserRepository;
 
 import java.util.Optional;
@@ -24,7 +23,7 @@ class CreatePortfolioItemUseCaseTest {
     private UserRepository userRepository;
 
     @Mock
-    private EmploymentInfoRepository employmentInfoRepository;
+    private PortfolioItemRepository portfolioItemRepository;
 
     @InjectMocks
     private CreatePortfolioItemUseCase useCase;
@@ -32,18 +31,19 @@ class CreatePortfolioItemUseCaseTest {
     @Test
     void should_addPortfolioItemToEmploymentInfo_when_ValuesAreCorrect() {
         // given
-        String email = "test@example.com";
+        Long userId = 1L;
         String title = "My Project";
         String description = "Project Description";
+        String url = "https://example.com";
 
         User user = mock(User.class);
 
-        when(userRepository.findByEmail(new Email(email))).thenReturn(Optional.of(user));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
-        PortfolioItemsRequest request = new PortfolioItemsRequest(1L,email, title, description);
+        PortfolioItemsRequest request = new PortfolioItemsRequest(1L, title, description, url, userId);
 
         // when
-        PortfolioItemsResponse response = useCase.execute(request);
+        PortfolioItemsResponse response = useCase.execute(request, userId);
 
         // then
 
@@ -55,13 +55,13 @@ class CreatePortfolioItemUseCaseTest {
     @Test
     void should_ThrowException_when_userNotFound() {
         // given
-        String email = "nonexistent@example.com";
-        when(userRepository.findByEmail(new Email(email))).thenReturn(Optional.empty());
+        Long userId = 1L;
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
-        PortfolioItemsRequest request = new PortfolioItemsRequest(1L,email, "title", "desc");
+        PortfolioItemsRequest request = new PortfolioItemsRequest(1L, "title", "desc", "https://example.com", userId);
 
         // when & then
-        assertThrows(RuntimeException.class, () -> useCase.execute(request));
-        verify(employmentInfoRepository, never()).save(any());
+        assertThrows(RuntimeException.class, () -> useCase.execute(request, userId));
+        verify(portfolioItemRepository, never()).save(any());
     }
 }

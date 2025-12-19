@@ -20,22 +20,23 @@ class EmploymentInfoMapperTest {
     private EmploymentInfoMapper mapper = new EmploymentInfoMapperImpl();
 
     private LanguageDto lang(String name, String lvl) {
-        return new LanguageDto(name,lvl);
+        return new LanguageDto(1L, name, lvl);
     }
 
     @Test
     void should_map_when_allValueCorrect() {
         // given
-        LanguageDto languageDto = new LanguageDto("English", "B2");
-        CertificateDto certificateDto = new CertificateDto("Java", LocalDate.of(2003,01,12));
-        ExperienceDto experienceDto = new ExperienceDto("DeveloperHouse", LocalDate.of(2019,1,1), LocalDate.of(2020,1,1),false,"Developer","I make job good","Make website work");
-        CourseDto courseDto = new CourseDto("Spring Boot", LocalDate.of(2020,5,5), "description");
-        SkillDto skillDto = new SkillDto("Early bird", Skill.Type.SOFT);
-        PortfolioItemsDto portfolioItem = new PortfolioItemsDto("Projekt ABC", "Zajefajny projekt");
-        LinkDto link = new LinkDto("github", "https://github.com/ceveme");
-        EducationDto educations = new EducationDto("AEH", "Specjalista", "Wyższa", LocalDate.of(2023,12,12), LocalDate.of(2024,12,12),false);
+        LanguageDto languageDto = new LanguageDto(1L, "English", "B2");
+        CertificateDto certificateDto = new CertificateDto(1L, "Java", LocalDate.of(2003,01,12));
+        ExperienceDto experienceDto = new ExperienceDto(1L, "DeveloperHouse", LocalDate.of(2019,1,1), LocalDate.of(2020,1,1),false,"Developer","I make job good","Make website work");
+        CourseDto courseDto = new CourseDto(1L, "Spring Boot", LocalDate.of(2020,5,5), "description");
+        SkillDto skillDto = new SkillDto(1L, "Early bird", Skill.Type.SOFT);
+        PortfolioItemsDto portfolioItem = new PortfolioItemsDto(1L, "Projekt ABC", "Zajefajny projekt", "https://example.com");
+        LinkDto link = new LinkDto(1L, "github", "https://github.com/ceveme");
+        EducationDto educations = new EducationDto(1L, "AEH", "Specjalista", "Wyższa", LocalDate.of(2023,12,12), LocalDate.of(2024,12,12),false);
 
         EmploymentInfoRequest request = new EmploymentInfoRequest(
+                1L,
                 List.of(languageDto),
                 List.of(certificateDto),
                 List.of(experienceDto),
@@ -82,7 +83,7 @@ class EmploymentInfoMapperTest {
     @Test
     void should_createEmptyList_when_valueIsEmpty() {
         // given
-        EmploymentInfoRequest request = new EmploymentInfoRequest(null,null,null,null,null,null,null,null,"test@wp.pl");
+        EmploymentInfoRequest request = new EmploymentInfoRequest(null, null,null,null,null,null,null,null,null,"test@wp.pl");
 
         //when
 

@@ -10,7 +10,6 @@ class UserService {
     const decodedPayload = JSON.parse(atob(tokenPayload));
     return decodedPayload.sub;
   }
-
   getIdFromToken(token) {
     const tokenPayload = token.split('.')[1];
     const decodedPayload = JSON.parse(atob(tokenPayload));
@@ -20,7 +19,6 @@ class UserService {
     if (!token) return null;
     const tokenPayload = token.split('.')[1];
     const decodedPayload = JSON.parse(atob(tokenPayload));
-
     return decodedPayload.role;
   }
 }

@@ -1,0 +1,68 @@
+spring:
+  application:
+    name: ceveme
+  mail:
+    host: test@wp.pl
+    port: 465
+    username: test@test.pl
+    password: testpassword
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          ssl:
+            enable: true
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: sa
+    hikari:
+      max-lifetime: 600000
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    open-in-view: false
+    database-platform: org.hibernate.dialect.H2Dialect
+  servlet:
+    multipart:
+      max-file-size: 15MB
+      max-request-size: 15MB
+
+mail:
+  username: test@test.pl
+
+server:
+  port: 8080
+
+logging:
+  level:
+    root: INFO
+    org.springframework: WARN
+
+jwt:
+  access-expiration: 100000
+  refresh-expiration: 2592000000
+
+token:
+  secretKey: c6d6db78b73cc88e4c1b361eec2a83fbfebe6ca5f669694b500acea00c134dd1
+
+gemini:
+  api-key: test-api-key
+  model: test-model
+
+stripe:
+  api-key: test-api-key
+  api-version: 2024-09-30.acacia
+
+CLOUDINARY_URL: cloudinary://test:test@test
+
+cloudinary:
+  url: cloudinary://test:test@test
+
+linkedIn:
+  li-at: test-li-at
+  li-rm: test-li-rm

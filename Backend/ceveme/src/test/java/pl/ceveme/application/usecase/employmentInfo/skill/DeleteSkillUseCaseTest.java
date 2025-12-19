@@ -9,8 +9,10 @@ import pl.ceveme.application.dto.entity.DeleteEntityRequest;
 import pl.ceveme.application.dto.entity.skill.SkillResponse;
 import pl.ceveme.domain.model.entities.EmploymentInfo;
 import pl.ceveme.domain.model.entities.Skill;
-import pl.ceveme.domain.repositories.EmploymentInfoRepository;
+import pl.ceveme.domain.model.entities.User;
+import pl.ceveme.domain.repositories.UserRepository;
 
+import java.nio.file.AccessDeniedException;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,25 +23,35 @@ import static org.mockito.Mockito.when;
 class DeleteSkillUseCaseTest {
 
     @Mock
-    private EmploymentInfoRepository employmentInfoRepository;
+    private UserRepository userRepository;
 
     @InjectMocks
     private DeleteSkillUseCase deleteSkillUseCase;
 
     @Test
-    void should_deleteSkill_when_exists() {
+    void should_deleteSkill_when_exists() throws AccessDeniedException {
         // given
         Long skillId = 123L;
-        Long infoId = 1L;
+        Long userId = 1L;
         Skill skill = createSkillWithId(skillId, "To delete", Skill.Type.TECHNICAL);
 
+        User user = new User();
+        try {
+            java.lang.reflect.Field field = User.class.getDeclaredField("id");
+            field.setAccessible(true);
+            field.set(user, userId);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         EmploymentInfo info = new EmploymentInfo();
         info.addSkill(skill);
+        user.setEmploymentInfo(info);
+        info.setUser(user);
 
-        when(employmentInfoRepository.findById(infoId)).thenReturn(Optional.of(info));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
         // when
-        SkillResponse response = deleteSkillUseCase.execute(new DeleteEntityRequest(skillId, infoId));
+        SkillResponse response = deleteSkillUseCase.execute(new DeleteEntityRequest(skillId), userId);
 
         // then
         assertThat(response.name()).isEqualTo("To delete");
@@ -50,30 +62,41 @@ class DeleteSkillUseCaseTest {
     void should_throwException_when_skillNotFound() {
         // given
         Long skillId = 999L;
-        Long infoId = 1L;
-        EmploymentInfo info = new EmploymentInfo();
+        Long userId = 1L;
 
-        when(employmentInfoRepository.findById(infoId)).thenReturn(Optional.of(info));
+        User user = new User();
+        try {
+            java.lang.reflect.Field field = User.class.getDeclaredField("id");
+            field.setAccessible(true);
+            field.set(user, userId);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        EmploymentInfo info = new EmploymentInfo();
+        user.setEmploymentInfo(info);
+        info.setUser(user);
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
         // when & then
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> deleteSkillUseCase.execute(new DeleteEntityRequest(skillId, infoId)));
+                () -> deleteSkillUseCase.execute(new DeleteEntityRequest(skillId), userId));
 
         assertThat(ex.getMessage()).isEqualTo("Skill not found");
     }
 
     @Test
-    void should_throwException_when_employmentInfoNotFound() {
+    void should_throwException_when_userNotFound() {
         // given
         Long skillId = 999L;
-        Long infoId = 1L;
-        when(employmentInfoRepository.findById(1L)).thenReturn(Optional.empty());
+        Long userId = 1L;
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
         // when & then
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> deleteSkillUseCase.execute(new DeleteEntityRequest(skillId, infoId)));
+                () -> deleteSkillUseCase.execute(new DeleteEntityRequest(skillId), userId));
 
-        assertThat(ex.getMessage()).isEqualTo("EmploymentInfo not found");
+        assertThat(ex.getMessage()).isEqualTo("User with id " + userId + " not found");
     }
 
     // helper for test

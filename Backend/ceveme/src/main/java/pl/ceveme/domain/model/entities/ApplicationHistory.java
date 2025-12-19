@@ -17,25 +17,38 @@ public class ApplicationHistory {
     private JobOffer jobOffer;
     private LocalDate applicationDate;
 
-
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-
     @OneToOne
     private Cv cv;
+
+    @Enumerated(EnumType.STRING)
+    private STATUS status;
 
     public ApplicationHistory() {
     }
 
-    public ApplicationHistory(LocalDate applicationDate, JobOffer jobOffer) {
+
+    public ApplicationHistory(JobOffer jobOffer, LocalDate applicationDate, User user, Cv cv, STATUS status) {
         this.jobOffer = jobOffer;
         this.applicationDate = applicationDate;
+        this.user = user;
+        this.cv = cv;
+        this.status = status;
+    }
+
+    public void changeStatus(STATUS status) {
+        this.status = status;
     }
 
     public long getId() {
         return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public JobOffer getJobOffer() {
@@ -54,10 +67,6 @@ public class ApplicationHistory {
         this.applicationDate = applicationDate;
     }
 
-    public void setId(long id) {
-        this.id = id;
-    }
-
     public User getUser() {
         return user;
     }
@@ -72,5 +81,17 @@ public class ApplicationHistory {
 
     public void setCv(Cv cv) {
         this.cv = cv;
+    }
+
+    public STATUS getStatus() {
+        return status;
+    }
+
+    public void setStatus(STATUS status) {
+        this.status = status;
+    }
+
+    public enum STATUS {
+        PENDING, SUBMITTED, REJECTED, REQUESTED, SCREENING, INTERVIEW, ASSIGNMENT, OFFERED, ACCEPTED, DECLINED, CLOSED
     }
 }

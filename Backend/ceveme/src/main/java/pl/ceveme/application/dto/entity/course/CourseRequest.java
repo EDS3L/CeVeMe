@@ -5,11 +5,9 @@ import java.util.Date;
 
 public record CourseRequest(
         Long id,
-        String email,
         String courseName,
         LocalDate dateOfCourse,
-        String courseDescription,
-        Long employmentInfoId
+        String courseDescription, Long userId
 ) {
 
 

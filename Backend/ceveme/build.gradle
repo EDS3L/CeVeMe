@@ -27,13 +27,17 @@ dependencies {
 
 	implementation 'com.googlecode.libphonenumber:libphonenumber:8.13.23'
 	implementation 'io.jsonwebtoken:jjwt:0.12.6'
+    implementation("com.microsoft.playwright:playwright:1.56.0")
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
 	implementation 'org.jsoup:jsoup:1.20.1'
 	implementation 'org.apache.httpcomponents.client5:httpclient5:5.5'
 	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
 	implementation("com.google.genai:google-genai:1.0.0")
+	implementation 'com.stripe:stripe-java:latest.release'
+	implementation("org.springframework.boot:spring-boot-starter-mail:3.5.6")
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+	implementation("org.springframework:spring-webflux:6.2.6")
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
@@ -42,6 +46,9 @@ dependencies {
 	testImplementation("org.assertj:assertj-core:3.27.3")
 
 	implementation("com.cloudinary:cloudinary-http5:2.3.0")
+	implementation("org.springframework.boot:spring-boot-starter-aop:3.5.3")
+	testImplementation 'com.h2database:h2'
+
 }
 
 tasks.withType(Test).configureEach {

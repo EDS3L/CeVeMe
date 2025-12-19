@@ -1,6 +1,7 @@
 package pl.ceveme.infrastructure.external.scrap.justJoinIt;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import io.swagger.v3.core.util.Json;
 import pl.ceveme.domain.model.entities.JobOffer;
 import pl.ceveme.domain.model.vo.Location;
 
@@ -8,13 +9,29 @@ import java.time.LocalDate;
 
 public class JobOfferJustJoinItMapper {
 
-    public static JobOffer mapToOffer(JsonNode node, String jobLink, String requirements, String experienceLevel, String salary, String employmentType) {
+    public static JobOffer mapToOffer(JsonNode node, String jobLink, String requirements, String experienceLevel) {
         if (node == null) return null;
         JsonNode hiringOrganisation = node.get("hiringOrganization"); //company
         String title = getString(node, "title");
         String company = getString(hiringOrganisation, "name");
         JsonNode jobLocation = node.get("jobLocation");
         JsonNode address = jobLocation.get("address");
+        String employmentType = getString(node, "employmentType");
+        JsonNode baseSalary = node.get("baseSalary");
+        String from = null;
+        String to = null;
+        String currency = null;
+        String salary  = null;
+        if(baseSalary != null && !baseSalary.isMissingNode()) {
+            JsonNode salaryValue = baseSalary.get("value");
+            currency = getString(baseSalary, "currency");
+            if(salaryValue != null && !salaryValue.isMissingNode()) {
+                from = getString(salaryValue,"minValue");
+                to = getString(salaryValue, "maxValue");
+                salary = "Od " + from + " " + currency + " do " + to + " " + currency;
+            }
+        }
+
         String city = null;
         String street = null;
         if (address != null && !address.isMissingNode()) {

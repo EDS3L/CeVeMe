@@ -1,15 +1,13 @@
 package pl.ceveme.infrastructure.controllers.gemini;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import pl.ceveme.application.annotations.CheckAiEndpointUsage;
 import pl.ceveme.application.dto.gemini.*;
 import pl.ceveme.application.usecase.gemini.GeminiResponseByOfferUrlUseCase;
-import pl.ceveme.application.usecase.gemini.GeminiResponseExistOfferUseCase;
 import pl.ceveme.domain.model.entities.User;
+import pl.ceveme.domain.model.enums.EndpointType;
+import pl.ceveme.domain.services.limits.CheckTimeout;
 import pl.ceveme.infrastructure.external.gemini.TextRefinementService;
 
 import java.nio.file.AccessDeniedException;
@@ -18,49 +16,35 @@ import java.nio.file.AccessDeniedException;
 @RequestMapping("api/ai")
 public class GeminiController {
 
-    private final GeminiResponseExistOfferUseCase geminiResponseExistOfferUseCase;
     private final GeminiResponseByOfferUrlUseCase geminiResponseByOfferUrlUseCase;
     private final TextRefinementService textRefinementService;
+    private final CheckTimeout checkTimeout;
 
-    public GeminiController(GeminiResponseExistOfferUseCase geminiResponseExistOfferUseCase, GeminiResponseByOfferUrlUseCase geminiResponseByOfferUrlUseCase, TextRefinementService textRefinementService) {
-        this.geminiResponseExistOfferUseCase = geminiResponseExistOfferUseCase;
+    public GeminiController(GeminiResponseByOfferUrlUseCase geminiResponseByOfferUrlUseCase, TextRefinementService textRefinementService, CheckTimeout checkTimeout) {
         this.geminiResponseByOfferUrlUseCase = geminiResponseByOfferUrlUseCase;
         this.textRefinementService = textRefinementService;
-    }
-
-    @PostMapping("/geminiExistOffer")
-    public GeminiResponse gemini(@RequestBody GeminiExistOfferRequest request) throws JsonProcessingException {
-        return geminiResponseExistOfferUseCase.execute(request);
+        this.checkTimeout = checkTimeout;
     }
 
     @PostMapping("/geminiByLink")
+    @CheckAiEndpointUsage(EndpointType.CV)
     public GeminiResponse gemini(@RequestBody GeminiLinkRequest request) throws Exception {
         return geminiResponseByOfferUrlUseCase.execute(request);
     }
 
     @PostMapping("/refinementText")
+    @CheckAiEndpointUsage(EndpointType.REFINEMENT)
     public TextRefinementResult refinementRequirements(@RequestBody TextRefinementRequest request, Authentication authentication) throws AccessDeniedException {
         User user = (User) authentication.getPrincipal();
         Long userId = user.getId();
         return textRefinementService.refinementRequirements(request,userId);
     }
 
-//    @PostMapping("/refinementJobAchievements")
-//    public TextRefinementResult refinementJobAchievements(@RequestBody TextRefinementRequest request, Authentication authentication) throws AccessDeniedException {
-//        User user = (User) authentication.getPrincipal();
-//        Long userId = user.getId();
-//        return textRefinementService.refinementJobAchievements(request,userId);
-//    }
-//    @PostMapping("/refinementCourseDescription")
-//    public TextRefinementResult refinementCourseDescription(@RequestBody TextRefinementRequest request, Authentication authentication) throws AccessDeniedException {
-//        User user = (User) authentication.getPrincipal();
-//        Long userId = user.getId();
-//        return textRefinementService.refinementCourseDescription(request,userId);
-//    }
-//    @PostMapping("/refinementPortfolioDescription")
-//    public TextRefinementResult refinementPortfolioDescription(@RequestBody TextRefinementRequest request, Authentication authentication) throws AccessDeniedException {
-//        User user = (User) authentication.getPrincipal();
-//        Long userId = user.getId();
-//        return textRefinementService.refinementPortfolioDescription(request,userId);
-//    }
+    @PostMapping("/timeout")
+    public TimeoutResponse checkTimeout(@RequestParam EndpointType endpointType, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        Long userId = user.getId();
+        return checkTimeout.checkTimeoutRemainingTime(userId,endpointType);
+    }
+
 }

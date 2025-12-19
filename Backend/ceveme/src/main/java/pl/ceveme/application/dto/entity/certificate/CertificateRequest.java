@@ -3,7 +3,7 @@ package pl.ceveme.application.dto.entity.certificate;
 import java.time.LocalDate;
 import java.util.Date;
 
-public record CertificateRequest(Long id, String email,String name, LocalDate dateOfCertificate, Long employmentInfoId ) {
+public record CertificateRequest(Long id,String name, LocalDate dateOfCertificate, Long userId) {
 
     public CertificateRequest {
         validate(name,dateOfCertificate);

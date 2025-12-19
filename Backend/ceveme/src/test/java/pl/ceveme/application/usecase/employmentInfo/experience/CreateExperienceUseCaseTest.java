@@ -8,7 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import pl.ceveme.application.dto.entity.experience.ExperienceRequest;
 import pl.ceveme.application.dto.entity.experience.ExperienceResponse;
 import pl.ceveme.domain.model.entities.User;
-import pl.ceveme.domain.model.vo.Email;
+import pl.ceveme.domain.repositories.ExperienceRepository;
 import pl.ceveme.domain.repositories.UserRepository;
 
 import java.time.LocalDate;
@@ -23,6 +23,9 @@ class CreateExperienceUseCaseTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private ExperienceRepository experienceRepository;
+
     @InjectMocks
     private CreateExperienceUseCase useCase;
 
@@ -30,23 +33,23 @@ class CreateExperienceUseCaseTest {
     void should_createExperience_when_valuesAreCorrect() {
         // given
         User user = new User();
-        String email = "test@wp.pl";
+        Long userId = 1L;
 
         ExperienceRequest request = new ExperienceRequest(
                 1L,
-                email,
                 "Sweet gallery",
                 LocalDate.of(2023,1,1),
                 LocalDate.of(2024,1,1),
                 false,
                 "Java Developer",
                 "backend",
-                "30% crm"
+                "30% crm",
+                userId
         );
 
         // when
-        when(userRepository.findByEmail(new Email(email))).thenReturn(Optional.of(user));
-        ExperienceResponse response = useCase.execute(request);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        ExperienceResponse response = useCase.execute(request, userId);
 
         // then
 
@@ -54,7 +57,7 @@ class CreateExperienceUseCaseTest {
         assertEquals("Java Developer", response.positionName());
         assertEquals("Addition of experience successfully completed", response.message());
 
-        verify(userRepository).save(user);
+        verify(experienceRepository).save(any());
 
 
     }
@@ -63,25 +66,25 @@ class CreateExperienceUseCaseTest {
     @Test
     void should_throw_when_userNotFound() {
         // given
-        String email = "test@wp.pl";
+        Long userId = 1L;
 
         ExperienceRequest request = new ExperienceRequest(
                 1L,
-                email,
                 "Sweet gallery",
                 LocalDate.of(2023,1,1),
                 LocalDate.of(2024,1,1),
                 false,
                 "Java Developer",
                 "backend",
-                "30% crm"
+                "30% crm",
+                userId
         );
         // when
-        when(userRepository.findByEmail(new Email(email))).thenReturn(Optional.empty());
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
         // then
-        assertThrows(IllegalArgumentException.class, () -> useCase.execute(request));
-        verify(userRepository, never()).save(any());
+        assertThrows(IllegalArgumentException.class, () -> useCase.execute(request, userId));
+        verify(experienceRepository, never()).save(any());
 
 
     }

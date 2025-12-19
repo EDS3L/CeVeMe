@@ -34,7 +34,7 @@ public class RocketJobsScrapper extends AbstractJobScraper {
 
     public JobOfferRequest getJobDetails(String url) throws Exception {
         JobOffer jobOffer = extractJobData(url);
-        return new JobOfferRequest(jobOffer.getTitle(), jobOffer.getCompany(), jobOffer.getRequirements(), jobOffer.getCompany(), jobOffer.getResponsibilities(), jobOffer.getExperienceLevel(), "Scrap successful");
+        return new JobOfferRequest(jobOffer.getTitle(), jobOffer.getCompany(), jobOffer.getRequirements(), jobOffer.getCompany(), jobOffer.getResponsibilities(), jobOffer.getExperienceLevel(),jobOffer.getSalary(),jobOffer.getLocation(),jobOffer.getBenefits(),jobOffer.getEmploymentType(),jobOffer.getDateAdded(),jobOffer.getDateEnding(), "Scrap successful");
     }
 
     @Override
@@ -70,7 +70,7 @@ public class RocketJobsScrapper extends AbstractJobScraper {
                 delay();
             }
             return processUrls(allUrls);
-        } catch (IOException | ParseException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -103,7 +103,7 @@ public class RocketJobsScrapper extends AbstractJobScraper {
             return firstPage.path("meta")
                     .path("totalPages")
                     .asInt();
-        } catch (IOException | ParseException e) {
+        } catch (IOException  e) {
             throw new RuntimeException(e);
         }
     }

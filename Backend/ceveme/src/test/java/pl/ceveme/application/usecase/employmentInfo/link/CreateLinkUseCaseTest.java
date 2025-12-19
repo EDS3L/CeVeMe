@@ -8,8 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import pl.ceveme.application.dto.entity.link.LinkRequest;
 import pl.ceveme.application.dto.entity.link.LinkResponse;
 import pl.ceveme.domain.model.entities.User;
-import pl.ceveme.domain.model.vo.Email;
-import pl.ceveme.domain.repositories.EmploymentInfoRepository;
+import pl.ceveme.domain.repositories.LinkRepository;
 import pl.ceveme.domain.repositories.UserRepository;
 
 import java.util.Optional;
@@ -24,7 +23,7 @@ class CreateLinkUseCaseTest {
     private UserRepository userRepository;
 
     @Mock
-    private EmploymentInfoRepository employmentInfoRepository;
+    private LinkRepository linkRepository;
 
     @InjectMocks
     private CreateLinkUseCase useCase;
@@ -32,18 +31,18 @@ class CreateLinkUseCaseTest {
     @Test
     void should_addLinkToEmploymentInfo_when_ValuesAreCorrect() {
         // given
-        String email = "test@example.com";
+        Long userId = 1L;
         String title = "GitHub";
         String linkUrl = "https://github.com/user";
 
         User user = mock(User.class);
 
-        when(userRepository.findByEmail(new Email(email))).thenReturn(Optional.of(user));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
-        LinkRequest request = new LinkRequest(1L,email, title, linkUrl);
+        LinkRequest request = new LinkRequest(1L, title, linkUrl, userId);
 
         // when
-        LinkResponse response = useCase.execute(request);
+        LinkResponse response = useCase.execute(request, userId);
 
         // then
 
@@ -55,13 +54,13 @@ class CreateLinkUseCaseTest {
     @Test
     void should_ThrowException_when_userNotFound() {
         // given
-        String email = "nonexistent@example.com";
-        when(userRepository.findByEmail(new Email(email))).thenReturn(Optional.empty());
+        Long userId = 1L;
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
-        LinkRequest request = new LinkRequest(1L,email, "title", "https://example.com");
+        LinkRequest request = new LinkRequest(1L, "title", "https://example.com", userId);
 
         // when & then
-        assertThrows(RuntimeException.class, () -> useCase.execute(request));
-        verify(employmentInfoRepository, never()).save(any());
+        assertThrows(RuntimeException.class, () -> useCase.execute(request, userId));
+        verify(linkRepository, never()).save(any());
     }
 }

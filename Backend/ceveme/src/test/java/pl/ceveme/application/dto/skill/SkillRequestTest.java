@@ -12,25 +12,22 @@ class SkillRequestTest {
     @Test
     void should_addSkill_when_ValuesIsCorrect() {
         // given
-        String email = "test@wp.pl";
         String skillName = "java";
 
         // when
-        SkillRequest request = new SkillRequest(1L, email,skillName, Skill.Type.SOFT);
+        SkillRequest request = new SkillRequest(1L, skillName, Skill.Type.SOFT, 1L);
 
 
         // then
-        assertEquals(skillName,request.name());
-        assertEquals(email,request.email());
+        assertEquals(skillName, request.name());
     }
 
     @Test
     void should_throw_when_nameIsEmpty() {
         // given
-        String email = "test@wp.pl";
         String skillName = "";
         // when & then
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new SkillRequest(1L,email,skillName,Skill.Type.SOFT));
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new SkillRequest(1L, skillName, Skill.Type.SOFT, 1L));
         assertThat(ex.getMessage()).isEqualTo("Skill name cannot be null!");
     }
 

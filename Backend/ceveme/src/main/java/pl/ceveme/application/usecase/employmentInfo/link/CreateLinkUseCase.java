@@ -23,8 +23,8 @@ public class CreateLinkUseCase {
     }
 
     @Transactional
-    public LinkResponse execute(LinkRequest request) {
-        User user = userRepository.findByEmail(new Email(request.email()))
+    public LinkResponse execute(LinkRequest request, Long userId) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         Link link = new Link(request.title(), request.link());

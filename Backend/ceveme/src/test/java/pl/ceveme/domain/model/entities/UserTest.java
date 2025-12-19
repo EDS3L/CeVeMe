@@ -1,12 +1,10 @@
 package pl.ceveme.domain.model.entities;
 
-import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.ceveme.domain.model.vo.*;
-import pl.ceveme.domain.repositories.UserRepository;
 import pl.ceveme.infrastructure.adapter.security.BCryptPasswordEncoderAdapter;
 
 import java.time.LocalDate;
@@ -38,11 +36,12 @@ class UserTest {
         List<Cv> cvList = new ArrayList<>();
         cvList.add(new Cv("asd", LocalDate.now(),new JobOffer(),new User(),new ApplicationHistory()));
         List<ApplicationHistory> applicationHistoryList = new ArrayList<>();
-        applicationHistoryList.add(new ApplicationHistory(LocalDate.now(),new JobOffer()));
+        applicationHistoryList.add(new ApplicationHistory(new JobOffer(), LocalDate.now(), new User(), null, ApplicationHistory.STATUS.PENDING));
         EmploymentInfo employmentInfo = new EmploymentInfo();
         ActivationToken activationToken = new ActivationToken(LocalDate.now().plusWeeks(2));
+        String city = "Warsaw";
         //when
-        User user = User.createNewUser(name,surname,phoneNumber,password,email,image,cvList,applicationHistoryList,employmentInfo,activationToken);
+        User user = User.createNewUser(name,surname,phoneNumber,password,email,image,cvList,applicationHistoryList,employmentInfo,activationToken,city);
         //then
 
         assertThat(user).isNotNull();
@@ -64,6 +63,7 @@ class UserTest {
         // GIVEN (Arrange)
         String currentPasswordPlainText = "Start1234!";
         String newPasswordPlainText = "NewPassword567!";
+        String confirmNewPasswordPlainText = "NewPassword567!";
         String hashedCurrentPassword = "hashed_password_abc";
         String hashedNewPassword = "hashed_password_xyz";
 
@@ -75,7 +75,7 @@ class UserTest {
         when(bCryptPasswordEncoderAdapter.encode(any(Password.class))).thenReturn(hashedNewPassword);
 
         // WHEN
-        user.changePassword(currentPasswordPlainText, newPasswordPlainText, bCryptPasswordEncoderAdapter);
+        user.changePassword(currentPasswordPlainText, newPasswordPlainText, confirmNewPasswordPlainText, bCryptPasswordEncoderAdapter);
 
         // THEN
         assertThat(user.getPassword()).isEqualTo(hashedNewPassword);
@@ -86,6 +86,7 @@ class UserTest {
         // GIVEN
         String currentPasswordPlainText = "WrongPassword!";
         String newPasswordPlainText = "NewPassword567!";
+        String confirmNewPasswordPlainText = "NewPassword567!";
         String hashedCurrentPassword = "hashed_password_abc";
 
         User user = new User();
@@ -95,7 +96,7 @@ class UserTest {
 
         // WHEN & THEN
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            user.changePassword(currentPasswordPlainText, newPasswordPlainText, bCryptPasswordEncoderAdapter);
+            user.changePassword(currentPasswordPlainText, newPasswordPlainText, confirmNewPasswordPlainText, bCryptPasswordEncoderAdapter);
         });
 
         assertThat(exception.getMessage()).isEqualTo("Incorrect current password");

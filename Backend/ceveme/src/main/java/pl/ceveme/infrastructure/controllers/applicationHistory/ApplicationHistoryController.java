@@ -1,26 +1,68 @@
 package pl.ceveme.infrastructure.controllers.applicationHistory;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+import pl.ceveme.application.dto.applicationHistories.ApplicationHistoriesRequest;
+import pl.ceveme.application.dto.applicationHistories.ApplicationHistoriesResponse;
+import pl.ceveme.application.dto.applicationHistories.ApplicationStatusCounts;
 import pl.ceveme.application.dto.entity.applicationHistory.ApplicationHistoryRequest;
 import pl.ceveme.application.dto.entity.applicationHistory.ApplicationHistoryResponse;
+import pl.ceveme.application.usecase.applicationHistory.ChangeAppliactanionHistoriesStatus;
+import pl.ceveme.application.usecase.applicationHistory.GetApplicationHistoriesUseCase;
+import pl.ceveme.application.usecase.applicationHistory.GetTheCountedStatuses;
 import pl.ceveme.application.usecase.applicationHistory.SaveApplicationHistoryUseCase;
+import pl.ceveme.domain.model.entities.User;
+
+import java.nio.file.AccessDeniedException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/applicationHistory")
 public class ApplicationHistoryController {
 
     private final SaveApplicationHistoryUseCase saveApplicationHistoryUseCase;
+    private final GetApplicationHistoriesUseCase getApplicationHistoriesUseCase;
+    private final ChangeAppliactanionHistoriesStatus changeAppliactanionHistoriesStatus;
+    private final GetTheCountedStatuses getTheCountedStatuses;
 
-    public ApplicationHistoryController(SaveApplicationHistoryUseCase saveApplicationHistoryUseCase) {
+    public ApplicationHistoryController(SaveApplicationHistoryUseCase saveApplicationHistoryUseCase, GetApplicationHistoriesUseCase getApplicationHistoriesUseCase, ChangeAppliactanionHistoriesStatus changeAppliactanionHistoriesStatus, GetTheCountedStatuses getTheCountedStatuses) {
         this.saveApplicationHistoryUseCase = saveApplicationHistoryUseCase;
+        this.getApplicationHistoriesUseCase = getApplicationHistoriesUseCase;
+        this.changeAppliactanionHistoriesStatus = changeAppliactanionHistoriesStatus;
+        this.getTheCountedStatuses = getTheCountedStatuses;
     }
 
-    @PostMapping
-    public ResponseEntity<ApplicationHistoryResponse> save(@RequestBody ApplicationHistoryRequest request) {
-        return ResponseEntity.ok(saveApplicationHistoryUseCase.execute(request));
+    @PostMapping("/save")
+    public ResponseEntity<ApplicationHistoryResponse> save(@RequestBody ApplicationHistoryRequest request, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        Long userId = user.getId();
+        return ResponseEntity.ok(saveApplicationHistoryUseCase.execute(request,userId));
+    }
+
+
+    @GetMapping("/")
+    public ResponseEntity<List<ApplicationHistoriesResponse>> histories(Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        Long userId = user.getId();
+        return ResponseEntity.ok(getApplicationHistoriesUseCase.execute(userId));
+    }
+
+    @PatchMapping("/edit")
+    public ResponseEntity<ApplicationHistoriesResponse> edit(@RequestBody ApplicationHistoriesRequest request, Authentication authentication) throws AccessDeniedException {
+        User user= (User) authentication.getPrincipal();
+        Long userId = user.getId();
+
+        ApplicationHistoriesResponse response = changeAppliactanionHistoriesStatus.changeStatus(request, userId);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/status/count")
+    public ResponseEntity<ApplicationStatusCounts> statusCount(Authentication authentication) {
+        User user= (User) authentication.getPrincipal();
+        Long userId = user.getId();
+
+        ApplicationStatusCounts applicationStatusCounts = getTheCountedStatuses.execute(userId);
+        return ResponseEntity.ok(applicationStatusCounts);
     }
 }

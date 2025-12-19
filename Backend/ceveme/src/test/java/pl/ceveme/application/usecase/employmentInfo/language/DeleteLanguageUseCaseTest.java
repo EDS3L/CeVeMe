@@ -9,8 +9,10 @@ import pl.ceveme.application.dto.entity.DeleteEntityRequest;
 import pl.ceveme.application.dto.entity.language.LanguageResponse;
 import pl.ceveme.domain.model.entities.EmploymentInfo;
 import pl.ceveme.domain.model.entities.Language;
-import pl.ceveme.domain.repositories.EmploymentInfoRepository;
+import pl.ceveme.domain.model.entities.User;
+import pl.ceveme.domain.repositories.UserRepository;
 
+import java.nio.file.AccessDeniedException;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,25 +23,29 @@ import static org.mockito.Mockito.when;
 class DeleteLanguageUseCaseTest {
 
     @Mock
-    private EmploymentInfoRepository employmentInfoRepository;
+    private UserRepository userRepository;
 
     @InjectMocks
     private DeleteLanguageUseCase deleteLanguageUseCase;
 
     @Test
-    void should_deleteLanguage_when_exists() {
+    void should_deleteLanguage_when_exists() throws AccessDeniedException {
         // given
         Long languageId = 123L;
-        Long infoId = 1L;
+        Long userId = 1L;
         Language language = createLanguageWithId(languageId, "To delete", "Level");
 
         EmploymentInfo info = new EmploymentInfo();
         info.addLanguage(language);
+        User user = new User();
+        user.setEmploymentInfo(info);
+        info.setUser(user);
+        setUserId(user, userId);
 
-        when(employmentInfoRepository.findById(infoId)).thenReturn(Optional.of(info));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
         // when
-        LanguageResponse response = deleteLanguageUseCase.execute(new DeleteEntityRequest(languageId, infoId));
+        LanguageResponse response = deleteLanguageUseCase.execute(new DeleteEntityRequest(languageId), userId);
 
         // then
         assertThat(response.name()).isEqualTo("To delete");
@@ -50,30 +56,34 @@ class DeleteLanguageUseCaseTest {
     void should_throwException_when_languageNotFound() {
         // given
         Long languageId = 999L;
-        Long infoId = 1L;
+        Long userId = 1L;
         EmploymentInfo info = new EmploymentInfo();
+        User user = new User();
+        user.setEmploymentInfo(info);
+        info.setUser(user);
+        setUserId(user, userId);
 
-        when(employmentInfoRepository.findById(infoId)).thenReturn(Optional.of(info));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
         // when & then
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> deleteLanguageUseCase.execute(new DeleteEntityRequest(languageId, infoId)));
+                () -> deleteLanguageUseCase.execute(new DeleteEntityRequest(languageId), userId));
 
         assertThat(ex.getMessage()).isEqualTo("Language not found");
     }
 
     @Test
-    void should_throwException_when_employmentInfoNotFound() {
+    void should_throwException_when_userNotFound() {
         // given
         Long languageId = 999L;
-        Long infoId = 1L;
-        when(employmentInfoRepository.findById(1L)).thenReturn(Optional.empty());
+        Long userId = 1L;
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
         // when & then
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> deleteLanguageUseCase.execute(new DeleteEntityRequest(languageId, infoId)));
+                () -> deleteLanguageUseCase.execute(new DeleteEntityRequest(languageId), userId));
 
-        assertThat(ex.getMessage()).isEqualTo("EmploymentInfo not found");
+        assertThat(ex.getMessage()).isEqualTo("User with id " + userId + " not found");
     }
 
     // helper for test
@@ -87,5 +97,15 @@ class DeleteLanguageUseCaseTest {
             throw new RuntimeException(e);
         }
         return language;
+    }
+
+    private void setUserId(User user, Long id) {
+        try {
+            java.lang.reflect.Field field = User.class.getDeclaredField("id");
+            field.setAccessible(true);
+            field.set(user, id);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

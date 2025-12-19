@@ -61,13 +61,13 @@ public class JustJoinItScrapper extends AbstractJobScraper {
 
     public JobOfferRequest getJobDetails(String url) {
         JobOffer jobOffer = extractJobData(url);
-        return new JobOfferRequest(jobOffer.getTitle(), jobOffer.getCompany(), jobOffer.getRequirements(), jobOffer.getCompany(), jobOffer.getResponsibilities(), jobOffer.getExperienceLevel(), "Scrap successful");
+        return new JobOfferRequest(jobOffer.getTitle(), jobOffer.getCompany(), jobOffer.getRequirements(), jobOffer.getCompany(), jobOffer.getResponsibilities(), jobOffer.getExperienceLevel(),jobOffer.getSalary(),jobOffer.getLocation(),jobOffer.getBenefits(),jobOffer.getEmploymentType(),jobOffer.getDateAdded(),jobOffer.getDateEnding(), "Scrap successful");
     }
 
     @Override
     protected JobOffer extractJobData(String link) {
         Document doc = fetchDocument(link);
-        JsonNode json = parseJson(doc, "div[class*=mui-jmaby8]");
+        JsonNode json = parseJson(doc, "div[class*=mui-1govsol]");
 
         String tech = doc.select("h4[class*=MuiTypography-subtitle2]")
                 .stream()
@@ -76,28 +76,24 @@ public class JustJoinItScrapper extends AbstractJobScraper {
                 .distinct()
                 .collect(Collectors.joining(", "));
 
-        String exp = extractSection(doc, "Experience");
-        String empType = extractSection(doc, "Employment Type");
-        String salary = Optional.ofNullable(doc.selectFirst("div[class*=mui-1km0bek]"))
-                .map(w -> w.child(0)
-                        .text())
-                .orElse(null);
+        String exp = extractExperienceLevel(doc);
 
         log.info("Data extracted {} from {} ", json, link);
-        return JobOfferJustJoinItMapper.mapToOffer(json, link, tech, exp, salary, empType);
+        return JobOfferJustJoinItMapper.mapToOffer(json, link, tech, exp);
     }
 
-    private String extractSection(Document doc, String label) {
-        return doc.select("div.MuiBox-root.mui-c76cah")
-                .stream()
-                .filter(sec -> label.equalsIgnoreCase(Optional.ofNullable(sec.selectFirst("div.MuiBox-root.mui-yqsicd"))
-                        .map(Element::text)
-                        .orElse("")))
-                .map(sec -> sec.selectFirst("div.MuiBox-root.mui-1ihbss1")
-                        .text())
-                .findFirst()
-                .orElse(null);
-    }
+
+private String extractExperienceLevel(Document doc) {
+    return doc.select("div:contains(Senior), div:contains(Mid), div:contains(Junior), div:contains(Manager / C-level)")
+            .stream()
+            .map(Element::text)
+            .filter(text -> text.equalsIgnoreCase("Junior")
+                    || text.equalsIgnoreCase("Mid")
+                    || text.equalsIgnoreCase("Senior")
+            || text.equalsIgnoreCase("Manager / C-level"))
+            .findFirst()
+            .orElse(null);
+}
 
     private int totalPageNumber() {
         try {
@@ -105,7 +101,7 @@ public class JustJoinItScrapper extends AbstractJobScraper {
             return first.path("meta")
                     .path("totalPages")
                     .asInt();
-        } catch (IOException | ParseException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
 

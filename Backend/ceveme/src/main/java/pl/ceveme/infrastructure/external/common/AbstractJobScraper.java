@@ -7,6 +7,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 import pl.ceveme.domain.model.entities.JobOffer;
 import pl.ceveme.domain.repositories.JobOfferRepository;
 import pl.ceveme.infrastructure.external.exception.FetchException;
@@ -135,14 +136,20 @@ public abstract class AbstractJobScraper {
         try {
             JobOffer offer = extractJobData(url);
             delay();
-
-            List<JobOffer> existingOffers = jobOfferRepository.findAll();
-            boolean isDuplicate = existingOffers.contains(offer);
-
-            if (isDuplicate) {
-                logger.info("Duplicate detected before save for: {} at {}", offer.getTitle(), offer.getCompany());
+            
+            if (StringUtils.hasText(offer.getLink())
+                    && jobOfferRepository.existsByLinkNormalized(offer.getLink())) {
+                logger.info("Duplicate (link) -> {}", offer.getLink());
                 return null;
             }
+
+            if (StringUtils.hasText(offer.getTitle()) && StringUtils.hasText(offer.getCompany())
+                    && jobOfferRepository.existsByTitleAndCompanyNormalized(
+                    offer.getTitle(), offer.getCompany())) {
+                logger.info("Duplicate (title+company) -> {} @ {}", offer.getTitle(), offer.getCompany());
+                return null;
+            }
+
 
             return jobOfferRepository.save(offer);
         } catch (Exception e) {

@@ -1,158 +1,128 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import api from './ApiService';
-
-// const parseSalaryNumber = (s) => {
-//   if (!s) return null;
-//   const m = s.replace(/\s/g, '').match(/(\d[\d]*)/);
-//   return m ? parseInt(m[1], 10) : null;
-// };
-
-const DEFAULT_PAGE = 50;
-
-const mapUiSort = (key) => {
-  switch (key) {
-    case 'newest':
-      return 'newest';
-    case 'endingSoon':
-      return 'endingSoon';
-    case 'companyAsc':
-      return 'companyAsc';
-    case 'titleAsc':
-      return 'titleAsc';
-    case 'cityAsc':
-      return 'cityAsc';
-    case 'salaryAsc':
-    case 'salaryDesc':
-    default:
-      return 'newest';
-  }
-};
+// src/hooks/useJobs.js
+import { useCallback, useEffect, useMemo, useState } from "react";
+import jobOfferApi from "../hooks/ApiService";
 
 export default function useJobs() {
-  const [currentPage, setCurrentPage] = useState(1); // 1-based
-  const [pageSize] = useState(DEFAULT_PAGE);
-  const [raw, setRaw] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [query, setQueryState] = useState("");
+  const [filters, setFiltersState] = useState({
+    city: "",
+    experience: "",
+    employmentType: "",
+    company: "",
+    title: "",
+    dateAddedFrom: undefined,
+    dateAddedTo: undefined,
+  });
+  const [sort, setSortState] = useState("newest");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [totalPages, setTotalPages] = useState(1);
   const [totalElements, setTotalElements] = useState(0);
+  const suggestions = [];
+  const size = 50;
 
-  // UI state
-  const [query, setQuery] = useState('');
-  const [filters, setFilters] = useState({
-    city: '',
-    experience: '',
-    employmentType: '',
-    company: '',
-  });
-  const [sort, setSort] = useState('newest');
+  const setQuery = useCallback((val) => {
+    setQueryState(val);
+    setCurrentPage(1);
+  }, []);
 
-  const fetchPage = useCallback(
-    async (signal) => {
-      try {
-        setLoading(true);
-        setError('');
+  const setFilters = useCallback((val) => {
+    setFiltersState(val);
+    setCurrentPage(1);
+  }, []);
 
-        const serverSort = mapUiSort(sort);
-        const hasFilters =
-          (filters.city && filters.city.trim()) ||
-          (filters.experience && filters.experience.trim()) ||
-          (filters.employmentType && filters.employmentType.trim()) ||
-          (filters.company && filters.company.trim());
+  const setSort = useCallback((val) => {
+    setSortState(val);
+    setCurrentPage(1);
+  }, []);
 
-        let page;
-
-        if (hasFilters) {
-          page = await api.serachJobsBy({
-            filters: {
-              city: filters.city || undefined,
-              experienceLevel: filters.experience || undefined,
-              employmentType: filters.employmentType || undefined,
-              company: filters.company || undefined,
-              title: query || undefined,
-            },
-            pageNumber: currentPage,
-            size: pageSize,
-            sort: serverSort,
-            signal,
-          });
-        } else if ((query || '').trim()) {
-          page = await api.serachJobs({
-            q: query.trim(),
-            pageNumber: currentPage,
-            size: pageSize,
-            sort: serverSort,
-            signal,
-          });
-        } else {
-          page = await api.getJobs({
-            pageNumber: currentPage,
-            size: pageSize,
-            sort: serverSort,
-            signal,
-          });
-        }
-
-        const items = Array.isArray(page?.content) ? page.content : [];
-        let arranged = items.slice();
-
-        setRaw(arranged);
-        setTotalPages(page?.totalPages || 1);
-        setTotalElements(page?.totalElements ?? arranged.length);
-      } catch (e) {
-        if (e?.name === 'AbortError') return;
-        setError('Nie udało się pobrać ofert. Spróbuj ponownie.');
-      } finally {
-        setLoading(false);
-      }
-    },
-    [currentPage, pageSize, filters, query, sort]
-  );
+  const hasFilters = useMemo(() => {
+    const f = filters || {};
+    return !!(
+      (f.city && f.city.trim()) ||
+      (f.experience && f.experience.trim()) ||
+      (f.employmentType && f.employmentType.trim()) ||
+      (f.company && f.company.trim()) ||
+      (f.title && f.title.trim()) ||
+      f.dateAddedFrom ||
+      f.dateAddedTo
+    );
+  }, [filters]);
 
   useEffect(() => {
-    const controller = new AbortController();
-    fetchPage(controller.signal);
-    return () => controller.abort();
-  }, [fetchPage]);
+    let cancelled = false;
+    const fetchData = async () => {
+      setLoading(true);
+      setError("");
+      try {
+        let res;
+        if (hasFilters) {
+          res = await jobOfferApi.serachJobsBy({
+            filters: {
+              company: filters.company || "",
+              city: filters.city || "",
+              experienceLevel: filters.experience || "",
+              employmentType: filters.employmentType || "",
+              title: filters.title || "",
+              dateAddedFrom: filters.dateAddedFrom,
+              dateAddedTo: filters.dateAddedTo,
+            },
+            pageNumber: currentPage,
+            size,
+            sort,
+          });
+        } else if (query && query.trim() !== "") {
+          res = await jobOfferApi.serachJobs({
+            q: query.trim(),
+            pageNumber: currentPage,
+            size,
+            sort,
+          });
+        } else {
+          if (sort === "salaryDesc") {
+            res = await jobOfferApi.orderBySalaryDESC({
+              pageNumber: currentPage,
+            });
+          } else if (sort === "salaryAsc") {
+            res = await jobOfferApi.orderBySalaryASC({
+              pageNumber: currentPage,
+            });
+          } else {
+            res = await jobOfferApi.serachJobs({
+              q: "",
+              pageNumber: currentPage,
+              size,
+              sort,
+            });
+          }
+        }
+        if (!cancelled) {
+          setJobs(res.content || []);
+          setTotalPages(res.totalPages || 1);
+          setTotalElements(res.totalElements || 0);
+        }
+      } catch {
+        if (!cancelled)
+          setError("Nie udało się pobrać ofert. Spróbuj ponownie.");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+    fetchData();
+    return () => {
+      cancelled = true;
+    };
+  }, [query, filters, sort, currentPage, hasFilters]);
 
-  const goToPage = (p) => {
-    if (p < 1 || p > totalPages) return;
+  const goToPage = useCallback((p) => {
     setCurrentPage(p);
-    const gridTop = document.getElementById('jobs-grid-top');
-    if (gridTop) gridTop.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
-
-  const jobs = useMemo(() => raw, [raw]);
-
-  // Podpowiedzi – liczone z aktualnej strony (dla wydajności)
-  const suggestions = useMemo(() => {
-    const cityCount = {};
-    const techCount = {};
-    raw.forEach((j) => {
-      const city = (j.location?.city || '').trim();
-      if (city) cityCount[city] = (cityCount[city] || 0) + 1;
-
-      (j.requirements || '')
-        .split(',')
-        .map((s) => s.trim())
-        .filter(Boolean)
-        .forEach((t) => {
-          techCount[t] = (techCount[t] || 0) + 1;
-        });
-    });
-
-    const cities = Object.entries(cityCount)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 6)
-      .map(([name, count]) => ({ type: 'city', label: name, count }));
-
-    const techs = Object.entries(techCount)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 8)
-      .map(([name, count]) => ({ type: 'tech', label: name, count }));
-
-    return { cities, techs };
-  }, [raw]);
+    setTimeout(() => {
+      const el = document.getElementById("jobs-grid-top");
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 0);
+  }, []);
 
   return {
     jobs,

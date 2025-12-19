@@ -9,7 +9,7 @@ import pl.ceveme.application.dto.entity.certificate.CertificateRequest;
 import pl.ceveme.application.dto.entity.certificate.CertificateResponse;
 import pl.ceveme.domain.model.entities.EmploymentInfo;
 import pl.ceveme.domain.model.entities.User;
-import pl.ceveme.domain.model.vo.Email;
+import pl.ceveme.domain.repositories.CertificateRepository;
 import pl.ceveme.domain.repositories.UserRepository;
 
 import java.time.LocalDate;
@@ -20,12 +20,16 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
 class CreateCertificateUseCaseTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private CertificateRepository certificateRepository;
 
     @InjectMocks
     private CreateCertificateUseCase createCertificateUseCase;
@@ -37,18 +41,18 @@ class CreateCertificateUseCaseTest {
         Calendar calendar = Calendar.getInstance();
         calendar.set(2003,Calendar.JANUARY, 12);
         LocalDate date = LocalDate.now();
-        Email email = new Email("test@wp.pl");
+        Long userId = 1L;
 
         EmploymentInfo employmentInfo = new EmploymentInfo();
         User user = new User();
         user.setEmploymentInfo(employmentInfo);
-        CertificateRequest request = new CertificateRequest(1L,email.email(), "java8", date);
+        CertificateRequest request = new CertificateRequest(1L, "java8", date, userId);
 
-        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
         // when
 
-        CertificateResponse response = createCertificateUseCase.execute(request);
+        CertificateResponse response = createCertificateUseCase.execute(request, userId);
 
         // then
 
@@ -56,7 +60,7 @@ class CreateCertificateUseCaseTest {
         assertThat(response.name()).isNotNull();
         assertThat(response.message()).isEqualTo("Addition of certification successfully completed");
 
-        verify(userRepository).save(user);
+        verify(certificateRepository).save(any());
 
     }
 
@@ -66,18 +70,18 @@ class CreateCertificateUseCaseTest {
         Calendar calendar = Calendar.getInstance();
         calendar.set(2003,Calendar.JANUARY, 12);
         LocalDate date = LocalDate.now();
-        Email email = new Email("test@wp.pl");
+        Long userId = 1L;
 
         EmploymentInfo employmentInfo = new EmploymentInfo();
         User user = new User();
-        when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
         user.setEmploymentInfo(employmentInfo);
-        CertificateRequest request = new CertificateRequest(1L,email.email(), "Java8", date);
+        CertificateRequest request = new CertificateRequest(1L, "Java8", date, userId);
 
 
         // when & then
 
-        final IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> createCertificateUseCase.execute(request));
+        final IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> createCertificateUseCase.execute(request, userId));
         assertThat(ex.getMessage()).isEqualTo("User not found");
 
     }

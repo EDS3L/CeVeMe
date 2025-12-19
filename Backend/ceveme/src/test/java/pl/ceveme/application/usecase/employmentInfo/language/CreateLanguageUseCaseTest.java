@@ -8,7 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import pl.ceveme.application.dto.entity.language.LanguageRequest;
 import pl.ceveme.application.dto.entity.language.LanguageResponse;
 import pl.ceveme.domain.model.entities.User;
-import pl.ceveme.domain.model.vo.Email;
+import pl.ceveme.domain.repositories.LanguageRepository;
 import pl.ceveme.domain.repositories.UserRepository;
 
 import java.util.Optional;
@@ -23,6 +23,9 @@ class CreateLanguageUseCaseTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private LanguageRepository languageRepository;
+
     @InjectMocks
     private CreateLanguageUseCase useCase;
 
@@ -30,22 +33,22 @@ class CreateLanguageUseCaseTest {
     @Test
     void should_addLanguageToUser_when_ValuesAreCorrect() {
         // given
-        String email = "test@wp.pl";
+        Long userId = 1L;
         String languageName = "English";
         String lvl = "C1";
 
         User user = new User();
-        when(userRepository.findByEmail(new Email(email))).thenReturn(Optional.of(user));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
-        LanguageRequest request = new LanguageRequest(1L,email,languageName,lvl);
+        LanguageRequest request = new LanguageRequest(1L, languageName, lvl, userId);
 
         // when
 
-        LanguageResponse response = useCase.execute(request);
+        LanguageResponse response = useCase.execute(request, userId);
 
         // then
 
-        verify(userRepository).save(user);
+        verify(languageRepository).save(any());
 
         assertEquals(languageName, response.name());
         assertEquals(lvl, response.level());
@@ -54,18 +57,18 @@ class CreateLanguageUseCaseTest {
     @Test
     void should_ThrowException_when_userNotFound() {
         // given
-        String email = "test@wp.pl";
-        when(userRepository.findByEmail(new Email(email))).thenReturn(Optional.empty());
+        Long userId = 1L;
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
-        LanguageRequest request = new LanguageRequest(1L,email, "German", "B2");
+        LanguageRequest request = new LanguageRequest(1L, "German", "B2", userId);
 
         // when & then
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            useCase.execute(request);
+            useCase.execute(request, userId);
         });
 
         assertEquals("User not found", exception.getMessage());
-        verify(userRepository, never()).save(any());
+        verify(languageRepository, never()).save(any());
     }
 
 

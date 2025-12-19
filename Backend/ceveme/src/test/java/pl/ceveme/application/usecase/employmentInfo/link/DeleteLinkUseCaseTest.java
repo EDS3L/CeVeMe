@@ -9,8 +9,10 @@ import pl.ceveme.application.dto.entity.DeleteEntityRequest;
 import pl.ceveme.application.dto.entity.link.LinkResponse;
 import pl.ceveme.domain.model.entities.EmploymentInfo;
 import pl.ceveme.domain.model.entities.Link;
-import pl.ceveme.domain.repositories.EmploymentInfoRepository;
+import pl.ceveme.domain.model.entities.User;
+import pl.ceveme.domain.repositories.UserRepository;
 
+import java.nio.file.AccessDeniedException;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,25 +23,29 @@ import static org.mockito.Mockito.when;
 class DeleteLinkUseCaseTest {
 
     @Mock
-    private EmploymentInfoRepository employmentInfoRepository;
+    private UserRepository userRepository;
 
     @InjectMocks
     private DeleteLinkUseCase deleteLinkUseCase;
 
     @Test
-    void should_deleteLink_when_exists() {
+    void should_deleteLink_when_exists() throws AccessDeniedException {
         // given
         Long linkId = 123L;
-        Long infoId = 1L;
+        Long userId = 1L;
         Link link = createLinkWithId(linkId, "To delete", "Url");
 
         EmploymentInfo info = new EmploymentInfo();
         info.addLink(link);
+        User user = new User();
+        user.setEmploymentInfo(info);
+        info.setUser(user);
+        setUserId(user, userId);
 
-        when(employmentInfoRepository.findById(infoId)).thenReturn(Optional.of(info));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
         // when
-        LinkResponse response = deleteLinkUseCase.execute(new DeleteEntityRequest(linkId, infoId));
+        LinkResponse response = deleteLinkUseCase.execute(new DeleteEntityRequest(linkId), userId);
 
         // then
         assertThat(response.title()).isEqualTo("To delete");
@@ -50,30 +56,34 @@ class DeleteLinkUseCaseTest {
     void should_throwException_when_linkNotFound() {
         // given
         Long linkId = 999L;
-        Long infoId = 1L;
+        Long userId = 1L;
         EmploymentInfo info = new EmploymentInfo();
+        User user = new User();
+        user.setEmploymentInfo(info);
+        info.setUser(user);
+        setUserId(user, userId);
 
-        when(employmentInfoRepository.findById(infoId)).thenReturn(Optional.of(info));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
         // when & then
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> deleteLinkUseCase.execute(new DeleteEntityRequest(linkId, infoId)));
+                () -> deleteLinkUseCase.execute(new DeleteEntityRequest(linkId), userId));
 
         assertThat(ex.getMessage()).isEqualTo("Link not found");
     }
 
     @Test
-    void should_throwException_when_employmentInfoNotFound() {
+    void should_throwException_when_userNotFound() {
         // given
         Long linkId = 999L;
-        Long infoId = 1L;
-        when(employmentInfoRepository.findById(1L)).thenReturn(Optional.empty());
+        Long userId = 1L;
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
         // when & then
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> deleteLinkUseCase.execute(new DeleteEntityRequest(linkId, infoId)));
+                () -> deleteLinkUseCase.execute(new DeleteEntityRequest(linkId), userId));
 
-        assertThat(ex.getMessage()).isEqualTo("EmploymentInfo not found");
+        assertThat(ex.getMessage()).isEqualTo("User with id " + userId + " not found");
     }
 
     // helper for test
@@ -87,5 +97,15 @@ class DeleteLinkUseCaseTest {
             throw new RuntimeException(e);
         }
         return link;
+    }
+
+    private void setUserId(User user, Long id) {
+        try {
+            java.lang.reflect.Field field = User.class.getDeclaredField("id");
+            field.setAccessible(true);
+            field.set(user, id);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -2,10 +2,12 @@ package pl.ceveme.domain.model.entities;
 
 import jakarta.persistence.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import pl.ceveme.domain.model.enums.UserRole;
 import pl.ceveme.domain.model.vo.*;
 import pl.ceveme.infrastructure.adapter.security.BCryptPasswordEncoderAdapter;
 
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "users")
@@ -24,8 +26,15 @@ public class User {
     @Column(unique = true)
     @Embedded
     private Email email;
+    private String city;
     private String password;
     private String image;
+
+    @Enumerated(EnumType.STRING)
+    private UserRole userRole;
+
+    @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST,CascadeType.MERGE}, fetch = FetchType.LAZY)
+    private List<LimitUsage> limitUsages;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Cv> cvList;
@@ -39,13 +48,19 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private ActivationToken activationToken;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private PasswordToken passwordToken;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<RefreshToken> refreshTokenList;
+
     private boolean isActive;
 
 
     public User() {
     }
 
-    public User(Name name, Surname surname, PhoneNumber phoneNumber, Email email, String image, String password, List<Cv> cvList, List<ApplicationHistory> applicationHistoryList, EmploymentInfo employmentInfo, boolean isActive, ActivationToken activationToken) {
+    public User(Name name, Surname surname, PhoneNumber phoneNumber, Email email, String image, String password, List<Cv> cvList, List<ApplicationHistory> applicationHistoryList, EmploymentInfo employmentInfo, boolean isActive, ActivationToken activationToken, String city, UserRole userRole) {
         this.name = name;
         this.surname = surname;
         this.phoneNumber = phoneNumber;
@@ -57,16 +72,30 @@ public class User {
         this.employmentInfo = employmentInfo;
         this.isActive = isActive;
         this.activationToken = activationToken;
+        this.city = city;
+        this.userRole = userRole;
     }
 
-    public static User createNewUser(Name name, Surname surname, PhoneNumber phoneNumber, String password, Email email, String image, List<Cv> cvList, List<ApplicationHistory> applicationHistoryList, EmploymentInfo employmentInfo, ActivationToken activationToken) {
-        return new User(name, surname, phoneNumber, email, image, password, cvList, applicationHistoryList, employmentInfo, false, activationToken);
+    public static User createNewUser(Name name, Surname surname, PhoneNumber phoneNumber, String password, Email email, String image, List<Cv> cvList, List<ApplicationHistory> applicationHistoryList, EmploymentInfo employmentInfo, ActivationToken activationToken, String city) {
+        return new User(name, surname, phoneNumber, email, image, password, cvList, applicationHistoryList, employmentInfo, false, activationToken, city, UserRole.FREE);
     }
 
-    public void changePassword(String currentPassword, String newPassword, BCryptPasswordEncoderAdapter passwordEncoder) {
+    public void changePassword(String currentPassword, String newPassword, String confirmNewPassword, BCryptPasswordEncoderAdapter passwordEncoder) {
+        if(!newPassword.equals(confirmNewPassword))throw new IllegalArgumentException("Passwords must match each other");
+
         if (!passwordEncoder.matches(currentPassword, this.password)) {
             throw new IllegalArgumentException("Incorrect current password");
         }
+
+        if (passwordEncoder.matches(newPassword, this.password)) {
+            throw new IllegalArgumentException("New password cannot be the same as the current password");
+        }
+        Password pass = new Password(newPassword);
+        this.password = passwordEncoder.encode(pass);
+    }
+
+    public void remindPassword(String newPassword,String confirmNewPassword, BCryptPasswordEncoderAdapter passwordEncoder) {
+        if(!newPassword.equals(confirmNewPassword))throw new IllegalArgumentException("Passwords must match each other");
 
         if (passwordEncoder.matches(newPassword, this.password)) {
             throw new IllegalArgumentException("New password cannot be the same as the current password");
@@ -90,7 +119,6 @@ public class User {
     public void changePhoneNumber(PhoneNumber phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
-
 
     public long getId() {
         return id;
@@ -156,6 +184,14 @@ public class User {
         this.image = image;
     }
 
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
     public void setApplicationHistoryList(List<ApplicationHistory> applicationHistoryList) {
         this.applicationHistoryList = applicationHistoryList;
     }
@@ -174,6 +210,42 @@ public class User {
 
     public void setActive(boolean active) {
         isActive = active;
+    }
+
+    public UserRole getUserRole() {
+        return userRole;
+    }
+
+    public void setUserRole(UserRole userRole) {
+        this.userRole = userRole;
+    }
+
+    public List<LimitUsage> getLimitUsages() {
+        return limitUsages;
+    }
+
+    public void setLimitUsages(List<LimitUsage> limitUsages) {
+        this.limitUsages = limitUsages;
+    }
+
+    public ActivationToken getActivationToken() {
+        return activationToken;
+    }
+
+    public void setActivationToken(ActivationToken activationToken) {
+        this.activationToken = activationToken;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public List<RefreshToken> getRefreshTokenList() {
+        return refreshTokenList;
+    }
+
+    public void setRefreshTokenList(List<RefreshToken> refreshTokenList) {
+        this.refreshTokenList = refreshTokenList;
     }
 
     public void addCertificate(Certificate certificate) {
@@ -240,6 +312,14 @@ public class User {
         this.employmentInfo.addEducation(education);
     }
 
+    public PasswordToken getPasswordToken() {
+        return passwordToken;
+    }
+
+    public void setPasswordToken(PasswordToken passwordToken) {
+        this.passwordToken = passwordToken;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -247,6 +327,8 @@ public class User {
                 ", surname=" + surname +
                 ", phoneNumber=" + phoneNumber +
                 ", email=" + email +
+                ", city='" + city + '\'' +
+                ", image='" + image + '\'' +
                 '}';
     }
 }

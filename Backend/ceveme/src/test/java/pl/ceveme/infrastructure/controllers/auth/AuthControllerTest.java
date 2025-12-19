@@ -2,6 +2,8 @@ package pl.ceveme.infrastructure.controllers.auth;
 
 
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import pl.ceveme.application.dto.auth.ActiveUserRequest;
 import pl.ceveme.application.dto.auth.ActiveUserResponse;
 import pl.ceveme.application.dto.auth.LoginUserRequest;
@@ -18,9 +20,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import pl.ceveme.application.usecase.auth.ActiveUserUseCase;
-import pl.ceveme.application.usecase.auth.LoginUserUseCase;
-import pl.ceveme.application.usecase.auth.RegisterUserUseCase;
+import pl.ceveme.application.usecase.auth.*;
+import pl.ceveme.application.usecase.email.SendConfirmationCodeAgainUseCase;
+import pl.ceveme.infrastructure.config.jwt.JwtService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -41,6 +43,24 @@ class AuthControllerTest {
     @Mock
     private ActiveUserUseCase activeUserUseCase;
 
+    @Mock
+    private RefreshUseCase refreshUseCase;
+
+    @Mock
+    private JwtService jwtService;
+
+    @Mock
+    private LogoutUseCase logoutUseCase;
+
+    @Mock
+    private SendConfirmationCodeAgainUseCase sendConfirmationCodeAgainUseCase;
+
+    @Mock
+    private PasswordTokenUseCase passwordTokenUseCase;
+
+    @Mock
+    private RemindPasswordUseCase remindPasswordUseCase;
+
     @InjectMocks
     private AuthController authController;
 
@@ -57,9 +77,9 @@ class AuthControllerTest {
     void login_ShouldReturnLoginResponse_WhenValidRequest() throws Exception {
         // Given
         LoginUserRequest loginRequest = new LoginUserRequest("test@example.com", "password123");
-        LoginUserResponse expectedResponse = new LoginUserResponse(1L, "jwt-token-123", "Login successful");
+        LoginUserResponse expectedResponse = new LoginUserResponse(1L, "Login successful");
 
-        when(loginUserUseCase.login(any(LoginUserRequest.class))).thenReturn(expectedResponse);
+        when(loginUserUseCase.login(any(LoginUserRequest.class), any(HttpServletResponse.class), any(HttpServletRequest.class))).thenReturn(expectedResponse);
 
         // When & Then
         mockMvc.perform(post("/api/auth/login")
@@ -68,31 +88,9 @@ class AuthControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.userId").value(1))
-                .andExpect(jsonPath("$.token").value("jwt-token-123"))
                 .andExpect(jsonPath("$.message").value("Login successful"));
 
-        verify(loginUserUseCase, times(1)).login(any(LoginUserRequest.class));
-    }
-
-    @Test
-    void login_ShouldCallLoginUseCase_WithCorrectParameters() throws Exception {
-        // Given
-        LoginUserRequest loginRequest = new LoginUserRequest("user@test.com", "mypassword");
-        LoginUserResponse expectedResponse = new LoginUserResponse(2L, "token123", "SUCCESS");
-
-        when(loginUserUseCase.login(loginRequest)).thenReturn(expectedResponse);
-
-        // When
-        mockMvc.perform(post("/api/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(loginRequest)))
-                .andExpect(status().isOk());
-
-        // Then
-        verify(loginUserUseCase).login(argThat(request ->
-                "user@test.com".equals(request.email()) &&
-                        "mypassword".equals(request.password())
-        ));
+        verify(loginUserUseCase, times(1)).login(any(LoginUserRequest.class), any(HttpServletResponse.class), any(HttpServletRequest.class));
     }
 
     @Test
@@ -106,7 +104,7 @@ class AuthControllerTest {
                         .content(invalidJson))
                 .andExpect(status().isBadRequest());
 
-        verify(loginUserUseCase, never()).login(any(LoginUserRequest.class));
+        verify(loginUserUseCase, never()).login(any(LoginUserRequest.class), any(HttpServletResponse.class), any(HttpServletRequest.class));
     }
 
     @Test
@@ -120,17 +118,17 @@ class AuthControllerTest {
                         .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isUnsupportedMediaType());
 
-        verify(loginUserUseCase, never()).login(any(LoginUserRequest.class));
+        verify(loginUserUseCase, never()).login(any(LoginUserRequest.class), any(HttpServletResponse.class), any(HttpServletRequest.class));
     }
 
     @Test
     void register_ShouldReturnRegisterResponse_WhenValidRequest() throws Exception {
         // Given
         RegisterUserRequest registerRequest = new RegisterUserRequest(
-                "John", "Doe", "+48123456789", "john@example.com", "password123"
+                "John", "Doe", "+48123456789", "john@example.com", "password123", "Warsaw"
         );
         RegisterUserResponse expectedResponse = new RegisterUserResponse(
-                "John", "Doe", "john@example.com", "User registered successfully"
+                "John", "Doe", "john@example.com", "Warsaw", "User registered successfully"
         );
 
         when(registerUserUseCase.register(any(RegisterUserRequest.class))).thenReturn(expectedResponse);
@@ -153,10 +151,10 @@ class AuthControllerTest {
     void register_ShouldCallRegisterUseCase_WithCorrectParameters() throws Exception {
         // Given
         RegisterUserRequest registerRequest = new RegisterUserRequest(
-                "Jane", "Smith", "+48987654321", "jane@test.com", "securepass"
+                "Jane", "Smith", "+48987654321", "jane@test.com", "securepass", "Krakow"
         );
         RegisterUserResponse expectedResponse = new RegisterUserResponse(
-                "Jane", "Smith", "jane@test.com", "Registration successful"
+                "Jane", "Smith", "jane@test.com", "Krakow", "Registration successful"
         );
 
         when(registerUserUseCase.register(registerRequest)).thenReturn(expectedResponse);
@@ -206,7 +204,7 @@ class AuthControllerTest {
     void register_ShouldReturnUnsupportedMediaType_WhenWrongContentType() throws Exception {
         // Given
         RegisterUserRequest registerRequest = new RegisterUserRequest(
-                "Test", "User", "+48111222333", "test@example.com", "password"
+                "Test", "User", "+48111222333", "test@example.com", "password", "Gdansk"
         );
 
         // When & Then
@@ -224,9 +222,15 @@ class AuthControllerTest {
         LoginUserUseCase mockLoginUseCase = mock(LoginUserUseCase.class);
         RegisterUserUseCase mockRegisterUseCase = mock(RegisterUserUseCase.class);
         ActiveUserUseCase mockActiveUseCase = mock(ActiveUserUseCase.class);
+        RefreshUseCase mockRefreshUseCase = mock(RefreshUseCase.class);
+        JwtService mockJwtService = mock(JwtService.class);
+        LogoutUseCase mockLogoutUseCase = mock(LogoutUseCase.class);
+        SendConfirmationCodeAgainUseCase mockSendConfirmationUseCase = mock(SendConfirmationCodeAgainUseCase.class);
+        PasswordTokenUseCase mockPasswordTokenUseCase = mock(PasswordTokenUseCase.class);
+        RemindPasswordUseCase mockRemindPasswordUseCase = mock(RemindPasswordUseCase.class);
 
         // When
-        AuthController controller = new AuthController(mockLoginUseCase, mockRegisterUseCase, mockActiveUseCase);
+        AuthController controller = new AuthController(mockLoginUseCase, mockRegisterUseCase, mockActiveUseCase, mockRefreshUseCase, mockJwtService, mockLogoutUseCase, mockSendConfirmationUseCase, mockPasswordTokenUseCase, mockRemindPasswordUseCase);
 
         // Then
         assertThat(controller).isNotNull();

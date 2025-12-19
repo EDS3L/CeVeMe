@@ -9,8 +9,10 @@ import pl.ceveme.application.dto.entity.link.LinkRequest;
 import pl.ceveme.application.dto.entity.link.LinkResponse;
 import pl.ceveme.domain.model.entities.EmploymentInfo;
 import pl.ceveme.domain.model.entities.Link;
-import pl.ceveme.domain.repositories.EmploymentInfoRepository;
+import pl.ceveme.domain.model.entities.User;
+import pl.ceveme.domain.repositories.UserRepository;
 
+import java.nio.file.AccessDeniedException;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,15 +23,15 @@ import static org.mockito.Mockito.when;
 class EditLinkUseCaseTest {
 
     @Mock
-    private EmploymentInfoRepository employmentInfoRepository;
+    private UserRepository userRepository;
 
     @InjectMocks
     private EditLinkUseCase editLinkUseCase;
 
     @Test
-    void should_editLink_when_linkExists() {
+    void should_editLink_when_linkExists() throws AccessDeniedException {
         // given
-        Long employmentInfoId = 1L;
+        Long userId = 1L;
         Long linkId = 10L;
         Link link = new Link("Old Name", "Old Url");
         try {
@@ -40,14 +42,18 @@ class EditLinkUseCaseTest {
             throw new RuntimeException(e);
         }
 
-        LinkRequest request = new LinkRequest(linkId, "test@wp.pl", "Updated Name", "Updated Url");
+        LinkRequest request = new LinkRequest(linkId, "Updated Name", "Updated Url", userId);
         EmploymentInfo info = new EmploymentInfo();
         info.addLink(link);
+        User user = new User();
+        user.setEmploymentInfo(info);
+        info.setUser(user);
+        setUserId(user, userId);
 
-        when(employmentInfoRepository.findById(employmentInfoId)).thenReturn(Optional.of(info));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
         // when
-        LinkResponse response = editLinkUseCase.execute(request, employmentInfoId);
+        LinkResponse response = editLinkUseCase.execute(request, userId);
 
         // then
         assertThat(response.title()).isEqualTo("Updated Name");
@@ -57,31 +63,45 @@ class EditLinkUseCaseTest {
     @Test
     void should_throwException_when_linkNotFound() {
         // given
-        Long employmentInfoId = 1L;
-        LinkRequest request = new LinkRequest(99L, "test@wp.pl", "Name", "Url");
+        Long userId = 1L;
+        LinkRequest request = new LinkRequest(99L, "Name", "Url", userId);
         EmploymentInfo info = new EmploymentInfo();
+        User user = new User();
+        user.setEmploymentInfo(info);
+        info.setUser(user);
+        setUserId(user, userId);
 
-        when(employmentInfoRepository.findById(employmentInfoId)).thenReturn(Optional.of(info));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
         // when & then
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> editLinkUseCase.execute(request, employmentInfoId));
+                () -> editLinkUseCase.execute(request, userId));
 
         assertThat(ex.getMessage()).isEqualTo("Link not found");
     }
 
     @Test
-    void should_throwException_when_employmentInfoNotFound() {
+    void should_throwException_when_userNotFound() {
         // given
-        Long employmentInfoId = 999L;
-        LinkRequest request = new LinkRequest(1L, "test@wp.pl", "Any", "Any");
+        Long userId = 999L;
+        LinkRequest request = new LinkRequest(1L, "Any", "Any", userId);
 
-        when(employmentInfoRepository.findById(employmentInfoId)).thenReturn(Optional.empty());
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
         // when & then
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> editLinkUseCase.execute(request, employmentInfoId));
+                () -> editLinkUseCase.execute(request, userId));
 
-        assertThat(ex.getMessage()).isEqualTo("EmploymentInfo not found");
+        assertThat(ex.getMessage()).isEqualTo("User not found");
+    }
+
+    private void setUserId(User user, Long id) {
+        try {
+            java.lang.reflect.Field field = User.class.getDeclaredField("id");
+            field.setAccessible(true);
+            field.set(user, id);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

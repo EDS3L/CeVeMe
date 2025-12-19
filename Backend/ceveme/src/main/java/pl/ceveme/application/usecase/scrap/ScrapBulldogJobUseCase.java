@@ -15,6 +15,7 @@ public class ScrapBulldogJobUseCase {
         this.scrapper = scrapper;
     }
 
+
     public ScrapResponse execute() throws IOException {
         return new ScrapResponse(scrapper.createJobs(), "Scrap successful!");
     }

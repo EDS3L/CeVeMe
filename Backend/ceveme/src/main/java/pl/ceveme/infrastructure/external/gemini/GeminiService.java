@@ -3,7 +3,11 @@ package pl.ceveme.infrastructure.external.gemini;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Lob;
 import jakarta.transaction.Transactional;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -15,8 +19,11 @@ import pl.ceveme.domain.model.entities.EmploymentInfo;
 import pl.ceveme.domain.model.entities.JobOffer;
 import pl.ceveme.domain.model.entities.User;
 import pl.ceveme.domain.model.vo.Email;
+import pl.ceveme.domain.model.vo.Location;
 import pl.ceveme.domain.repositories.JobOfferRepository;
 import pl.ceveme.domain.repositories.UserRepository;
+
+import java.time.LocalDate;
 
 @Service
 public class GeminiService implements GeminiMapper {
@@ -24,44 +31,18 @@ public class GeminiService implements GeminiMapper {
 
     private final UserRepository userRepository;
     private final ScrapChooser scrapChooser;
-    private final JobOfferRepository jobOfferRepository;
     private final GeminiHttpClient fetchAi;
     private final EmploymentInfoMapper mapper;
     private final ObjectMapper objectMapper;
+    private final JobOfferRepository jobOfferRepository;
 
-
-    public GeminiService(UserRepository userRepository, ScrapChooser scrapChooser, JobOfferRepository jobOfferRepository, GeminiHttpClient fetchAi, EmploymentInfoMapper mapper, ObjectMapper objectMapper) {
+    public GeminiService(UserRepository userRepository, ScrapChooser scrapChooser, GeminiHttpClient fetchAi, EmploymentInfoMapper mapper, ObjectMapper objectMapper, JobOfferRepository jobOfferRepository) {
         this.userRepository = userRepository;
         this.scrapChooser = scrapChooser;
-        this.jobOfferRepository = jobOfferRepository;
         this.fetchAi = fetchAi;
         this.mapper = mapper;
         this.objectMapper = objectMapper;
-    }
-
-    @Transactional
-    public GeminiResponse responseByExistOffer(GeminiExistOfferRequest request) throws JsonProcessingException {
-        User user = userRepository.findByEmail(new Email(request.email()))
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-
-        EmploymentInfo employmentInfo = user.getEmploymentInfo();
-        EmploymentInfoResponse response = mapper.toResponse(employmentInfo);
-
-        JobOffer offer = jobOfferRepository.findById(request.id())
-                .orElseThrow(() -> new IllegalArgumentException("Job offer not found"));
-
-        String prompt = PromptBuilder.createPrompt(new DataContainer(offer, user, response));
-        String aiResponse = fetchAi.getResponse(prompt).text();
-
-        String cleanedJson = cleanJsonResponse(aiResponse);
-
-
-        try {
-            return objectMapper.readValue(cleanedJson, GeminiResponse.class);
-
-        } catch (JsonProcessingException e) {
-            return parseJson(cleanedJson, objectMapper);
-        }
+        this.jobOfferRepository = jobOfferRepository;
     }
 
     @Transactional
@@ -74,12 +55,15 @@ public class GeminiService implements GeminiMapper {
 
         JobOfferRequest offer = scrapChooser.chooseCorrectPortal(request.link());
 
+        if(jobOfferRepository.findByLink(request.link()).isEmpty()) {
+            jobOfferRepository.save(new JobOffer(request.link(),offer.title(),offer.company(),offer.salary(),offer.location(),offer.requirements(),offer.niceToHave(),offer.responsibilities(),offer.benefits(),offer.experienceLevel(),offer.employmentType(),offer.dateAdded(),offer.dateEnding()));
+        }
+
         String prompt = PromptBuilder.createPrompt(new DataLinkContainer(offer, user, response));
         String aiResponse = fetchAi.getResponse(prompt).text();
+        log.info("cleanded JSON {}", aiResponse);
 
         String cleanedJson = cleanJsonResponse(aiResponse);
-        log.info("cleanded JSON {}", cleanedJson);
-
 
         try {
             return objectMapper.readValue(cleanedJson, GeminiResponse.class);

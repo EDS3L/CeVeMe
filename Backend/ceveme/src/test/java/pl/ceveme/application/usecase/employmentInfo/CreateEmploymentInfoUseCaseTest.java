@@ -49,8 +49,8 @@ class CreateEmploymentInfoUseCaseTest {
         User user = new User();
         Email email = new Email("Start@wp.pl");
         EmploymentInfo employmentInfo = new EmploymentInfo();
-        EmploymentInfoRequest employmentInfoRequest = new EmploymentInfoRequest(languages,certificates,experiences,courses,skills,portfolioItems,links,educations,email.email());
-        EmploymentInfoResponse expectedResponse = new EmploymentInfoResponse(languages,certificates,experiences,courses,skills,portfolioItems, educations,links);
+        EmploymentInfoRequest employmentInfoRequest = new EmploymentInfoRequest(1L,languages,certificates,experiences,courses,skills,portfolioItems,links,educations,email.email());
+        EmploymentInfoResponse expectedResponse = new EmploymentInfoResponse(1L,languages,certificates,experiences,courses,skills,portfolioItems, educations,links);
 
 
         // when
@@ -84,7 +84,7 @@ class CreateEmploymentInfoUseCaseTest {
         List<LinkDto> links = new ArrayList<>();
         List<EducationDto> educations = new ArrayList<>();
         String email = "test@wp.pl";
-        EmploymentInfoRequest employmentInfoRequest = new EmploymentInfoRequest(languages,certificates,experiences,courses,skills,portfolioItems,links,educations,email);
+        EmploymentInfoRequest employmentInfoRequest = new EmploymentInfoRequest(1L,languages,certificates,experiences,courses,skills,portfolioItems,links,educations,email);
         when(userRepository.findByEmail(new Email(email))).thenReturn(Optional.empty());
 
 

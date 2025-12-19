@@ -43,7 +43,7 @@ public class NoFluffJobsScrapper extends AbstractJobScraper {
     }
     public JobOfferRequest getJobDetails(String url) {
         JobOffer jobOffer = extractJobData(url);
-        return new JobOfferRequest(jobOffer.getTitle(), jobOffer.getCompany(), jobOffer.getRequirements(), jobOffer.getCompany(), jobOffer.getResponsibilities(), jobOffer.getExperienceLevel(), "Scrap successful");
+        return new JobOfferRequest(jobOffer.getTitle(), jobOffer.getCompany(), jobOffer.getRequirements(), jobOffer.getCompany(), jobOffer.getResponsibilities(), jobOffer.getExperienceLevel(),jobOffer.getSalary(),jobOffer.getLocation(),jobOffer.getBenefits(),jobOffer.getEmploymentType(),jobOffer.getDateAdded(),jobOffer.getDateEnding(), "Scrap successful");
     }
 
     public static LocalDate extractOfferValidUntil(Document doc) {

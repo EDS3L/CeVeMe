@@ -5,7 +5,6 @@ import java.time.LocalDate;
 
 public record ExperienceRequest(
         Long id,
-        String email,
         String companyName,
         LocalDate startingDate,
         LocalDate endDate,
@@ -13,7 +12,7 @@ public record ExperienceRequest(
         String positionName,
         String jobDescription,
         String jobAchievements,
-        Long employmentInfoId
+        Long userId
 ) {
 
 
@@ -38,7 +37,6 @@ public record ExperienceRequest(
         if(companyName.isBlank()) throw new IllegalArgumentException("Company name cannot be null!");
         if(positionName.isBlank()) throw new IllegalArgumentException("Position name name cannot be null!");
         if(jobDescription.isBlank()) throw new IllegalArgumentException("Job description cannot be null!");
-        if(jobAchievements.isBlank()) throw new IllegalArgumentException("Job achievements cannot be null!");
         if (currently == Boolean.TRUE && endDate != null)
             throw new IllegalArgumentException("End date cannot be present when still working!");
 

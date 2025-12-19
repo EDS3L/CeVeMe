@@ -12,7 +12,7 @@ const orbitingIconsData = [
 	},
 	{
 		id: 2,
-		letter: "E",
+		letter: "e",
 		letterColor: "text-amber-400",
 		initialAngle: 120,
 		description:
@@ -28,7 +28,7 @@ const orbitingIconsData = [
 	},
 	{
 		id: 4,
-		letter: "E",
+		letter: "e",
 		letterColor: "text-red-400",
 		initialAngle: 240,
 		description: "Eliminacja błędów i niedopasowań w dokumentach aplikacyjnych",
@@ -43,7 +43,7 @@ const orbitingIconsData = [
 	},
 	{
 		id: 6,
-		letter: "E",
+		letter: "e",
 		letterColor: "text-violet-400",
 		initialAngle: 360,
 		description: "Ekspresowe tworzenie spersonalizowanych CV w kilka minut",

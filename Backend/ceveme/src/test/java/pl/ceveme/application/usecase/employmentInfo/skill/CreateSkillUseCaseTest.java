@@ -9,7 +9,7 @@ import pl.ceveme.application.dto.entity.skill.SkillRequest;
 import pl.ceveme.application.dto.entity.skill.SkillResponse;
 import pl.ceveme.domain.model.entities.Skill;
 import pl.ceveme.domain.model.entities.User;
-import pl.ceveme.domain.model.vo.Email;
+import pl.ceveme.domain.repositories.SkillRepository;
 import pl.ceveme.domain.repositories.UserRepository;
 
 import java.util.Optional;
@@ -24,6 +24,9 @@ class CreateSkillUseCaseTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private SkillRepository skillRepository;
+
     @InjectMocks
     private CreateSkillUseCase useCase;
 
@@ -31,21 +34,21 @@ class CreateSkillUseCaseTest {
     @Test
     void should_addSkillToUser_when_ValuesAreCorrect() {
         // given
-        String email = "test@wp.pl";
+        Long userId = 1L;
         String skillName = "Java";
 
         User user = new User();
-        when(userRepository.findByEmail(new Email(email))).thenReturn(Optional.of(user));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
-        SkillRequest request = new SkillRequest(1L,email,skillName, Skill.Type.TECHNICAL);
+        SkillRequest request = new SkillRequest(1L, skillName, Skill.Type.TECHNICAL, userId);
 
         // when
 
-        SkillResponse response = useCase.execute(request);
+        SkillResponse response = useCase.execute(request, userId);
 
         // then
 
-        verify(userRepository).save(user);
+        verify(skillRepository).save(any());
 
         assertEquals(skillName, response.name());
         assertEquals("Addition of skill successfully completed", response.message());
@@ -54,18 +57,18 @@ class CreateSkillUseCaseTest {
     @Test
     void should_ThrowException_when_userNotFound() {
         // given
-        String email = "test@wp.pl";
-        when(userRepository.findByEmail(new Email(email))).thenReturn(Optional.empty());
+        Long userId = 1L;
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
-        SkillRequest request = new SkillRequest(1L,email,"java", Skill.Type.TECHNICAL);
+        SkillRequest request = new SkillRequest(1L, "java", Skill.Type.TECHNICAL, userId);
 
         // when & then
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            useCase.execute(request);
+            useCase.execute(request, userId);
         });
 
         assertEquals("User not found", exception.getMessage());
-        verify(userRepository, never()).save(any());
+        verify(skillRepository, never()).save(any());
     }
 
 }

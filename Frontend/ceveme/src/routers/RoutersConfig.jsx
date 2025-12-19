@@ -23,13 +23,41 @@ const RoutersConfig = {
   },
   cv: {
     path: '/cv',
-    component: React.lazy(() => import('../features/cv/pages/CvEditorPage')),
+    component: React.lazy(() =>
+      import('../features/cv/generativeCv/pages/CvEditorPage')
+    ),
     requiredRole: null,
   },
   user: {
     path: '/user',
     component: React.lazy(() =>
       import('../features/user/pages/UserProfilePage')
+    ),
+    requiredRole: null,
+  },
+  settings: {
+    path: '/settings',
+    component: React.lazy(() =>
+      import('../features/settings/pages/SettingsPage')
+    ),
+    requiredRole: null,
+  },
+  histories: {
+    path: '/history',
+    component: React.lazy(() =>
+      import('../features/applicationHistories/pages/ApplicationHistoriesPage')
+    ),
+    requiredRole: null,
+  },
+  cv2: {
+    path: '/cv2',
+    component: React.lazy(() => import('../features/cv/canvasCv/CvPage')),
+    requiredRole: null,
+  },
+  active: {
+    path: '/auth/active',
+    component: React.lazy(() =>
+      import('../features/auth/pages/ActivateAccount')
     ),
     requiredRole: null,
   },

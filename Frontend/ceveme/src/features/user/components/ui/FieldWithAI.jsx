@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { Wand2 } from 'lucide-react';
+import React, { useMemo, useRef, useLayoutEffect, useState } from 'react';
 import Refinement from '../../hooks/userAirefinement';
-import AILoading from './LoadingDots'; // ⬅ nowa animacja
+import AILoading from './LoadingDots';
+import ProgressButton from './ProgressButton';
+import { useAITimeout } from '../utils/AITimeoutContext';
 
 export default function FieldWithAI({
   id,
@@ -21,22 +22,59 @@ export default function FieldWithAI({
   const errorId = `${id}-err`;
   const baseInput =
     'w-full rounded-xl border border-cloudlight bg-basewhite text-slatedark px-3 py-2 outline-none ring-offset-2 focus:ring-2 focus:ring-feedbackfocus';
-  const refinement = new Refinement();
+
+  const refinement = useMemo(() => new Refinement(), []);
   const [loadingAi, setLoadingAi] = useState(false);
 
+  const {
+    timeoutData,
+    isAnyAILoading,
+    setIsAnyAILoading,
+    setAITimeout,
+    hasActiveTimeout,
+  } = useAITimeout();
+
+  const textareaRef = useRef(null);
+  useLayoutEffect(() => {
+    if (!multiline) return;
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = 'auto';
+    el.style.height = `${el.scrollHeight}px`;
+  }, [multiline, value]);
+
   const refinementText = async () => {
-    if (loadingAi) return;
+    if (loadingAi || isAnyAILoading || hasActiveTimeout) return;
+
     try {
+      setIsAnyAILoading(true);
       setLoadingAi(true);
+
+      const useTimeoutAi = await refinement.checkTimeout('REFINEMENT');
+      if (useTimeoutAi?.howMuchLeft > 0) {
+        setAITimeout(useTimeoutAi);
+        return;
+      }
+
       const res = await refinement.refinementRequirements(value, label);
 
-      if (res != null) {
+      if (res != null && typeof res.refinementText === 'string') {
         onChange(res.refinementText);
+        const newTimeout = await refinement.checkTimeout('REFINEMENT');
+        if (newTimeout?.howMuchLeft > 0) {
+          setAITimeout(newTimeout);
+        }
       }
+    } catch (err) {
+      console.error('Error in refinementText:', err);
     } finally {
       setLoadingAi(false);
+      setIsAnyAILoading(false);
     }
   };
+
+  const isButtonDisabled =
+    disabled || loadingAi || isAnyAILoading || hasActiveTimeout;
 
   return (
     <div className="grid gap-1">
@@ -49,20 +87,15 @@ export default function FieldWithAI({
           {multiline ? (
             <textarea
               id={id}
-              ref={(el) => {
-                if (el) {
-                  el.style.height = 'auto';
-                  el.style.height = el.scrollHeight + 'px';
-                }
-              }}
+              ref={textareaRef}
               value={value}
               onChange={(e) => onChange(e.target.value)}
               onInput={(e) => {
                 e.target.style.height = 'auto';
-                e.target.style.height = e.target.scrollHeight + 'px';
+                e.target.style.height = `${e.target.scrollHeight}px`;
               }}
               placeholder={placeholder}
-              disabled={disabled || loadingAi}
+              disabled={disabled || isAnyAILoading}
               aria-invalid={!!error}
               aria-describedby={`${described} ${error ? errorId : ''}`}
               className={`${baseInput} resize-none overflow-hidden`}
@@ -74,7 +107,7 @@ export default function FieldWithAI({
               value={value}
               onChange={(e) => onChange(e.target.value)}
               placeholder={placeholder}
-              disabled={disabled || loadingAi}
+              disabled={disabled || isAnyAILoading}
               aria-invalid={!!error}
               aria-describedby={`${described} ${error ? errorId : ''}`}
               className={baseInput}
@@ -98,23 +131,13 @@ export default function FieldWithAI({
         </div>
 
         {aiButton && isEditing && (
-          <button
-            type="button"
+          <ProgressButton
             onClick={refinementText}
-            disabled={disabled || loadingAi}
-            className={`${
-              loadingAi
-                ? 'bg-gray-400 cursor-not-allowed text-white '
-                : 'bg-manilla'
-            } inline-flex items-center gap-2 rounded-2xl text-slatedark px-3 py-2 hover:opacity-90 focus:ring-2 focus:ring-feedbackfocus`}
-            aria-label={`Popraw przez AI: ${label}`}
-            title="Popraw przez AI"
-          >
-            <Wand2 size={20} strokeWidth={2} />
-            <span className="text-sm font-semibold">
-              {loadingAi ? 'Generowanie…' : 'Ulepsz z AI'}
-            </span>
-          </button>
+            disabled={isButtonDisabled}
+            loading={loadingAi}
+            timeoutData={timeoutData}
+            label={`Popraw przez AI: ${label}`}
+          />
         )}
       </div>
 
@@ -132,6 +155,14 @@ export default function FieldWithAI({
           {error}
         </p>
       ) : null}
+
+      {hasActiveTimeout && timeoutData && (
+        <p className="text-xs text-gray-600">
+          AI będzie dostępne za{' '}
+          {Math.floor((timeoutData.howMuchLeft ?? 0) / 60)}:
+          {String((timeoutData.howMuchLeft ?? 0) % 60).padStart(2, '0')}
+        </p>
+      )}
     </div>
   );
 }

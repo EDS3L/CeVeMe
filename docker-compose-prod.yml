@@ -1,0 +1,45 @@
+services:
+  frontend:
+    image: ${DOCKER_USERNAME}/eds3l:ceveme-frontend
+    container_name: ceveme-frontend
+    restart: unless-stopped
+    networks:
+      - web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ceveme-frontend.rule=Host(`ceveme.pl`)"
+      - "traefik.http.routers.ceveme-frontend.entrypoints=websecure"
+      - "traefik.http.routers.ceveme-frontend.tls.certresolver=my-resolver"
+      - "traefik.http.services.ceveme-frontend.loadbalancer.server.port=3001"
+
+  backend:
+    image: ${DOCKER_USERNAME}/eds3l:ceveme-backend
+    container_name: ceveme-backend
+    restart: unless-stopped
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - MAIL_HOST=${MAIL_HOST}
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - DATASOURCE_URL=${DATASOURCE_URL}
+      - DATASOURCE_USERNAME=${DATASOURCE_USERNAME}
+      - DATASOURCE_PASSWORD=${DATASOURCE_PASSWORD}
+      - TOKEN_SECRETKEY=${TOKEN_SECRETKEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - STRIPE_APIKEY=${STRIPE_APIKEY}
+      - CLOUDINARY_URL=${CLOUDINARY_URL}
+      - LI_AT=${LI_AT}
+      - LI_RM=${LI_RM}
+    networks:
+      - web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ceveme-api.rule=Host(`ceveme.pl`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.ceveme-api.entrypoints=websecure"
+      - "traefik.http.routers.ceveme-api.tls.certresolver=my-resolver"
+      - "traefik.http.services.ceveme-api.loadbalancer.server.port=8080"
+
+networks:
+  web:
+    external: true
+    name: traefik_proxy_network

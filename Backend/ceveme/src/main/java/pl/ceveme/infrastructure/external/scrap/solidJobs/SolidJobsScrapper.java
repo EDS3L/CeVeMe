@@ -43,14 +43,14 @@ public class SolidJobsScrapper extends AbstractJobScraper {
     public JobOfferRequest getJobDetails(String url) throws Exception {
         String finalUrl = url.replaceAll("https://solid.jobs/offer/", BASE_API_URL + "/");
         JobOffer jobOffer = extractJobData(finalUrl);
-        return new JobOfferRequest(jobOffer.getTitle(), jobOffer.getCompany(), jobOffer.getRequirements(), jobOffer.getCompany(), jobOffer.getResponsibilities(), jobOffer.getExperienceLevel(), "Scrap successful");
+        return new JobOfferRequest(jobOffer.getTitle(), jobOffer.getCompany(), jobOffer.getRequirements(), jobOffer.getCompany(), jobOffer.getResponsibilities(), jobOffer.getExperienceLevel(),jobOffer.getSalary(),jobOffer.getLocation(),jobOffer.getBenefits(),jobOffer.getEmploymentType(),jobOffer.getDateAdded(),jobOffer.getDateEnding(), "Scrap successful");
     }
 
     private List<String> fetchJobOfferLinks() throws IOException, ParseException {
         try {
             String response = httpClient.fetchContentSolidJobs(API_ENDPOINT);
             return parseJobOfferUrls(response);
-        } catch (IOException | ParseException e) {
+        } catch (IOException  e) {
             log.error("Failed to fetch job offers list from API: {}", e.getMessage());
             throw e;
         }

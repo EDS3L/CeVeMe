@@ -2,7 +2,7 @@ import { toast } from 'react-toastify';
 import axios from '../../../../api';
 import React from 'react';
 
-const jwt = document.cookie.replace('jwt=', '');
+const jwt = document.cookie.replace('accessToken=', '');
 
 class EmploymentInfoDelete {
   async deleteLanguage(itemId) {

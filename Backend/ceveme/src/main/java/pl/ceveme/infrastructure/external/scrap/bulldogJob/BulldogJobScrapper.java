@@ -40,7 +40,7 @@ public class BulldogJobScrapper extends AbstractJobScraper {
 
     public JobOfferRequest getJobDetails(String url) throws Exception {
         JobOffer jobOffer = extractJobData(url);
-        return new JobOfferRequest(jobOffer.getTitle(), jobOffer.getCompany(), jobOffer.getRequirements(), jobOffer.getCompany(), jobOffer.getResponsibilities(), jobOffer.getExperienceLevel(), "Scrap successful");
+        return new JobOfferRequest(jobOffer.getTitle(), jobOffer.getCompany(), jobOffer.getRequirements(), jobOffer.getCompany(), jobOffer.getResponsibilities(), jobOffer.getExperienceLevel(),jobOffer.getSalary(),jobOffer.getLocation(),jobOffer.getBenefits(),jobOffer.getEmploymentType(),jobOffer.getDateAdded(),jobOffer.getDateEnding(), "Scrap successful");
     }
 
     private List<String> fetchAllJobLinks() throws IOException {

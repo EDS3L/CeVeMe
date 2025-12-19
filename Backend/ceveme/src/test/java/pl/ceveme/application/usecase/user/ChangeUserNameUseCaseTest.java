@@ -11,6 +11,7 @@ import pl.ceveme.domain.model.entities.User;
 import pl.ceveme.domain.model.vo.Name;
 import pl.ceveme.domain.repositories.UserRepository;
 
+import java.nio.file.AccessDeniedException;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,11 +28,12 @@ class ChangeUserNameUseCaseTest {
     private ChangeUserNameUseCase changeUserNameUseCase;
 
     @Test
-    void shouldChangeUserName_whenUserExists() {
+    void shouldChangeUserName_whenUserExists() throws AccessDeniedException {
         // GIVEN
         long userId = 1L;
         String newName = "Jan";
         User user = mock(User.class);
+        when(user.getId()).thenReturn(userId);
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 

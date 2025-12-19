@@ -22,8 +22,8 @@ public class CreateSkillUseCase {
     }
 
     @Transactional
-    public SkillResponse execute(SkillRequest request) {
-        User user = userRepository.findByEmail(new Email(request.email()))
+    public SkillResponse execute(SkillRequest request, Long userId) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         Skill skill = new Skill(request.name(), request.type());

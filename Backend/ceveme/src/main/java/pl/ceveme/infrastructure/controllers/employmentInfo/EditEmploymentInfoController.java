@@ -37,7 +37,7 @@ import pl.ceveme.domain.model.entities.User;
 import java.nio.file.AccessDeniedException;
 
 @RestController
-@RequestMapping("/api/employmentInfo/delete")
+@RequestMapping("/api/employmentInfo/edit")
 public class EditEmploymentInfoController {
 
     private final EditCertificateUseCase editCertificateUseCase;

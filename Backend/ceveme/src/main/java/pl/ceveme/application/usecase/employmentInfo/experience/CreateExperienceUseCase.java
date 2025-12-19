@@ -22,8 +22,8 @@ public class CreateExperienceUseCase {
     }
 
     @Transactional
-    public ExperienceResponse execute(ExperienceRequest request) {
-        User user = userRepository.findByEmail(new Email(request.email()))
+    public ExperienceResponse execute(ExperienceRequest request, Long userId) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         Experience experience = new Experience(request.companyName(), request.startingDate(), request.endDate(), request.currently(), request.positionName(), request.jobDescription(), request.jobAchievements());

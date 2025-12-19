@@ -1,4 +1,4 @@
 package pl.ceveme.application.dto.user;
 
-public record ChangePasswordResponse(String email, String message) {
+public record ChangePasswordResponse(Long userId, String message) {
 }

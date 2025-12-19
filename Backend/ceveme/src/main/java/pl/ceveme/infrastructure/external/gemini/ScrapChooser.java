@@ -5,7 +5,9 @@ import pl.ceveme.application.dto.scrap.JobOfferRequest;
 import pl.ceveme.domain.model.entities.JobOffer;
 import pl.ceveme.infrastructure.external.scrap.bulldogJob.BulldogJobScrapper;
 import pl.ceveme.infrastructure.external.scrap.justJoinIt.JustJoinItScrapper;
+import pl.ceveme.infrastructure.external.scrap.linkedin.LinkedInScrapper;
 import pl.ceveme.infrastructure.external.scrap.nofluffjobs.NoFluffJobsScrapper;
+import pl.ceveme.infrastructure.external.scrap.olx.OlxScrapper;
 import pl.ceveme.infrastructure.external.scrap.pracujPl.PracujPlScrapper;
 import pl.ceveme.infrastructure.external.scrap.rocketJobs.RocketJobsScrapper;
 import pl.ceveme.infrastructure.external.scrap.solidJobs.SolidJobsScrapper;
@@ -21,9 +23,11 @@ public class ScrapChooser {
     private final RocketJobsScrapper rocketJobsScrapper;
     private final SolidJobsScrapper solidJobsScrapper;
     private final TheProtocolItScrapper theProtocolItScrapper;
+    private final OlxScrapper olxScrapper;
+    private final LinkedInScrapper linkedInScrapper;
 
 
-    public ScrapChooser(JustJoinItScrapper justJoinItScrapper, BulldogJobScrapper bulldogJobScrapper, NoFluffJobsScrapper noFluffJobsScrapper, PracujPlScrapper pracujPlScrapper, RocketJobsScrapper rocketJobsScrapper, SolidJobsScrapper solidJobsScrapper, TheProtocolItScrapper theProtocolItScrapper) {
+    public ScrapChooser(JustJoinItScrapper justJoinItScrapper, BulldogJobScrapper bulldogJobScrapper, NoFluffJobsScrapper noFluffJobsScrapper, PracujPlScrapper pracujPlScrapper, RocketJobsScrapper rocketJobsScrapper, SolidJobsScrapper solidJobsScrapper, TheProtocolItScrapper theProtocolItScrapper, OlxScrapper olxScrapper, LinkedInScrapper linkedInScrapper) {
         this.justJoinItScrapper = justJoinItScrapper;
         this.bulldogJobScrapper = bulldogJobScrapper;
         this.noFluffJobsScrapper = noFluffJobsScrapper;
@@ -31,6 +35,8 @@ public class ScrapChooser {
         this.rocketJobsScrapper = rocketJobsScrapper;
         this.solidJobsScrapper = solidJobsScrapper;
         this.theProtocolItScrapper = theProtocolItScrapper;
+        this.olxScrapper = olxScrapper;
+        this.linkedInScrapper = linkedInScrapper;
     }
 
     public JobOfferRequest chooseCorrectPortal(String url) throws Exception {
@@ -49,8 +55,12 @@ public class ScrapChooser {
                 noFluffJobsScrapper.getJobDetails(url);
             case "bulldogjob.com" ->
                 bulldogJobScrapper.getJobDetails(url);
+            case "www.olx.pl" ->
+                    olxScrapper.getJobDetails(url);
             case "justjoin.it" ->
                 justJoinItScrapper.getJobDetails(url);
+            case "www.linkedin.com" ->
+                linkedInScrapper.getJobDetails(url);
                 default -> throw new IllegalArgumentException("Unknown portal: " + portalName);
         };
     };

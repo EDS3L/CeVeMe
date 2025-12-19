@@ -10,8 +10,10 @@ import pl.ceveme.application.dto.entity.portfolioItems.PortfolioItemsRequest;
 import pl.ceveme.application.dto.entity.portfolioItems.PortfolioItemsResponse;
 import pl.ceveme.domain.model.entities.EmploymentInfo;
 import pl.ceveme.domain.model.entities.PortfolioItem;
-import pl.ceveme.domain.repositories.EmploymentInfoRepository;
+import pl.ceveme.domain.model.entities.User;
+import pl.ceveme.domain.repositories.UserRepository;
 
+import java.nio.file.AccessDeniedException;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,17 +24,17 @@ import static org.mockito.Mockito.when;
 class EditPortfolioItemUseCaseTest {
 
     @Mock
-    private EmploymentInfoRepository employmentInfoRepository;
+    private UserRepository userRepository;
 
     @InjectMocks
     private EditPortfolioItemUseCase editPortfolioItemUseCase;
 
     @Test
-    void should_editPortfolioItem_when_portfolioItemExists() {
+    void should_editPortfolioItem_when_portfolioItemExists() throws AccessDeniedException {
         // given
-        Long employmentInfoId = 1L;
+        Long userId = 1L;
         Long portfolioItemId = 10L;
-        PortfolioItem portfolioItem = new PortfolioItem("Old Title", "Old Description");
+        PortfolioItem portfolioItem = new PortfolioItem("Old Title", "Old Description", "https://old.com");
         try {
             java.lang.reflect.Field field = PortfolioItem.class.getDeclaredField("id");
             field.setAccessible(true);
@@ -41,14 +43,18 @@ class EditPortfolioItemUseCaseTest {
             throw new RuntimeException(e);
         }
 
-        PortfolioItemsRequest request = new PortfolioItemsRequest(portfolioItemId, "test@wp.pl", "Updated Title", "Updated Description");
+        PortfolioItemsRequest request = new PortfolioItemsRequest(portfolioItemId, "Updated Title", "Updated Description", "https://updated.com", userId);
         EmploymentInfo info = new EmploymentInfo();
         info.addPortfolioItem(portfolioItem);
+        User user = new User();
+        user.setEmploymentInfo(info);
+        info.setUser(user);
+        setUserId(user, userId);
 
-        when(employmentInfoRepository.findById(employmentInfoId)).thenReturn(Optional.of(info));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
         // when
-        PortfolioItemsResponse response = editPortfolioItemUseCase.execute(request, employmentInfoId);
+        PortfolioItemsResponse response = editPortfolioItemUseCase.execute(request, userId);
 
         // then
         assertThat(response.title()).isEqualTo("Updated Title");
@@ -58,31 +64,45 @@ class EditPortfolioItemUseCaseTest {
     @Test
     void should_throwException_when_portfolioItemNotFound() {
         // given
-        Long employmentInfoId = 1L;
-        PortfolioItemsRequest request = new PortfolioItemsRequest(99L, "test@wp.pl", "Title", "Description");
+        Long userId = 1L;
+        PortfolioItemsRequest request = new PortfolioItemsRequest(99L, "Title", "Description", "https://example.com", userId);
         EmploymentInfo info = new EmploymentInfo();
+        User user = new User();
+        user.setEmploymentInfo(info);
+        info.setUser(user);
+        setUserId(user, userId);
 
-        when(employmentInfoRepository.findById(employmentInfoId)).thenReturn(Optional.of(info));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
         // when & then
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> editPortfolioItemUseCase.execute(request, employmentInfoId));
+                () -> editPortfolioItemUseCase.execute(request, userId));
 
         assertThat(ex.getMessage()).isEqualTo("PortfolioItem not found");
     }
 
     @Test
-    void should_throwException_when_employmentInfoNotFound() {
+    void should_throwException_when_userNotFound() {
         // given
-        Long employmentInfoId = 999L;
-        PortfolioItemsRequest request = new PortfolioItemsRequest(1L, "test@wp.pl", "Any", "Any");
+        Long userId = 999L;
+        PortfolioItemsRequest request = new PortfolioItemsRequest(1L, "Any", "Any", "https://example.com", userId);
 
-        when(employmentInfoRepository.findById(employmentInfoId)).thenReturn(Optional.empty());
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
         // when & then
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> editPortfolioItemUseCase.execute(request, employmentInfoId));
+                () -> editPortfolioItemUseCase.execute(request, userId));
 
-        assertThat(ex.getMessage()).isEqualTo("EmploymentInfo not found");
+        assertThat(ex.getMessage()).isEqualTo("User not found");
+    }
+
+    private void setUserId(User user, Long id) {
+        try {
+            java.lang.reflect.Field field = User.class.getDeclaredField("id");
+            field.setAccessible(true);
+            field.set(user, id);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

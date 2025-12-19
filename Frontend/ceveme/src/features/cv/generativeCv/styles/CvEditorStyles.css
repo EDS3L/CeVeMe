@@ -1,0 +1,23 @@
+.condensed p,
+.condensed li,
+.condensed div {
+  line-height: 1.35;
+}
+
+.condensed h2,
+.condensed h3 {
+  margin-top: 10px;
+  margin-bottom: 3px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.condensed .job-entry,
+.condensed .education-entry {
+  margin-bottom: 8px;
+}
+
+.condensed .cv-section {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}

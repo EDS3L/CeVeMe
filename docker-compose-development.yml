@@ -1,0 +1,41 @@
+services:
+  frontend:
+    build:
+      context: ./frontend/ceveme
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=http://localhost:8080
+    container_name: ceveme-frontend
+    ports:
+      - "3001:3001"
+    networks:
+      - ceveme-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  backend:
+    build:
+      context: ./Backend/ceveme
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    env_file:
+      - ./Backend/ceveme/.env
+    container_name: ceveme-backend
+    networks:
+      - ceveme-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    environment:
+      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY=DEBUG
+      - LOGGING_LEVEL_ORG_HIBERNATE_SQL=DEBUG
+
+networks:
+  ceveme-network:
+    driver: bridge
