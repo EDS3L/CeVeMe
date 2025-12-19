@@ -48,13 +48,13 @@ public class TheProtocolItScrapper extends AbstractJobScraper {
         int totalPages = calculateTotalPages(first);
         log.info("Total page {}", totalPages);
         List<String> all = new ArrayList<>(parseJobLinks(first));
+
         IntStream.rangeClosed(2, totalPages).forEach(p -> {
             try {
-                log.info("Currnet page {}", p);
-                TimeUnit.MILLISECONDS.sleep(1000);
-                JsonNode page = fetchPageJson(BASE_URL +  p);
+                log.info("Current page {}", p);
+                TimeUnit.MILLISECONDS.sleep(2000);
+                JsonNode page = fetchPageJson(BASE_URL + p);
                 all.addAll(parseJobLinks(page));
-                delay();
             } catch (Exception e) {
                 log.warn("Failed add jobs to list {}", e.getMessage());
             }
@@ -62,16 +62,15 @@ public class TheProtocolItScrapper extends AbstractJobScraper {
         return all.stream().distinct().toList();
     }
 
-
     private JsonNode fetchPageJson(String url) {
         try {
-            String html = httpClient.fetchContent(url);
-            Document doc = Jsoup.parse(html,url);
+            String html = httpClient.fetchContentWithBrowser(url);
+            Document doc = Jsoup.parse(html, url);
             Element script = doc.selectFirst("script[id*=__NEXT_DATA__]");
             if (script == null) throw new IOException("No __NEXT_DATA__ on " + url);
             return objectMapper.readTree(script.dataNodes().getFirst().getWholeData());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error fetching JSON from " + url, e);
         }
     }
 
@@ -88,29 +87,23 @@ public class TheProtocolItScrapper extends AbstractJobScraper {
                 .toList();
     }
 
-
     private int calculateTotalPages(JsonNode node) {
         JsonNode offersResponse = node.path("props")
                 .path("pageProps")
                 .path("offersResponse");
-        int size = offersResponse.path("page")
-                .path("size")
-                .asInt();
-        int offersCount = offersResponse.path("offersCount")
-                .asInt();
+        int size = offersResponse.path("page").path("size").asInt(20);
+        int offersCount = offersResponse.path("offersCount").asInt();
         return (int) Math.ceil((double) offersCount / size);
     }
 
     @Override
     protected JobOffer extractJobData(String url) throws Exception {
-        String html = httpClient.fetchContent(url);
+        String html = httpClient.fetchContentWithBrowser(url);
         Document doc = Jsoup.parse(html, url);
-
         JsonNode data = parseJson(doc, "script[id*=__NEXT_DATA__]");
 
-
-        log.info("Extracted data {} from {}",TheProtocolItJobMapper.mapToJobOffer(data,url).toString(),url);
-        return TheProtocolItJobMapper.mapToJobOffer(data,url);
-
+        JobOffer offer = TheProtocolItJobMapper.mapToJobOffer(data, url);
+        log.info("Extracted job: {} from {}", offer.getTitle(), url);
+        return offer;
     }
 }
