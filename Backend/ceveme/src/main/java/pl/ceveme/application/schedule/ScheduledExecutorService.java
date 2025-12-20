@@ -30,45 +30,45 @@ public class ScheduledExecutorService {
         this.scrapTheProtocolITUseCase = scrapTheProtocolITUseCase;
     }
 
-//    @Scheduled(initialDelay = 60000, fixedDelay = 20000)
-//    public void scrapBulldogScheduler() throws IOException {
-//        scrapBulldogJobUseCase.execute();
-//    }
-//
-//    @Scheduled(fixedDelay = 20000)
-//    public void scrapJustJoinItScheduler() throws Exception {
-//        scrapJustJoinItUseCase.execute();
-//    }
-//
+    @Scheduled(initialDelay = 60000, fixedDelay = 20000)
+    public void scrapBulldogScheduler() throws IOException {
+        scrapBulldogJobUseCase.execute();
+    }
+
+    @Scheduled(fixedDelay = 20000)
+    public void scrapJustJoinItScheduler() throws Exception {
+        scrapJustJoinItUseCase.execute();
+    }
+
 //    @Scheduled(fixedDelay = 20000)
 //    public void scrapLinkedInScheduler() throws IOException {
 //        scrapLinkedInUseCase.execute();
 //    }
-//
-//    @Scheduled(fixedDelay = 20000)
-//    public void scrapNoFluffScheduler() throws IOException {
-//        scrapNoFluffJobsUseCase.execute();
-//    }
+
+    @Scheduled(fixedDelay = 20000)
+    public void scrapNoFluffScheduler() throws IOException {
+        scrapNoFluffJobsUseCase.execute();
+    }
 //
 //    @Scheduled(fixedDelay = 20000)
 //    public void scrapPracujScheduler() throws IOException {
 //        scrapPracujPlUseCase.execute();
 //    }
-//
-//    @Scheduled(fixedDelay = 20000)
-//    public void scrapRocketScheduler() throws IOException {
-//        scrapRocketJobsUseCase.execute();
-//    }
-//
-//    @Scheduled(fixedDelay = 20000)
-//    public void scrapSolidJobsScheduler() throws Exception {
-//        scrapSolidJobsUseCase.execute();
-//    }
-//
-//    @Scheduled(fixedDelay = 20000)
-//    public void scrapTheProtocolITScheduler() throws IOException {
-//        scrapTheProtocolITUseCase.execute();
-//    }
+
+    @Scheduled(fixedDelay = 20000)
+    public void scrapRocketScheduler() throws IOException {
+        scrapRocketJobsUseCase.execute();
+    }
+
+    @Scheduled(fixedDelay = 20000)
+    public void scrapSolidJobsScheduler() throws Exception {
+        scrapSolidJobsUseCase.execute();
+    }
+
+    @Scheduled(fixedDelay = 20000)
+    public void scrapTheProtocolITScheduler() throws IOException {
+        scrapTheProtocolITUseCase.execute();
+    }
 
 }
 

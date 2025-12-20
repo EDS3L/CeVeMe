@@ -2,15 +2,11 @@ package pl.ceveme.infrastructure.external.scrap.pracujPl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.microsoft.playwright.Browser;
-import com.microsoft.playwright.BrowserContext;
-import com.microsoft.playwright.BrowserType;
-import com.microsoft.playwright.Page;
-import com.microsoft.playwright.Playwright;
+import com.microsoft.playwright.*;
+import com.microsoft.playwright.options.WaitUntilState;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -20,134 +16,127 @@ import pl.ceveme.domain.repositories.JobOfferRepository;
 import pl.ceveme.infrastructure.external.common.AbstractJobScraper;
 import pl.ceveme.infrastructure.external.common.HttpClient;
 
-import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.Random;
 
 @Component
 public class PracujPlScrapper extends AbstractJobScraper {
     private static final Logger log = LoggerFactory.getLogger(PracujPlScrapper.class);
+    private static final Random random = new Random();
 
     public PracujPlScrapper(HttpClient httpClient, ObjectMapper objectMapper, JobOfferRepository jobOfferRepository) {
         super(httpClient, objectMapper, jobOfferRepository);
     }
 
-    public List<JobOffer> createJobs() throws IOException {
-        List<String> urls = extractJobUrls();
-        return processUrls(urls);
-    }
-
     public JobOfferRequest getJobDetails(String url) throws Exception {
-        JobOffer jobOffer = extractJobData(url);
-        log.info("Getting job offer: {}", jobOffer);
-        return new JobOfferRequest(
-                jobOffer.getTitle(),
-                jobOffer.getCompany(),
-                jobOffer.getRequirements(),
-                jobOffer.getCompany(),
-                jobOffer.getResponsibilities(),
-                jobOffer.getExperienceLevel(),
-                jobOffer.getSalary(),
-                jobOffer.getLocation(),
-                jobOffer.getBenefits(),
-                jobOffer.getEmploymentType(),
-                jobOffer.getDateAdded(),
-                jobOffer.getDateEnding(),
-                "Scrap successful"
-        );
-    }
-
-    private List<String> extractJobUrls() throws IOException {
-        List<String> all = new ArrayList<>();
-        String BASE_URL = "https://www.pracuj.pl/praca/ostatnich%2024h;p,1";
-        int max = extractPageNumber(BASE_URL);
-        log.info("Total page on Pracuj Pl {}", max);
-
         try (Playwright playwright = Playwright.create()) {
-            Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(true));
-            BrowserContext context = browser.newContext(new Browser.NewContextOptions()
-                    .setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"));
+            try (BrowserContext context = createStealthContext(playwright)) {
+                Page page = context.newPage();
+                JobOffer jobOffer = scrapeSingleJob(page, url);
 
-            Page page = context.newPage();
+                if (jobOffer == null) throw new RuntimeException("Scrap failed for: " + url);
 
-            for (int p = 1; p <= max; p++) {
-                String url = p == 1 ? BASE_URL : BASE_URL + "?" + "pn=" + p;
-                log.info("Current page: {}", p);
-
-                page.navigate(url);
-                page.waitForTimeout(1000);
-
-                String content = page.content();
-                Document doc = Jsoup.parse(content); // Parsujemy HTML z Playwright do Jsoup
-
-                Elements links = doc.select("a[class*=tiles_cnb3rfy]");
-                links.forEach(e -> {
-                    String href = e.attr("href");
-                    if (!href.isBlank()) all.add(href);
-                });
-
-
+                return new JobOfferRequest(
+                        jobOffer.getTitle(), jobOffer.getCompany(), jobOffer.getRequirements(),
+                        jobOffer.getCompany(), jobOffer.getResponsibilities(), jobOffer.getExperienceLevel(),
+                        jobOffer.getSalary(), jobOffer.getLocation(), jobOffer.getBenefits(),
+                        jobOffer.getEmploymentType(), jobOffer.getDateAdded(), jobOffer.getDateEnding(),
+                        "Scrap successful"
+                );
             }
         }
-        return all;
     }
 
-    @Override
-    protected JobOffer extractJobData(String url) throws Exception {
-        log.info("Fetching with Playwright: {}", url);
-        String raw = fetchContentWithPlaywright(url);
-        Document doc = Jsoup.parse(raw);
-        Element script = doc.selectFirst("script#job-schema-org[type=application/ld+json]");
-
-        if (doc.title().contains("Just a moment") || doc.title().contains("Cloudflare")) {
-            log.error("CLOUDFLARE BLOCKED REQUEST: {}", url);
-            throw new IOException("Cloudflare challenge detected");
+    public List<JobOffer> createJobs() {
+        List<JobOffer> allJobs = new ArrayList<>();
+        try (Playwright playwright = Playwright.create()) {
+            try (BrowserContext context = createStealthContext(playwright)) {
+                Page page = context.newPage();
+                List<String> urls = extractJobUrls(page);
+                for (String url : urls) {
+                    try {
+                        JobOffer jo = scrapeSingleJob(page, url);
+                        if (jo != null) allJobs.add(jo);
+                        randomHumanDelay(3000, 6000);
+                    } catch (Exception e) {
+                        log.error("Error scraping {}: {}", url, e.getMessage());
+                    }
+                }
+            }
         }
+        return allJobs;
+    }
 
-        log.info("Job Schema org found: {}", script != null);
+    private JobOffer scrapeSingleJob(Page page, String url) throws Exception {
+        page.navigate(url, new Page.NavigateOptions().setWaitUntil(WaitUntilState.NETWORKIDLE));
+        handleCloudflare(page);
+
+        // Dodatkowe czekanie na JSON-LD
+        page.waitForTimeout(2000);
+
+        Document doc = Jsoup.parse(page.content());
+        Element script = doc.selectFirst("script#job-schema-org");
         if (script == null) return null;
 
-        JsonNode json = objectMapper.readTree(script.dataNodes()
-                .getFirst()
-                .getWholeData());
-
+        JsonNode json = objectMapper.readTree(script.dataNodes().get(0).getWholeData());
         Element wrapper = doc.selectFirst("li[data-test*=sections-benefit-employment-type-name] div[class*=tchzayo]");
-        String experience = (wrapper != null && !wrapper.text().isBlank()) ? wrapper.text() : null;
-
-        log.info("Data extracted successfully from {}", url);
+        String experience = (wrapper != null) ? wrapper.text() : "";
 
         return JobOfferPracujPlMapper.mapToJobOffer(json, url, experience);
     }
 
-    private int extractPageNumber(String pageUrl) throws IOException {
-        String content = fetchContentWithPlaywright(pageUrl);
-        Document doc = Jsoup.parse(content);
+    private List<String> extractJobUrls(Page page) {
+        List<String> urls = new ArrayList<>();
+        page.navigate("https://www.pracuj.pl/praca");
+        handleCloudflare(page);
 
-        Elements btn = doc.select("button[class*=listing_n19df7xb]");
-        if (btn.isEmpty()) {
-            return 1;
-        }
-        return Integer.parseInt(Objects.requireNonNull(btn.last()).text());
+        Document doc = Jsoup.parse(page.content());
+        doc.select("a[class*=tiles_cnb3rfy]").forEach(e -> {
+            String href = e.attr("href");
+            if (!href.isBlank()) urls.add(href.startsWith("http") ? href : "https://www.pracuj.pl" + href);
+        });
+        return urls;
     }
 
-    private String fetchContentWithPlaywright(String url) {
+    private BrowserContext createStealthContext(Playwright playwright) {
+        // Tryb HEADLESS (true) dla serwerów/Dockerów
+        BrowserType.LaunchPersistentContextOptions options = new BrowserType.LaunchPersistentContextOptions()
+                .setHeadless(true)
+                .setArgs(List.of(
+                        "--disable-blink-features=AutomationControlled",
+                        "--no-sandbox",
+                        "--disable-setuid-sandbox",
+                        "--use-gl=desktop" // Pomaga omijać niektóre testy GPU bota
+                ))
+                .setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36");
+
+        BrowserContext context = playwright.chromium().launchPersistentContext(Paths.get("/tmp/user_data_pracuj"), options);
+
+        // Wstrzykiwanie skryptu ukrywającego Playwrighta nawet w headless
+        context.addInitScript("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})");
+
+        return context;
+    }
+
+    private void handleCloudflare(Page page) {
+        if (page.title().toLowerCase().contains("just a moment") || page.content().contains("verifying you are human")) {
+            log.warn("Cloudflare detected! Waiting longer...");
+            page.waitForTimeout(10000);
+        }
+    }
+
+    private void randomHumanDelay(int min, int max) {
+        try { Thread.sleep(random.nextInt(max - min) + min); } catch (Exception ignored) {}
+    }
+
+    @Override
+    protected JobOffer extractJobData(String url) throws Exception {
         try (Playwright playwright = Playwright.create()) {
-            Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(true));
-
-            BrowserContext context = browser.newContext(new Browser.NewContextOptions()
-                    .setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"));
-
-            Page page = context.newPage();
-            page.navigate(url);
-
-            try {
-                page.waitForSelector("script#job-schema-org", new Page.WaitForSelectorOptions().setTimeout(5000));
-            } catch (Exception e) {
-                log.warn("Timeout waiting for selector, returning content anyway. URL: {}", url);
+            try (BrowserContext context = createStealthContext(playwright)) {
+                return scrapeSingleJob(context.newPage(), url);
             }
-
-            return page.content();
         }
     }
 }

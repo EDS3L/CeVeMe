@@ -66,7 +66,7 @@ public class HttpClient implements AutoCloseable {
 
             page.navigate(url, new Page.NavigateOptions().setWaitUntil(WaitUntilState.NETWORKIDLE));
 
-            page.waitForTimeout(2000);
+            page.waitForTimeout(1000);
 
             return page.content();
         } catch (Exception e) {
