@@ -27,7 +27,7 @@ import java.io.IOException;
 public class JwtFilter extends OncePerRequestFilter {
 
     private static final AntPathMatcher PM = new AntPathMatcher();
-    private static final String[] SKIP_PATHS = {"/auth/refresh", "/api/auth/refresh", // dopasuj do swoich
+    private static final String[] SKIP_PATHS = {"/auth/refresh","/api/auth/passwordToken", "/api/auth/refresh",
             "/auth/login", "/api/auth/login", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html"};
 
     private static final String COOKIE_NAME = "accessToken";
