@@ -41,7 +41,7 @@ public class JobScrapingScheduler {
 
 
      // Główna metoda uruchamiana 2 razy dziennie (8:00 i 20:00).
-    @Scheduled(cron = "0 10 8,20 * * *")
+    @Scheduled(cron = "0 20 8,20 * * *")
     public void runFullScrapingCycle() {
         log.info("Rozpoczynam cykl scrapowania ofert pracy...");
 
