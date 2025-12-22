@@ -5,19 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3231cadf-6361-4cef-88cc-949d98c677dc" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/b421d8d9-2bd6-4778-bd5f-d231f2925724.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/b421d8d9-2bd6-4778-bd5f-d231f2925724.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.vscode/settings.json" beforeDir="false" afterPath="$PROJECT_DIR$/.vscode/settings.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/domain/model/entities/PasswordToken.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/domain/model/entities/PasswordToken.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/domain/model/entities/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/domain/model/entities/User.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/controllers/auth/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/controllers/auth/AuthController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Frontend/ceveme/src/components/Navbar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/ceveme/src/components/Navbar.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Frontend/ceveme/src/features/auth/components/LoginForm.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/ceveme/src/features/auth/components/LoginForm.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Frontend/ceveme/src/features/auth/components/RegisterForm.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/ceveme/src/features/auth/components/RegisterForm.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Frontend/ceveme/src/features/cv/generativeCv/pages/CvEditorPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/ceveme/src/features/cv/generativeCv/pages/CvEditorPage.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Frontend/ceveme/src/features/home/components/SectionOneHome.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/ceveme/src/features/home/components/SectionOneHome.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Frontend/ceveme/src/features/home/components/SectionTwoHome.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/ceveme/src/features/home/components/SectionTwoHome.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Frontend/ceveme/src/routers/RoutersConfig.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/ceveme/src/routers/RoutersConfig.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -133,7 +121,7 @@
       <workItem from="1766319948918" duration="829000" />
       <workItem from="1766322229864" duration="2355000" />
       <workItem from="1766328970081" duration="1110000" />
-      <workItem from="1766426143491" duration="2545000" />
+      <workItem from="1766426143491" duration="3193000" />
     </task>
     <servers />
   </component>
