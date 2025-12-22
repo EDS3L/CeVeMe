@@ -1,0 +1,24 @@
+# Environment variables - NEVER COMMIT SECRETS
+.env
+.env.local
+.env.*.local
+*.env
+
+# IDE
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/usage.statistics.xml
+.idea/dictionaries
+.idea/shelf
+*.iws
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Docker
+docker-compose.override.yml

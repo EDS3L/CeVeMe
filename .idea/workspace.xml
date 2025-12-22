@@ -4,7 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3231cadf-6361-4cef-88cc-949d98c677dc" name="Changes" comment="" />
+    <list default="true" id="3231cadf-6361-4cef-88cc-949d98c677dc" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/schedule/JobScrapingScheduler.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/schedule/JobScrapingScheduler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/external/gemini/GeminiService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/external/gemini/GeminiService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/external/gemini/PromptBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/external/gemini/PromptBuilder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/external/scrap/pracujPl/PracujPlScrapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/external/scrap/pracujPl/PracujPlScrapper.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -119,7 +125,7 @@
       <workItem from="1766319948918" duration="829000" />
       <workItem from="1766322229864" duration="2355000" />
       <workItem from="1766328970081" duration="1110000" />
-      <workItem from="1766426143491" duration="3571000" />
+      <workItem from="1766426143491" duration="8645000" />
     </task>
     <servers />
   </component>

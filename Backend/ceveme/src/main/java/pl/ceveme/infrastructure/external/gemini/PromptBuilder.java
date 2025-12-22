@@ -7,27 +7,36 @@ public class PromptBuilder {
     public static String createPrompt(DataLinkContainer dataLinkContainer) {
         return """
                # ROLA
-               Działaj jako Światowej Klasy Ekspert HR, Rekruter Techniczny i Architekt CV. Twoim celem jest przekształcenie surowych danych kandydata w "Ofertę Handlową" (CV), która jest idealnie skrojona pod konkretną ofertę pracy.
+               Działaj jako Najlepszy na Świecie Strateg CV. Twoim zadaniem jest stworzenie CV, które jest "gęste" od merytoryki, profesjonalne i mieści się na JEDNEJ STRONIE A4.
 
                # CEL STRATEGICZNY
-               Wygeneruj czysty obiekt JSON w języku polskim. CV musi przejść systemy ATS i zachwycić rekrutera poprzez:
-               1. **Mirroring**: Użycie kluczowej terminologii z oferty pracy.
-               2. **Impact**: Skupienie na mierzalnych osiągnięciach, a nie tylko obowiązkach.
-               3. **Skanowalność**: Krótkie, gęste od treści formy zamiast długich bloków tekstu.
+               Wygeneruj obiekt JSON, który sprzedaje kandydata poprzez konkretne rezultaty. Unikaj ogólników. Każde zdanie musi być dowodem na kompetencje.
 
-               # KRYTYCZNE ZASADY ANALIZY
-               - **Priorytetyzacja**: Wybierz maksymalnie 3 najbardziej relewantne stanowiska doświadczenia i 3 projekty portfolio. Starsze lub niezwiązane z ofertą doświadczenia ogranicz tylko do nagłówka (bez jobDescription i achievements).
-               - **Zero Halucynacji**: Nie zmyślaj faktów. Jeśli brakuje danych do pola -> zwróć "" lub [].
-               - **Gramatyka**: Pisz w 1. osobie liczby pojedynczej (np. "Wdrożyłem", "Zarządzałem"), ale bez zaimka "Ja".
-               - **ATS Safety**: Używaj wyłącznie standardowych znaków ASCII. Zakaz używania emoji, gwiazdek, pasków postępu czy graficznych separatorów.
+               # KRYTYCZNE ZASADY MINIMALIZMU (ZASADA A4)
+               - **Selekcja**: Wybierz tylko te dane, które pasują do JOB_OFFER.
+               - **Limity**: 
+                 - Summary: Max 220 znaków.
+                 - Doświadczenie: Max 4 punkty na stanowisko.
+                 - Portfolio: Max 2-3 kluczowe projekty.
+               - **Styl**: Krótko, konkretnie, bez "lania wody".
 
-               # SZCZEGÓŁOWE INSTRUKCJE DLA PÓL JSON
-               - **headline**: Profesjonalny tytuł zawodowy, który pozycjonuje kandydata jako idealnego kandydata na stanowisko z oferty.
-               - **summary**: Max 250 znaków. Formuła: [Kim jestem] + [Kluczowa kompetencja dopasowana do oferty] + [Największy sukces mierzalny].
-               - **jobDescription**: (OBOWIĄZKOWE) 1-2 zdania opisujące kontekst roli, skalę projektu lub główną odpowiedzialność.
-               - **achievements**: Każdy punkt musi zawierać czasownik dokonany + liczbę/miarę + kontekst (np. "Zredukowałem koszty o 15% poprzez automatyzację procesu X").
-               - **skills**: Pogrupuj w logiczne kategorie. Zunifikuj nazwy (np. "Java 17", "Java 21" -> "Java").
-               - **certificates**: Pole daty w formacie JSON musi nazywać się `data` (zgodnie z DTO).
+               # ZASADY DLA PORTFOLIO / PROJEKTÓW (OBOWIĄZKOWE)
+               AI często pomija opisy projektów – Tobie NIE WOLNO tego zrobić. Każdy projekt w sekcji `portfolio` musi zawierać minimum 2 konkretne osiągnięcia (`achievements`):
+               1. **Cel i Funkcjonalność**: Co projekt rozwiązuje i dla kogo? (np. "Zaprojektowałem system do automatyzacji faktur, który eliminuje błędy ręcznego wprowadzania danych").
+               2. **Wyzwanie Techniczne**: Jaką trudną kwestię rozwiązałeś? (np. "Zoptymalizowałem zapytania SQL, co pozwoliło na płynne przetwarzanie 1 mln rekordów").
+               *Jeśli dane wejściowe są ubogie, wywnioskuj logiczne korzyści wynikające z użytego stosu technologicznego.*
+
+               # INSTRUKCJE DLA PÓL JSON
+               - **headline**: Profesjonalny tytuł zawodowy + "Value Proposition".
+               - **summary**: [Kim jestem] + [Kluczowy wyróżnik/technologia] + [Mierzalny sukces].
+               - **jobDescription**: Max 1 zdanie o skali i kontekście pracy.
+               - **achievements**: Każdy punkt musi zawierać: [Czasownik] + [Liczba/Wynik] + [Kontekst].
+               - **skills**: Pogrupuj w max 4 kategorie. Tylko technologie istotne dla oferty.
+
+               # STYL I JĘZYK
+               - Używaj "Action Verbs" (Zaimplementowałem, Przeskalowałem, Zintegrowałem).
+               - 1. osoba liczby pojedynczej, profesjonalny ton.
+               - Zero emoji, zero markdownu wewnątrz JSON.
 
                # DANE WEJŚCIOWE
                ## 1. OFERTA PRACY (JOB_OFFER)
@@ -36,7 +45,7 @@ public class PromptBuilder {
                ## 2. DANE KANDYDATA (CANDIDATE_DATA)
                """ + dataLinkContainer.user() + dataLinkContainer.response() + """
 
-               # FORMAT WYJŚCIOWY (CZYSTY JSON, BEZ MARKDOWNU)
+               # FORMAT WYJŚCIOWY (CZYSTY JSON, BEZ ```json)
                {
                  "summary": "",
                  "headline": "",
@@ -104,11 +113,10 @@ public class PromptBuilder {
                  "gdprClause": "Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb niezbędnych do realizacji procesu rekrutacji zgodnie z ustawą z dnia 10 maja 2018 roku o ochronie danych osobowych (Dz. Ustaw z 2018, poz. 1000) oraz zgodnie z Rozporządzeniem Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. w sprawie obserwacji osób fizycznych w związku z przetwarzaniem danych osobowych i w sprawie swobodnego przepływu takich danych oraz uchylenia dyrektywy 95/46/WE (RODO)."
                }
 
-               # FINALNA WERYFIKACJA PRZED WYSŁANIEM
-               - Czy usunąłeś ```json i ``` z odpowiedzi? (Wymagany czysty JSON).
-               - Czy pola `jobDescription` są wypełnione dla kluczowych stanowisk?
-               - Czy chronologia w `experience` i `educations` jest odwrotna (najnowsze na górze)?
-               - Czy klucze w JSON są identyczne z powyższym szabloniem (np. `data` w certyfikatach, `images` w personalData)?
+               # FINALNA WERYFIKACJA
+               - Czy sekcja `portfolio` ma bogate, minimum 2-punktowe opisy osiągnięć dla każdego projektu?
+               - Czy całość mieści się (wizualnie) na jednej stronie A4?
+               - Czy usunąłeś tagi ```json?
                """;
     }
 }

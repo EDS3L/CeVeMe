@@ -5,6 +5,7 @@ services:
       dockerfile: Dockerfile
       args:
         - VITE_API_URL=http://localhost:8080
+        - VITE_GFONTS_API_KEY=${VITE_GFONTS_API_KEY}
     container_name: ceveme-frontend
     ports:
       - "3001:3001"

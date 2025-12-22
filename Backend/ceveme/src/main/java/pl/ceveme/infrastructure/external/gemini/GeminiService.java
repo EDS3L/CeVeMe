@@ -59,15 +59,18 @@ public class GeminiService implements GeminiMapper {
             jobOfferRepository.save(new JobOffer(request.link(),offer.title(),offer.company(),offer.salary(),offer.location(),offer.requirements(),offer.niceToHave(),offer.responsibilities(),offer.benefits(),offer.experienceLevel(),offer.employmentType(),offer.dateAdded(),offer.dateEnding()));
         }
 
-        String prompt = PromptBuilder.createPrompt(new DataLinkContainer(offer, user, response));
+        DataLinkContainer dataContainer = new DataLinkContainer(offer, user, response);
+        String prompt = PromptBuilder.createPrompt(dataContainer);
+
         String aiResponse = fetchAi.getResponse(prompt).text();
-        log.info("cleanded JSON {}", aiResponse);
 
         String cleanedJson = cleanJsonResponse(aiResponse);
 
         try {
+
             return objectMapper.readValue(cleanedJson, GeminiResponse.class);
         } catch (JsonProcessingException e) {
+
             return parseJson(cleanedJson, objectMapper);
         }
     }

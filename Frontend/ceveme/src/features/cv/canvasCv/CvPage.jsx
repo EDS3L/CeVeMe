@@ -1,45 +1,42 @@
-import React, { useRef, useCallback, useMemo, useState } from 'react';
+import React, { useRef, useCallback, useMemo, useState } from "react";
 
-import TemplateModal from './ui/sidebar/templateChooser/TemplateModal';
-import TemplateSelectButton from './ui/sidebar/templateChooser/TemplateSelectButton';
+import TemplateModal from "./ui/sidebar/templateChooser/TemplateModal";
+import TemplateSelectButton from "./ui/sidebar/templateChooser/TemplateSelectButton";
 
-import useEngine from './hooks/useEngine';
-import Canvas from './ui/canva/Canvas';
-import InspectorPanel from './ui/sidebar/InspectorPanel';
-import LayersPanel from './ui/sidebar/LayersPanel';
-import Toolbar from './ui/Toolbar';
-import { TEMPLATES } from './services/templates';
-import ApiService from '../generativeCv/hooks/Gemini';
-import Navbar from '../../../components/Navbar';
+import useEngine from "./hooks/useEngine";
+import Canvas from "./ui/canva/Canvas";
+import InspectorPanel from "./ui/sidebar/InspectorPanel";
+import LayersPanel from "./ui/sidebar/LayersPanel";
+import Toolbar from "./ui/Toolbar";
+import { TEMPLATES } from "./services/templates";
+import ApiService from "../generativeCv/hooks/Gemini";
+import Navbar from "../../../components/Navbar";
 
-import OverflowTray from './ui/sidebar/OverflowTray';
-import { extraBottomMm } from './utils/overflow';
+import OverflowTray from "./ui/sidebar/OverflowTray";
+import { extraBottomMm } from "./utils/overflow";
 
-import { buildBlackAndWhiteCV } from './templates/BlackAndWhite';
-import { buildWhiteMinimalistCompactCV } from './templates/WhiteMinimalistNodes';
-import { buildDocFromAI } from './templates/SidebarTemplate';
-import { buildGrayAndWhite } from './templates/GrayAndWhiteSimple';
+import { buildBlackAndWhiteCV } from "./templates/BlackAndWhite";
+import { buildWhiteMinimalistCompactCV } from "./templates/WhiteMinimalistNodes";
+import { buildDocFromAI } from "./templates/SidebarTemplate";
+import { buildGrayAndWhite } from "./templates/GrayAndWhiteSimple";
 
-import { generatePdfBlob } from './services/exportVector';
+import { generatePdfBlob } from "./services/exportVector";
 
-import { useCvSave } from '../generativeCv/pages/hooks/useCvSave';
+import { useCvSave } from "../generativeCv/pages/hooks/useCvSave";
 
-import useAuth from '../../../hooks/useAuth';
+import useAuth from "../../../hooks/useAuth";
 
-import GenerateCvModal from './ui/canva/GenerateCvModal';
-import { buildModernTurquoiseCV } from './templates/modernTurquoiseCv';
-import { buildWhiteElegantMinimalistCV } from './templates/WhiteElegantMinimalistCV';
-import { buildPixelPerfectTealSidebarCV } from './templates/TealSidebarCV';
-import { buildBlueCreativeCV } from './templates/BlueCreativeCV';
-import { buildPixelPerfectAttachmentCV } from './templates/professionalResume';
-
-function isOurDocSchema(x) {
-  return x && typeof x === 'object' && x.page && Array.isArray(x.nodes);
-}
+import GenerateCvModal from "./ui/canva/GenerateCvModal";
+import InfoModal from "./ui/canva/InfoModal";
+import { buildModernTurquoiseCV } from "./templates/modernTurquoiseCv";
+import { buildWhiteElegantMinimalistCV } from "./templates/WhiteElegantMinimalistCV";
+import { buildPixelPerfectTealSidebarCV } from "./templates/TealSidebarCV";
+import { buildBlueCreativeCV } from "./templates/BlueCreativeCV";
+import { buildPixelPerfectAttachmentCV } from "./templates/professionalResume";
 
 function readCvData() {
   try {
-    const raw = localStorage.getItem('JSON_CV_DATA');
+    const raw = localStorage.getItem("JSON_CV_DATA");
     return raw ? JSON.parse(raw) : null;
   } catch {
     return null;
@@ -50,7 +47,7 @@ export default function App() {
   const initial = useMemo(() => {
     const cv = readCvData() || {};
     const first = TEMPLATES?.[0];
-    if (first && typeof first.build === 'function') return first.build(cv);
+    if (first && typeof first.build === "function") return first.build(cv);
     return buildDocFromAI(cv);
   }, []);
 
@@ -86,9 +83,9 @@ export default function App() {
 
   const [offerLink, setOfferLink] = useState(() => {
     try {
-      return localStorage.getItem('CV_OFFER_LINK') || '';
+      return localStorage.getItem("CV_OFFER_LINK") || "";
     } catch {
-      return '';
+      return "";
     }
   });
 
@@ -96,140 +93,153 @@ export default function App() {
   const [selectedTemplateName, setSelectedTemplateName] = useState(null);
 
   const [isGenModalOpen, setIsGenModalOpen] = useState(false);
-  const openGenerateModal = useCallback(() => setIsGenModalOpen(true), []);
+  const [isTemplateWarningOpen, setIsTemplateWarningOpen] = useState(false);
+
+  const openGenerateModal = useCallback(() => {
+    if (!selectedTemplateName) {
+      setIsTemplateWarningOpen(true);
+      return;
+    }
+    setIsGenModalOpen(true);
+  }, [selectedTemplateName]);
   const closeGenerateModal = useCallback(() => setIsGenModalOpen(false), []);
+
+  const handleTemplateWarningConfirm = useCallback(() => {
+    setIsTemplateWarningOpen(false);
+    setIsModalOpen(true); // Otwórz modal wyboru szablonu
+  }, []);
 
   const cvTemplates = useMemo(
     () => [
       {
-        key: 'Menu CV',
-        title: 'Panel boczny',
+        key: "Menu CV",
+        title: "Panel boczny",
         func: buildDocFromAI,
         description:
-          'Nowoczesny układ z bocznym panelem — świetny dla kreatywnych profesji.',
+          "Nowoczesny układ z bocznym panelem — świetny dla kreatywnych profesji.",
         sections: [
-          'Profil',
-          'Doświadczenie',
-          'Umiejętności',
-          'Edukacja',
-          'Języki',
+          "Profil",
+          "Doświadczenie",
+          "Umiejętności",
+          "Edukacja",
+          "Języki",
         ],
-        style: 'Minimalistyczny z wyróżnionym sidebarem',
+        style: "Minimalistyczny z wyróżnionym sidebarem",
       },
       {
-        key: 'black-and-white',
-        title: 'Nowoczesny Biznesowy',
+        key: "black-and-white",
+        title: "Nowoczesny Biznesowy",
         func: buildBlackAndWhiteCV,
         description:
-          'Elegancki czarno-biały design do zastosowań korporacyjnych.',
-        sections: ['Header', 'O mnie', 'Kariera', 'Kompetencje', 'Certyfikaty'],
-        style: 'Profesjonalny, stonowany, monochromatyczny',
+          "Elegancki czarno-biały design do zastosowań korporacyjnych.",
+        sections: ["Header", "O mnie", "Kariera", "Kompetencje", "Certyfikaty"],
+        style: "Profesjonalny, stonowany, monochromatyczny",
       },
       {
-        key: 'gray-and-white',
-        title: 'Czysty Klasyczny',
+        key: "gray-and-white",
+        title: "Czysty Klasyczny",
         func: buildGrayAndWhite,
         description:
-          'Klasyczny szablon z subtelnymi akcentami szarości, uniwersalny.',
+          "Klasyczny szablon z subtelnymi akcentami szarości, uniwersalny.",
         sections: [
-          'Dane kontaktowe',
-          'Doświadczenie',
-          'Wykształcenie',
-          'Umiejętności',
+          "Dane kontaktowe",
+          "Doświadczenie",
+          "Wykształcenie",
+          "Umiejętności",
         ],
-        style: 'Tradycyjny, czytelny, uniwersalny',
+        style: "Tradycyjny, czytelny, uniwersalny",
       },
       {
-        key: 'White-Minimalist',
-        title: 'White Minimalist [BETA]',
+        key: "White-Minimalist",
+        title: "White Minimalist [BETA]",
         func: buildWhiteMinimalistCompactCV,
-        description: 'Ultra-minimalistyczny design ze sporą ilością bieli.',
-        sections: ['Intro', 'Experience', 'Skills', 'Education'],
-        style: 'Skandynawski minimalizm',
+        description: "Ultra-minimalistyczny design ze sporą ilością bieli.",
+        sections: ["Intro", "Experience", "Skills", "Education"],
+        style: "Skandynawski minimalizm",
       },
       {
-        key: 'modern-turquoise',
-        title: 'Turkusowy Dwukolumnowy',
+        key: "modern-turquoise",
+        title: "Turkusowy Dwukolumnowy",
         func: buildModernTurquoiseCV,
         description:
-          'Dwukolumnowy szablon z turkusową belką akcentową, białym arkuszem, okrągłym zdjęciem i „chipami” kontaktu.',
+          "Dwukolumnowy szablon z turkusową belką akcentową, białym arkuszem, okrągłym zdjęciem i „chipami” kontaktu.",
         sections: [
-          'Nagłówek',
-          'Doświadczenie',
-          'O mnie',
-          'Edukacja',
-          'Umiejętności',
-          'Referencje',
+          "Nagłówek",
+          "Doświadczenie",
+          "O mnie",
+          "Edukacja",
+          "Umiejętności",
+          "Referencje",
         ],
-        style: 'Kreatywny, świeży, kontrastowy',
+        style: "Kreatywny, świeży, kontrastowy",
       },
       {
-        key: 'white-elegant-minimalist',
-        title: 'White Elegant Minimalist',
+        key: "white-elegant-minimalist",
+        title: "White Elegant Minimalist",
         func: buildWhiteElegantMinimalistCV,
         description:
-          'Dwukolumnowy układ na jasnym tle z ciemną belką nagłówka (#555D50)...',
+          "Dwukolumnowy układ na jasnym tle z ciemną belką nagłówka (#555D50)...",
         sections: [
-          'Nagłówek',
-          'Doświadczenie',
-          'Edukacja',
-          'O mnie',
-          'Software',
-          'Referencje',
+          "Nagłówek",
+          "Doświadczenie",
+          "Edukacja",
+          "O mnie",
+          "Software",
+          "Referencje",
         ],
-        style: 'Elegancki, minimalistyczny, wyrafinowany',
+        style: "Elegancki, minimalistyczny, wyrafinowany",
       },
       {
-        key: 'UrbanLineCV',
-        title: 'Urban Line',
+        key: "UrbanLineCV",
+        title: "Urban Line",
         func: buildPixelPerfectTealSidebarCV,
         description:
-          'Jednokolumnowy układ... Maks Makowski – Programista Java.',
+          "Jednokolumnowy układ... Maks Makowski – Programista Java.",
         sections: [
-          'Nagłówek',
-          'Podsumowanie',
-          'Doświadczenie',
-          'Portfolio',
-          'Umiejętności',
-          'Edukacja',
-          'Języki',
+          "Nagłówek",
+          "Podsumowanie",
+          "Doświadczenie",
+          "Portfolio",
+          "Umiejętności",
+          "Edukacja",
+          "Języki",
         ],
-        style: 'Klasyczny, czytelny, jednokolumnowy',
+        style: "Klasyczny, czytelny, jednokolumnowy",
       },
       {
-        key: 'NavyDiagonalCV',
-        title: 'Navy Diagonal',
+        key: "NavyDiagonalCV",
+        title: "Navy Diagonal",
         func: buildBlueCreativeCV,
-        description: 'Dwukolumnowy układ... „PROGRAMISTA JAVA”.',
+        description: "Dwukolumnowy układ... „PROGRAMISTA JAVA”.",
         sections: [
-          'Nagłówek',
-          'Doświadczenie',
-          'Portfolio',
-          'Języki',
-          'Kontakt',
-          'O mnie',
-          'Edukacja',
-          'Umiejętności',
+          "Nagłówek",
+          "Doświadczenie",
+          "Portfolio",
+          "Języki",
+          "Kontakt",
+          "O mnie",
+          "Edukacja",
+          "Umiejętności",
         ],
-        style: 'Nowoczesny, biznesowy, dwukolumnowy',
+        style: "Nowoczesny, biznesowy, dwukolumnowy",
       },
       {
-        key: 'pixel-perfect-attachment',
-        title: 'Szaro-Biały z Lewym Panelem',
+        key: "pixel-perfect-attachment",
+        title: "Szaro-Biały z Lewym Panelem",
         func: buildPixelPerfectAttachmentCV,
-        description: 'Dwukolumnowy, stonowany szablon...',
+        description: "Dwukolumnowy, stonowany szablon...",
         sections: [
-          'Nagłówek',
-          'Podsumowanie',
-          'Doświadczenie',
-          'Projekty',
-          'Kontakt (lewy panel)',
-          'Umiejętności (lewy panel)',
-          'Wykształcenie (lewy panel)',
-          'Języki (lewy panel)',
-          'RODO',
+          "Nagłówek",
+          "Podsumowanie",
+          "Doświadczenie",
+          "Projekty",
+          "Kontakt (lewy panel)",
+          "Umiejętności (lewy panel)",
+          "Wykształcenie (lewy panel)",
+          "Języki (lewy panel)",
+          "RODO",
         ],
-        style: 'Elegancki, czytelny, pixel-perfect, stonowany',
+        style: "Elegancki, czytelny, pixel-perfect, stonowany",
       },
     ],
     []
@@ -241,24 +251,34 @@ export default function App() {
       try {
         setLoading(true);
         setOfferLink(link);
-        localStorage.setItem('CV_OFFER_LINK', link);
+        localStorage.setItem("CV_OFFER_LINK", link);
         const data = await ApiService.generateCv(email, link);
-        const baseDoc = isOurDocSchema(data) ? data : '';
-        setDocument(baseDoc);
-        localStorage.setItem('JSON_CV_DATA', JSON.stringify(data));
+
+        localStorage.setItem("JSON_CV_DATA", JSON.stringify(data));
         setCvData(data);
+
+        const selectedTemplate =
+          cvTemplates.find((t) => t.title === selectedTemplateName) ||
+          cvTemplates[0];
+
+        const newDoc = selectedTemplate.func(data);
+        setDocument(newDoc);
+
+        if (!selectedTemplateName) {
+          setSelectedTemplateName(selectedTemplate.title);
+        }
       } catch (e) {
-        console.error('Nie udało się wygenerować CV:', e);
-        alert('Nie udało się wygenerować CV (szczegóły w konsoli).');
+        console.error("Nie udało się wygenerować CV:", e);
+        alert("Nie udało się wygenerować CV (szczegóły w konsoli).");
       } finally {
         setLoading(false);
       }
     },
-    [email, setDocument]
+    [email, setDocument, cvTemplates, selectedTemplateName]
   );
 
   const handlePickOffer = useCallback(() => {
-    alert('Tu podłącz picker ofert. Po wyborze wywołaj setOfferLink(link).');
+    alert("Tu podłącz picker ofert. Po wyborze wywołaj setOfferLink(link).");
   }, []);
 
   const handleSelectTemplate = useCallback(
@@ -311,7 +331,7 @@ export default function App() {
       if (!cont || !page) return;
       const yPx = yMm * metrics.pxPerMm * metrics.scale;
       const pageTop = page.offsetTop || 0;
-      cont.scrollTo({ top: pageTop + yPx - 40, behavior: 'smooth' });
+      cont.scrollTo({ top: pageTop + yPx - 40, behavior: "smooth" });
     },
     [metrics]
   );
@@ -336,7 +356,7 @@ export default function App() {
         redo={redo}
         canUndo={canUndo}
         canRedo={canRedo}
-        loading={loading || savingMode === 'uploadAndHistory'}
+        loading={loading || savingMode === "uploadAndHistory"}
         showGrid={showGrid}
         onToggleGrid={() => setShowGrid((v) => !v)}
         overflowPeek={overflowPeek}
@@ -388,7 +408,7 @@ export default function App() {
         <main
           ref={scrollRef}
           className="relative bg-slate-50 border p-3 border-black/20 rounded-xl w-full h-full md:min-h-[50vh] md:max-h-[1200px] overflow-auto flex items-center justify-center [grid-area:unset] max-[1200px]:[grid-area:canvas]"
-          aria-busy={loading ? 'true' : 'false'}
+          aria-busy={loading ? "true" : "false"}
         >
           {loading && (
             <div className="absolute inset-0 bg-white/75 z-20 flex flex-col items-center justify-center gap-2 font-bold text-slate-800">
@@ -403,7 +423,7 @@ export default function App() {
             setSelectedIds={setSelectedIds}
             activeGroupIds={activeGroupIds}
             setActiveGroupIds={setActiveGroupIds}
-            setSelectedId={setSelectedIdOnly} // KLUCZOWE: nie czyści multiselektu
+            setSelectedId={setSelectedIdOnly}
             updateNode={updateNode}
             removeNode={removeNode}
             pageRef={pageRef}
@@ -437,6 +457,16 @@ export default function App() {
         email={email}
         onGenerateFromLink={handleGenerateFromLink}
         onPickOffer={handlePickOffer}
+      />
+
+      <InfoModal
+        open={isTemplateWarningOpen}
+        onClose={() => setIsTemplateWarningOpen(false)}
+        title="Wybierz szablon"
+        message="Zanim wygenerujesz CV, musisz najpierw wybrać szablon. Kliknij przycisk poniżej, aby wybrać jeden z dostępnych szablonów."
+        buttonText="Wybierz szablon"
+        onConfirm={handleTemplateWarningConfirm}
+        icon="warning"
       />
     </div>
   );

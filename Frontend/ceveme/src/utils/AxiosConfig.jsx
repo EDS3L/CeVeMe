@@ -1,5 +1,5 @@
-import axios from 'axios';
+// This file is deprecated - use api.js instead
+// Keeping for backwards compatibility
+import api from "../../api";
 
-axios.defaults.baseURL = 'http://localhost:8080';
-
-export default axios;
+export default api;

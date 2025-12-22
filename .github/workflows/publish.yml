@@ -119,6 +119,7 @@ jobs:
             ${{ secrets.DOCKER_USERNAME }}/eds3l:ceveme-frontend
           build-args: |
             VITE_API_URL=https://ceveme.pl
+            VITE_GFONTS_API_KEY=${{ secrets.VITE_GFONTS_API_KEY }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 

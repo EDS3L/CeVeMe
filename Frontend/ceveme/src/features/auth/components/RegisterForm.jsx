@@ -27,27 +27,19 @@ const RegisterForm = () => {
     e.preventDefault();
     const formattedPhone = phoneNumber ? `+48${phoneNumber}` : "";
     try {
-      await useAuth.register(
-        name,
-        surname,
-        formattedPhone,
-        email,
-        password,
-        city,
-        navigate
-      );
-      try {
-        localStorage.setItem("activationEmail", email);
-      } catch (error) {
-        console.error("Error saving email to localStorage:", error);
-      }
-      navigate(`/auth/activate?email=${encodeURIComponent(email)}`, {
-        state: { email },
-        replace: true,
-      });
+      localStorage.setItem("activationEmail", email);
     } catch (error) {
-      console.error("Registration error:", error);
+      console.error("Error saving email to localStorage:", error);
     }
+    useAuth.register(
+      name,
+      surname,
+      formattedPhone,
+      email,
+      password,
+      city,
+      navigate
+    );
   };
 
   return (

@@ -40,7 +40,7 @@ public class PracujPlScrapper extends AbstractJobScraper {
                 jobOffer.getTitle(),
                 jobOffer.getCompany(),
                 jobOffer.getRequirements(),
-                jobOffer.getCompany(),
+                jobOffer.getNiceToHave(),
                 jobOffer.getResponsibilities(),
                 jobOffer.getExperienceLevel(),
                 jobOffer.getSalary(),
@@ -110,6 +110,8 @@ public class PracujPlScrapper extends AbstractJobScraper {
 
         Element wrapper = doc.selectFirst("li[data-test*=sections-benefit-employment-type-name] div[class*=tchzayo]");
         String experience = (wrapper != null && !wrapper.text().isBlank()) ? wrapper.text() : null;
+
+        log.info("Experience found: {}", experience);
 
         log.info("Data extracted successfully from {}", url);
 
