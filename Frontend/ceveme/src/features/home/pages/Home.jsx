@@ -1,7 +1,7 @@
-import { Link } from 'react-router-dom';
-import SectionOneHome from '../components/SectionOneHome';
-import SectionTwoHome from '../components/SectionTwoHome';
-import DemoSection from '../components/DemoSection';
+import { Link } from "react-router-dom";
+import SectionOneHome from "../components/SectionOneHome";
+import SectionTwoHome from "../components/SectionTwoHome";
+import DemoSection from "../components/DemoSection";
 
 export default function Home() {
   return (
@@ -9,7 +9,6 @@ export default function Home() {
       <SectionOneHome />
       <SectionTwoHome></SectionTwoHome>
       <DemoSection />
-      <div className="h-screen w-screen bg-blue">s</div>
     </div>
   );
 }

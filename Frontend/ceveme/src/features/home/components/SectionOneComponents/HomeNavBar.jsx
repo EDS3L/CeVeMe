@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 function HomeNavBar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -17,15 +17,15 @@ function HomeNavBar() {
       setLastScrollY(currentScrollY);
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
   return (
     <>
       <nav
         className={`fixed top-0 w-full z-50 bg-[var(--color-ivorylight)] shadow-lg h-16 transition-transform duration-300 ${
-          isVisible ? 'translate-y-0' : '-translate-y-full'
+          isVisible ? "translate-y-0" : "-translate-y-full"
         }`}
       >
         <div className="flex items-center justify-between px-6 md:px-12 h-full">
@@ -62,12 +62,12 @@ function HomeNavBar() {
           </div>
 
           <div className="hidden md:flex items-center space-x-4">
-            <Link to={'/auth/login'}>
+            <Link to={"/auth/login"}>
               <button className="border-2 border-[var(--color-bookcloth)] text-[var(--color-slatedark)] px-4 py-2 rounded-xl transition-colors duration-200 hover:bg-gray-200">
                 Sign in
               </button>
             </Link>
-            <Link to={'/auth/register'}>
+            <Link to={"/auth/register"}>
               <button className="bg-[var(--color-bookcloth)] text-[var(--color-basewhite)] px-4 py-2 rounded-xl hover:bg-[var(--color-kraft)] transition-colors duration-200">
                 Sign up
               </button>
@@ -101,12 +101,16 @@ function HomeNavBar() {
       {isMenuOpen && (
         <div className="absolute top-16 left-0 w-full bg-[var(--color-ivorylight)] shadow-lg z-50">
           <div className="flex items-center py-4 justify-around">
-            <button className="border-2 border-[var(--color-bookcloth)] text-[var(--color-slatedark)] px-4 py-2 rounded-xl transition-colors duration-200">
-              Sign in
-            </button>
-            <button className="bg-[var(--color-bookcloth)] text-[var(--color-basewhite)] px-4 py-2 rounded-xl hover:bg-[var(--color-kraft)] transition-colors duration-200">
-              Sign up
-            </button>
+            <Link to={"/auth/login"}>
+              <button className="border-2 border-[var(--color-bookcloth)] text-[var(--color-slatedark)] px-4 py-2 rounded-xl transition-colors duration-200">
+                Sign in
+              </button>
+            </Link>
+            <Link to={"/auth/register"}>
+              <button className="bg-[var(--color-bookcloth)] text-[var(--color-basewhite)] px-4 py-2 rounded-xl hover:bg-[var(--color-kraft)] transition-colors duration-200">
+                Sign up
+              </button>
+            </Link>
           </div>
         </div>
       )}

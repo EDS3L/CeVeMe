@@ -15,8 +15,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-
+    private Long id;
     @Embedded
     private Name name;
     @Embedded
@@ -55,6 +54,8 @@ public class User {
     private List<RefreshToken> refreshTokenList;
 
     private boolean isActive;
+
+    private boolean changePasswordOnNextLogin = false;
 
 
     public User() {
@@ -120,7 +121,7 @@ public class User {
         this.phoneNumber = phoneNumber;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -236,7 +237,7 @@ public class User {
         this.activationToken = activationToken;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -318,6 +319,14 @@ public class User {
 
     public void setPasswordToken(PasswordToken passwordToken) {
         this.passwordToken = passwordToken;
+    }
+
+    public boolean isChangePasswordOnNextLogin() {
+        return changePasswordOnNextLogin;
+    }
+
+    public void setChangePasswordOnNextLogin(boolean changePasswordOnNextLogin) {
+        this.changePasswordOnNextLogin = changePasswordOnNextLogin;
     }
 
     @Override

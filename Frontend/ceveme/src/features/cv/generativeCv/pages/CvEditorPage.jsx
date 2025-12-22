@@ -4,27 +4,27 @@ import React, {
   useRef,
   useState,
   useCallback,
-} from 'react';
+} from "react";
 
-import { useReactToPrint } from 'react-to-print';
-import { toast } from 'react-toastify';
-import { useLocation } from 'react-router-dom';
+import { useReactToPrint } from "react-to-print";
+import { toast } from "react-toastify";
+import { useLocation } from "react-router-dom";
 
-import Navbar from '../../../../components/Navbar';
-import LayoutPicker from '../components/LayoutPicker';
-import CvForm from '../components/CvForm';
-import SidebarEditor from '../components/SidebarEditor';
+import Navbar from "../../../../components/Navbar";
+import LayoutPicker from "../components/LayoutPicker";
+import CvForm from "../components/CvForm";
+import SidebarEditor from "../components/SidebarEditor";
 
-import { useCvEditor } from '../hooks/useCvEditor';
-import { useSinglePageScale } from '../hooks/useSinglePageScale';
+import { useCvEditor } from "../hooks/useCvEditor";
+import { useSinglePageScale } from "../hooks/useSinglePageScale";
 
-import { PAGE_STYLE } from './constants/pageStyle';
-import { LAYOUTS, getLayoutComponent } from './constants/layouts';
+import { PAGE_STYLE } from "./constants/pageStyle";
+import { LAYOUTS, getLayoutComponent } from "./constants/layouts";
 
-import { usePdfExport } from './hooks/usePdfExport';
-import { useCvSave } from './hooks/useCvSave';
+import { usePdfExport } from "./hooks/usePdfExport";
+import { useCvSave } from "./hooks/useCvSave";
 
-import './../styles/CvEditorStyles.css';
+import "./../styles/CvEditorStyles.css";
 
 export default function CvEditorPage() {
   const {
@@ -37,9 +37,15 @@ export default function CvEditorPage() {
     setCvData,
   } = useCvEditor();
 
-  const [layout, setLayout] = useState('classic');
+  const [layout, setLayout] = useState("classic");
   const location = useLocation();
   const [previewHeight, setPreviewHeight] = useState(0);
+
+  useEffect(() => {
+    if (location.state?.layout) {
+      setLayout(location.state.layout);
+    }
+  }, [location.state?.layout]);
 
   const innerRef = useRef(null);
   const pageRef = useRef(null);
@@ -71,8 +77,11 @@ export default function CvEditorPage() {
 
   useEffect(() => {
     if (!offerLink) return;
-    generateRef.current();
-  }, [offerLink]);
+    // Only generate if we don't have data yet, to avoid loops or double generation
+    if (!cvData && !loading && !error) {
+      generateRef.current();
+    }
+  }, [offerLink, cvData, loading, error]);
 
   // Automatyczne przeliczanie skali ORAZ wysokości po zmianach
   useEffect(() => {
@@ -100,15 +109,15 @@ export default function CvEditorPage() {
     removeAfterPrint: true,
     pageStyle: PAGE_STYLE,
     documentTitle: cvData?.personalData?.name
-      ? `CV_${cvData.personalData.name.replace(/\s+/g, '_')}`
-      : 'CV',
+      ? `CV_${cvData.personalData.name.replace(/\s+/g, "_")}`
+      : "CV",
   });
 
   const PreviewComponent = useMemo(() => getLayoutComponent(layout), [layout]);
 
   const handleGenerate = useCallback(() => {
     if (!offerLink) {
-      toast.info('Podaj link do oferty, aby wygenerować dopasowane CV.');
+      toast.info("Podaj link do oferty, aby wygenerować dopasowane CV.");
       return;
     }
     generateRef.current();
@@ -121,19 +130,19 @@ export default function CvEditorPage() {
       <div
         className={`mx-auto max-w-[1400px] px-6 py-3 ${
           isOverA4
-            ? 'bg-red-50 border border-red-200'
-            : 'bg-green-50 border border-green-200'
+            ? "bg-red-50 border border-red-200"
+            : "bg-green-50 border border-green-200"
         } rounded-lg mb-4`}
       >
         <div className="flex items-center justify-center gap-2">
           <div
             className={`w-3 h-3 rounded-full ${
-              isOverA4 ? 'bg-red-500' : 'bg-green-500'
+              isOverA4 ? "bg-red-500" : "bg-green-500"
             }`}
           ></div>
           <p
             className={`text-sm font-medium ${
-              isOverA4 ? 'text-red-800' : 'text-green-800'
+              isOverA4 ? "text-red-800" : "text-green-800"
             }`}
           >
             {isOverA4
@@ -149,7 +158,7 @@ export default function CvEditorPage() {
     <div className="flex flex-col h-screen bg-[var(--color-ivorylight)] text-[var(--color-slatedark)]">
       <Navbar showShadow={true} />
       <div className="flex-1 min-h-0">
-        {!cvData ? (
+        {!cvData || Object.keys(cvData).length === 0 ? (
           <div className="max-w-5xl mx-auto p-8">
             <CvForm
               offerLink={offerLink}
@@ -193,12 +202,12 @@ export default function CvEditorPage() {
                           bg-kraft text-[var(--color-basewhite)] font-semibold
                           shadow-sm hover:opacity-90 focus:outline-none
                           focus:ring-2 focus:ring-[var(--color-feedbackfocus)] disabled:opacity-50"
-                        aria-busy={savingMode ? 'true' : 'false'}
+                        aria-busy={savingMode ? "true" : "false"}
                         aria-live="polite"
                       >
-                        {savingMode === 'uploadAndHistory'
-                          ? 'Zapisywanie…'
-                          : 'Zapisz i dodaj do historii'}
+                        {savingMode === "uploadAndHistory"
+                          ? "Zapisywanie…"
+                          : "Zapisz i dodaj do historii"}
                       </button>
                     </div>
                     <button
@@ -209,7 +218,7 @@ export default function CvEditorPage() {
                         shadow-sm hover:bg-[var(--color-kraft)] focus:outline-none
                         focus:ring-2 focus:ring-[var(--color-feedbackfocus)] disabled:opacity-50"
                     >
-                      {loading ? 'Generowanie…' : 'Drukuj'}
+                      {loading ? "Generowanie…" : "Drukuj"}
                     </button>
                   </div>
                 </div>
@@ -222,27 +231,27 @@ export default function CvEditorPage() {
                       id="cv-page"
                       ref={pageRef}
                       style={{
-                        width: '210mm',
-                        height: '297mm',
-                        background: 'var(--color-basewhite)',
-                        boxShadow: '0 20px 50px rgba(0,0,0,0.12)',
-                        position: 'relative',
-                        overflow: 'hidden',
+                        width: "210mm",
+                        height: "297mm",
+                        background: "var(--color-basewhite)",
+                        boxShadow: "0 20px 50px rgba(0,0,0,0.12)",
+                        position: "relative",
+                        overflow: "hidden",
                         borderRadius: 14,
-                        border: '1px solid rgba(0,0,0,0.04)',
+                        border: "1px solid rgba(0,0,0,0.04)",
                       }}
                     >
                       <div
                         id="cv-print"
                         ref={innerRef}
-                        className={previewHeight > 1120 ? 'condensed' : ''}
+                        className={previewHeight > 1120 ? "condensed" : ""}
                         style={{
-                          position: 'absolute',
+                          position: "absolute",
                           top: 0,
                           left: 0,
                           transform: `translate(${tx}px, ${ty}px) scale(${scale})`,
-                          transformOrigin: 'top left',
-                          willChange: 'transform',
+                          transformOrigin: "top left",
+                          willChange: "transform",
                         }}
                       >
                         <PreviewComponent cvData={cvData} />

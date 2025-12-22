@@ -25,7 +25,7 @@ const RegisterForm = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    const formattedPhone = phoneNumber ? `+48 ${formatPL(phoneNumber)}` : "";
+    const formattedPhone = phoneNumber ? `+48${phoneNumber}` : "";
     try {
       await useAuth.register(
         name,
@@ -38,14 +38,16 @@ const RegisterForm = () => {
       );
       try {
         localStorage.setItem("activationEmail", email);
-        // eslint-disable-next-line no-empty
-      } catch {}
+      } catch (error) {
+        console.error("Error saving email to localStorage:", error);
+      }
       navigate(`/auth/activate?email=${encodeURIComponent(email)}`, {
         state: { email },
         replace: true,
       });
-      // eslint-disable-next-line no-empty
-    } catch {}
+    } catch (error) {
+      console.error("Registration error:", error);
+    }
   };
 
   return (

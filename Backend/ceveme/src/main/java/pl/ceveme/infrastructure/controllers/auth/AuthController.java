@@ -98,15 +98,15 @@ public class AuthController {
         return ResponseEntity.ok(emailResponse);
     }
 
-    @PostMapping("/passwordToken")
+    @PostMapping("/send/restartPasswordToken")
     public ResponseEntity<PasswordTokenResponse> sendPasswordToken(@RequestBody Email email) {
         PasswordTokenResponse emailResponse = passwordTokenUseCase.createToken(email);
         return ResponseEntity.ok(emailResponse);
     }
 
-    @PatchMapping("/password/{token}")
-    public ResponseEntity<ChangePasswordResponse> changePassword(@RequestBody RemindPasswordRequest request, @RequestParam String passwordToken) {
-        ChangePasswordResponse response = remindPasswordUseCase.remindPassword(request, passwordToken);
+    @PatchMapping("/password/remind/{token}")
+    public ResponseEntity<ChangePasswordResponse> changePassword(@RequestBody RemindPasswordRequest request, @PathVariable String token) {
+        ChangePasswordResponse response = remindPasswordUseCase.remindPassword(request, token);
         return ResponseEntity.ok(response);
     }
 

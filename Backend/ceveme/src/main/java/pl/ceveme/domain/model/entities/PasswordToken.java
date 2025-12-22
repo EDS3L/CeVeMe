@@ -10,6 +10,7 @@ public class PasswordToken {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "passwordTokenId")
     private Long id;
     private String token;
     private LocalDateTime expirationDate;
