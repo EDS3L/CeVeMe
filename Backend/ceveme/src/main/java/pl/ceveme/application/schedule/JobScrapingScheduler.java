@@ -40,37 +40,37 @@ public class JobScrapingScheduler {
     }
 
 
-//     // Główna metoda uruchamiana 2 razy dziennie (8:00 i 20:00).
-//    @Scheduled(cron = "0 20 8,20 * * *")
-//    public void runFullScrapingCycle() {
-//        log.info("Rozpoczynam cykl scrapowania ofert pracy...");
-//
-//        executeWithLogging("BulldogJob", scrapBulldogJobUseCase::execute);
-//        executeWithLogging("JustJoinIt", scrapJustJoinItUseCase::execute);
-//        executeWithLogging("NoFluffJobs", scrapNoFluffJobsUseCase::execute);
-//        executeWithLogging("RocketJobs", scrapRocketJobsUseCase::execute);
-//        executeWithLogging("SolidJobs", scrapSolidJobsUseCase::execute);
-//        executeWithLogging("TheProtocolIT", scrapTheProtocolITUseCase::execute);
-//
-//        // executeWithLogging("LinkedIn", scrapLinkedInUseCase::execute);
-//        // executeWithLogging("PracujPl", scrapPracujPlUseCase::execute);
-//
-//        log.info("Pełny cykl scrapowania został zakończony.");
-//    }
-//
-//    private void executeWithLogging(String jobName, ScraperTask task) {
-//        try {
-//            log.info("Start scrapowania: {}", jobName);
-//            task.run();
-//            log.info("Zakończono scrapowanie: {}", jobName);
-//        } catch (Exception e) {
-//            log.error("Błąd podczas pracy scrapera {}: {}", jobName, e.getMessage());
-//        }
-//    }
-//
-////Interfejs funkcyjny pozwalający przekazać metodę execute() jako parametr.
-//    @FunctionalInterface
-//    interface ScraperTask {
-//        void run() throws Exception;
-//    }
+     // Główna metoda uruchamiana 2 razy dziennie (16:00 i 1:00).
+    @Scheduled(cron = "0 0 16,1 * * *")
+    public void runFullScrapingCycle() {
+        log.info("Rozpoczynam cykl scrapowania ofert pracy...");
+
+        executeWithLogging("BulldogJob", scrapBulldogJobUseCase::execute);
+        executeWithLogging("JustJoinIt", scrapJustJoinItUseCase::execute);
+        executeWithLogging("NoFluffJobs", scrapNoFluffJobsUseCase::execute);
+        executeWithLogging("RocketJobs", scrapRocketJobsUseCase::execute);
+        executeWithLogging("SolidJobs", scrapSolidJobsUseCase::execute);
+        executeWithLogging("TheProtocolIT", scrapTheProtocolITUseCase::execute);
+
+        // executeWithLogging("LinkedIn", scrapLinkedInUseCase::execute);
+        // executeWithLogging("PracujPl", scrapPracujPlUseCase::execute);
+
+        log.info("Pełny cykl scrapowania został zakończony.");
+    }
+
+    private void executeWithLogging(String jobName, ScraperTask task) {
+        try {
+            log.info("Start scrapowania: {}", jobName);
+            task.run();
+            log.info("Zakończono scrapowanie: {}", jobName);
+        } catch (Exception e) {
+            log.error("Błąd podczas pracy scrapera {}: {}", jobName, e.getMessage());
+        }
+    }
+
+//Interfejs funkcyjny pozwalający przekazać metodę execute() jako parametr.
+    @FunctionalInterface
+    interface ScraperTask {
+        void run() throws Exception;
+    }
 }
