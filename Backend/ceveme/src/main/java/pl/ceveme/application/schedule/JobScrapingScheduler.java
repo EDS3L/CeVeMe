@@ -51,9 +51,9 @@ public class JobScrapingScheduler {
         executeWithLogging("RocketJobs", scrapRocketJobsUseCase::execute);
         executeWithLogging("SolidJobs", scrapSolidJobsUseCase::execute);
         executeWithLogging("TheProtocolIT", scrapTheProtocolITUseCase::execute);
+        executeWithLogging("PracujPl", scrapPracujPlUseCase::execute);
+        executeWithLogging("LinkedIn", scrapLinkedInUseCase::execute);
 
-        // executeWithLogging("LinkedIn", scrapLinkedInUseCase::execute);
-        // executeWithLogging("PracujPl", scrapPracujPlUseCase::execute);
 
         log.info("Pełny cykl scrapowania został zakończony.");
     }

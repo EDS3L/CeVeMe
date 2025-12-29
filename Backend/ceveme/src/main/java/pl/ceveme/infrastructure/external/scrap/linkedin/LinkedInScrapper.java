@@ -182,6 +182,7 @@ public class LinkedInScrapper extends AbstractJobScraper {
 
     @Override
     protected JobOffer extractJobData(String url) throws Exception {
+        log.info("Extracting job offer from {}", url);
         JsonNode jsonNode = extractJobJson(getHtml(url)).orElseThrow(() -> new RuntimeException("Json from html not found!"));
         return LinkedinMapper.mapToOffer(jsonNode, url, null, null, null);
     }

@@ -1985,382 +1985,390 @@
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="680" parent="526" name="id">
-      <AutoIncrement>29097</AutoIncrement>
-      <NotNull>1</NotNull>
+    <column id="680" parent="526" name="dateAdded">
       <Position>1</Position>
+      <StoredType>date|0s</StoredType>
+    </column>
+    <column id="681" parent="526" name="dateEnding">
+      <Position>2</Position>
+      <StoredType>date|0s</StoredType>
+    </column>
+    <column id="682" parent="526" name="id">
+      <AutoIncrement>2710</AutoIncrement>
+      <NotNull>1</NotNull>
+      <Position>3</Position>
       <StoredType>bigint(20)|0s</StoredType>
     </column>
-    <column id="681" parent="526" name="benefits">
-      <Position>2</Position>
-      <StoredType>longtext|0s</StoredType>
-    </column>
-    <column id="682" parent="526" name="company">
-      <Position>3</Position>
+    <column id="683" parent="526" name="city">
+      <Position>4</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="683" parent="526" name="dateAdded">
-      <Position>4</Position>
-      <StoredType>date|0s</StoredType>
-    </column>
-    <column id="684" parent="526" name="dateEnding">
+    <column id="684" parent="526" name="company">
       <Position>5</Position>
-      <StoredType>date|0s</StoredType>
+      <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="685" parent="526" name="link">
+    <column id="685" parent="526" name="employmentType">
       <Position>6</Position>
-      <StoredType>longtext|0s</StoredType>
+      <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="686" parent="526" name="city">
+    <column id="686" parent="526" name="experienceLevel">
       <Position>7</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="687" parent="526" name="street">
+    <column id="687" parent="526" name="salary">
       <Position>8</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="688" parent="526" name="niceToHave">
+    <column id="688" parent="526" name="street">
       <Position>9</Position>
-      <StoredType>longtext|0s</StoredType>
+      <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="689" parent="526" name="requirements">
+    <column id="689" parent="526" name="title">
       <Position>10</Position>
-      <StoredType>longtext|0s</StoredType>
+      <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="690" parent="526" name="responsibilities">
+    <column id="690" parent="526" name="benefits">
       <Position>11</Position>
-      <StoredType>longtext|0s</StoredType>
+      <StoredType>mediumtext|0s</StoredType>
     </column>
-    <column id="691" parent="526" name="salary">
+    <column id="691" parent="526" name="link">
       <Position>12</Position>
-      <StoredType>varchar(255)|0s</StoredType>
+      <StoredType>mediumtext|0s</StoredType>
     </column>
-    <column id="692" parent="526" name="title">
+    <column id="692" parent="526" name="niceToHave">
       <Position>13</Position>
-      <StoredType>varchar(255)|0s</StoredType>
+      <StoredType>mediumtext|0s</StoredType>
     </column>
-    <column id="693" parent="526" name="employmentType">
+    <column id="693" parent="526" name="requirements">
       <Position>14</Position>
-      <StoredType>varchar(255)|0s</StoredType>
+      <StoredType>mediumtext|0s</StoredType>
     </column>
-    <column id="694" parent="526" name="experienceLevel">
+    <column id="694" parent="526" name="responsibilities">
       <Position>15</Position>
-      <StoredType>varchar(255)|0s</StoredType>
+      <StoredType>mediumtext|0s</StoredType>
     </column>
-    <index id="695" parent="526" name="PRIMARY">
+    <column id="695" parent="526" name="latitude">
+      <Position>16</Position>
+      <StoredType>double|0s</StoredType>
+    </column>
+    <column id="696" parent="526" name="longitude">
+      <Position>17</Position>
+      <StoredType>double|0s</StoredType>
+    </column>
+    <index id="697" parent="526" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="696" parent="526" name="PRIMARY">
+    <key id="698" parent="526" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="697" parent="527" name="id">
+    <column id="699" parent="527" name="id">
       <AutoIncrement>36</AutoIncrement>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>bigint(20)|0s</StoredType>
     </column>
-    <column id="698" parent="527" name="level">
+    <column id="700" parent="527" name="level">
       <Position>2</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="699" parent="527" name="name">
+    <column id="701" parent="527" name="name">
       <Position>3</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="700" parent="527" name="employment_info_id">
+    <column id="702" parent="527" name="employment_info_id">
       <Position>4</Position>
       <StoredType>bigint(20)|0s</StoredType>
     </column>
-    <foreign-key id="701" parent="527" name="FK8b01ikxn0jm0gp6nn8cc3vbeh">
+    <foreign-key id="703" parent="527" name="FK8b01ikxn0jm0gp6nn8cc3vbeh">
       <ColNames>employment_info_id</ColNames>
       <RefColNames>id</RefColNames>
       <RefTableName>employmentInfos</RefTableName>
     </foreign-key>
-    <index id="702" parent="527" name="PRIMARY">
+    <index id="704" parent="527" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <index id="703" parent="527" name="FK8b01ikxn0jm0gp6nn8cc3vbeh">
+    <index id="705" parent="527" name="FK8b01ikxn0jm0gp6nn8cc3vbeh">
       <ColNames>employment_info_id</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="704" parent="527" name="PRIMARY">
+    <key id="706" parent="527" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="705" parent="528" name="id">
+    <column id="707" parent="528" name="id">
       <AutoIncrement>17</AutoIncrement>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>bigint(20)|0s</StoredType>
     </column>
-    <column id="706" parent="528" name="link">
+    <column id="708" parent="528" name="link">
       <Position>2</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="707" parent="528" name="title">
+    <column id="709" parent="528" name="title">
       <Position>3</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="708" parent="528" name="employment_info_id">
+    <column id="710" parent="528" name="employment_info_id">
       <Position>4</Position>
       <StoredType>bigint(20)|0s</StoredType>
     </column>
-    <foreign-key id="709" parent="528" name="FKfiv97cmb6d1cmydnqkmj3l5nv">
+    <foreign-key id="711" parent="528" name="FKfiv97cmb6d1cmydnqkmj3l5nv">
       <ColNames>employment_info_id</ColNames>
       <RefColNames>id</RefColNames>
       <RefTableName>employmentInfos</RefTableName>
     </foreign-key>
-    <index id="710" parent="528" name="PRIMARY">
+    <index id="712" parent="528" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <index id="711" parent="528" name="FKfiv97cmb6d1cmydnqkmj3l5nv">
+    <index id="713" parent="528" name="FKfiv97cmb6d1cmydnqkmj3l5nv">
       <ColNames>employment_info_id</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="712" parent="528" name="PRIMARY">
+    <key id="714" parent="528" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="713" parent="529" name="passwordTokenId">
+    <column id="715" parent="529" name="passwordTokenId">
       <AutoIncrement>1</AutoIncrement>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>bigint(20)|0s</StoredType>
     </column>
-    <column id="714" parent="529" name="expirationDate">
+    <column id="716" parent="529" name="expirationDate">
       <Position>2</Position>
       <StoredType>datetime(6)|0s</StoredType>
     </column>
-    <column id="715" parent="529" name="lastUse">
+    <column id="717" parent="529" name="lastUse">
       <Position>3</Position>
       <StoredType>datetime(6)|0s</StoredType>
     </column>
-    <column id="716" parent="529" name="token">
+    <column id="718" parent="529" name="token">
       <Position>4</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="717" parent="529" name="user_id">
+    <column id="719" parent="529" name="user_id">
       <Position>5</Position>
       <StoredType>bigint(20)|0s</StoredType>
     </column>
-    <foreign-key id="718" parent="529" name="FK9vymx1qydt30oik8liqnhq85i">
+    <foreign-key id="720" parent="529" name="FK9vymx1qydt30oik8liqnhq85i">
       <ColNames>user_id</ColNames>
       <RefColNames>id</RefColNames>
       <RefTableName>users</RefTableName>
     </foreign-key>
-    <index id="719" parent="529" name="PRIMARY">
+    <index id="721" parent="529" name="PRIMARY">
       <ColNames>passwordTokenId</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <index id="720" parent="529" name="UK8j2e0lf96f64rocrm31jok097">
+    <index id="722" parent="529" name="UK8j2e0lf96f64rocrm31jok097">
       <ColNames>user_id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="721" parent="529" name="PRIMARY">
+    <key id="723" parent="529" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <key id="722" parent="529" name="UK8j2e0lf96f64rocrm31jok097">
+    <key id="724" parent="529" name="UK8j2e0lf96f64rocrm31jok097">
       <UnderlyingIndexName>UK8j2e0lf96f64rocrm31jok097</UnderlyingIndexName>
     </key>
-    <column id="723" parent="530" name="id">
+    <column id="725" parent="530" name="id">
       <AutoIncrement>30</AutoIncrement>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>bigint(20)|0s</StoredType>
     </column>
-    <column id="724" parent="530" name="description">
+    <column id="726" parent="530" name="description">
       <Position>2</Position>
       <StoredType>longtext|0s</StoredType>
     </column>
-    <column id="725" parent="530" name="title">
+    <column id="727" parent="530" name="title">
       <Position>3</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="726" parent="530" name="employment_info_id">
+    <column id="728" parent="530" name="employment_info_id">
       <Position>4</Position>
       <StoredType>bigint(20)|0s</StoredType>
     </column>
-    <column id="727" parent="530" name="url">
+    <column id="729" parent="530" name="url">
       <Position>5</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <foreign-key id="728" parent="530" name="FK9kw7p0tsc2lshbp378jupuo8b">
+    <foreign-key id="730" parent="530" name="FK9kw7p0tsc2lshbp378jupuo8b">
       <ColNames>employment_info_id</ColNames>
       <RefColNames>id</RefColNames>
       <RefTableName>employmentInfos</RefTableName>
     </foreign-key>
-    <index id="729" parent="530" name="PRIMARY">
+    <index id="731" parent="530" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <index id="730" parent="530" name="FK9kw7p0tsc2lshbp378jupuo8b">
+    <index id="732" parent="530" name="FK9kw7p0tsc2lshbp378jupuo8b">
       <ColNames>employment_info_id</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="731" parent="530" name="PRIMARY">
+    <key id="733" parent="530" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="732" parent="531" name="id">
+    <column id="734" parent="531" name="id">
       <AutoIncrement>162</AutoIncrement>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>bigint(20)|0s</StoredType>
     </column>
-    <column id="733" parent="531" name="createdAt">
+    <column id="735" parent="531" name="createdAt">
       <Position>2</Position>
       <StoredType>datetime(6)|0s</StoredType>
     </column>
-    <column id="734" parent="531" name="deviceInfo">
+    <column id="736" parent="531" name="deviceInfo">
       <Position>3</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="735" parent="531" name="expiresAt">
+    <column id="737" parent="531" name="expiresAt">
       <Position>4</Position>
       <StoredType>datetime(6)|0s</StoredType>
     </column>
-    <column id="736" parent="531" name="jit">
+    <column id="738" parent="531" name="jit">
       <Position>5</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="737" parent="531" name="lastUsed">
+    <column id="739" parent="531" name="lastUsed">
       <Position>6</Position>
       <StoredType>datetime(6)|0s</StoredType>
     </column>
-    <column id="738" parent="531" name="user_id">
+    <column id="740" parent="531" name="user_id">
       <NotNull>1</NotNull>
       <Position>7</Position>
       <StoredType>bigint(20)|0s</StoredType>
     </column>
-    <column id="739" parent="531" name="device_id">
+    <column id="741" parent="531" name="device_id">
       <Position>8</Position>
       <StoredType>bigint(20)|0s</StoredType>
     </column>
-    <foreign-key id="740" parent="531" name="FK1lih5y2npsf8u5o3vhdb9y0os">
+    <foreign-key id="742" parent="531" name="FK1lih5y2npsf8u5o3vhdb9y0os">
       <ColNames>user_id</ColNames>
       <RefColNames>id</RefColNames>
       <RefTableName>users</RefTableName>
     </foreign-key>
-    <foreign-key id="741" parent="531" name="FKa3bxdj3aq8y05gpidwqahrx97">
+    <foreign-key id="743" parent="531" name="FKa3bxdj3aq8y05gpidwqahrx97">
       <ColNames>device_id</ColNames>
       <RefColNames>id</RefColNames>
       <RefTableName>devices</RefTableName>
     </foreign-key>
-    <index id="742" parent="531" name="PRIMARY">
+    <index id="744" parent="531" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <index id="743" parent="531" name="FK1lih5y2npsf8u5o3vhdb9y0os">
+    <index id="745" parent="531" name="FK1lih5y2npsf8u5o3vhdb9y0os">
       <ColNames>user_id</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="744" parent="531" name="FKa3bxdj3aq8y05gpidwqahrx97">
+    <index id="746" parent="531" name="FKa3bxdj3aq8y05gpidwqahrx97">
       <ColNames>device_id</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="745" parent="531" name="PRIMARY">
+    <key id="747" parent="531" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="746" parent="532" name="userId">
+    <column id="748" parent="532" name="userId">
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>varchar(36)|0s</StoredType>
     </column>
-    <column id="747" parent="532" name="role">
+    <column id="749" parent="532" name="role">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StoredType>enum(&apos;ADMIN&apos;, &apos;CLIENT&apos;, &apos;PHOTOGRAPHER&apos;)|0e</StoredType>
     </column>
-    <index id="748" parent="532" name="PRIMARY">
+    <index id="750" parent="532" name="PRIMARY">
       <ColNames>userId
 role</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="749" parent="532" name="PRIMARY">
+    <key id="751" parent="532" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="750" parent="533" name="id">
+    <column id="752" parent="533" name="id">
       <AutoIncrement>48</AutoIncrement>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>bigint(20)|0s</StoredType>
     </column>
-    <column id="751" parent="533" name="email">
+    <column id="753" parent="533" name="email">
       <Position>2</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="752" parent="533" name="image">
+    <column id="754" parent="533" name="image">
       <Position>3</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="753" parent="533" name="isActive">
+    <column id="755" parent="533" name="isActive">
       <NotNull>1</NotNull>
       <Position>4</Position>
       <StoredType>bit(1)|0s</StoredType>
     </column>
-    <column id="754" parent="533" name="name">
+    <column id="756" parent="533" name="name">
       <Position>5</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="755" parent="533" name="password">
+    <column id="757" parent="533" name="password">
       <Position>6</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="756" parent="533" name="phoneNumber">
+    <column id="758" parent="533" name="phoneNumber">
       <Position>7</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="757" parent="533" name="surname">
+    <column id="759" parent="533" name="surname">
       <Position>8</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="758" parent="533" name="city">
+    <column id="760" parent="533" name="city">
       <Position>9</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="759" parent="533" name="userRole">
+    <column id="761" parent="533" name="userRole">
       <NotNull>1</NotNull>
       <Position>10</Position>
       <StoredType>enum(&apos;FREE&apos;, &apos;PREMIUM&apos;, &apos;ULTIMATE&apos;)|0e</StoredType>
     </column>
-    <column id="760" parent="533" name="userId">
+    <column id="762" parent="533" name="userId">
       <NotNull>1</NotNull>
       <Position>11</Position>
       <StoredType>varchar(36)|0s</StoredType>
     </column>
-    <column id="761" parent="533" name="changePasswordOnNextLogin">
+    <column id="763" parent="533" name="changePasswordOnNextLogin">
       <NotNull>1</NotNull>
       <Position>12</Position>
       <StoredType>bit(1)|0s</StoredType>
     </column>
-    <index id="762" parent="533" name="PRIMARY">
+    <index id="764" parent="533" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="763" parent="533" name="PRIMARY">
+    <key id="765" parent="533" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>

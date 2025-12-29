@@ -62,7 +62,7 @@ public class    RocketJobsScrapper extends AbstractJobScraper {
 
         String salary = extractSalary(doc);
 
-        log.info("Extracted data exp: {} tech: {} emptype: {}  salary: {} link {}", exp, tech, contractType, salary, url);
+        log.info("Extracted data link {}", url);
         return RocketJobsMapper.mapToOffer(json, url, salary, tech, exp, contractType);
     }
 
@@ -100,8 +100,6 @@ public class    RocketJobsScrapper extends AbstractJobScraper {
 
                     String fullRangeText = salaryContainer.select("div.MuiTypography-h4").text();
                     String currency = fullRangeText.replaceAll(".*[0-9]\\s*", "");
-
-                    log.info("Extracted salary from {} to {}", salaryFrom, salaryTo);
 
                     return String.format("%s - %s %s (%s)", salaryFrom, salaryTo, currency, salaryDetails);
                 }

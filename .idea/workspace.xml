@@ -5,11 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3231cadf-6361-4cef-88cc-949d98c677dc" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/b421d8d9-2bd6-4778-bd5f-d231f2925724.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/b421d8d9-2bd6-4778-bd5f-d231f2925724.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/schedule/JobScrapingScheduler.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/schedule/JobScrapingScheduler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/external/gemini/GeminiService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/external/gemini/GeminiService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/external/gemini/PromptBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/external/gemini/PromptBuilder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/external/scrap/justJoinIt/JustJoinItScrapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/external/scrap/justJoinIt/JustJoinItScrapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/external/scrap/linkedin/LinkedInScrapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/external/scrap/linkedin/LinkedInScrapper.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/external/scrap/pracujPl/PracujPlScrapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/external/scrap/pracujPl/PracujPlScrapper.java" afterDir="false" />
+    </list>
+    <list id="28ac2837-207c-4697-b16d-14bb42f7d26d" name="Changes by barte" comment="">
+      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/external/scrap/rocketJobs/RocketJobsScrapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/external/scrap/rocketJobs/RocketJobsScrapper.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,6 +46,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="package.json" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -96,7 +101,29 @@
     ]
   }
 }</component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Gradle.Tests in 'ceveme.test'">
+    <configuration name="Tests in 'ceveme.test'" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$/Backend/ceveme" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":test" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
+      <method v="2" />
+    </configuration>
     <configuration name="CevemeApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <module name="ceveme.main" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="pl.ceveme.CevemeApplication" />
@@ -104,6 +131,11 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Gradle.Tests in 'ceveme.test'" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -125,7 +157,9 @@
       <workItem from="1766319948918" duration="829000" />
       <workItem from="1766322229864" duration="2355000" />
       <workItem from="1766328970081" duration="1110000" />
-      <workItem from="1766426143491" duration="8645000" />
+      <workItem from="1766426143491" duration="9244000" />
+      <workItem from="1766511379250" duration="21000" />
+      <workItem from="1767022543625" duration="12597000" />
     </task>
     <servers />
   </component>
