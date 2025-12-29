@@ -6,10 +6,19 @@ import jakarta.persistence.Embeddable;
 public class Location {
 
     private String city;
-
     private String street;
+    private Double latitude;
+    private Double longitude;
 
     public Location() {
+    }
+
+    public Location(String city, String street, Double latitude, Double longitude) {
+        this.city = city;
+        this.street = street;
+        this.latitude = latitude;
+        this.longitude = longitude;
+
     }
 
     public Location(String city, String street) {
@@ -31,5 +40,21 @@ public class Location {
 
     public void setStreet(String street) {
         this.street = street;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
     }
 }

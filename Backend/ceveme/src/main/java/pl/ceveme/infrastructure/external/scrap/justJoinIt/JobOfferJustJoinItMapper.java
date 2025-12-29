@@ -14,6 +14,7 @@ public class JobOfferJustJoinItMapper {
         JsonNode hiringOrganisation = node.get("hiringOrganization"); //company
         String title = getString(node, "title");
         String company = getString(hiringOrganisation, "name");
+
         JsonNode jobLocation = node.get("jobLocation");
         JsonNode address = jobLocation.get("address");
         String employmentType = getString(node, "employmentType");
@@ -34,11 +35,20 @@ public class JobOfferJustJoinItMapper {
 
         String city = null;
         String street = null;
+        Double latitude = null;
+        Double longitude = null;
         if (address != null && !address.isMissingNode()) {
             city = getString(address, "addressLocality");
             street = getString(address, "streetAddress");
+
+            JsonNode geo = jobLocation.get("geo");
+
+            if (geo != null && !geo.isMissingNode()) {
+                latitude = geo.hasNonNull("latitude") ? geo.get("latitude").asDouble() : null;
+                longitude = geo.hasNonNull("longitude") ? geo.get("longitude").asDouble() : null;
+            }
         }
-        Location location = new Location(city, street);
+        Location location = new Location(city, street, latitude, longitude);
         String responsibilities = getString(node, "description");
         String niceToHave = getString(node, "niceToHaveSkills");
         LocalDate dateAdded = parseDate(getString(node, "datePosted"));
