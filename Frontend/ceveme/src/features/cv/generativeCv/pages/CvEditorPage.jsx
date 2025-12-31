@@ -10,7 +10,6 @@ import { useReactToPrint } from "react-to-print";
 import { toast } from "react-toastify";
 import { useLocation } from "react-router-dom";
 
-import Navbar from "../../../../components/Navbar";
 import LayoutPicker from "../components/LayoutPicker";
 import CvForm from "../components/CvForm";
 import SidebarEditor from "../components/SidebarEditor";
@@ -156,7 +155,6 @@ export default function CvEditorPage() {
 
   return (
     <div className="flex flex-col h-screen bg-[var(--color-ivorylight)] text-[var(--color-slatedark)]">
-      <Navbar showShadow={true} />
       <div className="flex-1 min-h-0">
         {!cvData || Object.keys(cvData).length === 0 ? (
           <div className="max-w-5xl mx-auto p-8">

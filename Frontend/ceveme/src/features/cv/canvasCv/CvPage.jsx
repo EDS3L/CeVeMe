@@ -10,7 +10,6 @@ import LayersPanel from "./ui/sidebar/LayersPanel";
 import Toolbar from "./ui/Toolbar";
 import { TEMPLATES } from "./services/templates";
 import ApiService from "../generativeCv/hooks/Gemini";
-import Navbar from "../../../components/Navbar";
 
 import OverflowTray from "./ui/sidebar/OverflowTray";
 import { extraBottomMm } from "./utils/overflow";
@@ -343,8 +342,6 @@ export default function App() {
 
   return (
     <div className="flex flex-col min-h-full">
-      <Navbar showShadow={true} />
-
       <Toolbar
         doc={doc}
         selectedIds={selectedIds}

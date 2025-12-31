@@ -1,26 +1,25 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import ApplicationHistoryCard from '../components/cardView/ApplicationHistoryCard';
-import LoadingSpinner from '../components/cardView/LoadingSpinner';
-import EmptyState from '../components/cardView/EmptyState';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import ApplicationHistories from '../hooks/useApplicationHistories';
-import Navbar from '../../../components/Navbar';
-import ViewToggle from '../components/ViewToggle';
-import ApplicationHistoryTable from '../components/tableView/ApplicationHistoryTable';
-import FiltersBar from '../components/FiltersBar';
-import { STATUS_MAP } from '../constants/statusConfig';
-import StatusBadge from '../components/StatusBadge';
+import React, { useState, useEffect, useMemo } from "react";
+import ApplicationHistoryCard from "../components/cardView/ApplicationHistoryCard";
+import LoadingSpinner from "../components/cardView/LoadingSpinner";
+import EmptyState from "../components/cardView/EmptyState";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import ApplicationHistories from "../hooks/useApplicationHistories";
+import ViewToggle from "../components/ViewToggle";
+import ApplicationHistoryTable from "../components/tableView/ApplicationHistoryTable";
+import FiltersBar from "../components/FiltersBar";
+import { STATUS_MAP } from "../constants/statusConfig";
+import StatusBadge from "../components/StatusBadge";
 
 // ⬇️ NOWE
-import ApplicationHistoryAnalytics from '../components/Analytics/ApplicationHistoryAnalytics';
+import ApplicationHistoryAnalytics from "../components/Analytics/ApplicationHistoryAnalytics";
 
 export default function ApplicationHistoryPage() {
   const applicationHistoriesApi = new ApplicationHistories();
   const [histories, setHistories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [view, setView] = useState('table'); // 'table' | 'card' | 'analytics'
-  const [filters, setFilters] = useState({ status: 'ALL', from: '', to: '' });
+  const [view, setView] = useState("table"); // 'table' | 'card' | 'analytics'
+  const [filters, setFilters] = useState({ status: "ALL", from: "", to: "" });
 
   useEffect(() => {
     const loadHistories = async () => {
@@ -28,7 +27,7 @@ export default function ApplicationHistoryPage() {
         const data = await applicationHistoriesApi.getApplicationHistories();
         setHistories(data || []);
       } catch (error) {
-        console.error('Nie udało się załadować historii aplikacji:', error);
+        console.error("Nie udało się załadować historii aplikacji:", error);
       } finally {
         setLoading(false);
       }
@@ -66,7 +65,7 @@ export default function ApplicationHistoryPage() {
   const filteredHistories = useMemo(() => {
     return histories.filter((h) => {
       const matchesStatus =
-        filters.status === 'ALL' ? true : h.status === filters.status;
+        filters.status === "ALL" ? true : h.status === filters.status;
       const appDate = new Date(h.dateOfApplication);
       const fromOk = filters.from ? appDate >= new Date(filters.from) : true;
       const toOk = filters.to ? appDate <= new Date(filters.to) : true;
@@ -76,14 +75,14 @@ export default function ApplicationHistoryPage() {
 
   const renderContent = () => {
     // ⬇️ Najpierw obsłuż widok wykresów – ma własne dane i loader
-    if (view === 'analytics') {
+    if (view === "analytics") {
       return <ApplicationHistoryAnalytics />;
     }
 
     if (loading) return <LoadingSpinner />;
     if (!histories.length) return <EmptyState />;
 
-    if (view === 'table') {
+    if (view === "table") {
       return (
         <ApplicationHistoryTable
           histories={filteredHistories}
@@ -115,7 +114,6 @@ export default function ApplicationHistoryPage() {
 
   return (
     <>
-      <Navbar showShadow={true} />
       <div className="min-h-screen bg-gradient-to-br bg-ivorylight to-teal-50 font-sans">
         <div className="container mx-auto px-4 py-8 sm:py-12 max-w-7xl">
           <header className="mb-6 sm:mb-8">
@@ -134,18 +132,18 @@ export default function ApplicationHistoryPage() {
                 <ViewToggle value={view} onChange={setView} />
 
                 {/* ⬇️ Nie pokazujemy filtrów w trybie „Wykresy” */}
-                {view !== 'analytics' && (
+                {view !== "analytics" && (
                   <FiltersBar
                     filters={filters}
                     onChange={setFilters}
                     onClear={() =>
-                      setFilters({ status: 'ALL', from: '', to: '' })
+                      setFilters({ status: "ALL", from: "", to: "" })
                     }
                     resultsCount={filteredHistories.length}
                   />
                 )}
 
-                {view !== 'analytics' && filters.status !== 'ALL' && (
+                {view !== "analytics" && filters.status !== "ALL" && (
                   <div className="flex items-center gap-2">
                     <span className="text-sm text-slate-600">
                       Wybrany status:

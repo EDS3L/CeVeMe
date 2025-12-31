@@ -9,6 +9,7 @@ import {
   Menu as MenuIcon,
 } from "lucide-react";
 import UseAuth from "../features/auth/hooks/UseAuth";
+import { useAuthContext } from "../features/auth/context/useAuthContext";
 
 function Navbar({ showShadow }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -16,8 +17,8 @@ function Navbar({ showShadow }) {
   const nav = useNavigate();
 
   const auth = new UseAuth();
-
-  const isLogged = document.cookie.includes("accessToken=");
+  const { user, logout } = useAuthContext();
+  const isLogged = !!user;
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -42,7 +43,6 @@ function Navbar({ showShadow }) {
       >
         <div className="flex items-center justify-between px-6 md:px-12 h-full">
           <Link
-            //wyświetla w zależności od logowania page
             to={isLogged ? "/offers" : "/"}
             className="flex items-center space-x-3 cursor-pointer"
           >
@@ -57,30 +57,34 @@ function Navbar({ showShadow }) {
           </Link>
 
           <div className="hidden md:flex items-center space-x-6">
-            <Link
-              to="/cv2"
-              className="text-[var(--color-clouddark)] hover:text-[var(--color-slatedark)] transition-colors duration-200 font-bold"
-            >
-              Nowy kreator
-            </Link>
-            <Link
-              to="/cv"
-              className="text-[var(--color-clouddark)] hover:text-[var(--color-slatedark)] transition-colors duration-200 font-bold"
-            >
-              CV
-            </Link>
-            <Link
-              to="/offers"
-              className="text-[var(--color-clouddark)] hover:text-[var(--color-slatedark)] transition-colors duration-200 font-bold"
-            >
-              Oferty
-            </Link>
-            <Link
-              to="/history"
-              className="text-[var(--color-clouddark)] hover:text-[var(--color-slatedark)] transition-colors duration-200 font-bold"
-            >
-              Historia aplikacji
-            </Link>
+            {isLogged && (
+              <>
+                <Link
+                  to="/cv2"
+                  className="text-[var(--color-clouddark)] hover:text-[var(--color-slatedark)] transition-colors duration-200 font-bold"
+                >
+                  Nowy kreator
+                </Link>
+                <Link
+                  to="/cv"
+                  className="text-[var(--color-clouddark)] hover:text-[var(--color-slatedark)] transition-colors duration-200 font-bold"
+                >
+                  CV
+                </Link>
+                <Link
+                  to="/offers"
+                  className="text-[var(--color-clouddark)] hover:text-[var(--color-slatedark)] transition-colors duration-200 font-bold"
+                >
+                  Oferty
+                </Link>
+                <Link
+                  to="/history"
+                  className="text-[var(--color-clouddark)] hover:text-[var(--color-slatedark)] transition-colors duration-200 font-bold"
+                >
+                  Historia aplikacji
+                </Link>
+              </>
+            )}
           </div>
 
           <div className="hidden md:flex items-center  space-x-4">
@@ -146,6 +150,7 @@ function Navbar({ showShadow }) {
                       className="flex items-center w-full px-4 py-2 text-[var(--color-kraft)] hover:bg-[var(--color-manilla)]/40 transition-colors duration-200"
                       onClick={() => {
                         auth.logout(nav);
+                        logout();
                       }}
                     >
                       <LogOut size={20} strokeWidth={2} className="mr-3" />
@@ -192,30 +197,30 @@ function Navbar({ showShadow }) {
           className="fixed top-16 left-0 w-full bg-[var(--color-ivorylight)] shadow-lg z-[11000] md:hidden"
         >
           <div className="flex flex-col p-4 space-y-4">
-            <Link
-              to="/info"
-              className="text-[var(--color-clouddark)] hover:text-[var(--color-slatedark)] transition-colors duration-200 font-bold py-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              CV
-            </Link>
-            <Link
-              to="/demo"
-              className="text-[var(--color-clouddark)] hover:text-[var(--color-slatedark)] transition-colors duration-200 font-bold py-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Demo
-            </Link>
-            <Link
-              to="/contact"
-              className="text-[var(--color-clouddark)] hover:text-[var(--color-slatedark)] transition-colors duration-200 font-bold py-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Contact
-            </Link>
-            <hr className="border-[var(--color-ivorydark)]" />
             {isLogged ? (
               <>
+                <Link
+                  to="/offers"
+                  className="text-[var(--color-clouddark)] hover:text-[var(--color-slatedark)] transition-colors duration-200 font-bold py-2"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Oferty pracy
+                </Link>
+                <Link
+                  to="/history"
+                  className="text-[var(--color-clouddark)] hover:text-[var(--color-slatedark)] transition-colors duration-200 font-bold py-2"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Historia aplikacji
+                </Link>
+                <Link
+                  to="/cv2"
+                  className="text-[var(--color-clouddark)] hover:text-[var(--color-slatedark)] transition-colors duration-200 font-bold py-2"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Nowy kreator CV
+                </Link>
+                <hr className="border-[var(--color-ivorydark)]" />
                 <Link
                   to="/settings"
                   className="flex items-center text-[var(--color-slatedark)] hover:text-[var(--color-kraft)] transition-colors duration-200 py-2"
@@ -225,18 +230,19 @@ function Navbar({ showShadow }) {
                   Ustawienia
                 </Link>
                 <Link
-                  to="/favorites"
+                  to="/user"
                   className="flex items-center text-[var(--color-slatedark)] hover:text-[var(--color-kraft)] transition-colors duration-200 py-2"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  <Heart size={20} strokeWidth={2} className="mr-3" />
-                  Ulubione
+                  <User size={20} strokeWidth={2} className="mr-3" />
+                  Profil
                 </Link>
                 <button
                   className="flex items-center text-[var(--color-kraft)] hover:text-red-600 transition-colors duration-200 py-2"
                   onClick={() => {
                     setIsMenuOpen(false);
                     auth.logout(nav);
+                    logout();
                   }}
                 >
                   <LogOut size={20} strokeWidth={2} className="mr-3" />
@@ -245,6 +251,14 @@ function Navbar({ showShadow }) {
               </>
             ) : (
               <>
+                <Link
+                  to="/"
+                  className="text-[var(--color-clouddark)] hover:text-[var(--color-slatedark)] transition-colors duration-200 font-bold py-2"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Strona główna
+                </Link>
+                <hr className="border-[var(--color-ivorydark)]" />
                 <Link
                   to="/auth/login"
                   className="flex items-center text-[var(--color-slatedark)] hover:text-[var(--color-kraft)] transition-colors duration-200 py-2 font-bold"

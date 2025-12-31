@@ -64,12 +64,12 @@ function HomeNavBar() {
           <div className="hidden md:flex items-center space-x-4">
             <Link to={"/auth/login"}>
               <button className="border-2 border-[var(--color-bookcloth)] text-[var(--color-slatedark)] px-4 py-2 rounded-xl transition-colors duration-200 hover:bg-gray-200">
-                Sign in
+                Zaloguj
               </button>
             </Link>
             <Link to={"/auth/register"}>
               <button className="bg-[var(--color-bookcloth)] text-[var(--color-basewhite)] px-4 py-2 rounded-xl hover:bg-[var(--color-kraft)] transition-colors duration-200">
-                Sign up
+                Zarejestruj
               </button>
             </Link>
           </div>
@@ -103,12 +103,12 @@ function HomeNavBar() {
           <div className="flex items-center py-4 justify-around">
             <Link to={"/auth/login"}>
               <button className="border-2 border-[var(--color-bookcloth)] text-[var(--color-slatedark)] px-4 py-2 rounded-xl transition-colors duration-200">
-                Sign in
+                Zaloguj
               </button>
             </Link>
             <Link to={"/auth/register"}>
               <button className="bg-[var(--color-bookcloth)] text-[var(--color-basewhite)] px-4 py-2 rounded-xl hover:bg-[var(--color-kraft)] transition-colors duration-200">
-                Sign up
+                Zarejestruj
               </button>
             </Link>
           </div>

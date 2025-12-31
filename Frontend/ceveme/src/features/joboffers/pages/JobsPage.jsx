@@ -1,16 +1,15 @@
-import React, { useState } from 'react';
-import useJobs from '../hooks/useJobs';
-import SearchHero from '../components/search/SearchHero';
-import FiltersSheet from '../components/search/FiltersSheet';
-import Chip from '../components/ui/Chip';
-import Select from '../components/ui/Select';
-import JobCard from '../components/jobs/JobCard';
-import JobModal from '../components/jobs/JobModal';
-import SkeletonCard from '../components/jobs/SkeletonCard';
-import EmptyState from '../components/jobs/EmptyState';
-import Pagination from '../components/ui/Pagination';
-import { X, MapPin } from 'lucide-react';
-import Navbar from '../../../components/Navbar';
+import React, { useState } from "react";
+import useJobs from "../hooks/useJobs";
+import SearchHero from "../components/search/SearchHero";
+import FiltersSheet from "../components/search/FiltersSheet";
+import Chip from "../components/ui/Chip";
+import Select from "../components/ui/Select";
+import JobCard from "../components/jobs/JobCard";
+import JobModal from "../components/jobs/JobModal";
+import SkeletonCard from "../components/jobs/SkeletonCard";
+import EmptyState from "../components/jobs/EmptyState";
+import Pagination from "../components/ui/Pagination";
+import { X, MapPin } from "lucide-react";
 
 export default function JobsPage() {
   const {
@@ -41,7 +40,6 @@ export default function JobsPage() {
 
   return (
     <div className="min-h-screen bg-ivorylight">
-      <Navbar showShadow={true} />
       {/* HERO */}
       <SearchHero
         query={query}
@@ -56,18 +54,18 @@ export default function JobsPage() {
         {/* Aktywne filtry + sort */}
         <div className="flex flex-wrap items-center gap-2">
           {filters.city && (
-            <Chip onRemove={() => setFilters({ ...filters, city: '' })}>
+            <Chip onRemove={() => setFilters({ ...filters, city: "" })}>
               <MapPin className="w-4 h-4" /> {filters.city}
             </Chip>
           )}
           {filters.experience && (
-            <Chip onRemove={() => setFilters({ ...filters, experience: '' })}>
+            <Chip onRemove={() => setFilters({ ...filters, experience: "" })}>
               {filters.experience}
             </Chip>
           )}
           {filters.employmentType && (
             <Chip
-              onRemove={() => setFilters({ ...filters, employmentType: '' })}
+              onRemove={() => setFilters({ ...filters, employmentType: "" })}
             >
               {filters.employmentType}
             </Chip>
@@ -90,9 +88,9 @@ export default function JobsPage() {
         <div className="mt-3 text-sm text-clouddark">
           {totalElements ? (
             <>
-              Łącznie ofert:{' '}
+              Łącznie ofert:{" "}
               <strong className="text-slatedark">{totalElements}</strong>.
-              Strona <strong className="text-slatedark">{currentPage}</strong> z{' '}
+              Strona <strong className="text-slatedark">{currentPage}</strong> z{" "}
               <strong className="text-slatedark">{totalPages}</strong>.
             </>
           ) : null}

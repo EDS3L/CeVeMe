@@ -2,7 +2,7 @@ import axios from "../../../../api";
 import { toast } from "react-toastify";
 
 class UseAuth {
-  async login(email, password, nav) {
+  async login(email, password, nav, checkAuth) {
     axios({
       url: "/api/auth/login",
       method: "POST",
@@ -14,6 +14,7 @@ class UseAuth {
       .then((response) => {
         if (response.status === 200) {
           toast.success(response.message);
+          if (checkAuth) checkAuth();
           nav("/offers");
         }
       })

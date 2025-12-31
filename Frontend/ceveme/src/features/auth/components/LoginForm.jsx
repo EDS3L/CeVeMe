@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import UseAuth from "../hooks/UseAuth";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuthContext } from "../context/useAuthContext";
 
 const LockIcon = () => (
   <svg
@@ -25,10 +26,11 @@ const LoginForm = () => {
   const [password, setPassword] = useState("");
   const useAuth = new UseAuth();
   const navigate = useNavigate();
+  const { checkAuth } = useAuthContext();
 
   const handleSignIn = async (e) => {
     e.preventDefault();
-    await useAuth.login(email, password, navigate);
+    await useAuth.login(email, password, navigate, checkAuth);
   };
 
   return (

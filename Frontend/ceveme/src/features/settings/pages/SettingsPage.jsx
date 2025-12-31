@@ -1,11 +1,9 @@
-import React from 'react';
-import UserDetails from '../components/UserDetails';
-import Navbar from '../../../components/Navbar';
+import React from "react";
+import UserDetails from "../components/UserDetails";
 
 function SettingsPage() {
   return (
     <div className="relative">
-      <Navbar showShadow={false} />
       <UserDetails />
     </div>
   );
