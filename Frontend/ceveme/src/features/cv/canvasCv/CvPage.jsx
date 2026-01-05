@@ -43,71 +43,6 @@ function readCvData() {
 }
 
 export default function App() {
-  const initial = useMemo(() => {
-    const cv = readCvData() || {};
-    const first = TEMPLATES?.[0];
-    if (first && typeof first.build === "function") return first.build(cv);
-    return buildDocFromAI(cv);
-  }, []);
-
-  const engine = useEngine(initial);
-  const {
-    doc,
-    setDocument,
-    selectedId,
-    setSelectedId,
-    addText,
-    addImage,
-    addRect,
-    updateNode,
-    removeNode,
-    reorder,
-    undo,
-    redo,
-    canUndo,
-    canRedo,
-  } = engine;
-
-  const pageRef = useRef(null);
-  const scrollRef = useRef(null);
-
-  const [loading, setLoading] = useState(false);
-  const [showGrid, setShowGrid] = useState(false);
-  const [cvData, setCvData] = useState(() => readCvData());
-
-  const [overflowPeek, setOverflowPeek] = useState(false);
-  const [metrics, setMetrics] = useState({ scale: 1, pxPerMm: 3.7795 });
-
-  const { email } = useAuth();
-
-  const [offerLink, setOfferLink] = useState(() => {
-    try {
-      return localStorage.getItem("CV_OFFER_LINK") || "";
-    } catch {
-      return "";
-    }
-  });
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedTemplateName, setSelectedTemplateName] = useState(null);
-
-  const [isGenModalOpen, setIsGenModalOpen] = useState(false);
-  const [isTemplateWarningOpen, setIsTemplateWarningOpen] = useState(false);
-
-  const openGenerateModal = useCallback(() => {
-    if (!selectedTemplateName) {
-      setIsTemplateWarningOpen(true);
-      return;
-    }
-    setIsGenModalOpen(true);
-  }, [selectedTemplateName]);
-  const closeGenerateModal = useCallback(() => setIsGenModalOpen(false), []);
-
-  const handleTemplateWarningConfirm = useCallback(() => {
-    setIsTemplateWarningOpen(false);
-    setIsModalOpen(true); // Otwórz modal wyboru szablonu
-  }, []);
-
   const cvTemplates = useMemo(
     () => [
       {
@@ -149,8 +84,8 @@ export default function App() {
         style: "Tradycyjny, czytelny, uniwersalny",
       },
       {
-        key: "White-Minimalist",
-        title: "White Minimalist [BETA]",
+        key: "white-minimalist",
+        title: "White Minimalist",
         func: buildWhiteMinimalistCompactCV,
         description: "Ultra-minimalistyczny design ze sporą ilością bieli.",
         sections: ["Intro", "Experience", "Skills", "Education"],
@@ -161,16 +96,16 @@ export default function App() {
         title: "Turkusowy Dwukolumnowy",
         func: buildModernTurquoiseCV,
         description:
-          "Dwukolumnowy szablon z turkusową belką akcentową, białym arkuszem, okrągłym zdjęciem i „chipami” kontaktu.",
+          "Dwukolumnowy szablon z turkusowa belka akcentowa, bialym arkuszem, okraglym zdjeciem i chipami kontaktu.",
         sections: [
-          "Nagłówek",
-          "Doświadczenie",
+          "Naglowek",
+          "Doswiadczenie",
           "O mnie",
           "Edukacja",
-          "Umiejętności",
+          "Umiejetnosci",
           "Referencje",
         ],
-        style: "Kreatywny, świeży, kontrastowy",
+        style: "Kreatywny, swiezy, kontrastowy",
       },
       {
         key: "white-elegant-minimalist",
@@ -184,65 +119,133 @@ export default function App() {
           "Edukacja",
           "O mnie",
           "Software",
-          "Referencje",
         ],
-        style: "Elegancki, minimalistyczny, wyrafinowany",
+        style: "Elegancki, profesjonalny, dwukolumnowy",
       },
       {
-        key: "UrbanLineCV",
-        title: "Urban Line",
+        key: "teal-sidebar",
+        title: "Teal Sidebar CV",
         func: buildPixelPerfectTealSidebarCV,
-        description:
-          "Jednokolumnowy układ... Maks Makowski – Programista Java.",
-        sections: [
-          "Nagłówek",
-          "Podsumowanie",
-          "Doświadczenie",
-          "Portfolio",
-          "Umiejętności",
-          "Edukacja",
-          "Języki",
-        ],
-        style: "Klasyczny, czytelny, jednokolumnowy",
+        description: "Nowoczesny szablon z turkusowym bocznym panelem.",
+        sections: ["Sidebar", "Nagłówek", "Doświadczenie", "Edukacja"],
+        style: "Nowoczesny z kolorowym sidebar",
       },
       {
-        key: "NavyDiagonalCV",
-        title: "Navy Diagonal",
+        key: "blue-creative",
+        title: "Blue Creative CV",
         func: buildBlueCreativeCV,
-        description: "Dwukolumnowy układ... „PROGRAMISTA JAVA”.",
+        description: "Kreatywny szablon z niebieskimi akcentami.",
         sections: [
-          "Nagłówek",
+          "Header",
+          "Profil",
           "Doświadczenie",
-          "Portfolio",
-          "Języki",
-          "Kontakt",
-          "O mnie",
           "Edukacja",
           "Umiejętności",
         ],
-        style: "Nowoczesny, biznesowy, dwukolumnowy",
+        style: "Kreatywny, nowoczesny, kolorowy",
       },
       {
-        key: "pixel-perfect-attachment",
-        title: "Szaro-Biały z Lewym Panelem",
+        key: "professional-resume",
+        title: "Professional Resume",
         func: buildPixelPerfectAttachmentCV,
-        description: "Dwukolumnowy, stonowany szablon...",
-        sections: [
-          "Nagłówek",
-          "Podsumowanie",
-          "Doświadczenie",
-          "Projekty",
-          "Kontakt (lewy panel)",
-          "Umiejętności (lewy panel)",
-          "Wykształcenie (lewy panel)",
-          "Języki (lewy panel)",
-          "RODO",
-        ],
-        style: "Elegancki, czytelny, pixel-perfect, stonowany",
+        description: "Profesjonalne CV w klasycznym stylu.",
+        sections: ["Header", "Podsumowanie", "Doświadczenie", "Edukacja"],
+        style: "Klasyczny, profesjonalny",
       },
     ],
     []
   );
+
+  const initial = useMemo(() => {
+    const cv = readCvData() || {};
+    const randomIndex = Math.floor(Math.random() * cvTemplates.length);
+    const template = cvTemplates[randomIndex];
+    if (template && typeof template.func === "function") {
+      return template.build ? template.build(cv) : template.func(cv);
+    }
+    return buildDocFromAI(cv);
+  }, [cvTemplates]);
+
+  const engine = useEngine(initial);
+  const {
+    doc,
+    setDocument,
+    selectedId,
+    setSelectedId,
+    addText,
+    addImage,
+    addRect,
+    addIcon,
+    updateNode,
+    removeNode,
+    reorder,
+    alignNodes,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
+  } = engine;
+
+  const pageRef = useRef(null);
+  const scrollRef = useRef(null);
+  const fitToScreenRef = useRef(null);
+
+  const [loading, setLoading] = useState(false);
+  const [showGrid, setShowGrid] = useState(false);
+  const [cvData, setCvData] = useState(() => readCvData());
+
+  const [overflowPeek, setOverflowPeek] = useState(false);
+  const [metrics, setMetrics] = useState({ scale: 1, pxPerMm: 3.7795 });
+
+  const [addDialogMode, setAddDialogMode] = useState("closed");
+
+  const openIconPicker = useCallback(() => {
+    setAddDialogMode("icons");
+  }, []);
+
+  const closeAddDialog = useCallback(() => {
+    setAddDialogMode("closed");
+  }, []);
+
+  const handleFitToScreenReady = useCallback((fn) => {
+    fitToScreenRef.current = fn;
+  }, []);
+
+  const handleFitToScreen = useCallback(() => {
+    if (fitToScreenRef.current) {
+      fitToScreenRef.current(60);
+    }
+  }, []);
+
+  const { email } = useAuth();
+
+  const [offerLink, setOfferLink] = useState(() => {
+    try {
+      return localStorage.getItem("CV_OFFER_LINK") || "";
+    } catch {
+      return "";
+    }
+  });
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedTemplateName, setSelectedTemplateName] = useState(null);
+
+  const [isGenModalOpen, setIsGenModalOpen] = useState(false);
+  const [isTemplateWarningOpen, setIsTemplateWarningOpen] = useState(false);
+
+  const openGenerateModal = useCallback(() => {
+    if (!selectedTemplateName) {
+      setIsTemplateWarningOpen(true);
+      return;
+    }
+    setIsGenModalOpen(true);
+  }, [selectedTemplateName]);
+  const closeGenerateModal = useCallback(() => setIsGenModalOpen(false), []);
+
+  const handleTemplateWarningConfirm = useCallback(() => {
+    setIsTemplateWarningOpen(false);
+    setIsModalOpen(true);
+  }, []);
 
   const handleGenerateFromLink = useCallback(
     async (link) => {
@@ -295,11 +298,9 @@ export default function App() {
     generatePdfBlob: () => generatePdfBlob(doc),
   });
 
-  // ---- SELEKCJA / GRUPOWANIE ----
   const [selectedIds, setSelectedIds] = useState([]);
   const [activeGroupIds, setActiveGroupIds] = useState(null);
 
-  // Używaj tego, gdy chcesz wyczyścić multiselekt (np. klik z panelu).
   const setSelectedIdSync = useCallback(
     (id) => {
       setSelectedId(id);
@@ -309,7 +310,6 @@ export default function App() {
     [setSelectedId]
   );
 
-  // Używaj tego wszędzie tam, gdzie NIE chcesz ruszać multiselektu (Canvas!)
   const setSelectedIdOnly = useCallback(
     (id) => {
       setSelectedId(id);
@@ -349,6 +349,7 @@ export default function App() {
         addText={addText}
         addImage={addImage}
         addRect={addRect}
+        addIcon={addIcon}
         undo={undo}
         redo={redo}
         canUndo={canUndo}
@@ -362,6 +363,10 @@ export default function App() {
         onGenerateAndSave={handleSaveAndHistory}
         onOpenGenerateModal={openGenerateModal}
         updateNode={updateNode}
+        onFitToScreen={handleFitToScreen}
+        alignNodes={alignNodes}
+        addDialogMode={addDialogMode}
+        onCloseAddDialog={closeAddDialog}
       />
 
       <div className="grid gap-3 p-3 [grid-template-columns:280px_1fr_320px] max-[1400px]:[grid-template-columns:240px_1fr_280px] max-[1200px]:[grid-template-columns:240px_1fr] max-[1200px]:[grid-template-areas:'sidebar_canvas''inspector_inspector'] max-[900px]:grid-cols-1 max-[900px]:[grid-template-areas:'canvas''sidebar''inspector']">
@@ -382,7 +387,7 @@ export default function App() {
           <OverflowTray
             doc={doc}
             updateNode={updateNode}
-            setSelectedId={setSelectedIdSync} // tutaj chcemy czyścić multiselekt
+            setSelectedId={setSelectedIdSync}
             onJumpToMm={jumpToMm}
           />
 
@@ -427,6 +432,16 @@ export default function App() {
             showGrid={showGrid}
             overflowPeek={overflowPeek}
             onMetricsChange={setMetrics}
+            onFitToScreenReady={handleFitToScreenReady}
+            onAddText={addText}
+            onAddRect={addRect}
+            onAddImage={addImage}
+            onAddIcon={addIcon}
+            onOpenIconPicker={openIconPicker}
+            onUndo={undo}
+            onRedo={redo}
+            canUndo={canUndo}
+            canRedo={canRedo}
           />
         </main>
 
@@ -436,6 +451,8 @@ export default function App() {
               node={doc.nodes.find((n) => n.id === inspectorSelectedId) || null}
               updateNode={updateNode}
               removeNode={removeNode}
+              reorder={reorder}
+              activeGroupIds={activeGroupIds}
             />
           </aside>
         )}

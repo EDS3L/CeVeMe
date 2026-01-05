@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useCallback } from 'react';
+import React, { useEffect, useRef, useCallback } from "react";
 
 function Row({ label, children }) {
   return (
@@ -14,12 +14,14 @@ function Row({ label, children }) {
  * - node:           aktualnie fokusowany node (ostatni zaznaczony)
  * - updateNode:     (id, patch)
  * - removeNode:     (id) => void
+ * - reorder:        (id, dir) => void  - dir: 'forward' | 'backward' | 'front' | 'back'
  * - activeGroupIds: array id-ów, jeżeli mamy aktywną grupę (>=2)
  */
 export default function InspectorPanel({
   node,
   updateNode,
   removeNode,
+  reorder,
   activeGroupIds = null,
 }) {
   const fileInputRef = useRef(null);
@@ -29,10 +31,10 @@ export default function InspectorPanel({
   const isEditable = (el) => {
     if (!el) return false;
     const tag = el.tagName?.toLowerCase();
-    if (tag === 'input' || tag === 'textarea' || tag === 'select') return true;
+    if (tag === "input" || tag === "textarea" || tag === "select") return true;
     if (el.isContentEditable) return true;
     if (el.closest?.('[contenteditable="true"]')) return true;
-    if (el.getAttribute?.('role') === 'textbox') return true;
+    if (el.getAttribute?.("role") === "textbox") return true;
     return false;
   };
 
@@ -50,7 +52,7 @@ export default function InspectorPanel({
   // ——— DEL/Backspace poza inputami usuwa pojedynczy / grupę
   useEffect(() => {
     const onKey = (e) => {
-      if (e.key !== 'Delete' && e.key !== 'Backspace') return;
+      if (e.key !== "Delete" && e.key !== "Backspace") return;
       const active = document.activeElement;
       if (isEditable(active)) return;
 
@@ -67,8 +69,8 @@ export default function InspectorPanel({
       deleteSelection();
     };
 
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
   }, [activeGroupIds, node, deleteSelection]);
 
   // sprzątanie blobów
@@ -88,7 +90,7 @@ export default function InspectorPanel({
 
   const f = node?.frame || {};
   const st = node?.style || {};
-  const num = (v) => (typeof v === 'number' ? v : 0);
+  const num = (v) => (typeof v === "number" ? v : 0);
 
   const setSrcFromFile = async (file) => {
     if (!file) return;
@@ -172,13 +174,13 @@ export default function InspectorPanel({
       )}
 
       {/* Obraz */}
-      {!isGroup && node?.type === 'image' && (
+      {!isGroup && node?.type === "image" && (
         <>
           <hr className="my-3 border-black/10" />
           <Row label="URL">
             <input
               className="w-full rounded-lg border border-black/10 px-2 py-1 text-sm outline-none focus:ring-2 focus:ring-blue-500/40"
-              value={node.src || ''}
+              value={node.src || ""}
               onChange={(e) => updateNode(node.id, { src: e.target.value })}
               placeholder="https://... lub data:/blob:"
             />
@@ -193,7 +195,7 @@ export default function InspectorPanel({
                 onChange={async (e) => {
                   const file = e.target.files?.[0];
                   await setSrcFromFile(file);
-                  e.target.value = '';
+                  e.target.value = "";
                 }}
               />
               <button
@@ -208,7 +210,7 @@ export default function InspectorPanel({
           <Row label="Dopasowanie">
             <select
               className="px-2 py-[6px] text-sm rounded-lg border border-black/10 bg-white outline-none focus:ring-2 focus:ring-blue-500/40"
-              value={node.objectFit || 'cover'}
+              value={node.objectFit || "cover"}
               onChange={(e) =>
                 updateNode(node.id, { objectFit: e.target.value })
               }
@@ -236,14 +238,14 @@ export default function InspectorPanel({
       )}
 
       {/* Kształt */}
-      {!isGroup && node?.type === 'shape' && (
+      {!isGroup && node?.type === "shape" && (
         <>
           <hr className="my-3 border-black/10" />
           <Row label="Wypełnienie">
             <input
               className="w-full rounded-lg border border-black/10 px-2 py-1 text-sm outline-none focus:ring-2 focus:ring-blue-500/40"
               type="color"
-              value={st.fill?.color || '#e2e8f0'}
+              value={st.fill?.color || "#e2e8f0"}
               onChange={(e) =>
                 updateNode(node.id, {
                   style: {
@@ -278,7 +280,7 @@ export default function InspectorPanel({
             <input
               className="w-full rounded-lg border border-black/10 px-2 py-1 text-sm outline-none focus:ring-2 focus:ring-blue-500/40"
               type="color"
-              value={st.stroke?.color || '#94a3b8'}
+              value={st.stroke?.color || "#94a3b8"}
               onChange={(e) =>
                 updateNode(node.id, {
                   style: {
@@ -323,12 +325,84 @@ export default function InspectorPanel({
         </>
       )}
 
+      {/* Ikona */}
+      {!isGroup && node?.type === "icon" && (
+        <>
+          <hr className="my-3 border-black/10" />
+          <Row label="Kolor ikony">
+            <input
+              className="w-full rounded-lg border border-black/10 px-2 py-1 text-sm outline-none focus:ring-2 focus:ring-blue-500/40"
+              type="color"
+              value={st.color || "#0f172a"}
+              onChange={(e) =>
+                updateNode(node.id, {
+                  style: { ...st, color: e.target.value },
+                })
+              }
+            />
+          </Row>
+          <Row label="Grubość linii">
+            <input
+              className="w-full rounded-lg border border-black/10 px-2 py-1 text-sm outline-none focus:ring-2 focus:ring-blue-500/40"
+              type="number"
+              min="0.5"
+              max="5"
+              step="0.5"
+              value={st.strokeWidth || 2}
+              onChange={(e) =>
+                updateNode(node.id, {
+                  style: { ...st, strokeWidth: +e.target.value },
+                })
+              }
+            />
+          </Row>
+        </>
+      )}
+
+      {/* Kontrola warstw (z-index) */}
+      {!isGroup && node && reorder && (
+        <>
+          <hr className="my-3 border-black/10" />
+          <div className="text-xs text-slate-500 mb-2">Kolejność warstw</div>
+          <div className="grid grid-cols-4 gap-2">
+            <button
+              onClick={() => reorder(node.id, "front")}
+              className="px-2 py-2 rounded-lg border border-black/10 bg-white text-xs hover:bg-slate-50"
+              title="Na wierzch"
+            >
+              ⬆⬆
+            </button>
+            <button
+              onClick={() => reorder(node.id, "forward")}
+              className="px-2 py-2 rounded-lg border border-black/10 bg-white text-xs hover:bg-slate-50"
+              title="Wyżej"
+            >
+              ⬆
+            </button>
+            <button
+              onClick={() => reorder(node.id, "backward")}
+              className="px-2 py-2 rounded-lg border border-black/10 bg-white text-xs hover:bg-slate-50"
+              title="Niżej"
+            >
+              ⬇
+            </button>
+            <button
+              onClick={() => reorder(node.id, "back")}
+              className="px-2 py-2 rounded-lg border border-black/10 bg-white text-xs hover:bg-slate-50"
+              title="Na spód"
+            >
+              ⬇⬇
+            </button>
+          </div>
+        </>
+      )}
+
       <hr className="my-3 border-black/10" />
       <button
         onClick={deleteSelection}
         className="w-full px-3 py-2 rounded-lg border border-red-500 bg-red-100 text-red-700 font-semibold"
       >
-        {isGroup ? 'Usuń grupę' : 'Usuń element'}
+        {isGroup ? "Usuń grupę" : "Usuń element"}
       </button>
     </aside>
   );

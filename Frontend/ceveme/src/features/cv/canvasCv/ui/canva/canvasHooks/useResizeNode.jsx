@@ -1,11 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useRef, useCallback, useState } from 'react';
-import { mmRound } from '../../../utils/mmRound';
-import { A4 } from '../../../core/mm';
+import { useRef, useCallback, useState } from "react";
+import { mmRound } from "../../../utils/mmRound";
+import { A4 } from "../../../core/mm";
 
-/**
- * Jeżeli wynikowy [y,y+h] przecina granicę, dopasuj do najbliższej strony.
- */
+
 function adjustFrameNoCrossing({ x, y, w, h }, dir, pageH) {
   if (h >= pageH - 0.1) return { x, y, w, h };
 
@@ -17,8 +15,8 @@ function adjustFrameNoCrossing({ x, y, w, h }, dir, pageH) {
   const boundary = k * pageH;
   const bottom = y + h;
 
-  const hasN = dir.includes('n');
-  const hasS = dir.includes('s');
+  const hasN = dir.includes("n");
+  const hasS = dir.includes("s");
 
   const fitAbove = () => {
     const newY = boundary - h;
@@ -69,7 +67,7 @@ export default function useResizeNode(
     const rect = el.getBoundingClientRect();
     const xPx = e.clientX - rect.left;
     const yPx = e.clientY - rect.top;
-    const denom = pxPerMm * scale * (viewZoom || 1);
+    const denom = pxPerMm * (viewZoom || 1);
     return { x: xPx / denom, y: yPx / denom };
   };
 
@@ -87,36 +85,36 @@ export default function useResizeNode(
         let { x, y, w, h } = r.groupStartBBox;
 
         switch (r.dir) {
-          case 'e':
+          case "e":
             w = Math.max(5, r.groupStartBBox.w + dxMm);
             break;
-          case 's':
+          case "s":
             h = Math.max(5, r.groupStartBBox.h + dyMm);
             break;
-          case 'se':
+          case "se":
             w = Math.max(5, r.groupStartBBox.w + dxMm);
             h = Math.max(5, r.groupStartBBox.h + dyMm);
             break;
-          case 'w':
+          case "w":
             x = r.groupStartBBox.x + dxMm;
             w = Math.max(5, r.groupStartBBox.w - dxMm);
             break;
-          case 'n':
+          case "n":
             y = r.groupStartBBox.y + dyMm;
             h = Math.max(5, r.groupStartBBox.h - dyMm);
             break;
-          case 'nw':
+          case "nw":
             x = r.groupStartBBox.x + dxMm;
             y = r.groupStartBBox.y + dyMm;
             w = Math.max(5, r.groupStartBBox.w - dxMm);
             h = Math.max(5, r.groupStartBBox.h - dyMm);
             break;
-          case 'ne':
+          case "ne":
             y = r.groupStartBBox.y + dyMm;
             w = Math.max(5, r.groupStartBBox.w + dxMm);
             h = Math.max(5, r.groupStartBBox.h - dyMm);
             break;
-          case 'sw':
+          case "sw":
             x = r.groupStartBBox.x + dxMm;
             w = Math.max(5, r.groupStartBBox.w - dxMm);
             h = Math.max(5, r.groupStartBBox.h + dyMm);
@@ -159,36 +157,36 @@ export default function useResizeNode(
       let { x, y, w, h } = f0;
 
       switch (r.dir) {
-        case 'e':
+        case "e":
           w = Math.max(5, f0.w + dxMm);
           break;
-        case 's':
+        case "s":
           h = Math.max(5, f0.h + dyMm);
           break;
-        case 'se':
+        case "se":
           w = Math.max(5, f0.w + dxMm);
           h = Math.max(5, f0.h + dyMm);
           break;
-        case 'w':
+        case "w":
           x = f0.x + dxMm;
           w = Math.max(5, f0.w - dxMm);
           break;
-        case 'n':
+        case "n":
           y = f0.y + dyMm;
           h = Math.max(5, f0.h - dyMm);
           break;
-        case 'nw':
+        case "nw":
           x = f0.x + dxMm;
           y = f0.y + dyMm;
           w = Math.max(5, f0.w - dxMm);
           h = Math.max(5, f0.h - dyMm);
           break;
-        case 'ne':
+        case "ne":
           y = f0.y + dyMm;
           w = Math.max(5, f0.w + dxMm);
           h = Math.max(5, f0.h - dyMm);
           break;
-        case 'sw':
+        case "sw":
           x = f0.x + dxMm;
           w = Math.max(5, f0.w - dxMm);
           h = Math.max(5, f0.h + dyMm);
@@ -237,7 +235,7 @@ export default function useResizeNode(
 
     resizeRef.current = null;
     setResizePreviewBoth({});
-    window.removeEventListener('mousemove', onMouseMoveResize);
+    window.removeEventListener("mousemove", onMouseMoveResize);
     setLayoutFrozen(false);
   }, [updateNode, onMouseMoveResize, setLayoutFrozen]);
 
@@ -270,8 +268,8 @@ export default function useResizeNode(
       }
 
       setResizePreviewBoth({});
-      window.addEventListener('mousemove', onMouseMoveResize);
-      window.addEventListener('mouseup', onMouseUpResize, { once: true });
+      window.addEventListener("mousemove", onMouseMoveResize);
+      window.addEventListener("mouseup", onMouseUpResize, { once: true });
     },
     [onMouseMoveResize, onMouseUpResize, setLayoutFrozen]
   );

@@ -1,14 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useRef, useState, useCallback } from 'react';
-import { mmRound } from '../../../utils/mmRound';
-import { computeSmartGuides } from '../../../hooks/useSmartGuides';
-import { A4 } from '../../../core/mm';
+import { useRef, useState, useCallback } from "react";
+import { mmRound } from "../../../utils/mmRound";
+import { computeSmartGuides } from "../../../hooks/useSmartGuides";
+import { A4 } from "../../../core/mm";
 
-/**
- * Pomocnik: koryguje Y tak, by [y, y+h] NIE przecinało granicy stron (k * pageH).
- * - Jeżeli node jest wyższy niż strona, nie korygujemy (nie da się zmieścić).
- * - Jeżeli przecina granicę, przesuwamy cały prostokąt na górę lub na dół (mniejszy ruch).
- */
 function snapYAwayFromPageGaps(y, h, pageH) {
   if (h >= pageH - 0.1) return { y, applied: false };
   if (h <= 0) return { y, applied: false };
@@ -55,7 +50,7 @@ export default function useDragNode(
     const rect = el.getBoundingClientRect();
     const xPx = e.clientX - rect.left;
     const yPx = e.clientY - rect.top;
-    const denom = pxPerMm * scale * (viewZoom || 1);
+    const denom = pxPerMm * (viewZoom || 1);
     return { x: xPx / denom, y: yPx / denom };
   };
 
@@ -69,7 +64,6 @@ export default function useDragNode(
       const dxMm = curViewX - s.startMouseViewX;
       const dyMm = curViewY - s.startMouseViewY;
 
-      // ——— GRUPA
       if (s.isGroup) {
         let movedBBox = {
           x: s.groupStartBBox.x + dxMm,
@@ -83,7 +77,7 @@ export default function useDragNode(
           .allNodes()
           .filter((n) => !s.groupIds.includes(n.id));
         const { guides, snapOffset } = computeSmartGuides(
-          { id: '__group__', type: 'group-virtual', frame: movedBBox },
+          { id: "__group__", type: "group-virtual", frame: movedBBox },
           otherNodes,
           { pageWidthMm: A4.widthMm, pageHeightMm: pageHeightForGuidesMm }
         );
@@ -117,7 +111,6 @@ export default function useDragNode(
         return;
       }
 
-      // ——— POJEDYNCZY
       const node = s.nodeRef();
       if (!node) return;
 
@@ -181,11 +174,11 @@ export default function useDragNode(
     }
 
     dragRef.current = null;
-    setDragPreviewBoth({}); // <— WAŻNE: czyścimy na pusty obiekt, NIE tablicę
+    setDragPreviewBoth({}); 
     setGuides([]);
 
-    window.removeEventListener('mousemove', onMouseMoveDrag);
-    window.removeEventListener('mouseup', onMouseUpDrag);
+    window.removeEventListener("mousemove", onMouseMoveDrag);
+    window.removeEventListener("mouseup", onMouseUpDrag);
   }, [updateNode, onMouseMoveDrag]);
 
   const startDrag = useCallback(
@@ -197,7 +190,7 @@ export default function useDragNode(
       if (group && group.ids?.length >= 2) {
         dragRef.current = {
           isGroup: true,
-          id: '__group__',
+          id: "__group__",
           groupIds: [...group.ids],
           groupStartFrames: { ...group.frames },
           groupStartBBox: { ...group.bbox },
@@ -219,8 +212,8 @@ export default function useDragNode(
       }
 
       setDragPreviewBoth({});
-      window.addEventListener('mousemove', onMouseMoveDrag);
-      window.addEventListener('mouseup', onMouseUpDrag, { once: true });
+      window.addEventListener("mousemove", onMouseMoveDrag);
+      window.addEventListener("mouseup", onMouseUpDrag, { once: true });
     },
     [doc, onMouseMoveDrag, onMouseUpDrag]
   );

@@ -6,8 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="3231cadf-6361-4cef-88cc-949d98c677dc" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/external/gemini/PromptBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/external/gemini/PromptBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/resources/application.yml" afterDir="false" />
     </list>
     <list id="28ac2837-207c-4697-b16d-14bb42f7d26d" name="Changes by barte" comment="" />
     <option name="SHOW_DIALOG" value="false" />
@@ -157,7 +155,7 @@
       <workItem from="1766511379250" duration="21000" />
       <workItem from="1767022543625" duration="13085000" />
       <workItem from="1767175198994" duration="1795000" />
-      <workItem from="1767349198314" duration="1620000" />
+      <workItem from="1767349198314" duration="3057000" />
     </task>
     <servers />
   </component>
