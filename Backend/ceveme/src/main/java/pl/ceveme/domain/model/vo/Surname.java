@@ -19,6 +19,5 @@ public record Surname(String surname) {
         if (!surname.matches("\\p{L}+")) {
             throw new IllegalArgumentException("Surname must contain only letters (including accented letters).");
         }
-
     }
 }

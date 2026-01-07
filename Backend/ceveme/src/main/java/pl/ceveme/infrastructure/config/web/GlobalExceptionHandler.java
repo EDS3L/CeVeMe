@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import pl.ceveme.application.dto.exception.ApiError;
 import pl.ceveme.infrastructure.external.exception.EmailException;
 import pl.ceveme.infrastructure.external.exception.TimeoutException;
@@ -82,6 +83,13 @@ public class GlobalExceptionHandler {
         logger.error("Unexpected error: {}", ex.getMessage(), ex);
         ApiError error = new ApiError("EMAIL_EXCEPTION", ex.getMessage(), Instant.now(), request.getRequestURI());
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(IncorrectResultSizeDataAccessException.class)
+    public ResponseEntity<ApiError> handleIncorrectResultSize(IncorrectResultSizeDataAccessException ex, HttpServletRequest request) {
+        logger.error("Data integrity error - duplicate records found: {}", ex.getMessage(), ex);
+        ApiError error = new ApiError("DATA_INTEGRITY_ERROR", "Authentication failed due to data inconsistency. Please contact support.", Instant.now(), request.getRequestURI());
+        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(Exception.class)

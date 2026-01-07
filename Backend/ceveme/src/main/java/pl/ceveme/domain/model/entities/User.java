@@ -22,8 +22,8 @@ public class User {
     private Surname surname;
     @Embedded
     private PhoneNumber phoneNumber;
-    @Column(unique = true)
     @Embedded
+    @AttributeOverride(name = "email", column = @Column(name = "email", unique = true, nullable = false))
     private Email email;
     private String city;
     private String password;

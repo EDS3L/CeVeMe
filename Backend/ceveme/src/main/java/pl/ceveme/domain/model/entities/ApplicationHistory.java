@@ -14,6 +14,7 @@ public class ApplicationHistory {
     private long id;
 
     @OneToOne
+    @JoinColumn(name = "job_offer_id")
     private JobOffer jobOffer;
     private LocalDate applicationDate;
 
@@ -22,6 +23,7 @@ public class ApplicationHistory {
     private User user;
 
     @OneToOne
+    @JoinColumn(name = "cv_id", unique = true)
     private Cv cv;
 
     @Enumerated(EnumType.STRING)

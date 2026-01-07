@@ -39,6 +39,7 @@ public class EmploymentInfo {
     private List<Education> educations = new ArrayList<>();
 
     @OneToOne
+    @JoinColumn(name = "user_id", unique = true)
     private User user;
 
     public EmploymentInfo() {

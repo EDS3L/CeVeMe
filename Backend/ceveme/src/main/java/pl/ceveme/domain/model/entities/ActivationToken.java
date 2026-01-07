@@ -23,6 +23,7 @@ public class ActivationToken {
     private LocalDate expirationDate;
 
     @OneToOne
+    @JoinColumn(name = "user_id", unique = true)
     private User user;
 
     public ActivationToken() {

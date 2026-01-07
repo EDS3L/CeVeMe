@@ -47,13 +47,11 @@ class NameTest {
     @Test
     @DisplayName("Test should give information 'Name must be at least 2 characters long' when credentials are lower then 3")
     void should_giveInfoThatNameCanOnlyHaveLetters_when_ValueHasDigitsOrSpecialCharacters() {
-        //given
         var raw = "MA!!!";
 
-        // when + then
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new Name(raw));
 
-        assertThat(ex.getMessage()).isEqualTo("Name must contain only letters (no digits or special characters).");
+        assertThat(ex.getMessage()).isEqualTo("Name must contain only letters (including accented letters).");
     }
 
 }

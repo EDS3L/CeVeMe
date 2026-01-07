@@ -1,5 +1,6 @@
 package pl.ceveme.domain.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -16,13 +17,15 @@ public class Cv {
     private LocalDate createdAt;
 
     @OneToOne
+    @JoinColumn(name = "job_offer_id")
     private JobOffer jobOffer;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToOne
+    @OneToOne(mappedBy = "cv")
+    @JsonIgnore
     private ApplicationHistory applicationHistory;
 
     public Cv() {

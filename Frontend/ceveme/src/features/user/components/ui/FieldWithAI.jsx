@@ -1,8 +1,14 @@
-import React, { useMemo, useRef, useLayoutEffect, useState } from 'react';
-import Refinement from '../../hooks/userAirefinement';
-import AILoading from './LoadingDots';
-import ProgressButton from './ProgressButton';
-import { useAITimeout } from '../utils/AITimeoutContext';
+import React, {
+  useMemo,
+  useRef,
+  useLayoutEffect,
+  useState,
+  useEffect,
+} from "react";
+import Refinement from "../../hooks/userAirefinement";
+import AILoading from "./LoadingDots";
+import ProgressButton from "./ProgressButton";
+import { useAITimeout } from "../utils/AITimeoutContext";
 
 export default function FieldWithAI({
   id,
@@ -11,7 +17,7 @@ export default function FieldWithAI({
   onChange,
   placeholder,
   error,
-  type = 'text',
+  type = "text",
   multiline = false,
   disabled = false,
   help,
@@ -21,10 +27,12 @@ export default function FieldWithAI({
   const described = `${id}-desc`;
   const errorId = `${id}-err`;
   const baseInput =
-    'w-full rounded-xl border border-cloudlight bg-basewhite text-slatedark px-3 py-2 outline-none ring-offset-2 focus:ring-2 focus:ring-feedbackfocus';
+    "w-full rounded-xl border border-cloudlight bg-basewhite text-slatedark px-3 py-2 outline-none ring-offset-2 focus:ring-2 focus:ring-feedbackfocus";
 
   const refinement = useMemo(() => new Refinement(), []);
   const [loadingAi, setLoadingAi] = useState(false);
+  const [pendingValue, setPendingValue] = useState(null);
+  const isMountedRef = useRef(true);
 
   const {
     timeoutData,
@@ -35,11 +43,18 @@ export default function FieldWithAI({
   } = useAITimeout();
 
   const textareaRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
   useLayoutEffect(() => {
     if (!multiline) return;
     const el = textareaRef.current;
     if (!el) return;
-    el.style.height = 'auto';
+    el.style.height = "auto";
     el.style.height = `${el.scrollHeight}px`;
   }, [multiline, value]);
 
@@ -50,7 +65,7 @@ export default function FieldWithAI({
       setIsAnyAILoading(true);
       setLoadingAi(true);
 
-      const useTimeoutAi = await refinement.checkTimeout('REFINEMENT');
+      const useTimeoutAi = await refinement.checkTimeout("REFINEMENT");
       if (useTimeoutAi?.howMuchLeft > 0) {
         setAITimeout(useTimeoutAi);
         return;
@@ -58,23 +73,34 @@ export default function FieldWithAI({
 
       const res = await refinement.refinementRequirements(value, label);
 
-      if (res != null && typeof res.refinementText === 'string') {
-        onChange(res.refinementText);
-        const newTimeout = await refinement.checkTimeout('REFINEMENT');
+      if (res != null && typeof res.refinementText === "string") {
+        setPendingValue(res.refinementText);
+        requestAnimationFrame(() => {
+          if (isMountedRef.current) {
+            onChange(res.refinementText);
+            setPendingValue(null);
+          }
+        });
+
+        const newTimeout = await refinement.checkTimeout("REFINEMENT");
         if (newTimeout?.howMuchLeft > 0) {
           setAITimeout(newTimeout);
         }
       }
     } catch (err) {
-      console.error('Error in refinementText:', err);
+      console.error("Error in refinementText:", err);
     } finally {
-      setLoadingAi(false);
-      setIsAnyAILoading(false);
+      if (isMountedRef.current) {
+        setLoadingAi(false);
+        setIsAnyAILoading(false);
+      }
     }
   };
 
   const isButtonDisabled =
     disabled || loadingAi || isAnyAILoading || hasActiveTimeout;
+
+  const displayValue = pendingValue !== null ? pendingValue : value;
 
   return (
     <div className="grid gap-1">
@@ -88,41 +114,41 @@ export default function FieldWithAI({
             <textarea
               id={id}
               ref={textareaRef}
-              value={value}
+              value={displayValue}
               onChange={(e) => onChange(e.target.value)}
               onInput={(e) => {
-                e.target.style.height = 'auto';
+                e.target.style.height = "auto";
                 e.target.style.height = `${e.target.scrollHeight}px`;
               }}
               placeholder={placeholder}
               disabled={disabled || isAnyAILoading}
               aria-invalid={!!error}
-              aria-describedby={`${described} ${error ? errorId : ''}`}
+              aria-describedby={`${described} ${error ? errorId : ""}`}
               className={`${baseInput} resize-none overflow-hidden`}
             />
           ) : (
             <input
               id={id}
               type={type}
-              value={value}
+              value={displayValue}
               onChange={(e) => onChange(e.target.value)}
               placeholder={placeholder}
               disabled={disabled || isAnyAILoading}
               aria-invalid={!!error}
-              aria-describedby={`${described} ${error ? errorId : ''}`}
+              aria-describedby={`${described} ${error ? errorId : ""}`}
               className={baseInput}
             />
           )}
 
           <div
             className={[
-              'absolute inset-0 flex items-center justify-center rounded-xl bg-basewhite/75',
-              'transition-[opacity,backdrop-filter] duration-[2000ms] ease-out',
-              'will-change-[opacity,backdrop-filter]',
+              "absolute inset-0 flex items-center justify-center rounded-xl bg-basewhite/75",
+              "transition-[opacity,backdrop-filter] duration-[2000ms] ease-out",
+              "will-change-[opacity,backdrop-filter]",
               loadingAi
-                ? 'opacity-100 backdrop-blur-sm pointer-events-auto'
-                : 'opacity-0 backdrop-blur-0 pointer-events-none',
-            ].join(' ')}
+                ? "opacity-100 backdrop-blur-sm pointer-events-auto"
+                : "opacity-0 backdrop-blur-0 pointer-events-none",
+            ].join(" ")}
             aria-hidden={!loadingAi}
             style={{ zIndex: 2 }}
           >
@@ -147,7 +173,7 @@ export default function FieldWithAI({
         </p>
       ) : (
         <span id={described} className="sr-only">
-          {' '}
+          {" "}
         </span>
       )}
       {error ? (
@@ -158,9 +184,9 @@ export default function FieldWithAI({
 
       {hasActiveTimeout && timeoutData && (
         <p className="text-xs text-gray-600">
-          AI będzie dostępne za{' '}
+          AI będzie dostępne za{" "}
           {Math.floor((timeoutData.howMuchLeft ?? 0) / 60)}:
-          {String((timeoutData.howMuchLeft ?? 0) % 60).padStart(2, '0')}
+          {String((timeoutData.howMuchLeft ?? 0) % 60).padStart(2, "0")}
         </p>
       )}
     </div>

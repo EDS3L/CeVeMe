@@ -17,6 +17,7 @@ public class PasswordToken {
     private LocalDateTime lastUse;
 
     @OneToOne
+    @JoinColumn(name = "user_id", unique = true)
     private User user;
 
     public PasswordToken() {
