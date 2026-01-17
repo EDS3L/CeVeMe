@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import pl.ceveme.application.usecase.location.FindLocationUseCase;
 import pl.ceveme.application.usecase.scrap.*;
 
 @Component
@@ -19,16 +20,9 @@ public class JobScrapingScheduler {
     private final ScrapRocketJobsUseCase scrapRocketJobsUseCase;
     private final ScrapSolidJobsUseCase scrapSolidJobsUseCase;
     private final ScrapTheProtocolITUseCase scrapTheProtocolITUseCase;
+    private final FindLocationUseCase findLocationUseCase;
 
-    public JobScrapingScheduler(
-            ScrapBulldogJobUseCase scrapBulldogJobUseCase,
-            ScrapJustJoinItUseCase scrapJustJoinItUseCase,
-            ScrapLinkedInUseCase scrapLinkedInUseCase,
-            ScrapNoFluffJobsUseCase scrapNoFluffJobsUseCase,
-            ScrapPracujPlUseCase scrapPracujPlUseCase,
-            ScrapRocketJobsUseCase scrapRocketJobsUseCase,
-            ScrapSolidJobsUseCase scrapSolidJobsUseCase,
-            ScrapTheProtocolITUseCase scrapTheProtocolITUseCase) {
+    public JobScrapingScheduler(ScrapBulldogJobUseCase scrapBulldogJobUseCase, ScrapJustJoinItUseCase scrapJustJoinItUseCase, ScrapLinkedInUseCase scrapLinkedInUseCase, ScrapNoFluffJobsUseCase scrapNoFluffJobsUseCase, ScrapPracujPlUseCase scrapPracujPlUseCase, ScrapRocketJobsUseCase scrapRocketJobsUseCase, ScrapSolidJobsUseCase scrapSolidJobsUseCase, ScrapTheProtocolITUseCase scrapTheProtocolITUseCase, FindLocationUseCase findLocationUseCase) {
         this.scrapBulldogJobUseCase = scrapBulldogJobUseCase;
         this.scrapJustJoinItUseCase = scrapJustJoinItUseCase;
         this.scrapLinkedInUseCase = scrapLinkedInUseCase;
@@ -37,10 +31,10 @@ public class JobScrapingScheduler {
         this.scrapRocketJobsUseCase = scrapRocketJobsUseCase;
         this.scrapSolidJobsUseCase = scrapSolidJobsUseCase;
         this.scrapTheProtocolITUseCase = scrapTheProtocolITUseCase;
+        this.findLocationUseCase = findLocationUseCase;
     }
 
-
-     // Główna metoda uruchamiana 2 razy dziennie (16:00 i 1:00).
+    // Główna metoda uruchamiana 2 razy dziennie (16:00 i 1:00).
     @Scheduled(cron = "0 0 16,1 * * *")
     public void runFullScrapingCycle() {
         log.info("Rozpoczynam cykl scrapowania ofert pracy...");
@@ -58,19 +52,28 @@ public class JobScrapingScheduler {
         log.info("Pełny cykl scrapowania został zakończony.");
     }
 
-    private void executeWithLogging(String jobName, ScraperTask task) {
+    @Scheduled(cron = "0 0 5 * * *")
+    public void findingLocation() {
+        log.info("Rozpoczynam cykl pobierania lokacji pracy...");
+
+        executeWithLogging("GeoLocalizer", findLocationUseCase::execute);
+
+        log.info("Pełny cykl pobierania lokacji został zakończony.");
+    }
+
+    private void executeWithLogging(String jobName, Task task) {
         try {
-            log.info("Start scrapowania: {}", jobName);
+            log.info("Start : {}", jobName);
             task.run();
-            log.info("Zakończono scrapowanie: {}", jobName);
+            log.info("Zakończono : {}", jobName);
         } catch (Exception e) {
-            log.error("Błąd podczas pracy scrapera {}: {}", jobName, e.getMessage());
+            log.error("Błąd podczas pracy  {}: {}", jobName, e.getMessage());
         }
     }
 
 //Interfejs funkcyjny pozwalający przekazać metodę execute() jako parametr.
     @FunctionalInterface
-    interface ScraperTask {
+    interface Task {
         void run() throws Exception;
     }
 }

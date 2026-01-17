@@ -126,10 +126,16 @@ export default function FiltersSheet({
                   }
                 >
                   <option value="">Wszystkie</option>
+                  <option value="Staż">Staż</option>
                   <option value="Junior">Junior</option>
                   <option value="Mid">Mid</option>
                   <option value="Senior">Senior</option>
                   <option value="Expert">Expert</option>
+                  <option value="C-Level">C-Level</option>
+                  <option value="Director">Dyrektor</option>
+                  <option value="Kierownik">Kierownik</option>
+                  <option value="Manger">Manager</option>
+                  <option value="pracownik fizyczny">Pracownik fizyczny</option>
                 </Select>
               </div>
 
