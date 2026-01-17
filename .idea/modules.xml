@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ceveme.iml" filepath="$PROJECT_DIR$/.idea/modules/ceveme.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/ceveme.main.iml" filepath="$PROJECT_DIR$/.idea/modules/ceveme.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/Backend/ceveme/src/main/main.iml" filepath="$PROJECT_DIR$/Backend/ceveme/src/main/main.iml" />
       <module fileurl="file://$PROJECT_DIR$/Backend/ceveme/src/test/test.iml" filepath="$PROJECT_DIR$/Backend/ceveme/src/test/test.iml" />

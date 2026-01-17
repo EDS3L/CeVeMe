@@ -5,23 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3231cadf-6361-4cef-88cc-949d98c677dc" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/data_source_mapping.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/ceveme.main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/ceveme.main.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/usecase/jobOffer/SearchJobOffersUseCase.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/usecase/jobOffer/SearchJobOffersUseCase.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/domain/model/entities/ActivationToken.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/domain/model/entities/ActivationToken.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/domain/model/entities/ApplicationHistory.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/domain/model/entities/ApplicationHistory.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/domain/model/entities/Cv.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/domain/model/entities/Cv.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/domain/model/entities/EmploymentInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/domain/model/entities/EmploymentInfo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/domain/model/entities/PasswordToken.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/domain/model/entities/PasswordToken.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/domain/model/entities/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/domain/model/entities/User.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/domain/model/vo/Name.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/domain/model/vo/Name.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/domain/model/vo/Surname.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/domain/model/vo/Surname.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/config/web/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/config/web/GlobalExceptionHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/controllers/jobOffer/JobOfferController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/controllers/jobOffer/JobOfferController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/test/java/pl/ceveme/domain/model/vo/NameTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/test/java/pl/ceveme/domain/model/vo/NameTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Frontend/ceveme/src/features/user/components/ui/FieldWithAI.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/ceveme/src/features/user/components/ui/FieldWithAI.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/ceveme/src/features/cv/canvasCv/ui/canva/Canvas.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/ceveme/src/features/cv/canvasCv/ui/canva/Canvas.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/ceveme/src/features/cv/canvasCv/ui/canva/NodeView.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/ceveme/src/features/cv/canvasCv/ui/canva/NodeView.jsx" afterDir="false" />
     </list>
-    <list id="28ac2837-207c-4697-b16d-14bb42f7d26d" name="Changes by barte" comment="" />
+    <list id="28ac2837-207c-4697-b16d-14bb42f7d26d" name="Changes by barte" comment="">
+      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/resources/application.yml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -170,7 +163,9 @@
       <workItem from="1767022543625" duration="13085000" />
       <workItem from="1767175198994" duration="1795000" />
       <workItem from="1767349198314" duration="3057000" />
-      <workItem from="1767808338396" duration="3031000" />
+      <workItem from="1767808338396" duration="3484000" />
+      <workItem from="1768235656337" duration="3000" />
+      <workItem from="1768651567459" duration="4614000" />
     </task>
     <servers />
   </component>

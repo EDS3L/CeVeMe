@@ -14,7 +14,7 @@ public class ApplicationHistory {
     private long id;
 
     @OneToOne
-    @JoinColumn(name = "job_offer_id")
+    @JoinColumn(name = "joboffer_id")
     private JobOffer jobOffer;
     private LocalDate applicationDate;
 

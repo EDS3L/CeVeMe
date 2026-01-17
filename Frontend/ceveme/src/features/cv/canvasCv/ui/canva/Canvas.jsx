@@ -82,7 +82,7 @@ export default function Canvas({
   onAddRect,
   onAddImage,
   onAddIcon,
-  onOpenIconPicker, 
+  onOpenIconPicker,
   onUndo,
   onRedo,
   canUndo = false,
@@ -99,12 +99,12 @@ export default function Canvas({
   const isGrouped = activeGroupIds?.length > 0;
   const groupSet = useMemo(
     () => new Set(isGrouped ? activeGroupIds : []),
-    [isGrouped, activeGroupIds]
+    [isGrouped, activeGroupIds],
   );
 
   const groupNodes = useMemo(
     () => (isGrouped ? nodes.filter((n) => n && groupSet.has(n.id)) : []),
-    [isGrouped, nodes, groupSet]
+    [isGrouped, nodes, groupSet],
   );
 
   const wrapperRef = useRef(null);
@@ -115,11 +115,11 @@ export default function Canvas({
   const [layoutFrozen, setLayoutFrozen] = useState(false);
   const liveContentMaxY = useMemo(
     () => maxContentYMm(doc) || A4.heightMm,
-    [doc]
+    [doc],
   );
   const frozenState = useMemo(
     () => ({ contentMaxY: liveContentMaxY }),
-    [liveContentMaxY]
+    [liveContentMaxY],
   );
   const contentMaxY = layoutFrozen ? frozenState.contentMaxY : liveContentMaxY;
 
@@ -145,7 +145,7 @@ export default function Canvas({
       return { left, top };
     },
     A4,
-    pxPerMm
+    pxPerMm,
   );
   useEffect(() => {
     viewZoomRef.current = viewZoom;
@@ -161,7 +161,7 @@ export default function Canvas({
   const mmToPxY = (mm) => logicYToViewYmm(mm) * pxPerMm;
   const heightPxFromMmRect = useCallback(
     (yMm, hMm) => mmToPxY(yMm + hMm) - mmToPxY(yMm),
-    [mmToPxY]
+    [mmToPxY],
   );
 
   const {
@@ -176,7 +176,7 @@ export default function Canvas({
     updateNode,
     contentMaxY,
     contentRef,
-    PAGE_GAP_MM 
+    PAGE_GAP_MM,
   );
   const { resizePreview, startResize } = useResizeNode(
     pxPerMm,
@@ -185,7 +185,7 @@ export default function Canvas({
     updateNode,
     setLayoutFrozen,
     contentRef,
-    PAGE_GAP_MM 
+    PAGE_GAP_MM,
   );
 
   const PAGE_SPAN_MM = A4.heightMm + PAGE_GAP_MM;
@@ -199,7 +199,7 @@ export default function Canvas({
       const denom = pxPerMm * (viewZoom || 1);
       return { x: xPx / denom, y: yPx / denom };
     },
-    [pxPerMm, viewZoom]
+    [pxPerMm, viewZoom],
   );
 
   const viewToLogicYmm = useCallback(
@@ -207,9 +207,8 @@ export default function Canvas({
       const gapsBefore = Math.floor(yViewMm / PAGE_SPAN_MM);
       return yViewMm - gapsBefore * PAGE_GAP_MM;
     },
-    [PAGE_SPAN_MM]
+    [PAGE_SPAN_MM],
   );
-
 
   const [drawingToolActive, setDrawingToolActive] = useState(false);
   const drawing = useDrawingTool(
@@ -219,7 +218,7 @@ export default function Canvas({
     setDocument,
     drawingToolActive,
     clientToViewMm,
-    viewToLogicYmm 
+    viewToLogicYmm,
   );
 
   useEffect(() => {
@@ -251,7 +250,7 @@ export default function Canvas({
       if (!n) return null;
       return resizePreview[n.id] || dragPreview[n.id] || n.frame;
     },
-    [dragPreview, resizePreview]
+    [dragPreview, resizePreview],
   );
 
   const groupBBox = useMemo(() => {
@@ -292,29 +291,35 @@ export default function Canvas({
         return xMm >= f.x && xMm <= f.x + f.w && yMm >= f.y && yMm <= f.y + f.h;
       });
     },
-    [nodes]
+    [nodes],
   );
 
-  const selectBestNode = useCallback((nodesAtPoint, clickedNode, isCycling) => {
-    if (nodesAtPoint.length === 0) return null;
-    if (nodesAtPoint.length === 1) return nodesAtPoint[0];
+  const selectBestNode = useCallback(
+    (nodesAtPoint, clickedNode, isCycling) => {
+      if (nodesAtPoint.length === 0) return null;
+      if (nodesAtPoint.length === 1) return nodesAtPoint[0];
 
-    const sorted = [...nodesAtPoint].sort((a, b) => {
-      const areaA = a.frame.w * a.frame.h;
-      const areaB = b.frame.w * b.frame.h;
-      return areaA - areaB; 
-    });
+      // Sortuj według z-index (indeksu w tablicy nodes) - najwyższy z-index pierwszy
+      const sorted = [...nodesAtPoint].sort((a, b) => {
+        const zA = a.frame?.zIndex ?? nodes.indexOf(a);
+        const zB = b.frame?.zIndex ?? nodes.indexOf(b);
+        return zB - zA; // Wyższy z-index = pierwszy (na wierzchu)
+      });
 
-    if (isCycling && clickedNode) {
-      const currentIdx = sorted.findIndex((n) => n.id === clickedNode.id);
-      if (currentIdx !== -1) {
-        const nextIdx = (currentIdx + 1) % sorted.length;
-        return sorted[nextIdx];
+      // Jeśli cycling (wielokrotne kliknięcie w to samo miejsce), przechodź przez elementy
+      if (isCycling && clickedNode) {
+        const currentIdx = sorted.findIndex((n) => n.id === clickedNode.id);
+        if (currentIdx !== -1) {
+          const nextIdx = (currentIdx + 1) % sorted.length;
+          return sorted[nextIdx];
+        }
       }
-    }
 
-    return sorted[0];
-  }, []);
+      // Domyślnie zwróć element na wierzchu (najwyższy z-index)
+      return sorted[0];
+    },
+    [nodes],
+  );
 
   const onMouseDownNode = (e, node) => {
     if (drawingToolActive) {
@@ -353,11 +358,12 @@ export default function Canvas({
     const clickPos = clientToViewMm(e);
     const nodesAtPoint = findNodesAtPoint(
       clickPos.x,
-      viewToLogicYmm(clickPos.y)
+      viewToLogicYmm(clickPos.y),
     );
 
+    // ZAWSZE wybierz najlepszy węzeł (na wierzchu), ignorując który został kliknięty w DOM
     let targetNode = node;
-    if (nodesAtPoint.length > 1) {
+    if (nodesAtPoint.length > 0) {
       const currentlySelected = nodes.find((n) => n.id === selectedIds[0]);
       targetNode =
         selectBestNode(nodesAtPoint, currentlySelected, isCycling) || node;
@@ -379,7 +385,7 @@ export default function Canvas({
 
     if (nodeInGroup(targetNode.id)) {
       const frames = Object.fromEntries(
-        groupNodes.map((n) => [n.id, { ...n.frame }])
+        groupNodes.map((n) => [n.id, { ...n.frame }]),
       );
       const bbox = groupBBox || bboxOfFrames(groupNodes.map((n) => n.frame));
       startDrag(e, targetNode, null, { ids: activeGroupIds, frames, bbox });
@@ -391,7 +397,7 @@ export default function Canvas({
   const onStartResize = (e, dir, selectedNode) => {
     if (isGrouped) {
       const frames = Object.fromEntries(
-        groupNodes.map((n) => [n.id, { ...n.frame }])
+        groupNodes.map((n) => [n.id, { ...n.frame }]),
       );
       const bbox = groupBBox || bboxOfFrames(groupNodes.map((n) => n.frame));
       startResize(e, dir, selectedNode, { ids: activeGroupIds, frames, bbox });
@@ -447,7 +453,7 @@ export default function Canvas({
   }, [selectedIds, setDocument]);
 
   const handleBringForward = useCallback(() => {
-    if (selectedIds.length !== 1) return; 
+    if (selectedIds.length !== 1) return;
     const id = selectedIds[0];
     setDocument((prev) => {
       const idx = prev.nodes.findIndex((n) => n.id === id);
@@ -459,7 +465,7 @@ export default function Canvas({
   }, [selectedIds, setDocument]);
 
   const handleSendBackward = useCallback(() => {
-    if (selectedIds.length !== 1) return; 
+    if (selectedIds.length !== 1) return;
     const id = selectedIds[0];
     setDocument((prev) => {
       const idx = prev.nodes.findIndex((n) => n.id === id);
@@ -524,7 +530,7 @@ export default function Canvas({
     const onMove = (me) => {
       const { x: mx, y: my } = clientToViewMm(me);
       setMarquee((prev) =>
-        prev ? { ...prev, x2: mx, y2: viewToLogicYmm(my) } : null
+        prev ? { ...prev, x2: mx, y2: viewToLogicYmm(my) } : null,
       );
     };
 
@@ -539,7 +545,7 @@ export default function Canvas({
           const sortedNodes = [...nodes].filter(Boolean).sort((a, b) => {
             const zA = a.frame?.zIndex ?? nodes.indexOf(a);
             const zB = b.frame?.zIndex ?? nodes.indexOf(b);
-            return zB - zA; 
+            return zB - zA;
           });
 
           const hit = sortedNodes
@@ -566,7 +572,7 @@ export default function Canvas({
           setSelectedIds(finalHit);
           setSelectedId &&
             setSelectedId(
-              finalHit.length ? finalHit[finalHit.length - 1] : null
+              finalHit.length ? finalHit[finalHit.length - 1] : null,
             );
           setActiveGroupIds(finalHit.length >= 2 ? [...finalHit] : null);
         }
@@ -741,7 +747,7 @@ export default function Canvas({
       handleSendToBack,
       handleBringForward,
       handleSendBackward,
-    ]
+    ],
   );
 
   useEffect(() => {
@@ -772,16 +778,16 @@ export default function Canvas({
   })();
 
   // Handler kliknięcia w wrapper (poza obszarem stron) - czyści selekcję
-  const onClickWrapper = useCallback(
+  const onClickOutside = useCallback(
     (e) => {
-      // Jeśli kliknięto bezpośrednio w wrapper (nie w jego dzieci)
-      if (e.target === wrapperRef.current) {
+      // Sprawdź czy kliknięto poza contentRef (obszar stron)
+      if (contentRef.current && !contentRef.current.contains(e.target)) {
         setSelectedIds([]);
         setSelectedId && setSelectedId(null);
         setActiveGroupIds(null);
       }
     },
-    [setSelectedIds, setSelectedId, setActiveGroupIds]
+    [setSelectedIds, setSelectedId, setActiveGroupIds],
   );
 
   // Pomocnik do konwersji punktów ścieżki na SVG path w trakcie rysowania
@@ -817,7 +823,7 @@ export default function Canvas({
     <div
       ref={wrapperRef}
       className="w-full h-full overflow-auto bg-slate-50 relative"
-      onClick={onClickWrapper}
+      onClick={onClickOutside}
     >
       {/* Drawing Toolbar */}
       <div className="absolute top-2 left-2 z-50">
@@ -895,11 +901,14 @@ export default function Canvas({
             ))}
 
             {/* Nody */}
-            {nodes.filter(Boolean).map((node) => {
+            {nodes.filter(Boolean).map((node, index) => {
               // Ukryte elementy nie są renderowane
               if (node.visible === false) return null;
               const df = displayFrameOf(node) || node.frame;
               if (!df) return null;
+              // z-index bazuje na jawnej wartości z frame lub indeksie w tablicy
+              // Dodajemy LAYER_Z.nodes aby być powyżej stron
+              const nodeZIndex = LAYER_Z.nodes + (node.frame?.zIndex ?? index);
               return (
                 <NodeView
                   key={node.id}
@@ -912,6 +921,7 @@ export default function Canvas({
                   selected={selectedIds.includes(node.id)}
                   onMouseDownNode={onMouseDownNode}
                   onChangeText={onChangeText}
+                  zIndex={nodeZIndex}
                 />
               );
             })}
@@ -947,7 +957,7 @@ export default function Canvas({
                   onStartResize={(e, dir) => {
                     const any = nodes.find((n) => n && groupSet.has(n.id));
                     const frames = Object.fromEntries(
-                      groupNodes.map((n) => [n.id, { ...n.frame }])
+                      groupNodes.map((n) => [n.id, { ...n.frame }]),
                     );
                     const bbox = groupBBox;
                     startResize(e, dir, any, {
@@ -977,7 +987,7 @@ export default function Canvas({
               selectedIds.length === 1 &&
               (() => {
                 const selectedNode = nodes.find(
-                  (n) => n && n.id === selectedIds[0]
+                  (n) => n && n.id === selectedIds[0],
                 );
                 if (!selectedNode || selectedNode.lock) return null;
                 const df = displayFrameOf(selectedNode) || selectedNode.frame;

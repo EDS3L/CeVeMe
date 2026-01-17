@@ -43,7 +43,7 @@ logging:
     org.springframework: WARN
 
 jwt:
-  access-expiration: 100000
+  access-expiration: 10800000
   refresh-expiration: 2592000000
 
 token:

@@ -1,6 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 
-function NodeShape({ node, mmToPxX, mmToPxY, onMouseDownNode, selected }) {
+function NodeShape({
+  node,
+  mmToPxX,
+  mmToPxY,
+  onMouseDownNode,
+  selected,
+  zIndex,
+}) {
   const { frame } = node;
   const style = node.style || {};
   return (
@@ -27,12 +34,20 @@ function NodeShape({ node, mmToPxX, mmToPxY, onMouseDownNode, selected }) {
         outline: selected ? "2px solid #2563eb" : "none",
         cursor: "move",
         userSelect: "none",
+        zIndex: zIndex,
       }}
     />
   );
 }
 
-function NodeImage({ node, mmToPxX, mmToPxY, onMouseDownNode, selected }) {
+function NodeImage({
+  node,
+  mmToPxX,
+  mmToPxY,
+  onMouseDownNode,
+  selected,
+  zIndex,
+}) {
   const { frame } = node;
   return (
     <div
@@ -49,6 +64,7 @@ function NodeImage({ node, mmToPxX, mmToPxY, onMouseDownNode, selected }) {
         outline: selected ? "2px solid #2563eb" : "none",
         cursor: "move",
         userSelect: "none",
+        zIndex: zIndex,
       }}
     >
       <img
@@ -69,6 +85,7 @@ function NodeText({
   onMouseDownNode,
   onChangeText,
   selected,
+  zIndex,
 }) {
   const { frame } = node;
   const style = node.textStyle || {};
@@ -111,6 +128,7 @@ function NodeText({
         outline: selected ? "2px solid #2563eb" : "none",
         cursor: editing ? "text" : "move",
         userSelect: editing ? "text" : "none",
+        zIndex: zIndex,
       }}
       onMouseDown={(e) => {
         if (!editing) onMouseDownNode(e, node);
@@ -152,7 +170,14 @@ function NodeText({
   );
 }
 
-function NodeIcon({ node, mmToPxX, mmToPxY, onMouseDownNode, selected }) {
+function NodeIcon({
+  node,
+  mmToPxX,
+  mmToPxY,
+  onMouseDownNode,
+  selected,
+  zIndex,
+}) {
   const { frame, iconDef, style = {} } = node;
   const color = style.color || "#0f172a";
   const strokeWidth = style.strokeWidth || 2;
@@ -174,6 +199,7 @@ function NodeIcon({ node, mmToPxX, mmToPxY, onMouseDownNode, selected }) {
         outline: selected ? "2px solid #2563eb" : "none",
         cursor: "move",
         userSelect: "none",
+        zIndex: zIndex,
       }}
     >
       <svg
@@ -192,7 +218,14 @@ function NodeIcon({ node, mmToPxX, mmToPxY, onMouseDownNode, selected }) {
   );
 }
 
-function NodeDrawing({ node, mmToPxX, mmToPxY, onMouseDownNode, selected }) {
+function NodeDrawing({
+  node,
+  mmToPxX,
+  mmToPxY,
+  onMouseDownNode,
+  selected,
+  zIndex,
+}) {
   const { frame, svgPath, style = {} } = node;
   const strokeColor = style.strokeColor || style.color || "#0f172a";
   const fillColor = style.fillColor || style.fill || "none";
@@ -217,6 +250,7 @@ function NodeDrawing({ node, mmToPxX, mmToPxY, onMouseDownNode, selected }) {
         cursor: "move",
         userSelect: "none",
         opacity,
+        zIndex: zIndex,
       }}
     >
       <svg
