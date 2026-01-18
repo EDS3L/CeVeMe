@@ -52,7 +52,7 @@ public class JobScrapingScheduler {
         log.info("Pełny cykl scrapowania został zakończony.");
     }
 
-    @Scheduled(cron = "0 0 5 * * *")
+    @Scheduled(cron = "0 0 6 * * *")
     public void findingLocation() {
         log.info("Rozpoczynam cykl pobierania lokacji pracy...");
 

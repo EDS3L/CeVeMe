@@ -1,5 +1,4 @@
-// src/main.jsx (albo odpowiednik pliku startowego)
-// ⬇️ USUNIĘTO warm-up z cache, zostawiono tylko rejestrację SW (nie prefetchuje)
+
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import AppRoutes from './routers/AppRoutes';

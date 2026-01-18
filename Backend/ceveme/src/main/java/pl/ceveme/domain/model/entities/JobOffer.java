@@ -4,6 +4,7 @@ package pl.ceveme.domain.model.entities;
 import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import pl.ceveme.domain.model.enums.SalaryType;
 import pl.ceveme.domain.model.vo.Location;
 
 import java.time.LocalDate;
@@ -26,6 +27,15 @@ public class JobOffer {
     private String company;
 
     private String salary;
+
+    private Double salaryMin;
+
+    private Double salaryMax;
+
+    private String salaryCurrency;
+
+    @Enumerated(EnumType.STRING)
+    private SalaryType salaryType;
 
     @Embedded
     private Location location;
@@ -107,6 +117,38 @@ public class JobOffer {
 
     public void setSalary(String salary) {
         this.salary = salary;
+    }
+
+    public Double getSalaryMin() {
+        return salaryMin;
+    }
+
+    public void setSalaryMin(Double salaryMin) {
+        this.salaryMin = salaryMin;
+    }
+
+    public Double getSalaryMax() {
+        return salaryMax;
+    }
+
+    public void setSalaryMax(Double salaryMax) {
+        this.salaryMax = salaryMax;
+    }
+
+    public String getSalaryCurrency() {
+        return salaryCurrency;
+    }
+
+    public void setSalaryCurrency(String salaryCurrency) {
+        this.salaryCurrency = salaryCurrency;
+    }
+
+    public SalaryType getSalaryType() {
+        return salaryType;
+    }
+
+    public void setSalaryType(SalaryType salaryType) {
+        this.salaryType = salaryType;
     }
 
     public Location getLocation() {

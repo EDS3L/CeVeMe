@@ -12,6 +12,9 @@ class JobSearchService {
       title: criteria.title || undefined,
       dateAddedFrom: criteria.dateAddedFrom || undefined,
       dateAddedTo: criteria.dateAddedTo || undefined,
+      salaryMin: criteria.salaryMin || undefined,
+      salaryMax: criteria.salaryMax || undefined,
+      salaryType: criteria.salaryType || undefined,
     };
 
     Object.keys(params).forEach((key) => {

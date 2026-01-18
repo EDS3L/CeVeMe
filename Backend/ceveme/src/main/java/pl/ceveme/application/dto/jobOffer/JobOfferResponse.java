@@ -8,7 +8,14 @@ public class JobOfferResponse {
     private String title;
     private String company;
     private String city;
+    private String street;
+    private Double latitude;
+    private Double longitude;
     private String salary;
+    private Double salaryMin;
+    private Double salaryMax;
+    private String salaryCurrency;
+    private String salaryType;
     private String experienceLevel;
     private String employmentType;
     private LocalDate dateAdded;
@@ -22,7 +29,8 @@ public class JobOfferResponse {
     public JobOfferResponse() {
     }
 
-    public JobOfferResponse(Long id, String title, String company, String city, String salary,
+    public JobOfferResponse(Long id, String title, String company, String city, String street, Double latitude, Double longitude, 
+                           String salary, Double salaryMin, Double salaryMax, String salaryCurrency, String salaryType,
                            String experienceLevel, String employmentType, LocalDate dateAdded,
                            LocalDate dateEnding, String link, String requirements, 
                            String responsibilities, String benefits, String niceToHave) {
@@ -30,7 +38,14 @@ public class JobOfferResponse {
         this.title = title;
         this.company = company;
         this.city = city;
+        this.street = street;
+        this.latitude = latitude;
+        this.longitude = longitude;
         this.salary = salary;
+        this.salaryMin = salaryMin;
+        this.salaryMax = salaryMax;
+        this.salaryCurrency = salaryCurrency;
+        this.salaryType = salaryType;
         this.experienceLevel = experienceLevel;
         this.employmentType = employmentType;
         this.dateAdded = dateAdded;
@@ -74,12 +89,68 @@ public class JobOfferResponse {
         this.city = city;
     }
 
+    public String getStreet() {
+        return street;
+    }
+
+    public void setStreet(String street) {
+        this.street = street;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
     public String getSalary() {
         return salary;
     }
 
     public void setSalary(String salary) {
         this.salary = salary;
+    }
+
+    public Double getSalaryMin() {
+        return salaryMin;
+    }
+
+    public void setSalaryMin(Double salaryMin) {
+        this.salaryMin = salaryMin;
+    }
+
+    public Double getSalaryMax() {
+        return salaryMax;
+    }
+
+    public void setSalaryMax(Double salaryMax) {
+        this.salaryMax = salaryMax;
+    }
+
+    public String getSalaryCurrency() {
+        return salaryCurrency;
+    }
+
+    public void setSalaryCurrency(String salaryCurrency) {
+        this.salaryCurrency = salaryCurrency;
+    }
+
+    public String getSalaryType() {
+        return salaryType;
+    }
+
+    public void setSalaryType(String salaryType) {
+        this.salaryType = salaryType;
     }
 
     public String getExperienceLevel() {

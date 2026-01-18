@@ -6,9 +6,39 @@ import {
   Briefcase,
   Calendar,
   ArrowUpRight,
+  Banknote,
+  Clock,
 } from "lucide-react";
 
+const formatSalary = (min, max, currency = "PLN", type) => {
+  const formatter = new Intl.NumberFormat("pl-PL");
+
+  if (!min && !max) return null;
+
+  const typeLabel = type === "HOURLY" ? "/godz." : "/mies.";
+  const currencyLabel = currency || "PLN";
+
+  if (min && max) {
+    if (min === max) {
+      return `${formatter.format(min)} ${currencyLabel}${typeLabel}`;
+    }
+    return `${formatter.format(min)} - ${formatter.format(max)} ${currencyLabel}${typeLabel}`;
+  }
+
+  if (min) return `od ${formatter.format(min)} ${currencyLabel}${typeLabel}`;
+  if (max) return `do ${formatter.format(max)} ${currencyLabel}${typeLabel}`;
+
+  return null;
+};
+
 export default function JobCard({ job, onOpen }) {
+  const salaryDisplay = formatSalary(
+    job.salaryMin,
+    job.salaryMax,
+    job.salaryCurrency,
+    job.salaryType,
+  );
+
   return (
     <Card
       role="button"
@@ -52,9 +82,13 @@ export default function JobCard({ job, onOpen }) {
         </div>
 
         <div className="mt-3 flex flex-wrap items-center gap-2">
-          {job.salary && (
-            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-sm bg-bookcloth/10 text-slatedark border border-bookcloth/30 font-medium">
-              {job.salary}
+          {salaryDisplay && (
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-sm bg-gradient-to-r from-bookcloth/10 to-kraft/10 text-slatedark border border-bookcloth/30 font-medium">
+              <Banknote className="w-4 h-4 text-bookcloth" />
+              {salaryDisplay}
+              {job.salaryType === "HOURLY" && (
+                <Clock className="w-3 h-3 text-kraft ml-0.5" />
+              )}
             </span>
           )}
           {job.experienceLevel && (

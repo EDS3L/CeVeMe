@@ -136,4 +136,14 @@ public interface JobOfferRepository extends JpaRepository<JobOffer, Long>, JpaSp
         j.salary IS NOT NULL
         """)
     Page<JobOffer> findActive(@Param("today") LocalDate today, Pageable pageable);
+
+
+    @Query("""
+            SELECT j FROM JobOffer j
+            WHERE j.dateEnding < :today
+              AND j.location IS NOT NULL
+              AND (j.location.latitude BETWEEN :minLat AND :maxLat)
+              AND (j.location.longitude BETWEEN :minLon AND :maxLon)
+            """)
+    List<JobOffer> findAllOffersAround(@Param("minLat") double minLat, @Param("maxLat") double maxLat, @Param("minLon") double minLon, @Param("maxLon") double maxLon, @Param("today") LocalDate today);
 }

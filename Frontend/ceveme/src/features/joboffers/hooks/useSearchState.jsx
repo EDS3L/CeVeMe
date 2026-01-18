@@ -10,6 +10,11 @@ const DEFAULT_CRITERIA = {
   title: "",
   dateAddedFrom: null,
   dateAddedTo: null,
+  locationCity: "",
+  radiusKm: null,
+  salaryMin: null,
+  salaryMax: null,
+  salaryType: "",
   pageNumber: 0,
   size: 50,
   sort: "newest",
@@ -18,7 +23,7 @@ const DEFAULT_CRITERIA = {
 export const useSearchState = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [localCriteria, setLocalCriteria] = useState(() =>
-    parseUrlToCriteria(searchParams)
+    parseUrlToCriteria(searchParams),
   );
 
   const syncCriteriaToUrl = useCallback(
@@ -38,7 +43,7 @@ export const useSearchState = () => {
 
       setSearchParams(params, { replace: true });
     },
-    [setSearchParams]
+    [setSearchParams],
   );
 
   useEffect(() => {
@@ -59,7 +64,7 @@ export const useSearchState = () => {
         return updated;
       });
     },
-    [syncCriteriaToUrl]
+    [syncCriteriaToUrl],
   );
 
   const resetCriteria = useCallback(() => {
@@ -110,6 +115,21 @@ function parseUrlToCriteria(searchParams) {
 
   const dateAddedTo = searchParams.get("dateAddedTo");
   if (dateAddedTo) criteria.dateAddedTo = dateAddedTo;
+
+  const locationCity = searchParams.get("locationCity");
+  if (locationCity) criteria.locationCity = locationCity;
+
+  const radiusKm = searchParams.get("radiusKm");
+  if (radiusKm) criteria.radiusKm = parseFloat(radiusKm);
+
+  const salaryMin = searchParams.get("salaryMin");
+  if (salaryMin) criteria.salaryMin = parseFloat(salaryMin);
+
+  const salaryMax = searchParams.get("salaryMax");
+  if (salaryMax) criteria.salaryMax = parseFloat(salaryMax);
+
+  const salaryType = searchParams.get("salaryType");
+  if (salaryType) criteria.salaryType = salaryType;
 
   const pageNumber = searchParams.get("pageNumber");
   if (pageNumber) criteria.pageNumber = parseInt(pageNumber, 10);

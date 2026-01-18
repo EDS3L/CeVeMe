@@ -11,14 +11,43 @@ import {
   ScrollText,
   ExternalLink,
   CheckCircle2,
+  Banknote,
 } from "lucide-react";
 import Modal from "../ui/Modal";
+import JobMap from "./JobMap";
+
+const formatSalary = (min, max, currency = "PLN", type) => {
+  const formatter = new Intl.NumberFormat("pl-PL");
+
+  if (!min && !max) return null;
+
+  const typeLabel = type === "HOURLY" ? "/godz." : "/mies.";
+  const currencyLabel = currency || "PLN";
+
+  if (min && max) {
+    if (min === max) {
+      return `${formatter.format(min)} ${currencyLabel}${typeLabel}`;
+    }
+    return `${formatter.format(min)} - ${formatter.format(max)} ${currencyLabel}${typeLabel}`;
+  }
+
+  if (min) return `od ${formatter.format(min)} ${currencyLabel}${typeLabel}`;
+  if (max) return `do ${formatter.format(max)} ${currencyLabel}${typeLabel}`;
+
+  return null;
+};
 
 export default function JobModal({ open, onClose, job }) {
   const nav = useNavigate();
   if (!open || !job) return null;
 
   const formatDate = (d) => (d ? new Date(d).toLocaleDateString("pl-PL") : "—");
+
+  const showMap = job.street && job.latitude && job.longitude;
+  const fullAddress =
+    job.street && job.city
+      ? `${job.street}, ${job.city}`
+      : job.city || "Brak adresu";
 
   const getPortalName = (url) => {
     if (!url) return "Nieznane źródło";
@@ -35,13 +64,13 @@ export default function JobModal({ open, onClose, job }) {
   };
   const truncateHtml = (html, maxWords = 50) => {
     if (!html) return null;
-    
+
     // Remove HTML tags for counting
     const text = html.replace(/<[^>]*>/g, " ").trim();
     const words = text.split(/\s+/);
-    
+
     if (words.length <= maxWords) return html;
-    
+
     // Return first maxWords
     const truncated = words.slice(0, maxWords).join(" ");
     return `${truncated}... <em class="text-gray-500">(więcej na portalu)</em>`;
@@ -92,10 +121,20 @@ export default function JobModal({ open, onClose, job }) {
                     {job.city || "Lokalizacja zdalna"}
                   </span>
 
-                  {job.salary && (
+                  {(job.salaryMin || job.salaryMax) && (
                     <span className="inline-flex items-center gap-1.5 font-medium">
-                      <Briefcase className="w-5 h-5 text-baseblack" />
-                      <span className="font-bold">{job.salary}</span>
+                      <Banknote className="w-5 h-5 text-bookcloth" />
+                      <span className="font-bold text-bookcloth">
+                        {formatSalary(
+                          job.salaryMin,
+                          job.salaryMax,
+                          job.salaryCurrency,
+                          job.salaryType,
+                        )}
+                      </span>
+                      {job.salaryType === "HOURLY" && (
+                        <Clock className="w-4 h-4 text-kraft" />
+                      )}
                     </span>
                   )}
                 </div>
@@ -120,12 +159,6 @@ export default function JobModal({ open, onClose, job }) {
                 >
                   Zobacz ofertę
                 </a>
-                <button
-                  aria-label="Zapisz"
-                  className="p-3 text-gray-500 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors shadow-sm"
-                >
-                  <Bookmark className="w-5 h-5" />
-                </button>
               </div>
             </header>
 
@@ -161,14 +194,35 @@ export default function JobModal({ open, onClose, job }) {
                     </span>
                     <span>{job.city || "—"}</span>
                   </div>
-                  {job.salary && (
-                    <div className="flex items-start gap-3">
-                      <span className="font-semibold text-slatedark min-w-[120px]">
+                  {(job.salaryMin || job.salaryMax) && (
+                    <div className="flex items-start gap-3 p-3 bg-gradient-to-r from-bookcloth/5 to-kraft/5 rounded-lg border border-bookcloth/20">
+                      <span className="font-semibold text-slatedark min-w-[120px] flex items-center gap-2">
+                        <Banknote className="w-4 h-4 text-bookcloth" />
                         Wynagrodzenie:
                       </span>
-                      <span className="font-bold text-bookcloth">
-                        {job.salary}
-                      </span>
+                      <div className="flex flex-col">
+                        <span className="font-bold text-bookcloth text-lg">
+                          {formatSalary(
+                            job.salaryMin,
+                            job.salaryMax,
+                            job.salaryCurrency,
+                            job.salaryType,
+                          )}
+                        </span>
+                        {job.salaryType && (
+                          <span className="text-sm text-clouddark flex items-center gap-1">
+                            {job.salaryType === "HOURLY" ? (
+                              <>
+                                <Clock className="w-3 h-3" /> Stawka godzinowa
+                              </>
+                            ) : (
+                              <>
+                                <Clock className="w-3 h-3" /> Stawka miesięczna
+                              </>
+                            )}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   )}
                   {job.experienceLevel && (
@@ -206,9 +260,11 @@ export default function JobModal({ open, onClose, job }) {
                     <Briefcase className="w-5 h-5 text-bookcloth" />
                     Opis stanowiska
                   </h4>
-                  <div 
+                  <div
                     className="text-gray-700 leading-relaxed prose prose-sm max-w-none [&>ul]:list-disc [&>ul]:ml-5 [&>ol]:list-decimal [&>ol]:ml-5"
-                    dangerouslySetInnerHTML={{ __html: truncateHtml(job.responsibilities, 60) }}
+                    dangerouslySetInnerHTML={{
+                      __html: truncateHtml(job.responsibilities, 60),
+                    }}
                   />
                 </section>
               )}
@@ -220,9 +276,11 @@ export default function JobModal({ open, onClose, job }) {
                     <CheckCircle2 className="w-5 h-5 text-bookcloth" />
                     Wymagania
                   </h4>
-                  <div 
+                  <div
                     className="text-gray-700 leading-relaxed prose prose-sm max-w-none [&>ul]:list-disc [&>ul]:ml-5 [&>ol]:list-decimal [&>ol]:ml-5"
-                    dangerouslySetInnerHTML={{ __html: truncateHtml(job.requirements, 60) }}
+                    dangerouslySetInnerHTML={{
+                      __html: truncateHtml(job.requirements, 60),
+                    }}
                   />
                 </section>
               )}
@@ -233,9 +291,11 @@ export default function JobModal({ open, onClose, job }) {
                   <h4 className="text-xl font-semibold text-slatedark mb-4">
                     💡 Mile widziane
                   </h4>
-                  <div 
+                  <div
                     className="text-gray-700 leading-relaxed prose prose-sm max-w-none [&>ul]:list-disc [&>ul]:ml-5 [&>ol]:list-decimal [&>ol]:ml-5"
-                    dangerouslySetInnerHTML={{ __html: truncateHtml(job.niceToHave, 40) }}
+                    dangerouslySetInnerHTML={{
+                      __html: truncateHtml(job.niceToHave, 40),
+                    }}
                   />
                 </section>
               )}
@@ -246,16 +306,19 @@ export default function JobModal({ open, onClose, job }) {
                   <h4 className="text-xl font-semibold text-slatedark mb-4">
                     ✨ Benefity
                   </h4>
-                  <div 
+                  <div
                     className="text-gray-700 leading-relaxed prose prose-sm max-w-none [&>ul]:list-disc [&>ul]:ml-5 [&>ol]:list-decimal [&>ol]:ml-5"
-                    dangerouslySetInnerHTML={{ __html: truncateHtml(job.benefits, 40) }}
+                    dangerouslySetInnerHTML={{
+                      __html: truncateHtml(job.benefits, 40),
+                    }}
                   />
                 </section>
               )}
 
               {/* Info Footer */}
               <div className="text-center text-sm text-gray-500 italic bg-ivorylight/50 p-4 rounded-lg border border-kraft/10">
-                Wyświetlono skróconą wersję oferty. Pełne szczegóły dostępne na stronie portalu {getPortalName(job.link)}.
+                Wyświetlono skróconą wersję oferty. Pełne szczegóły dostępne na
+                stronie portalu {getPortalName(job.link)}.
               </div>
 
               {/* CTA Section */}
@@ -265,12 +328,28 @@ export default function JobModal({ open, onClose, job }) {
                 </p>
                 <button
                   className="w-full cursor-pointer inline-flex font-bold items-center justify-center gap-2 px-6 py-3 rounded-lg text-white bg-gradient-to-r from-bookcloth to-kraft hover:from-kraft hover:to-manilla transition-all shadow-lg hover:shadow-xl"
-                  onClick={() => nav("/cv", { state: { offerLink: job.link } })}
+                  onClick={() =>
+                    nav("/cv2", { state: { offerLink: job.link } })
+                  }
                 >
                   <ScrollText className="w-5 h-5" />
-                  Wygeneruj CV
+                  Wygeneruj CV w Edytorze
                 </button>
               </aside>
+              {showMap && (
+                <section>
+                  <h4 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                    <MapPin className="w-5 h-5 text-red-600" />
+                    Lokalizcja na mapie
+                  </h4>
+                  <JobMap
+                    latitude={job.latitude}
+                    longitude={job.longitude}
+                    title={job.title}
+                    adress={fullAddress}
+                  ></JobMap>
+                </section>
+              )}
             </div>
           </div>
         </div>

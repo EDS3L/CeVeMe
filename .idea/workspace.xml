@@ -5,18 +5,45 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3231cadf-6361-4cef-88cc-949d98c677dc" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/dto/location/FindLocationCommand.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/dto/location/LocationResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/port/out/LocationFinder.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/usecase/location/FindLocationUseCase.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/external/location/OpenStreetMapImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/database/CityMapping.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/database/EmploymentNormalizer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/database/EmploymentType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/database/ExperienceNormalizer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/database/LocationNormalizer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/database/ParsedSalary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/database/SalaryNormalizer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/database/Seniority.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/dto/location/BoundingBox.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/dto/location/FindJobsInRadiusCommand.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/schedule/DataNormalizationJob.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/usecase/location/FindJobsInRadiusUseCase.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/usecase/location/GeoUtils.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/domain/model/enums/SalaryType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/controllers/location/LocationController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/dto/jobOffer/JobOfferResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/dto/jobOffer/JobOfferResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/dto/jobOffer/JobSearchCriteria.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/dto/jobOffer/JobSearchCriteria.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/mapper/JobOfferMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/mapper/JobOfferMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/port/out/LocationFinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/port/out/LocationFinder.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/schedule/JobScrapingScheduler.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/schedule/JobScrapingScheduler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/controllers/stripe/CheckoutController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/controllers/stripe/CheckoutController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/usecase/jobOffer/SearchJobOffersUseCase.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/usecase/jobOffer/SearchJobOffersUseCase.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/usecase/location/FindLocationUseCase.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/usecase/location/FindLocationUseCase.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/domain/model/entities/JobOffer.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/domain/model/entities/JobOffer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/domain/repositories/JobOfferRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/domain/repositories/JobOfferRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/domain/specification/JobOfferSpecification.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/domain/specification/JobOfferSpecification.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/external/location/OpenStreetMapImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/external/location/OpenStreetMapImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/ceveme/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/ceveme/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/ceveme/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/ceveme/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/ceveme/src/features/joboffers/components/jobs/JobModal.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/ceveme/src/features/joboffers/components/jobs/JobModal.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/ceveme/src/features/joboffers/components/search/ActiveFilters.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/ceveme/src/features/joboffers/components/search/ActiveFilters.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Frontend/ceveme/src/features/joboffers/components/search/FiltersSheet.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/ceveme/src/features/joboffers/components/search/FiltersSheet.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/ceveme/src/features/joboffers/hooks/ApiService.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/ceveme/src/features/joboffers/hooks/ApiService.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/ceveme/src/features/joboffers/hooks/useSearchState.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/ceveme/src/features/joboffers/hooks/useSearchState.jsx" afterDir="false" />
     </list>
-    <list id="28ac2837-207c-4697-b16d-14bb42f7d26d" name="Changes by barte" comment="">
-      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/schedule/JobScrapingScheduler.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/schedule/JobScrapingScheduler.java" afterDir="false" />
+    <list id="6203340b-26e1-4138-9e37-bbc30d96334c" name="Changes by barte" comment="">
+      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/port/out/LocationFinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/port/out/LocationFinder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/external/location/OpenStreetMapImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/external/location/OpenStreetMapImpl.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,8 +77,10 @@
       <list>
         <option value="package.json" />
         <option value="package-info" />
+        <option value="Interface" />
         <option value="Record" />
         <option value="Class" />
+        <option value="Enum" />
       </list>
     </option>
   </component>
@@ -71,20 +100,16 @@
   }
 }</component>
   <component name="LineStatusTrackerManager">
-    <file path="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/schedule/JobScrapingScheduler.java">
+    <file path="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/port/out/LocationFinder.java">
       <ranges>
-        <range start1="6" end1="6" start2="6" end2="7" changelist="3231cadf-6361-4cef-88cc-949d98c677dc" />
-        <range start1="21" end1="21" start2="22" end2="23" changelist="3231cadf-6361-4cef-88cc-949d98c677dc" />
-        <range start1="22" end1="31" start2="24" end2="25" changelist="3231cadf-6361-4cef-88cc-949d98c677dc" />
-        <range start1="39" end1="39" start2="33" end2="34" changelist="3231cadf-6361-4cef-88cc-949d98c677dc" />
-        <range start1="40" end1="41" start2="35" end2="35" changelist="3231cadf-6361-4cef-88cc-949d98c677dc" />
-        <range start1="42" end1="43" start2="36" end2="37" changelist="3231cadf-6361-4cef-88cc-949d98c677dc" />
-        <range start1="59" end1="59" start2="53" end2="62" changelist="3231cadf-6361-4cef-88cc-949d98c677dc" />
-        <range start1="60" end1="61" start2="63" end2="64" changelist="28ac2837-207c-4697-b16d-14bb42f7d26d" />
-        <range start1="62" end1="63" start2="65" end2="66" changelist="28ac2837-207c-4697-b16d-14bb42f7d26d" />
-        <range start1="64" end1="65" start2="67" end2="68" changelist="28ac2837-207c-4697-b16d-14bb42f7d26d" />
-        <range start1="66" end1="67" start2="69" end2="70" changelist="28ac2837-207c-4697-b16d-14bb42f7d26d" />
-        <range start1="72" end1="73" start2="75" end2="76" changelist="28ac2837-207c-4697-b16d-14bb42f7d26d" />
+        <range start1="3" end1="3" start2="3" end2="4" changelist="3231cadf-6361-4cef-88cc-949d98c677dc" />
+        <range start1="10" end1="10" start2="11" end2="13" changelist="6203340b-26e1-4138-9e37-bbc30d96334c" />
+      </ranges>
+    </file>
+    <file path="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/external/location/OpenStreetMapImpl.java">
+      <ranges>
+        <range start1="29" end1="50" start2="29" end2="30" changelist="3231cadf-6361-4cef-88cc-949d98c677dc" />
+        <range start1="53" end1="53" start2="33" end2="64" changelist="6203340b-26e1-4138-9e37-bbc30d96334c" />
       </ranges>
     </file>
   </component>
@@ -188,11 +213,23 @@
       <workItem from="1767349198314" duration="3057000" />
       <workItem from="1767808338396" duration="3484000" />
       <workItem from="1768235656337" duration="3000" />
-      <workItem from="1768651567459" duration="12415000" />
+      <workItem from="1768651567459" duration="12783000" />
+      <workItem from="1768720445547" duration="29506000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>

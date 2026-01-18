@@ -1,4 +1,11 @@
-import React, { useRef, useCallback, useMemo, useState } from "react";
+import React, {
+  useRef,
+  useCallback,
+  useMemo,
+  useState,
+  useEffect,
+} from "react";
+import { useLocation } from "react-router-dom";
 
 import TemplateModal from "./ui/sidebar/templateChooser/TemplateModal";
 import TemplateSelectButton from "./ui/sidebar/templateChooser/TemplateSelectButton";
@@ -153,7 +160,7 @@ export default function App() {
         style: "Klasyczny, profesjonalny",
       },
     ],
-    []
+    [],
   );
 
   const initial = useMemo(() => {
@@ -218,6 +225,7 @@ export default function App() {
   }, []);
 
   const { email } = useAuth();
+  const location = useLocation();
 
   const [offerLink, setOfferLink] = useState(() => {
     try {
@@ -232,6 +240,70 @@ export default function App() {
 
   const [isGenModalOpen, setIsGenModalOpen] = useState(false);
   const [isTemplateWarningOpen, setIsTemplateWarningOpen] = useState(false);
+
+  const autoGenerateRef = useRef(false);
+  useEffect(() => {
+    console.log("[CvPage] Auto-generate check:", {
+      email,
+      offerLink: location.state?.offerLink,
+      alreadyTriggered: autoGenerateRef.current,
+    });
+
+    if (!email) {
+      console.log("[CvPage] Waiting for email...");
+      return;
+    }
+
+    if (location.state?.offerLink && !autoGenerateRef.current) {
+      console.log(
+        "[CvPage] Starting auto-generation for:",
+        location.state.offerLink,
+      );
+      autoGenerateRef.current = true;
+      const link = location.state.offerLink;
+
+      const templateToUse =
+        selectedTemplateName ||
+        (cvTemplates.length > 0 ? cvTemplates[0].title : null);
+      if (!selectedTemplateName && cvTemplates.length > 0) {
+        setSelectedTemplateName(cvTemplates[0].title);
+      }
+
+      (async () => {
+        try {
+          setLoading(true);
+          setOfferLink(link);
+          localStorage.setItem("CV_OFFER_LINK", link);
+          const data = await ApiService.generateCv(email, link);
+
+          localStorage.setItem("JSON_CV_DATA", JSON.stringify(data));
+          setCvData(data);
+
+          const selectedTemplate =
+            cvTemplates.find((t) => t.title === templateToUse) ||
+            cvTemplates[0];
+
+          const newDoc = selectedTemplate.func(data);
+          setDocument(newDoc);
+
+          if (!selectedTemplateName) {
+            setSelectedTemplateName(selectedTemplate.title);
+          }
+        } catch (e) {
+          console.error("Nie udało się wygenerować CV:", e);
+          alert("Nie udało się wygenerować CV (szczegóły w konsoli).");
+        } finally {
+          setLoading(false);
+        }
+      })();
+    }
+  }, [
+    location.state?.offerLink,
+    email,
+    cvTemplates,
+    selectedTemplateName,
+    setDocument,
+  ]);
 
   const openGenerateModal = useCallback(() => {
     if (!selectedTemplateName) {
@@ -276,7 +348,7 @@ export default function App() {
         setLoading(false);
       }
     },
-    [email, setDocument, cvTemplates, selectedTemplateName]
+    [email, setDocument, cvTemplates, selectedTemplateName],
   );
 
   const handlePickOffer = useCallback(() => {
@@ -289,7 +361,7 @@ export default function App() {
       setDocument(newDoc);
       setSelectedTemplateName(template.title);
     },
-    [cvData, setDocument]
+    [cvData, setDocument],
   );
 
   const { savingMode, handleSaveAndHistory } = useCvSave({
@@ -307,14 +379,14 @@ export default function App() {
       setSelectedIds(id ? [id] : []);
       setActiveGroupIds(null);
     },
-    [setSelectedId]
+    [setSelectedId],
   );
 
   const setSelectedIdOnly = useCallback(
     (id) => {
       setSelectedId(id);
     },
-    [setSelectedId]
+    [setSelectedId],
   );
 
   const handleGroup = useCallback(() => {
@@ -332,7 +404,7 @@ export default function App() {
       const pageTop = page.offsetTop || 0;
       cont.scrollTo({ top: pageTop + yPx - 40, behavior: "smooth" });
     },
-    [metrics]
+    [metrics],
   );
 
   const overflowMm = useMemo(() => extraBottomMm(doc), [doc]);

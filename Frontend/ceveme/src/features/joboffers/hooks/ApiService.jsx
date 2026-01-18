@@ -32,6 +32,11 @@ class ApiService {
       dateAddedFrom,
       dateAddedForm,
       dateAddedTo,
+      locationCity,
+      radiusKm,
+      salaryMin,
+      salaryMax,
+      salaryType
     } = filters;
 
     const from = dateAddedFrom || dateAddedForm || null;
@@ -49,6 +54,13 @@ class ApiService {
 
     if (from) params.dateAddedFrom = from;
     if (dateAddedTo) params.dateAddedTo = dateAddedTo;
+
+    if(locationCity) params.locationCity = locationCity;
+    if(radiusKm) params.radiusKm = radiusKm;
+
+    if(salaryMin) params.salaryMin = salaryMin;
+    if(salaryMax) params.salaryMax = salaryMax;
+    if(salaryType) params.salaryType = salaryType;
 
     const res = await axios.get('/api/jobOffer/searchBy', {
       params,

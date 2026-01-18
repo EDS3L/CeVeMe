@@ -27,9 +27,23 @@ public class OpenStreetMapImpl implements LocationFinder {
 
     @Override
     public LocationResponse findByCityName(String cityName) throws IOException, InterruptedException {
+        return findLocAndLat(cityName);
+
+    }
+
+    @Override
+    public LocationResponse findByCityAndStreetName(String cityName, String streetName) throws IOException, InterruptedException {
+
+        String fullAddress = cityName + " ," + streetName;
+        return findLocAndLat(fullAddress);
+
+    }
+
+
+    private LocationResponse findLocAndLat(String location) throws InterruptedException, IOException {
         Thread.sleep(1000);
 
-        String encodedAddress = URLEncoder.encode(cityName, StandardCharsets.UTF_8);
+        String encodedAddress = URLEncoder.encode(location, StandardCharsets.UTF_8);
         String url = "https://nominatim.openstreetmap.org/search?q=" + encodedAddress + "&format=json&limit=1";
 
         String response = httpClient.fetchContent(url);
@@ -46,9 +60,6 @@ public class OpenStreetMapImpl implements LocationFinder {
         double latitude = Double.parseDouble(lat);
         log.info("Lat: {}, Lon: {}", longitude, latitude);
 
-
         return new LocationResponse(latitude, longitude);
-
     }
-
 }

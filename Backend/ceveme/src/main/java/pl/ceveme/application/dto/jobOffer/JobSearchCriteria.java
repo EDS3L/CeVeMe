@@ -13,8 +13,11 @@ public class JobSearchCriteria {
     private String experienceLevel;
     private String employmentType;
     private String title;
-    private Integer minSalary;
-    private Integer maxSalary;
+    private Integer salaryMin;
+    private Integer salaryMax;
+    private String salaryType;
+    private String locationCity;
+    private Double radiusKm;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate dateAddedFrom;
@@ -78,20 +81,28 @@ public class JobSearchCriteria {
         this.title = title;
     }
 
-    public Integer getMinSalary() {
-        return minSalary;
+    public Integer getSalaryMin() {
+        return salaryMin;
     }
 
-    public void setMinSalary(Integer minSalary) {
-        this.minSalary = minSalary;
+    public void setSalaryMin(Integer salaryMin) {
+        this.salaryMin = salaryMin;
     }
 
-    public Integer getMaxSalary() {
-        return maxSalary;
+    public Integer getSalaryMax() {
+        return salaryMax;
     }
 
-    public void setMaxSalary(Integer maxSalary) {
-        this.maxSalary = maxSalary;
+    public void setSalaryMax(Integer salaryMax) {
+        this.salaryMax = salaryMax;
+    }
+
+    public String getSalaryType() {
+        return salaryType;
+    }
+
+    public void setSalaryType(String salaryType) {
+        this.salaryType = salaryType;
     }
 
     public LocalDate getDateAddedFrom() {
@@ -140,5 +151,21 @@ public class JobSearchCriteria {
 
     public void setSort(String sort) {
         this.sort = sort;
+    }
+
+    public String getLocationCity() {
+        return locationCity;
+    }
+
+    public void setLocationCity(String locationCity) {
+        this.locationCity = locationCity;
+    }
+
+    public Double getRadiusKm() {
+        return radiusKm;
+    }
+
+    public void setRadiusKm(Double radiusKm) {
+        this.radiusKm = radiusKm;
     }
 }

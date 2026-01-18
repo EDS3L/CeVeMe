@@ -2,11 +2,9 @@ package pl.ceveme.application.usecase.location;
 
 
 import org.springframework.stereotype.Component;
-import pl.ceveme.application.dto.location.FindLocationCommand;
 import pl.ceveme.application.dto.location.LocationResponse;
 import pl.ceveme.domain.model.entities.JobOffer;
 import pl.ceveme.domain.repositories.JobOfferRepository;
-import pl.ceveme.infrastructure.external.exception.FetchException;
 import pl.ceveme.infrastructure.external.location.OpenStreetMapImpl;
 
 import java.io.IOException;
@@ -17,7 +15,7 @@ import java.util.List;
 public class FindLocationUseCase {
 
     private final JobOfferRepository jobOfferRepository;
-    private final OpenStreetMapImpl  openStreetMapImpl;
+    private final OpenStreetMapImpl openStreetMapImpl;
 
     public FindLocationUseCase(JobOfferRepository jobOfferRepository, OpenStreetMapImpl openStreetMapImpl) {
         this.jobOfferRepository = jobOfferRepository;
@@ -26,7 +24,11 @@ public class FindLocationUseCase {
 
 
     public List<LocationResponse> execute() throws IOException, InterruptedException {
-        List<JobOffer> jobOffers = jobOfferRepository.findAll().stream().filter(jb -> jb.getLocation() != null).filter(jb -> jb.getLocation().getCity() != null).toList();
+        List<JobOffer> jobOffers = jobOfferRepository.findAll().stream()
+                .filter(jb -> jb.getLocation() != null)
+                .filter(jb -> jb.getLocation().getCity() != null)
+                .filter(jb -> jb.getLocation().getLongitude() == null ||  jb.getLocation().getLatitude() == null)
+                .toList();
 
         List<LocationResponse> locationResponses = new ArrayList<>();
         for (JobOffer jobOffer : jobOffers) {
@@ -38,13 +40,24 @@ public class FindLocationUseCase {
 
 
     private LocationResponse getLatAndLon(JobOffer jobOffer) throws IOException, InterruptedException {
-        if(jobOffer.getLocation().getCity() == null) return null;
+        if (jobOffer.getLocation().getCity() == null) return null;
 
         String city = jobOffer.getLocation().getCity();
+        String street = jobOffer.getLocation().getStreet();
 
-        LocationResponse locationResponse = openStreetMapImpl.findByCityName(city);
+        boolean hasCity = city != null && !city.isBlank();
+        boolean hasStreet = street != null && !street.isBlank();
 
-        if(locationResponse == null) return null;
+        LocationResponse locationResponse;
+        if (hasCity && hasStreet) {
+            locationResponse = openStreetMapImpl.findByCityAndStreetName(city, street);
+        } else if (hasCity) {
+            locationResponse = openStreetMapImpl.findByCityName(city);
+        } else {
+            return null;
+        }
+
+        if (locationResponse == null) return null;
 
         jobOffer.getLocation().setLatitude(locationResponse.latitude());
         jobOffer.getLocation().setLongitude(locationResponse.longitude());

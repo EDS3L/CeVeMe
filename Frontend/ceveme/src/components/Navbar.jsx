@@ -63,7 +63,7 @@ function Navbar({ showShadow }) {
                   to="/cv2"
                   className="text-[var(--color-clouddark)] hover:text-[var(--color-slatedark)] transition-colors duration-200 font-bold"
                 >
-                  Nowy kreator
+                  Kreator cv
                 </Link>
                 <Link
                   to="/cv"
@@ -134,15 +134,6 @@ function Navbar({ showShadow }) {
                     >
                       <User size={20} strokeWidth={2} className="mr-3" />
                       Profil
-                    </Link>
-                    <Link
-                      to="/favorites"
-                      role="menuitem"
-                      className="flex items-center px-4 py-2 text-[var(--color-slatedark)] hover:bg-[var(--color-ivorymedium)]/60 transition-colors duration-200"
-                      onClick={() => setIsUserDropdownOpen(false)}
-                    >
-                      <Heart size={20} strokeWidth={2} className="mr-3" />
-                      Ulubione
                     </Link>
                     <hr className="my-2 border-[var(--color-ivorydark)]" />
                     <button

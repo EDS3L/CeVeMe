@@ -9,6 +9,7 @@ import pl.ceveme.application.dto.jobOffer.JobSearchCriteria;
 import pl.ceveme.domain.model.entities.JobOffer;
 import pl.ceveme.domain.repositories.JobOfferRepository;
 import pl.ceveme.domain.specification.JobOfferSpecification;
+import pl.ceveme.infrastructure.external.location.OpenStreetMapImpl;
 
 @Service
 public class SearchJobOffersUseCase {
@@ -18,16 +19,18 @@ public class SearchJobOffersUseCase {
     private static final int DEFAULT_PAGE_SIZE = 50;
 
     private final JobOfferRepository jobOfferRepository;
+    private final OpenStreetMapImpl openStreetMap;
 
-    public SearchJobOffersUseCase(JobOfferRepository jobOfferRepository) {
+    public SearchJobOffersUseCase(JobOfferRepository jobOfferRepository, OpenStreetMapImpl openStreetMap) {
         this.jobOfferRepository = jobOfferRepository;
+        this.openStreetMap = openStreetMap;
     }
 
     public Page<JobOffer> search(JobSearchCriteria criteria) {
         validateCriteria(criteria);
 
         Pageable pageable = buildPageable(criteria);
-        return jobOfferRepository.findAll(JobOfferSpecification.buildSpecification(criteria), pageable);
+        return jobOfferRepository.findAll(JobOfferSpecification.buildSpecification(criteria,openStreetMap), pageable);
     }
 
     private void validateCriteria(JobSearchCriteria criteria) {

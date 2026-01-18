@@ -1,11 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import Navbar from "../../../components/Navbar";
 
 const NotFound = () => {
   return (
     <div className="flex flex-col min-h-screen bg-ivorylight">
-      <Navbar showShadow={true} />
       <div className="flex-1 flex flex-col items-center justify-center p-4 text-center">
         <h1 className="text-9xl font-bold text-kraft mb-4">404</h1>
         <h2 className="text-3xl font-semibold text-slatedark mb-6">
