@@ -6,6 +6,7 @@ import pl.ceveme.domain.model.enums.UserRole;
 import pl.ceveme.domain.model.vo.*;
 import pl.ceveme.infrastructure.adapter.security.BCryptPasswordEncoderAdapter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -52,6 +53,8 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<RefreshToken> refreshTokenList;
+
+    private LocalDateTime lastLogin;
 
     private boolean isActive;
 
@@ -311,6 +314,14 @@ public class User {
             this.employmentInfo.setUser(this);
         }
         this.employmentInfo.addEducation(education);
+    }
+
+    public LocalDateTime getLastLogin() {
+        return lastLogin;
+    }
+
+    public void setLastLogin(LocalDateTime lastLogin) {
+        this.lastLogin = lastLogin;
     }
 
     public PasswordToken getPasswordToken() {

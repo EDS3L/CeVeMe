@@ -14,6 +14,8 @@ import pl.ceveme.domain.services.jwt.RefreshTokenService;
 import pl.ceveme.infrastructure.adapter.security.BCryptPasswordEncoderAdapter;
 import pl.ceveme.infrastructure.config.jwt.JwtService;
 
+import java.time.LocalDateTime;
+
 
 @Service
 public class LoginUserUseCase {
@@ -51,6 +53,10 @@ public class LoginUserUseCase {
 
         createRefreshCookie(user,servletRequest,servletResponse);
         generateAccessCookie(email,userId,user,servletResponse);
+
+        user.setLastLogin(LocalDateTime.now());
+
+        userRepository.save(user);
 
         return new LoginUserResponse(user.getId(), "Login successful!");
 

@@ -101,7 +101,7 @@ export default function App() {
         }}
       >
         <div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 border border-cloudmedium/50 rounded-[50%]"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 border-2 border-kraft/30 rounded-[50%] shadow-lg shadow-kraft/10"
           style={{
             width: `${ellipseRadii.x * 2}px`,
             height: `${ellipseRadii.y * 2}px`,

@@ -1,10 +1,9 @@
-import React from "react";
-import DemoAnimation from "./DemoAnimation";
+import React from 'react';
+import DemoAnimation from './DemoAnimation';
 
 export default function DemoSection() {
   return (
     <section
-      id="demo"
       className="w-full bg-gradient-to-b from-cloudlight to-ivorylight py-16 text-slatedark"
       aria-labelledby="lp-demo-heading"
     >
@@ -23,15 +22,15 @@ export default function DemoSection() {
               >
                 Jak to działa
               </h2>
-              <p className="mt-3 text-sm leading-relaxed text-clouddark">
+              <p className="mt-3 text-sm leading-relaxed text-[var(--color-clouddark)]">
                 Aplikacja działa w pętli — po zakończeniu jednego procesu
-                automatycznie zaczyna kolejny. Zawsze możesz wcisnąć „Pauza".
+                automatycznie zaczyna kolejny. Zawsze możesz wcisnąć „Pauza”.
               </p>
             </header>
 
             <ul className="mt-6 space-y-4 text-sm">
               <li className="flex gap-3">
-                <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-kraft to-bookcloth text-white font-bold shadow-md">
+                <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-[var(--color-manilla)] font-bold">
                   1
                 </span>
                 <div>
@@ -39,7 +38,7 @@ export default function DemoSection() {
                 </div>
               </li>
               <li className="flex gap-3">
-                <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-kraft to-bookcloth text-white font-bold shadow-md">
+                <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-[var(--color-manilla)] font-bold">
                   2
                 </span>
                 <div>
@@ -48,16 +47,16 @@ export default function DemoSection() {
                 </div>
               </li>
               <li className="flex gap-3">
-                <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-kraft to-bookcloth text-white font-bold shadow-md">
+                <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-[var(--color-manilla)] font-bold">
                   3
                 </span>
                 <div>
                   <strong>Powstaje spersonalizowane CV,</strong> a pola
-                  „wpadają" na swoje miejsce.
+                  „wpadają” na swoje miejsce.
                 </div>
               </li>
               <li className="flex gap-3">
-                <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-kraft to-bookcloth text-white font-bold shadow-md">
+                <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-[var(--color-manilla)] font-bold">
                   4
                 </span>
                 <div>

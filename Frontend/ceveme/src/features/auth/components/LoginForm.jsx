@@ -2,23 +2,7 @@ import React, { useState } from "react";
 import UseAuth from "../hooks/UseAuth";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthContext } from "../context/useAuthContext";
-
-const LockIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    className="h-5 w-5 text-cloudmedium"
-    fill="none"
-    viewBox="0 0 24 24"
-    stroke="currentColor"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-    />
-  </svg>
-);
+import { Mail, Lock, ArrowRight, Sparkles, FileText } from "lucide-react";
 
 const LoginForm = () => {
   const hasError = false;
@@ -34,88 +18,137 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="bg-manilla min-h-screen flex items-center justify-center font-sans p-4">
-      <div className="w-full max-w-md bg-slatelight rounded-lg shadow-lg p-8 space-y-6">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-ivorylight">Witaj ponownie</h1>
-          <p className="text-cloudmedium mt-2">Zaloguj się, aby kontynuować.</p>
-        </div>
+    <div className="bg-gradient-to-br from-manilla via-kraft to-bookcloth min-h-screen flex items-center justify-center font-sans p-4 relative overflow-hidden">
+      {/* Animated Background Blobs */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-20 left-10 w-96 h-96 bg-kraft/30 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob"></div>
+        <div className="absolute top-40 right-10 w-96 h-96 bg-bookcloth/30 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000"></div>
+        <div className="absolute bottom-20 left-1/2 w-96 h-96 bg-manilla/30 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-4000"></div>
+      </div>
 
-        <form className="space-y-6" onSubmit={handleSignIn}>
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-ivorymedium mb-2"
-            >
-              Adres Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="ty@przyklad.com"
-              className={`w-full px-4 py-3 bg-slatelight border ${
-                hasError ? "border-feedbackerror" : "border-clouddark"
-              } rounded-md text-ivorylight placeholder-cloudmedium focus:outline-none focus:ring-2 focus:ring-feedbackfocus focus:border-transparent transition duration-200`}
-            />
+      {/* Floating Icons */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-1/4 left-1/6 animate-float">
+          <FileText className="text-white/20 w-20 h-20" />
+        </div>
+        <div className="absolute top-1/3 right-1/6 animate-float-delayed">
+          <Sparkles className="text-white/20 w-16 h-16" />
+        </div>
+      </div>
+
+      <div className="relative z-10 w-full max-w-md">
+        {/* Glassmorphism Card */}
+        <div className="bg-white/20 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/30 p-8 md:p-10 space-y-8">
+          {/* Header */}
+          <div className="text-center">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-kraft to-bookcloth rounded-2xl shadow-lg mb-6">
+              <Lock className="w-10 h-10 text-white" />
+            </div>
+            <h1 className="text-4xl font-bold text-white mb-3">
+              Witaj ponownie
+            </h1>
+            <p className="text-white/80 text-lg">
+              Zaloguj się, aby kontynuować tworzenie perfekcyjnych CV
+            </p>
           </div>
 
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-ivorymedium mb-2"
-            >
-              Hasło
-            </label>
-            <div className="relative">
-              <input
-                type="password"
-                id="password"
-                name="password"
-                placeholder="••••••••"
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-4 pr-10 py-3 bg-slatelight border border-clouddark rounded-md text-ivorylight placeholder-cloudmedium focus:outline-none focus:ring-2 focus:ring-feedbackfocus focus:border-transparent transition duration-200"
-              />
-              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                <LockIcon />
+          <form className="space-y-6" onSubmit={handleSignIn}>
+            {/* Email Input */}
+            <div className="space-y-2">
+              <label
+                htmlFor="email"
+                className="block text-sm font-semibold text-white/90"
+              >
+                Adres Email
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <Mail className="h-5 w-5 text-white/60" />
+                </div>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="ty@przyklad.com"
+                  className={`w-full pl-12 pr-4 py-4 bg-white/30 backdrop-blur-sm border-2 ${
+                    hasError ? "border-feedbackerror" : "border-white/40"
+                  } rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/60 transition-all duration-200`}
+                />
               </div>
             </div>
-            {hasError && (
-              <p className="text-sm text-feedbackerror mt-2">
-                Nieprawidłowy email lub hasło.
-              </p>
-            )}
-          </div>
 
-          <div className="flex items-center justify-between">
-            <Link
-              to="/auth/forgot-password"
-              className="text-sm text-kraft hover:underline focus:outline-none focus:ring-1 focus:ring-kraft rounded"
-            >
-              Nie pamiętasz hasła?
-            </Link>
-          </div>
+            {/* Password Input */}
+            <div className="space-y-2">
+              <label
+                htmlFor="password"
+                className="block text-sm font-semibold text-white/90"
+              >
+                Hasło
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <Lock className="h-5 w-5 text-white/60" />
+                </div>
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  placeholder="••••••••"
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full pl-12 pr-4 py-4 bg-white/30 backdrop-blur-sm border-2 border-white/40 rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/60 transition-all duration-200"
+                />
+              </div>
+              {hasError && (
+                <p className="text-sm text-feedbackerror bg-white/20 backdrop-blur-sm rounded-lg px-3 py-2 mt-2">
+                  Nieprawidłowy email lub hasło.
+                </p>
+              )}
+            </div>
 
-          <div>
-            <button
-              type="submit"
-              className="w-full cursor-pointer bg-bookcloth text-ivorylight font-bold py-3 px-4 rounded-md hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slatemedium focus:ring-bookcloth transition duration-200"
-            >
-              Zaloguj się
-            </button>
-          </div>
-        </form>
+            {/* Forgot Password Link */}
+            <div className="flex items-center justify-end">
+              <Link
+                to="/auth/forgot-password"
+                className="text-sm text-white/90 hover:text-white font-medium hover:underline focus:outline-none focus:ring-2 focus:ring-white/50 rounded-lg px-2 py-1 transition-all"
+              >
+                Nie pamiętasz hasła?
+              </Link>
+            </div>
 
-        <div className="text-center">
-          <p className="text-sm text-cloudmedium">
-            Nie masz jeszcze konta?{" "}
-            <a
-              href="/auth/register"
-              className="font-medium text-kraft hover:underline focus:outline-none focus:ring-1 focus:ring-kraft rounded"
-            >
-              Zarejestruj się
-            </a>
+            {/* Submit Button */}
+            <div>
+              <button
+                type="submit"
+                className="group relative w-full cursor-pointer bg-gradient-to-r from-slatedark to-slatemedium text-white font-bold py-4 px-6 rounded-xl shadow-xl hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-white/30 transition-all duration-300 transform hover:scale-105 overflow-hidden"
+              >
+                <span className="relative z-10 flex items-center justify-center gap-2">
+                  Zaloguj się
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </span>
+                <div className="absolute inset-0 bg-gradient-to-r from-slatemedium to-slatedark opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              </button>
+            </div>
+          </form>
+
+          {/* Register Link */}
+          <div className="text-center pt-4">
+            <p className="text-white/80">
+              Nie masz jeszcze konta?{" "}
+              <Link
+                to="/auth/register"
+                className="font-bold text-white hover:underline focus:outline-none focus:ring-2 focus:ring-white/50 rounded px-1 transition-all"
+              >
+                Zarejestruj się
+              </Link>
+            </p>
+          </div>
+        </div>
+
+        {/* Bottom Decorative Text */}
+        <div className="text-center mt-8">
+          <p className="text-white/60 text-sm">
+            🔒 Bezpieczne połączenie szyfrowane SSL
           </p>
         </div>
       </div>

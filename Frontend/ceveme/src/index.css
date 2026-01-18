@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+/* Global Smooth Scroll */
+html {
+  scroll-behavior: smooth;
+}
+
 @theme {
   --color-slatedark: #191919;
   --color-slatemedium: #262625;
@@ -92,4 +97,58 @@ input[type="range"]:focus::-webkit-slider-thumb {
   box-shadow:
     0 0 0 3px rgba(97, 170, 242, 0.3),
     0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Custom Animations */
+@keyframes blob {
+  0%,
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20px) rotate(5deg);
+  }
+}
+
+@keyframes float-delayed {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-15px) rotate(-5deg);
+  }
+}
+
+.animate-blob {
+  animation: blob 7s infinite;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: float-delayed 8s ease-in-out infinite;
 }

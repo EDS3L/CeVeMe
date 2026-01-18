@@ -21,54 +21,63 @@ function HomeNavBar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
+  const scrollToSection = (sectionId) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      const offsetTop = element.offsetTop - 100; // 100px offset for navbar
+      window.scrollTo({
+        top: offsetTop,
+        behavior: "smooth"
+      });
+    }
+  };
+
   return (
     <>
       <nav
-        className={`fixed top-0 w-full z-50 bg-[var(--color-ivorylight)] shadow-lg h-16 transition-transform duration-300 ${
+        className={`fixed top-0 w-full z-50 bg-white/10 backdrop-blur-xl shadow-lg border-b border-white/20 h-20 transition-transform duration-300 ${
           isVisible ? "translate-y-0" : "-translate-y-full"
         }`}
       >
         <div className="flex items-center justify-between px-6 md:px-12 h-full">
-          <div className="flex items-center space-x-4">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-r from-[var(--color-kraft)] to-[var(--color-manilla)] flex items-center justify-center">
-              <span className="text-[var(--color-basewhite)] font-bold text-lg">
-                C
-              </span>
+          <div className="flex items-center space-x-3">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-kraft to-bookcloth flex items-center justify-center shadow-lg">
+              <span className="text-white font-bold text-xl">C</span>
             </div>
-            <span className="text-2xl font-bold text-[var(--color-slatedark)]">
+            <span className="text-2xl font-bold bg-gradient-to-r from-slatedark to-kraft bg-clip-text text-transparent">
               CeVeMe
             </span>
           </div>
 
-          <div className="hidden md:flex items-center space-x-6">
-            <Link
-              to="/info"
-              className="text-[var(--color-clouddark)] hover:text-[var(--color-slatedark)] transition-colors duration-200 font-bold"
+          <div className="hidden md:flex items-center space-x-8">
+            <button
+              onClick={() => scrollToSection("info")}
+              className="text-slatedark/80 hover:text-kraft transition-colors duration-200 font-semibold hover:scale-105 transform cursor-pointer"
             >
               Info
-            </Link>
-            <Link
-              to="/demo"
-              className="text-[var(--color-clouddark)] hover:text-[var(--color-slatedark)] transition-colors duration-200 font-bold"
+            </button>
+            <button
+              onClick={() => scrollToSection("demo")}
+              className="text-slatedark/80 hover:text-kraft transition-colors duration-200 font-semibold hover:scale-105 transform cursor-pointer"
             >
               Demo
-            </Link>
-            <Link
-              to="/contact"
-              className="text-[var(--color-clouddark)] hover:text-[var(--color-slatedark)] transition-colors duration-200 font-bold"
+            </button>
+            <button
+              onClick={() => scrollToSection("contact")}
+              className="text-slatedark/80 hover:text-kraft transition-colors duration-200 font-semibold hover:scale-105 transform cursor-pointer"
             >
               Contact
-            </Link>
+            </button>
           </div>
 
           <div className="hidden md:flex items-center space-x-4">
             <Link to={"/auth/login"}>
-              <button className="border-2 border-[var(--color-bookcloth)] text-[var(--color-slatedark)] px-4 py-2 rounded-xl transition-colors duration-200 hover:bg-gray-200">
+              <button className="border-2 border-kraft/40 text-slatedark px-6 py-2.5 rounded-xl transition-all duration-300 hover:border-kraft hover:bg-kraft/10 font-semibold hover:scale-105 transform">
                 Zaloguj
               </button>
             </Link>
             <Link to={"/auth/register"}>
-              <button className="bg-[var(--color-bookcloth)] text-[var(--color-basewhite)] px-4 py-2 rounded-xl hover:bg-[var(--color-kraft)] transition-colors duration-200">
+              <button className="bg-gradient-to-r from-kraft to-bookcloth text-white px-6 py-2.5 rounded-xl hover:shadow-lg transition-all duration-300 font-semibold hover:scale-105 transform">
                 Zarejestruj
               </button>
             </Link>
