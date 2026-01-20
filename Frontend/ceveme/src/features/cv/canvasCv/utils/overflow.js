@@ -6,7 +6,7 @@ export function contentBBoxMm(nodes = []) {
   for (const n of nodes) {
     if (!n || n.visible === false || !n.frame) continue;
     const { x = 0, y = 0, w = 0, h = 0 } = n.frame;
-    if ([x, y, w, h].some((v) => typeof v !== 'number' || Number.isNaN(v)))
+    if ([x, y, w, h].some((v) => typeof v !== "number" || Number.isNaN(v)))
       continue;
     minX = Math.min(minX, x);
     minY = Math.min(minY, y);
@@ -33,14 +33,14 @@ export function getOverflowList(doc, margin = 0) {
     if (!overflow) continue;
 
     const name =
-      (n.type === 'text' && (n.text || '').split('\n')[0]) ||
-      (n.type === 'image' && (n.src || 'Obraz')) ||
+      (n.type === "text" && (n.text || "").split("\n")[0]) ||
+      (n.type === "image" && (n.src || "Obraz")) ||
       n.id;
 
     list.push({
       id: n.id,
       type: n.type,
-      name: (name || '').trim(),
+      name: (name || "").trim(),
       frame: { x, y, w, h },
       over: {
         top: overTop,
@@ -69,7 +69,7 @@ export function clampFrameIntoPage(
   frame,
   pageW = 210,
   pageH = 297,
-  margin = 0
+  margin = 0,
 ) {
   const out = { ...frame };
   out.x = Math.max(margin, Math.min(out.x, pageW - margin - out.w));

@@ -4,7 +4,7 @@ import DemoAnimation from "./DemoAnimation";
 export default function DemoSection() {
   return (
     <section
-      id="demo"
+      id="features"
       className="w-full bg-gradient-to-b from-cloudlight to-ivorylight py-16 text-slatedark"
       aria-labelledby="lp-demo-heading"
     >

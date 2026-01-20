@@ -3,9 +3,9 @@ import {
   createTextNode,
   createShapeNode,
   createImageNode,
-} from '../core/model';
-import { A4 } from '../core/mm';
-import { measureTextHeightMm } from '../services/typeset';
+} from "../core/model";
+import { A4 } from "../core/mm";
+import { measureTextHeightMm } from "../services/typeset";
 
 export class GrayAndWhiteResume {
   // strona
@@ -21,13 +21,13 @@ export class GrayAndWhiteResume {
 
   // kolory
   static COLORS = {
-    primary: '#767676',
-    text: '#727272',
-    muted: '#8b8b8b',
-    bg: '#f2f2f2',
-    line: '#535353',
-    iconBg: '#4b4b4b',
-    iconFg: '#ffffff', // BIAŁE IKONY
+    primary: "#767676",
+    text: "#727272",
+    muted: "#8b8b8b",
+    bg: "#f2f2f2",
+    line: "#535353",
+    iconBg: "#4b4b4b",
+    iconFg: "#ffffff", // BIAŁE IKONY
   };
 
   // IKONY: użyjemy wektorów (SVG → data:) zamiast emoji
@@ -84,56 +84,56 @@ export class GrayAndWhiteResume {
     nameFirst: {
       fontSize: 30, // było 32
       fontWeight: 400,
-      color: '#767676',
+      color: "#767676",
       lineHeight: 1.05,
-      fontFamily: 'Lora, serif',
+      fontFamily: "Lora, serif",
     },
     nameLast: {
       fontSize: 30,
       fontWeight: 700,
-      color: '#767676',
+      color: "#767676",
       lineHeight: 1.05,
-      fontFamily: 'Lora, serif',
+      fontFamily: "Lora, serif",
     },
     // tytuł przerzucony bardziej w prawo (mniejsza szerokość lewego bloku)
     title: {
       fontSize: 14.2,
       fontWeight: 600,
-      color: '#727272',
+      color: "#727272",
       lineHeight: 1.15,
     },
 
     section: {
       fontSize: 13.5,
       fontWeight: 700,
-      fontFamily: 'Lora, serif',
-      color: '#767676',
-      textTransform: 'uppercase',
+      fontFamily: "Lora, serif",
+      color: "#767676",
+      textTransform: "uppercase",
       letterSpacing: 0.5,
     },
 
-    body: { fontSize: 8.5, color: '#727272', lineHeight: 1.45 },
-    bodyMuted: { fontSize: 8.5, color: '#8b8b8b', lineHeight: 1.45 },
+    body: { fontSize: 8.5, color: "#727272", lineHeight: 1.45 },
+    bodyMuted: { fontSize: 8.5, color: "#8b8b8b", lineHeight: 1.45 },
 
-    compact: { fontSize: 8.8, color: '#727272', lineHeight: 1.25 },
-    compactMuted: { fontSize: 8.8, color: '#8b8b8b', lineHeight: 1.25 },
+    compact: { fontSize: 8.8, color: "#727272", lineHeight: 1.25 },
+    compactMuted: { fontSize: 8.8, color: "#8b8b8b", lineHeight: 1.25 },
 
     // kontakt — ciaśniejszy
-    contact: { fontSize: 8.8, color: '#727272', lineHeight: 1.2 },
+    contact: { fontSize: 8.8, color: "#727272", lineHeight: 1.2 },
 
     rowTitle: {
       fontSize: 10.3,
       fontWeight: 700,
-      color: '#727272',
+      color: "#727272",
       lineHeight: 1.28,
     },
-    rowSubtle: { fontSize: 8.4, color: '#8b8b8b', lineHeight: 1.26 },
+    rowSubtle: { fontSize: 8.4, color: "#8b8b8b", lineHeight: 1.26 },
 
     legal: {
       fontSize: 8.5,
-      color: '#727272',
+      color: "#727272",
       lineHeight: 1.28,
-      textAlign: 'justify',
+      textAlign: "justify",
     },
   };
 
@@ -159,8 +159,23 @@ export class GrayAndWhiteResume {
     this.y = GrayAndWhiteResume.PAGE.MARGIN + GrayAndWhiteResume.SPACING.md;
 
     const canvas =
-      typeof document !== 'undefined' ? document.createElement('canvas') : null;
-    this.ctx = canvas ? canvas.getContext('2d') : null;
+      typeof document !== "undefined" ? document.createElement("canvas") : null;
+    this.ctx = canvas ? canvas.getContext("2d") : null;
+  }
+
+  checkPageBreak(currentY, elementHeight, bottomMargin = 20) {
+    const PAGE_H = GrayAndWhiteResume.PAGE.H;
+    const currentPage = Math.floor(currentY / PAGE_H);
+    const pageBottom = (currentPage + 1) * PAGE_H - bottomMargin;
+
+    if (currentY + elementHeight > pageBottom) {
+      const nextPageTop =
+        (currentPage + 1) * PAGE_H +
+        (GrayAndWhiteResume.PAGE.MARGIN + GrayAndWhiteResume.SPACING.md);
+      return nextPageTop;
+    }
+
+    return currentY;
   }
 
   build() {
@@ -189,10 +204,10 @@ export class GrayAndWhiteResume {
     const { MARGIN, W: PAGE_W } = GrayAndWhiteResume.PAGE;
     const nameAreaW = PAGE_W * NAME_AREA_W_RATIO;
 
-    const fullName = (this.api?.personalData?.name ?? 'Your Name').trim();
+    const fullName = (this.api?.personalData?.name ?? "Your Name").trim();
     const parts = fullName.split(/\s+/);
-    const lastName = parts.length > 1 ? parts.pop() : '';
-    const firstName = parts.join(' ') || lastName;
+    const lastName = parts.length > 1 ? parts.pop() : "";
+    const firstName = parts.join(" ") || lastName;
 
     const headerY = this.y + NAME_TOP_OFFSET;
 
@@ -207,11 +222,11 @@ export class GrayAndWhiteResume {
       createShapeNode({
         frame: { x: photoX, y: photoY, w: photoSize, h: photoSize },
         style: {
-          fill: { color: '#ddd' },
+          fill: { color: "#ddd" },
           stroke: null,
           cornerRadius: photoSize / 2,
         },
-      })
+      }),
     );
     if (photoUrl) {
       this.nodes.push(
@@ -220,10 +235,10 @@ export class GrayAndWhiteResume {
           src: photoUrl,
           style: {
             cornerRadius: photoSize / 2,
-            shape: 'circle',
+            shape: "circle",
             clipCircle: true,
           },
-        })
+        }),
       );
     }
 
@@ -232,13 +247,13 @@ export class GrayAndWhiteResume {
       MARGIN,
       headerY,
       nameAreaW,
-      `${firstName}${lastName ? ' ' : ''}`,
-      GrayAndWhiteResume.STYLES.nameFirst
+      `${firstName}${lastName ? " " : ""}`,
+      GrayAndWhiteResume.STYLES.nameFirst,
     );
 
     const offsetPx = this.#textWidth(
       `${firstName} `,
-      GrayAndWhiteResume.STYLES.nameFirst
+      GrayAndWhiteResume.STYLES.nameFirst,
     );
     const offset = Math.min(Math.max(offsetPx, 0), nameAreaW * 0.7);
     const lastH = this.#textBlock(
@@ -246,7 +261,7 @@ export class GrayAndWhiteResume {
       headerY,
       nameAreaW,
       lastName,
-      GrayAndWhiteResume.STYLES.nameLast
+      GrayAndWhiteResume.STYLES.nameLast,
     );
     const nameH = Math.max(firstH, lastH);
 
@@ -256,7 +271,7 @@ export class GrayAndWhiteResume {
       headerY + nameH + GrayAndWhiteResume.SPACING.xs,
       nameAreaW,
       UNDERLINE_H,
-      GrayAndWhiteResume.COLORS.line
+      GrayAndWhiteResume.COLORS.line,
     );
 
     // kontakt (po prawej, pod zdjęciem)
@@ -264,7 +279,7 @@ export class GrayAndWhiteResume {
     const contactRightEdge = photoX - GrayAndWhiteResume.PHOTO.GAP;
     const maxTextW = Math.min(
       C.TEXT_W,
-      contactRightEdge - MARGIN - C.ICON_SIZE - C.GAP
+      contactRightEdge - MARGIN - C.ICON_SIZE - C.GAP,
     );
     const iconX = contactRightEdge - C.ICON_SIZE;
     let cy = headerY + GrayAndWhiteResume.SPACING.xs;
@@ -277,8 +292,8 @@ export class GrayAndWhiteResume {
         iconX,
         y: cy,
         text: String(pd.phoneNumber),
-        icon: 'phone',
-        link: `tel:${String(pd.phoneNumber).replace(/\s+/g, '')}`,
+        icon: "phone",
+        link: `tel:${String(pd.phoneNumber).replace(/\s+/g, "")}`,
         textW: maxTextW,
       });
     }
@@ -287,7 +302,7 @@ export class GrayAndWhiteResume {
         iconX,
         y: cy,
         text: String(pd.email),
-        icon: 'mail',
+        icon: "mail",
         link: `mailto:${String(pd.email)}`,
         textW: maxTextW,
       });
@@ -297,7 +312,7 @@ export class GrayAndWhiteResume {
         iconX,
         y: cy,
         text: String(pd.city),
-        icon: 'pin',
+        icon: "pin",
         textW: maxTextW,
       });
     }
@@ -306,11 +321,11 @@ export class GrayAndWhiteResume {
     const extra = this.#normalizeLinks(pd?.links);
     for (const item of extra) {
       const iconKey =
-        item.key === 'github'
-          ? 'github'
-          : item.key === 'linkedin'
-          ? 'link'
-          : 'link';
+        item.key === "github"
+          ? "github"
+          : item.key === "linkedin"
+            ? "link"
+            : "link";
       cy = this.#contactRow({
         iconX,
         y: cy,
@@ -323,13 +338,13 @@ export class GrayAndWhiteResume {
 
     // tytuł — w lewym bloku
     this.y = headerY + nameH + GrayAndWhiteResume.SPACING.sm;
-    const title = this.api?.headline || 'Your Title';
+    const title = this.api?.headline || "Your Title";
     this.y += this.#textBlock(
       MARGIN,
       this.y,
       nameAreaW,
       title,
-      GrayAndWhiteResume.STYLES.title
+      GrayAndWhiteResume.STYLES.title,
     );
 
     // treść od dolnej krawędzi headera
@@ -356,13 +371,13 @@ export class GrayAndWhiteResume {
           stroke: null,
           cornerRadius: ICON_SIZE / 2,
         },
-      })
+      }),
     );
 
     // IKONA SVG
     const svg = GrayAndWhiteResume.ICONS[icon] || GrayAndWhiteResume.ICONS.link;
     const svgDataUrl =
-      'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg.trim());
+      "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg.trim());
     const iconInner = ICON_SIZE * 0.62;
     this.nodes.push(
       createImageNode({
@@ -374,14 +389,14 @@ export class GrayAndWhiteResume {
         },
         src: svgDataUrl,
         style: { cornerRadius: 0 },
-      })
+      }),
     );
 
     // tekst
     const style = {
       ...GrayAndWhiteResume.STYLES.contact,
-      textAlign: 'right',
-      verticalAlign: 'middle',
+      textAlign: "right",
+      verticalAlign: "middle",
     };
     const measuredW = this.#textWidth(String(text), style) + 12.5;
     const w = Math.min(textW, measuredW);
@@ -404,24 +419,24 @@ export class GrayAndWhiteResume {
     const out = [];
     const arr = Array.isArray(raw) ? raw : [];
     for (const l of arr) {
-      const url = typeof l === 'string' ? l : l?.url || l?.href || '';
+      const url = typeof l === "string" ? l : l?.url || l?.href || "";
       if (!url) continue;
-      let key = (typeof l === 'string' ? '' : l?.type || l?.name || '')
+      let key = (typeof l === "string" ? "" : l?.type || l?.name || "")
         .toString()
         .toLowerCase();
-      let label = 'Strona www';
+      let label = "Strona www";
       try {
         const u = new URL(url);
-        const host = u.hostname.replace(/^www\./, '');
-        if (host.includes('linkedin')) {
-          key ||= 'linkedin';
-          label = 'LinkedIn';
-        } else if (host.includes('github')) {
-          key ||= 'github';
-          label = 'GitHub';
+        const host = u.hostname.replace(/^www\./, "");
+        if (host.includes("linkedin")) {
+          key ||= "linkedin";
+          label = "LinkedIn";
+        } else if (host.includes("github")) {
+          key ||= "github";
+          label = "GitHub";
         } else {
-          label = 'Strona www';
-          key ||= 'website';
+          label = "Strona www";
+          key ||= "website";
         }
       } catch {
         /* noop */
@@ -443,7 +458,7 @@ export class GrayAndWhiteResume {
       let finalLabel = label;
       if (!finalLabel) {
         try {
-          finalLabel = new URL(u).hostname.replace(/^www\./, '');
+          finalLabel = new URL(u).hostname.replace(/^www\./, "");
         } catch {
           finalLabel = u;
         }
@@ -453,20 +468,20 @@ export class GrayAndWhiteResume {
 
     // typowe pola
     push(p.url, null);
-    push(p.homepage, 'Strona');
-    push(p.demo, 'Demo');
-    push(p.live, 'Live');
-    push(p.repository || p.repo || p.github, 'GitHub');
-    push(p.docs || p.documentation, 'Dokumentacja');
+    push(p.homepage, "Strona");
+    push(p.demo, "Demo");
+    push(p.live, "Live");
+    push(p.repository || p.repo || p.github, "GitHub");
+    push(p.docs || p.documentation, "Dokumentacja");
 
     // tablica p.links
     if (Array.isArray(p.links)) {
       for (const l of p.links) {
         if (!l) continue;
-        const url = typeof l === 'string' ? l : l.url || l.href || '';
+        const url = typeof l === "string" ? l : l.url || l.href || "";
         if (!url) continue;
         const label =
-          typeof l === 'string' ? '' : l.label || l.name || l.type || '';
+          typeof l === "string" ? "" : l.label || l.name || l.type || "";
         push(url, label || null);
       }
     }
@@ -480,16 +495,17 @@ export class GrayAndWhiteResume {
     const { MARGIN } = GrayAndWhiteResume.PAGE;
     const W = GrayAndWhiteResume.CONTENT_W;
 
+    this.y = this.checkPageBreak(this.y, 15);
     this.y += this.#section({
       x: MARGIN,
       y: this.y,
       w: W,
-      title: 'PODSUMOWANIE',
-      align: 'left',
+      title: "PODSUMOWANIE",
+      align: "left",
     });
     const summaryStyle = {
       ...GrayAndWhiteResume.STYLES.body,
-      textAlign: 'justify',
+      textAlign: "justify",
     };
     this.y +=
       this.#textBlock(MARGIN, this.y, W, this.api.summary, summaryStyle) +
@@ -518,19 +534,21 @@ export class GrayAndWhiteResume {
       topY,
       sepThickness,
       bottomY - topY,
-      GrayAndWhiteResume.COLORS.line
+      GrayAndWhiteResume.COLORS.line,
     );
 
     // PRAWA: Doświadczenie → Języki → RODO
     let ry = topY;
+    ry = this.checkPageBreak(ry, 15);
     ry += this.#section({
       x: rightX,
       y: ry,
       w: rightW,
-      title: 'DOŚWIADCZENIE ZAWODOWE',
+      title: "DOŚWIADCZENIE ZAWODOWE",
     });
 
     for (const exp of this.api?.experience || []) {
+      ry = this.checkPageBreak(ry, 25);
       ry +=
         this.#experience(rightX, ry, rightW, exp) +
         GrayAndWhiteResume.SPACING.lg;
@@ -538,35 +556,37 @@ export class GrayAndWhiteResume {
 
     // >>> JĘZYKI przeniesione tutaj, bezpośrednio pod doświadczeniem
     const languagesLine = (this.api?.languages || [])
-      .map((l) => [l?.language, l?.level].filter(Boolean).join(' — '))
+      .map((l) => [l?.language, l?.level].filter(Boolean).join(" — "))
       .filter(Boolean)
-      .join(', ');
+      .join(", ");
     if (languagesLine) {
-      ry += this.#section({ x: rightX, y: ry, w: rightW, title: 'JĘZYKI' });
+      ry = this.checkPageBreak(ry, 15);
+      ry += this.#section({ x: rightX, y: ry, w: rightW, title: "JĘZYKI" });
       ry +=
         this.#textBlock(
           rightX,
           ry,
           rightW,
           languagesLine,
-          GrayAndWhiteResume.STYLES.compact
+          GrayAndWhiteResume.STYLES.compact,
         ) + GrayAndWhiteResume.SPACING.xs;
     }
 
-    const gdpr = this.api?.gdprClause || '';
+    const gdpr = this.api?.gdprClause || "";
     if (gdpr) {
+      ry = this.checkPageBreak(ry, 15);
       ry += this.#section({
         x: rightX,
         y: ry,
         w: rightW,
-        title: 'KLAUZULA RODO',
+        title: "KLAUZULA RODO",
       });
       ry += this.#textBlock(
         rightX,
         ry,
         rightW,
         gdpr,
-        GrayAndWhiteResume.STYLES.legal
+        GrayAndWhiteResume.STYLES.legal,
       );
     }
 
@@ -575,18 +595,22 @@ export class GrayAndWhiteResume {
 
     const educations = this.api?.educations || [];
     if (educations.length) {
-      ly += this.#section({ x: leftX, y: ly, w: leftW, title: 'EDUKACJA' });
-      for (const edu of educations)
+      ly = this.checkPageBreak(ly, 15);
+      ly += this.#section({ x: leftX, y: ly, w: leftW, title: "EDUKACJA" });
+      for (const edu of educations) {
+        ly = this.checkPageBreak(ly, 20);
         ly +=
           this.#education(leftX, ly, leftW, edu) +
           GrayAndWhiteResume.SPACING.sm;
+      }
       ly += GrayAndWhiteResume.SPACING.xs;
     }
 
-    const skillsTech = this.#collectSkills(['Technical', 'Tools']).join(', ');
-    const skillsSoft = this.#collectSkills(['Soft']).join(', ');
+    const skillsTech = this.#collectSkills(["Technical", "Tools"]).join(", ");
+    const skillsSoft = this.#collectSkills(["Soft"]).join(", ");
     if (skillsTech || skillsSoft) {
-      ly += this.#section({ x: leftX, y: ly, w: leftW, title: 'UMIEJĘTNOŚCI' });
+      ly = this.checkPageBreak(ly, 15);
+      ly += this.#section({ x: leftX, y: ly, w: leftW, title: "UMIEJĘTNOŚCI" });
       ly +=
         this.#skillsInline(leftX, ly, leftW, skillsTech, skillsSoft) +
         GrayAndWhiteResume.SPACING.sm;
@@ -594,10 +618,13 @@ export class GrayAndWhiteResume {
 
     const projects = this.api?.portfolio || [];
     if (projects.length) {
-      ly += this.#section({ x: leftX, y: ly, w: leftW, title: 'PROJEKTY' });
-      for (const p of projects)
+      ly = this.checkPageBreak(ly, 15);
+      ly += this.#section({ x: leftX, y: ly, w: leftW, title: "PROJEKTY" });
+      for (const p of projects) {
+        ly = this.checkPageBreak(ly, 25);
         ly +=
           this.#project(leftX, ly, leftW, p) + GrayAndWhiteResume.SPACING.md;
+      }
       ly += GrayAndWhiteResume.SPACING.xs;
     }
 
@@ -605,14 +632,15 @@ export class GrayAndWhiteResume {
       .map((c) => c?.name)
       .filter(Boolean);
     if (certificates.length) {
-      ly += this.#section({ x: leftX, y: ly, w: leftW, title: 'CERTYFIKATY' });
+      ly = this.checkPageBreak(ly, 15);
+      ly += this.#section({ x: leftX, y: ly, w: leftW, title: "CERTYFIKATY" });
       ly +=
         this.#bulletedList(
           leftX,
           ly,
           leftW,
           certificates,
-          GrayAndWhiteResume.STYLES.compact
+          GrayAndWhiteResume.STYLES.compact,
         ) + GrayAndWhiteResume.SPACING.xs;
     }
 
@@ -623,15 +651,15 @@ export class GrayAndWhiteResume {
 
   #education(x, y, w, edu) {
     let used = 0;
-    const title = edu?.institution || '';
-    const sub = [edu?.degree, edu?.specialization].filter(Boolean).join(' — ');
+    const title = edu?.institution || "";
+    const sub = [edu?.degree, edu?.specialization].filter(Boolean).join(" — ");
 
     used += this.#textBlock(
       x,
       y + used,
       w,
       title,
-      GrayAndWhiteResume.STYLES.rowTitle
+      GrayAndWhiteResume.STYLES.rowTitle,
     );
     if (sub)
       used += this.#textBlock(
@@ -639,7 +667,7 @@ export class GrayAndWhiteResume {
         y + used,
         w,
         sub,
-        GrayAndWhiteResume.STYLES.compact
+        GrayAndWhiteResume.STYLES.compact,
       );
     if (edu?.period)
       used += this.#textBlock(
@@ -647,7 +675,7 @@ export class GrayAndWhiteResume {
         y + used,
         w,
         edu.period,
-        GrayAndWhiteResume.STYLES.compactMuted
+        GrayAndWhiteResume.STYLES.compactMuted,
       );
 
     return used;
@@ -680,12 +708,12 @@ export class GrayAndWhiteResume {
 
   #project(x, y, w, p) {
     let used = 0;
-    const name = p?.name || 'Projekt';
+    const name = p?.name || "Projekt";
     const tech = (p?.technologies || [])
       .map((t) => t?.name)
       .filter(Boolean)
-      .join(' • ');
-    const desc = p?.description || '';
+      .join(" • ");
+    const desc = p?.description || "";
     const ach = (p?.achievements || [])
       .map((a) => a?.description)
       .filter(Boolean);
@@ -695,7 +723,7 @@ export class GrayAndWhiteResume {
       y + used,
       w,
       name,
-      GrayAndWhiteResume.STYLES.rowTitle
+      GrayAndWhiteResume.STYLES.rowTitle,
     );
     if (tech)
       used += this.#textBlock(
@@ -703,7 +731,7 @@ export class GrayAndWhiteResume {
         y + used,
         w,
         tech,
-        GrayAndWhiteResume.STYLES.bodyMuted
+        GrayAndWhiteResume.STYLES.bodyMuted,
       );
     if (desc)
       used +=
@@ -720,7 +748,7 @@ export class GrayAndWhiteResume {
           w,
           ln.label,
           GrayAndWhiteResume.STYLES.rowSubtle,
-          { link: ln.url }
+          { link: ln.url },
         );
       }
     }
@@ -731,7 +759,7 @@ export class GrayAndWhiteResume {
         y + used,
         w,
         ach,
-        GrayAndWhiteResume.STYLES.body
+        GrayAndWhiteResume.STYLES.body,
       );
     return used;
   }
@@ -741,9 +769,9 @@ export class GrayAndWhiteResume {
   #experience(x, y, w, exp) {
     let used = 0;
 
-    const title = exp?.title || '';
-    const sub = [exp?.company, exp?.period].filter(Boolean).join(' | ');
-    const desc = exp?.jobDescription || '';
+    const title = exp?.title || "";
+    const sub = [exp?.company, exp?.period].filter(Boolean).join(" | ");
+    const desc = exp?.jobDescription || "";
     const bullets = (exp?.achievements || [])
       .map((a) => a?.description)
       .filter(Boolean);
@@ -753,7 +781,7 @@ export class GrayAndWhiteResume {
       y + used,
       w,
       title,
-      GrayAndWhiteResume.STYLES.rowTitle
+      GrayAndWhiteResume.STYLES.rowTitle,
     );
     if (sub)
       used +=
@@ -762,7 +790,7 @@ export class GrayAndWhiteResume {
           y + used,
           w,
           sub,
-          GrayAndWhiteResume.STYLES.rowSubtle
+          GrayAndWhiteResume.STYLES.rowSubtle,
         ) + GrayAndWhiteResume.SPACING.xs;
     if (desc)
       used +=
@@ -774,7 +802,7 @@ export class GrayAndWhiteResume {
         y + used,
         w,
         bullets,
-        GrayAndWhiteResume.STYLES.body
+        GrayAndWhiteResume.STYLES.body,
       );
 
     return used;
@@ -788,7 +816,7 @@ export class GrayAndWhiteResume {
     w,
     title,
     style = GrayAndWhiteResume.STYLES.section,
-    align = 'left',
+    align = "left",
   }) {
     const t = String(title).toUpperCase();
     const h = this.#textBlock(x, y, w, t, { ...style, textAlign: align });
@@ -804,7 +832,7 @@ export class GrayAndWhiteResume {
           fill: { color: GrayAndWhiteResume.COLORS.line },
           stroke: null,
         },
-      })
+      }),
     );
   }
 
@@ -813,21 +841,21 @@ export class GrayAndWhiteResume {
       createShapeNode({
         frame: { x, y, w, h },
         style: { fill: { color }, stroke: null },
-      })
+      }),
     );
   }
 
   // tekst z auto-pomiarem wysokości; respektuje textAlign; obsługa node.link
   #textBlock(x, y, w, text, style, opts = {}) {
-    const t = String(text ?? '');
+    const t = String(text ?? "");
     const h = Math.max(3, measureTextHeightMm(t, w, style));
     let textX = x;
 
     const align = style?.textAlign;
-    if (align === 'center' || align === 'right') {
+    if (align === "center" || align === "right") {
       const textW = this.#textWidth(t, style);
-      if (align === 'center') textX = x + (w - textW) / 2;
-      if (align === 'right') textX = x + (w - textW);
+      if (align === "center") textX = x + (w - textW) / 2;
+      if (align === "right") textX = x + (w - textW);
     }
 
     const node = createTextNode({
@@ -842,19 +870,19 @@ export class GrayAndWhiteResume {
   }
 
   #bulletedList(x, y, w, items, style) {
-    const txt = items.map((s) => `• ${s}`).join('\n');
+    const txt = items.map((s) => `• ${s}`).join("\n");
     return this.#textBlock(x, y, w, txt, style);
   }
 
-  #textWidth(text = '', style = {}) {
+  #textWidth(text = "", style = {}) {
     if (!this.ctx) {
       const fs = Number(style?.fontSize || 12);
       const avgCharMm = fs * 0.35278 * 0.5;
       return avgCharMm * String(text).length;
     }
-    const fontSizePt = style?.fontSize ? `${style.fontSize}pt` : '12pt';
+    const fontSizePt = style?.fontSize ? `${style.fontSize}pt` : "12pt";
     const fontWeight = style?.fontWeight || 400;
-    const fontFamily = style?.fontFamily || 'Inter, Arial, sans-serif';
+    const fontFamily = style?.fontFamily || "Inter, Arial, sans-serif";
     this.ctx.font = `${fontWeight} ${fontSizePt} ${fontFamily}`;
     const px = this.ctx.measureText(String(text)).width || 0;
     return px * 0.264583; // px -> mm

@@ -1,46 +1,68 @@
-// DemoAnimation.jsx
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import DropChip from './DropChip';
+// DemoAnimation.jsx — Ulepszona wersja z profesjonalnymi animacjami
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 export default function DemoAnimation() {
-  // Sceny: 1=link, 2=analiza, 3=generowanie (drop), 4=gotowe
   const [scene, setScene] = useState(1);
-  const [cycle, setCycle] = useState(0); // reset animacji per cykl
+  const [cycle, setCycle] = useState(0);
   const [running, setRunning] = useState(true);
+  const [progress, setProgress] = useState(0);
 
-  // Sterowanie dropami i odsłanianiem tekstu docelowego
   const [drop, setDrop] = useState({
     name: false,
     headline: false,
     summary: false,
+    skills: false,
+    experience: false,
   });
   const [reveal, setReveal] = useState({
     name: false,
     headline: false,
     summary: false,
+    skills: false,
+    experience: false,
   });
 
-  // Pomiar pozycji docelowych
   const overlayRef = useRef(null);
   const dstNameRef = useRef(null);
   const dstHeadlineRef = useRef(null);
   const dstSummaryRef = useRef(null);
-  const [to, setTo] = useState({ name: null, headline: null, summary: null });
+  const dstSkillsRef = useRef(null);
+  const dstExperienceRef = useRef(null);
+  const [to, setTo] = useState({
+    name: null,
+    headline: null,
+    summary: null,
+    skills: null,
+    experience: null,
+  });
 
   const timersRef = useRef([]);
+  const progressRef = useRef(null);
 
-  // ——— CZASY (łatwo regulować) ———
   const T = {
-    link: 2200, // scena 1
-    analyze: 5000, // scena 2
-    generateStart: 400, // opóźnienie przed startem „dropów”
-    dropGap: 800, // odstęp między dropami
-    dropDuration: 1200, // czas pojedynczego dropa
-    chipStay: 350, // ile chip zostaje po lądowaniu (potem znika)
-    revealLag: 120, // NOWE: ile po zniknięciu chipa odsłonić tekst
-    done: 5000, // scena 4
-    between: 500, // krótki crossfade między scenami
+    link: 3000,
+    analyze: 5500,
+    generateStart: 600,
+    dropGap: 900,
+    dropDuration: 1800,
+    chipStay: 500,
+    revealLag: 200,
+    done: 5000,
+    between: 800,
   };
+
+  const totalTime =
+    T.link +
+    T.between +
+    T.analyze +
+    T.between +
+    T.generateStart +
+    4 * T.dropGap +
+    T.dropDuration +
+    T.chipStay +
+    T.revealLag +
+    T.between +
+    T.done;
 
   const measureTargets = () => {
     const rel = (el) => {
@@ -53,10 +75,11 @@ export default function DemoAnimation() {
       name: rel(dstNameRef.current),
       headline: rel(dstHeadlineRef.current),
       summary: rel(dstSummaryRef.current),
+      skills: rel(dstSkillsRef.current),
+      experience: rel(dstExperienceRef.current),
     });
   };
 
-  // Pomiar po montażu + po załadowaniu fontów (wpływają na metryki)
   useLayoutEffect(() => {
     measureTargets();
     if (document.fonts?.ready) {
@@ -64,32 +87,57 @@ export default function DemoAnimation() {
     }
   }, []);
 
-  // Reaguj na zmiany rozmiaru kontenera/targetów
   useEffect(() => {
     if (!overlayRef.current) return;
     const ro = new ResizeObserver(() => measureTargets());
     ro.observe(overlayRef.current);
-    if (dstNameRef.current) ro.observe(dstNameRef.current);
-    if (dstHeadlineRef.current) ro.observe(dstHeadlineRef.current);
-    if (dstSummaryRef.current) ro.observe(dstSummaryRef.current);
+    [
+      dstNameRef,
+      dstHeadlineRef,
+      dstSummaryRef,
+      dstSkillsRef,
+      dstExperienceRef,
+    ].forEach((ref) => {
+      if (ref.current) ro.observe(ref.current);
+    });
     const onResize = () => measureTargets();
-    window.addEventListener('resize', onResize);
+    window.addEventListener("resize", onResize);
     return () => {
       ro.disconnect();
-      window.removeEventListener('resize', onResize);
+      window.removeEventListener("resize", onResize);
     };
   }, []);
 
   useEffect(() => {
-    startLoop(); // autoplay
-    return stopAll; // sprzątanie
+    startLoop();
+    return stopAll;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Progress animation
+  useEffect(() => {
+    if (!running) return;
+    const startTime = Date.now();
+    const animate = () => {
+      const elapsed = Date.now() - startTime;
+      const newProgress = Math.min((elapsed / totalTime) * 100, 100);
+      setProgress(newProgress);
+      if (elapsed < totalTime && running) {
+        progressRef.current = requestAnimationFrame(animate);
+      }
+    };
+    progressRef.current = requestAnimationFrame(animate);
+    return () => {
+      if (progressRef.current) cancelAnimationFrame(progressRef.current);
+    };
+  }, [running, cycle, totalTime]);
 
   function stopAll() {
     timersRef.current.forEach(clearTimeout);
     timersRef.current = [];
+    if (progressRef.current) cancelAnimationFrame(progressRef.current);
   }
+
   function later(ms, cb) {
     const t = setTimeout(cb, ms);
     timersRef.current.push(t);
@@ -99,81 +147,93 @@ export default function DemoAnimation() {
   function startLoop() {
     stopAll();
     setScene(1);
-    setDrop({ name: false, headline: false, summary: false });
-    setReveal({ name: false, headline: false, summary: false });
+    setProgress(0);
+    setDrop({
+      name: false,
+      headline: false,
+      summary: false,
+      skills: false,
+      experience: false,
+    });
+    setReveal({
+      name: false,
+      headline: false,
+      summary: false,
+      skills: false,
+      experience: false,
+    });
 
-    // SCENA 1 — LINK
     later(T.link, () => {
       setScene(2);
       measureTargets();
     });
 
-    // SCENA 2 — ANALIZA
     later(T.link + T.between + T.analyze, () => {
       setScene(3);
       measureTargets();
     });
 
-    // SCENA 3 — GENEROWANIE (dropy)
     const base = T.link + T.between + T.analyze + T.between + T.generateStart;
 
-    // Name
-    later(base + 0, () => setDrop((d) => ({ ...d, name: true })));
-    later(base + 0 + T.dropDuration + T.chipStay + T.revealLag, () =>
-      setReveal((r) => ({ ...r, name: true }))
-    );
-
-    // Headline
-    later(base + T.dropGap, () => setDrop((d) => ({ ...d, headline: true })));
-    later(base + T.dropGap + T.dropDuration + T.chipStay + T.revealLag, () =>
-      setReveal((r) => ({ ...r, headline: true }))
-    );
-
-    // Summary
-    later(base + 2 * T.dropGap, () =>
-      setDrop((d) => ({ ...d, summary: true }))
-    );
-    later(
-      base + 2 * T.dropGap + T.dropDuration + T.chipStay + T.revealLag,
-      () => setReveal((r) => ({ ...r, summary: true }))
-    );
-
-    // SCENA 4 — GOTOWE
-    const endGenerate =
-      base + 2 * T.dropGap + T.dropDuration + T.chipStay + T.revealLag;
-    later(endGenerate + T.between, () => {
-      setScene(4);
-      // na wszelki wypadek odsłoń wszystko
-      setReveal({ name: true, headline: true, summary: true });
+    // Animacje dropów
+    const dropSequence = [
+      "name",
+      "headline",
+      "summary",
+      "skills",
+      "experience",
+    ];
+    dropSequence.forEach((field, i) => {
+      later(base + i * T.dropGap, () =>
+        setDrop((d) => ({ ...d, [field]: true })),
+      );
+      later(
+        base + i * T.dropGap + T.dropDuration + T.chipStay + T.revealLag,
+        () => setReveal((r) => ({ ...r, [field]: true })),
+      );
     });
 
-    // Restart pętli (uwzględnia revealLag)
-    const total =
-      T.link +
-      T.between +
-      T.analyze +
-      T.between +
-      T.generateStart +
-      2 * T.dropGap +
+    const endGenerate =
+      base +
+      (dropSequence.length - 1) * T.dropGap +
       T.dropDuration +
       T.chipStay +
-      T.revealLag +
-      T.between +
-      T.done;
+      T.revealLag;
 
-    later(total, () => {
+    later(endGenerate + T.between, () => {
+      setScene(4);
+      setReveal({
+        name: true,
+        headline: true,
+        summary: true,
+        skills: true,
+        experience: true,
+      });
+    });
+
+    later(totalTime, () => {
       if (!running) return;
-      // reset cyklu, żeby animacje w 100% się odświeżyły
       setCycle((c) => c + 1);
       setScene(1);
-      setDrop({ name: false, headline: false, summary: false });
-      setReveal({ name: false, headline: false, summary: false });
+      setDrop({
+        name: false,
+        headline: false,
+        summary: false,
+        skills: false,
+        experience: false,
+      });
+      setReveal({
+        name: false,
+        headline: false,
+        summary: false,
+        skills: false,
+        experience: false,
+      });
       measureTargets();
       startLoop();
     });
   }
 
-  // Pauza/Wznowienie
   const toggleRun = () => {
     if (running) {
       setRunning(false);
@@ -186,141 +246,246 @@ export default function DemoAnimation() {
   };
 
   const phaseLabel = {
-    1: 'Wklejono link do oferty',
-    2: 'AI analizuje wymagania…',
-    3: 'AI generuje CV z Twoich danych…',
-    4: 'Gotowe! Spersonalizowane CV',
+    1: "Wklejono link do oferty",
+    2: "AI analizuje wymagania…",
+    3: "AI generuje CV z Twoich danych…",
+    4: "Gotowe! Spersonalizowane CV",
   }[scene];
 
   return (
-    <div className="rounded-2xl border border-[rgba(0,0,0,0.08)] bg-[var(--color-basewhite)] p-5 lg:p-7">
-      {/* Tytuł + Pauza/Wznów */}
-      <div className="mb-6 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="inline-flex items-center text-[10px] uppercase tracking-wide px-2 py-0.5 rounded bg-[var(--color-manilla)]">
-            Demo
+    <div className="rounded-3xl border border-kraft/20 bg-gradient-to-br from-basewhite via-ivorylight to-basewhite p-6 lg:p-8 shadow-2xl overflow-hidden relative">
+      {/* Animated background gradient */}
+      <div className="absolute inset-0 opacity-30 pointer-events-none">
+        <div
+          className="absolute w-[600px] h-[600px] rounded-full bg-gradient-to-r from-kraft/40 to-bookcloth/40 blur-3xl"
+          style={{
+            top: "-200px",
+            right: "-200px",
+            animation: "float 8s ease-in-out infinite",
+          }}
+        />
+        <div
+          className="absolute w-[400px] h-[400px] rounded-full bg-gradient-to-r from-manilla/30 to-kraft/30 blur-3xl"
+          style={{
+            bottom: "-100px",
+            left: "-100px",
+            animation: "float 10s ease-in-out infinite reverse",
+          }}
+        />
+      </div>
+
+      {/* Header */}
+      <div className="relative z-10 mb-8 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <span className="relative inline-flex items-center text-xs uppercase tracking-widest px-3 py-1.5 rounded-full bg-gradient-to-r from-kraft to-bookcloth text-white font-bold shadow-lg">
+            <span className="absolute inset-0 rounded-full bg-gradient-to-r from-kraft to-bookcloth animate-pulse opacity-50" />
+            <span className="relative">Demo</span>
           </span>
-          <h3 className="text-xl lg:text-2xl font-bold">
+          <h3 className="text-xl lg:text-2xl font-extrabold text-slatedark">
             Generowanie CV — pokaz działania
           </h3>
         </div>
         <button
           onClick={toggleRun}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-md border border-[rgba(0,0,0,0.1)] bg-[var(--color-ivorylight)] font-semibold hover:bg-[var(--color-ivorymedium)]"
+          className="group relative inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border-2 border-kraft/30 bg-white/80 backdrop-blur-sm font-bold text-slatedark hover:border-kraft hover:bg-kraft/10 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
           aria-pressed={running}
-          title={running ? 'Pauza' : 'Wznów'}
         >
-          {running ? '⏸ Pauza' : '▶ Wznów'}
+          <span
+            className={`w-3 h-3 rounded-full transition-all duration-300 ${
+              running ? "bg-feedbackerror animate-pulse" : "bg-feedbacksuccess"
+            }`}
+          />
+          {running ? "Pauza" : "Wznów"}
         </button>
       </div>
 
-      {/* Status */}
-      <div className="mb-6">
-        <div className="text-sm lg:text-base text-[var(--color-slatedark)] font-medium">
-          {phaseLabel}
+      {/* Progress bar */}
+      <div className="relative z-10 mb-6">
+        <div className="h-2 rounded-full bg-clouddark/10 overflow-hidden">
+          <div
+            className="h-full rounded-full bg-gradient-to-r from-kraft via-bookcloth to-kraft transition-all duration-100 relative"
+            style={{ width: `${progress}%` }}
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-shimmer" />
+          </div>
         </div>
-        <ol className="mt-3 grid grid-cols-4 gap-2 text-xs lg:text-sm">
-          <StepDot active={scene >= 1} label="Link" />
-          <StepDot active={scene >= 2} label="Analiza" />
-          <StepDot active={scene >= 3} label="Generowanie" />
-          <StepDot active={scene >= 4} label="CV" />
+      </div>
+
+      {/* Status */}
+      <div className="relative z-10 mb-8">
+        <div className="text-base lg:text-lg text-slatedark font-semibold flex items-center gap-3">
+          <span
+            className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-kraft to-bookcloth text-white text-sm font-bold shadow-lg"
+            style={{ animation: "pulse 2s ease-in-out infinite" }}
+          >
+            {scene}
+          </span>
+          <span className="animate-fadeIn">{phaseLabel}</span>
+        </div>
+        <ol className="mt-5 grid grid-cols-4 gap-3">
+          <StepIndicator
+            active={scene >= 1}
+            current={scene === 1}
+            label="Link"
+            icon="🔗"
+          />
+          <StepIndicator
+            active={scene >= 2}
+            current={scene === 2}
+            label="Analiza"
+            icon="🔍"
+          />
+          <StepIndicator
+            active={scene >= 3}
+            current={scene === 3}
+            label="Generowanie"
+            icon="⚡"
+          />
+          <StepIndicator
+            active={scene >= 4}
+            current={scene === 4}
+            label="CV"
+            icon="📄"
+          />
         </ol>
       </div>
 
-      {/* ——— SCENY (każda osobna, większe fonty) ——— */}
-      <div className="relative">
-        {/* Scena 1 — LINK */}
-        <SceneFrame key={`s1-${cycle}`} visible={scene === 1} tone="light">
-          <div className="grid grid-cols-1 lg:grid-cols-[560px_minmax(0,1fr)] gap-8 items-center min-h-[380px] lg:min-h-[440px]">
-            <div className="rounded-xl border bg-[var(--color-basewhite)] p-6 shadow-sm">
-              <div className="text-sm uppercase tracking-wide text-[var(--color-clouddark)] mb-2">
-                Krok 1
-              </div>
-              <div className="text-2xl lg:text-3xl font-extrabold mb-5">
+      {/* Scenes */}
+      <div className="relative z-10">
+        {/* Scene 1 — LINK */}
+        <SceneFrame visible={scene === 1} tone="light">
+          <div className="flex flex-col xl:flex-row gap-6 xl:gap-8 items-center">
+            <div className="rounded-2xl border-2 border-kraft/20 bg-white/90 backdrop-blur-sm p-5 lg:p-6 shadow-xl flex-1 w-full">
+              <StepBadge step={1} />
+              <h4 className="text-xl lg:text-2xl font-black text-slatedark mb-4 lg:mb-6">
                 Wklejasz link do oferty
+              </h4>
+              <div className="relative group">
+                <div className="h-12 lg:h-14 rounded-xl border-2 border-kraft/30 bg-ivorylight/50 px-4 flex items-center text-sm lg:text-base font-medium overflow-hidden group-hover:border-kraft transition-colors duration-300">
+                  <span className="text-kraft mr-2 lg:mr-3">🔗</span>
+                  <span className="text-slatedark/80 truncate text-xs lg:text-sm">
+                    https://jobs.example.com/frontend-engineer
+                  </span>
+                  <span className="ml-auto">
+                    <TypingCursor />
+                  </span>
+                </div>
+                <div className="absolute -bottom-2 left-4 right-4 h-4 bg-gradient-to-b from-kraft/10 to-transparent rounded-b-xl blur-sm" />
               </div>
-              <div className="h-14 rounded-lg border px-4 flex items-center text-base lg:text-lg font-medium overflow-hidden">
-                https://jobs.example.com/frontend-engineer
-              </div>
-              <div className="mt-4 text-sm text-[var(--color-clouddark)]">
-                Aplikacja automatycznie przechwytuje link. Za chwilę analiza.
-              </div>
+              <p className="mt-4 lg:mt-6 text-clouddark flex items-center gap-2 text-sm">
+                <LoadingDots />
+                <span>Przechwytywanie linku...</span>
+              </p>
             </div>
-            <SceneHint>Przejście do analizy…</SceneHint>
+            <div className="hidden xl:block flex-shrink-0">
+              <SceneHint icon="➡️">Przejście do analizy…</SceneHint>
+            </div>
           </div>
         </SceneFrame>
 
-        {/* Scena 2 — ANALIZA */}
-        <SceneFrame key={`s2-${cycle}`} visible={scene === 2} tone="brand">
-          <div className="grid grid-cols-1 lg:grid-cols-[560px_minmax(0,1fr)] gap-8 items-center min-h-[380px] lg:min-h-[440px]">
-            <div className="rounded-xl border bg-[var(--color-basewhite)] p-6 shadow-sm">
-              <div className="text-sm uppercase tracking-wide text-[var(--color-clouddark)] mb-2">
-                Krok 2
-              </div>
-              <div className="text-2xl lg:text-3xl font-extrabold mb-5">
+        {/* Scene 2 — ANALIZA */}
+        <SceneFrame visible={scene === 2} tone="brand">
+          <div className="flex flex-col xl:flex-row gap-6 xl:gap-8 items-center">
+            <div className="rounded-2xl border-2 border-bookcloth/30 bg-white/90 backdrop-blur-sm p-5 lg:p-6 shadow-xl flex-1 w-full">
+              <StepBadge step={2} />
+              <h4 className="text-xl lg:text-2xl font-black text-slatedark mb-4 lg:mb-6">
                 AI analizuje wymagania
-              </div>
-              <div className="h-32 rounded-lg border p-4 relative overflow-hidden">
-                <ScanLines />
-                <div className="relative z-10 text-sm lg:text-base leading-relaxed">
-                  • React, TypeScript, CSS-in-JS
-                  <br />
-                  • Dostępność (WCAG), testy jednostkowe
-                  <br />• Doświadczenie: 4+ lata w FE
+              </h4>
+              <div className="relative rounded-xl border-2 border-kraft/20 bg-manilla/20 p-4 overflow-hidden">
+                <ScanEffect />
+                <div className="relative z-10 space-y-2 lg:space-y-3 text-sm lg:text-base">
+                  <RequirementItem delay={0}>
+                    React, TypeScript, CSS-in-JS
+                  </RequirementItem>
+                  <RequirementItem delay={0.3}>
+                    Dostępność (WCAG), testy jednostkowe
+                  </RequirementItem>
+                  <RequirementItem delay={0.6}>
+                    Doświadczenie: 4+ lata w FE
+                  </RequirementItem>
+                  <RequirementItem delay={0.9}>
+                    Praca z REST API i GraphQL
+                  </RequirementItem>
                 </div>
               </div>
-              <div className="mt-4 flex items-center gap-2 text-sm text-[var(--color-clouddark)]">
-                <Spinner /> Analizuję opis stanowiska…
-              </div>
+              <p className="mt-4 lg:mt-6 text-clouddark flex items-center gap-3 text-sm">
+                <PulsingDot />
+                <span>Analizuję opis stanowiska…</span>
+              </p>
             </div>
-            <SceneHint>Dopasowanie do Twoich danych…</SceneHint>
+            <div className="hidden xl:block flex-shrink-0">
+              <SceneHint icon="🎯">Dopasowanie do Twoich danych…</SceneHint>
+            </div>
           </div>
         </SceneFrame>
 
-        {/* Scena 3 — GENEROWANIE (dropy) */}
-        <SceneFrame key={`s3-${cycle}`} visible={scene === 3} tone="neutral">
-          <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-6 min-h-[400px] lg:min-h-[480px]">
-            {/* Formularz */}
-            <div className="rounded-xl border bg-[var(--color-basewhite)] p-6">
-              <div className="text-sm uppercase tracking-wide text-[var(--color-clouddark)] mb-2">
-                Krok 3
-              </div>
-              <div className="text-2xl lg:text-3xl font-extrabold mb-5">
+        {/* Scene 3 — GENEROWANIE */}
+        <SceneFrame visible={scene === 3} tone="neutral">
+          <div className="flex flex-col xl:flex-row gap-6 xl:gap-8">
+            {/* Form */}
+            <div className="rounded-2xl border-2 border-kraft/20 bg-white/90 backdrop-blur-sm p-5 lg:p-6 shadow-xl flex-shrink-0 xl:w-[340px]">
+              <StepBadge step={3} />
+              <h4 className="text-lg lg:text-xl font-black text-slatedark mb-4">
                 Tworzenie CV z Twoich danych
+              </h4>
+              <div className="space-y-4">
+                <AnimatedFormField
+                  label="Imię i nazwisko"
+                  value="Jan Kowalski"
+                  active={drop.name}
+                  done={reveal.name}
+                />
+                <AnimatedFormField
+                  label="Nagłówek"
+                  value="Frontend Engineer"
+                  active={drop.headline}
+                  done={reveal.headline}
+                />
+                <AnimatedFormField
+                  label="Podsumowanie"
+                  value="Buduję dopracowane UI z naciskiem na wydajność i dostępność."
+                  active={drop.summary}
+                  done={reveal.summary}
+                  multiline
+                />
+                <AnimatedFormField
+                  label="Umiejętności"
+                  value="React • TypeScript • Node.js"
+                  active={drop.skills}
+                  done={reveal.skills}
+                />
               </div>
-              <FormField label="Imię i nazwisko" value="Jan Kowalski" large />
-              <FormField label="Nagłówek" value="Frontend Engineer" />
-              <FormField
-                label="Podsumowanie"
-                value="Buduję dopracowane UI z naciskiem na wydajność i dostępność. 5+ lat w React/TypeScript."
-                multiline
-              />
-              <div className="mt-3 text-sm text-[var(--color-clouddark)]">
-                Pola wpadają na swoje miejsce po prawej.
-              </div>
+              <p className="mt-4 text-sm text-clouddark flex items-center gap-2">
+                <span className="text-lg">✨</span>
+                Pola wpadają na swoje miejsce
+              </p>
             </div>
 
-            {/* Makieta A4 (cel) */}
-            <div className="relative">
+            {/* CV Preview */}
+            <div className="relative flex items-center justify-center flex-1 min-h-[400px] xl:min-h-[500px]">
               <div
-                className="mx-auto relative rounded-xl border bg-[var(--color-basewhite)] shadow-[0_20px_50px_rgba(0,0,0,0.12)]"
-                style={{ width: 'min(100%, 580px)', aspectRatio: '210/297' }}
+                className="relative rounded-2xl border-2 border-kraft/30 bg-white shadow-2xl overflow-hidden w-full max-w-[320px] xl:max-w-[380px]"
+                style={{ aspectRatio: "210/297" }}
               >
-                {/* header */}
-                <div className="absolute left-6 right-6 top-6 pb-3 border-b border-[rgba(0,0,0,0.08)]">
-                  <div ref={dstNameRef} className="h-9">
+                {/* CV Header */}
+                <div className="absolute left-4 right-4 top-4 pb-2 border-b-2 border-kraft/20">
+                  <div ref={dstNameRef} className="min-h-[24px] mb-1">
                     <span
-                      className={`block font-extrabold text-[clamp(18px,2.6vw,24px)] leading-tight text-[var(--color-slatedark)] transition-opacity duration-300 ${
-                        reveal.name ? 'opacity-100' : 'opacity-0'
+                      className={`block font-black text-base xl:text-lg text-slatedark transition-all duration-500 ${
+                        reveal.name
+                          ? "opacity-100 translate-y-0"
+                          : "opacity-0 translate-y-2"
                       }`}
                     >
                       Jan Kowalski
                     </span>
                   </div>
-                  <div ref={dstHeadlineRef} className="h-6">
+                  <div ref={dstHeadlineRef} className="min-h-[18px]">
                     <span
-                      className={`block text-[clamp(14px,1.8vw,16px)] leading-tight text-[var(--color-clouddark)] transition-opacity duration-300 ${
-                        reveal.headline ? 'opacity-100' : 'opacity-0'
+                      className={`block text-xs xl:text-sm text-bookcloth font-semibold transition-all duration-500 ${
+                        reveal.headline
+                          ? "opacity-100 translate-y-0"
+                          : "opacity-0 translate-y-2"
                       }`}
                     >
                       Frontend Engineer
@@ -328,41 +493,96 @@ export default function DemoAnimation() {
                   </div>
                 </div>
 
-                {/* summary */}
+                {/* Summary */}
                 <div
                   ref={dstSummaryRef}
-                  className="absolute left-6 right-6 top-[100px]"
+                  className="absolute left-4 right-4"
+                  style={{ top: "18%" }}
                 >
                   <div
-                    className={`text-[clamp(13px,1.6vw,15px)] text-[var(--color-slatedark)] leading-relaxed break-words hyphens-auto line-clamp-4 text-balance transition-opacity duration-300 ${
-                      reveal.summary ? 'opacity-100' : 'opacity-0'
+                    className={`text-[10px] xl:text-xs text-slatedark/80 leading-relaxed transition-all duration-500 ${
+                      reveal.summary
+                        ? "opacity-100 translate-y-0"
+                        : "opacity-0 translate-y-2"
                     }`}
                   >
                     Buduję dopracowane UI z naciskiem na wydajność i dostępność.
-                    5+ lat w React/TypeScript.
                   </div>
                 </div>
 
-                {/* placeholdery */}
-                <div className="absolute left-6 right-6 bottom-6 top-[172px]">
-                  <div className="grid grid-cols-3 gap-4 h-full">
-                    <div className="col-span-2 flex flex-col gap-3">
-                      <div className="h-5 rounded bg-[var(--color-ivorymedium)]" />
-                      <div className="h-5 w-4/5 rounded bg-[var(--color-ivorymedium)]" />
-                      <div className="flex-1 rounded bg-[var(--color-ivorylight)] border border-[rgba(0,0,0,0.06)]" />
+                {/* Skills */}
+                <div
+                  ref={dstSkillsRef}
+                  className="absolute left-4 right-4"
+                  style={{ top: "28%" }}
+                >
+                  <div
+                    className={`transition-all duration-500 ${
+                      reveal.skills
+                        ? "opacity-100 translate-y-0"
+                        : "opacity-0 translate-y-2"
+                    }`}
+                  >
+                    <div className="text-[8px] xl:text-[10px] uppercase tracking-wider text-clouddark mb-1 font-bold">
+                      Umiejętności
                     </div>
-                    <div className="flex flex-col gap-3">
-                      <div className="h-5 rounded bg-[var(--color-ivorymedium)]" />
-                      <div className="h-5 w-4/5 rounded bg-[var(--color-ivorymedium)]" />
-                      <div className="flex-1 rounded bg-[var(--color-ivorylight)] border border-[rgba(0,0,0,0.06)]" />
+                    <div className="flex flex-wrap gap-1">
+                      {["React", "TypeScript", "Node.js", "CSS"].map(
+                        (skill) => (
+                          <span
+                            key={skill}
+                            className="px-1.5 py-0.5 text-[8px] xl:text-[10px] rounded-full bg-kraft/10 text-slatedark font-medium"
+                          >
+                            {skill}
+                          </span>
+                        ),
+                      )}
                     </div>
                   </div>
                 </div>
 
-                {/* OVERLAY — chipy ponad treścią; znikają po lądowaniu */}
+                {/* Experience */}
+                <div
+                  ref={dstExperienceRef}
+                  className="absolute left-4 right-4"
+                  style={{ top: "40%" }}
+                >
+                  <div
+                    className={`transition-all duration-500 ${
+                      reveal.experience
+                        ? "opacity-100 translate-y-0"
+                        : "opacity-0 translate-y-2"
+                    }`}
+                  >
+                    <div className="text-[8px] xl:text-[10px] uppercase tracking-wider text-clouddark mb-1 font-bold">
+                      Doświadczenie
+                    </div>
+                    <div className="text-[10px] xl:text-xs text-slatedark font-semibold">
+                      Senior Frontend Dev
+                    </div>
+                    <div className="text-[8px] xl:text-[10px] text-clouddark">
+                      TechCorp • 2020-obecnie
+                    </div>
+                  </div>
+                </div>
+
+                {/* Placeholders */}
+                <div
+                  className="absolute left-4 right-4 bottom-4"
+                  style={{ top: "55%" }}
+                >
+                  <div className="flex flex-col gap-1.5 h-full">
+                    <div className="h-2 xl:h-3 rounded bg-ivorymedium/50 w-3/4" />
+                    <div className="h-2 xl:h-3 rounded bg-ivorymedium/50 w-1/2" />
+                    <div className="h-2 xl:h-3 rounded bg-ivorymedium/50 w-2/3" />
+                    <div className="flex-1 rounded-lg bg-ivorylight/50 border border-kraft/10 mt-1" />
+                  </div>
+                </div>
+
+                {/* Drop overlay */}
                 <div
                   ref={overlayRef}
-                  className="pointer-events-none absolute inset-0 z-10"
+                  className="pointer-events-none absolute inset-0 z-20"
                 >
                   {to.name && (
                     <DropChip
@@ -370,9 +590,9 @@ export default function DemoAnimation() {
                       label="Jan Kowalski"
                       to={to.name}
                       go={drop.name}
-                      delay={0}
                       duration={T.dropDuration}
                       stay={T.chipStay}
+                      icon="👤"
                     />
                   )}
                   {to.headline && (
@@ -381,9 +601,9 @@ export default function DemoAnimation() {
                       label="Frontend Engineer"
                       to={to.headline}
                       go={drop.headline}
-                      delay={0}
                       duration={T.dropDuration}
                       stay={T.chipStay}
+                      icon="💼"
                     />
                   )}
                   {to.summary && (
@@ -392,168 +612,439 @@ export default function DemoAnimation() {
                       label="Podsumowanie"
                       to={to.summary}
                       go={drop.summary}
-                      delay={0}
                       duration={T.dropDuration}
                       stay={T.chipStay}
+                      icon="📝"
                       wide
                     />
                   )}
+                  {to.skills && (
+                    <DropChip
+                      key={`skills-${cycle}`}
+                      label="Umiejętności"
+                      to={to.skills}
+                      go={drop.skills}
+                      duration={T.dropDuration}
+                      stay={T.chipStay}
+                      icon="⚡"
+                    />
+                  )}
+                  {to.experience && (
+                    <DropChip
+                      key={`experience-${cycle}`}
+                      label="Doświadczenie"
+                      to={to.experience}
+                      go={drop.experience}
+                      duration={T.dropDuration}
+                      stay={T.chipStay}
+                      icon="📊"
+                    />
+                  )}
+                </div>
+
+                {/* Glow effect during generation */}
+                <div
+                  className={`absolute inset-0 pointer-events-none transition-opacity duration-500 ${
+                    scene === 3 ? "opacity-100" : "opacity-0"
+                  }`}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-t from-kraft/10 via-transparent to-transparent" />
                 </div>
               </div>
+
+              {/* Shadow underneath */}
+              <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-3/4 h-8 bg-black/10 rounded-full blur-xl" />
             </div>
           </div>
         </SceneFrame>
 
-        {/* Scena 4 — GOTOWE (czytelny finał) */}
-        <SceneFrame key={`s4-${cycle}`} visible={scene === 4} tone="success">
-          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_560px] gap-8 items-center min-h-[380px] lg:min-h-[440px]">
-            <SceneHint>CV gotowe do pobrania</SceneHint>
-            <div className="relative">
+        {/* Scene 4 — GOTOWE */}
+        <SceneFrame visible={scene === 4} tone="success">
+          <div className="flex flex-col xl:flex-row gap-6 xl:gap-8 items-center">
+            <div className="text-center xl:text-left flex-shrink-0 xl:w-[280px]">
+              <div className="inline-flex items-center justify-center w-16 h-16 xl:w-20 xl:h-20 rounded-full bg-gradient-to-br from-feedbacksuccess to-kraft text-white text-3xl xl:text-4xl mb-4 xl:mb-6 shadow-2xl animate-bounce">
+                ✓
+              </div>
+              <h4 className="text-xl xl:text-2xl font-black text-slatedark mb-2 xl:mb-3">
+                CV gotowe!
+              </h4>
+              <p className="text-clouddark mb-4 xl:mb-6 text-sm xl:text-base">
+                Twoje spersonalizowane CV jest gotowe do pobrania.
+              </p>
+              <button className="inline-flex items-center gap-2 px-5 py-2.5 xl:px-6 xl:py-3 rounded-xl bg-gradient-to-r from-kraft to-bookcloth text-white font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 text-sm xl:text-base">
+                <span>📥</span>
+                Pobierz PDF
+              </button>
+            </div>
+
+            {/* Final CV */}
+            <div className="relative flex items-center justify-center flex-1 min-h-[350px] xl:min-h-[450px]">
               <div
-                className="mx-auto relative rounded-xl border bg-[var(--color-basewhite)] shadow-[0_30px_70px_rgba(0,0,0,0.18)] ring-2 ring-[var(--color-bookcloth)]"
-                style={{ width: 'min(100%, 580px)', aspectRatio: '210/297' }}
+                className="relative rounded-2xl border-2 border-feedbacksuccess/50 bg-white shadow-2xl overflow-hidden ring-4 ring-feedbacksuccess/20 w-full max-w-[280px] xl:max-w-[350px]"
+                style={{
+                  aspectRatio: "210/297",
+                  animation: "successGlow 2s ease-in-out infinite",
+                }}
               >
-                {/* Nagłówek */}
-                <div className="absolute left-6 right-6 top-6 pb-3 border-b border-[rgba(0,0,0,0.08)]">
-                  <div className="h-9">
-                    <span className="block font-extrabold text-[clamp(18px,2.6vw,24px)] leading-tight text-[var(--color-slatedark)]">
-                      Jan Kowalski
-                    </span>
+                {/* Complete CV content */}
+                <div className="absolute left-4 right-4 top-4 pb-2 border-b-2 border-kraft/20">
+                  <div className="font-black text-base xl:text-lg text-slatedark">
+                    Jan Kowalski
                   </div>
-                  <div className="h-6">
-                    <span className="block text-[clamp(14px,1.8vw,16px)] leading-tight text-[var(--color-clouddark)]">
-                      Frontend Engineer
-                    </span>
+                  <div className="text-xs xl:text-sm text-bookcloth font-semibold">
+                    Frontend Engineer
                   </div>
                 </div>
-                {/* Podsumowanie */}
-                <div className="absolute left-6 right-6 top-[100px] text-[clamp(13px,1.6vw,15px)] leading-relaxed text-balance hyphens-auto">
+                <div
+                  className="absolute left-4 right-4 text-[10px] xl:text-xs text-slatedark/80 leading-relaxed"
+                  style={{ top: "18%" }}
+                >
                   Buduję dopracowane UI z naciskiem na wydajność i dostępność.
-                  5+ lat w React/TypeScript.
                 </div>
-                {/* Placeholdery */}
-                <div className="absolute left-6 right-6 bottom-6 top-[172px]">
-                  <div className="grid grid-cols-3 gap-4 h-full">
-                    <div className="col-span-2 flex flex-col gap-3">
-                      <div className="h-5 rounded bg-[var(--color-ivorymedium)]" />
-                      <div className="h-5 w-4/5 rounded bg-[var(--color-ivorymedium)]" />
-                      <div className="flex-1 rounded bg-[var(--color-ivorylight)] border border-[rgba(0,0,0,0.06)]" />
-                    </div>
-                    <div className="flex flex-col gap-3">
-                      <div className="h-5 rounded bg-[var(--color-ivorymedium)]" />
-                      <div className="h-5 w-4/5 rounded bg-[var(--color-ivorymedium)]" />
-                      <div className="flex-1 rounded bg-[var(--color-ivorylight)] border border-[rgba(0,0,0,0.06)]" />
-                    </div>
+                <div className="absolute left-4 right-4" style={{ top: "28%" }}>
+                  <div className="text-[8px] xl:text-[10px] uppercase tracking-wider text-clouddark mb-1 font-bold">
+                    Umiejętności
                   </div>
+                  <div className="flex flex-wrap gap-1">
+                    {["React", "TypeScript", "Node.js", "CSS"].map((skill) => (
+                      <span
+                        key={skill}
+                        className="px-1.5 py-0.5 text-[8px] xl:text-[10px] rounded-full bg-kraft/10 text-slatedark font-medium"
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <div className="absolute left-4 right-4" style={{ top: "40%" }}>
+                  <div className="text-[8px] xl:text-[10px] uppercase tracking-wider text-clouddark mb-1 font-bold">
+                    Doświadczenie
+                  </div>
+                  <div className="text-[10px] xl:text-xs text-slatedark font-semibold">
+                    Senior Frontend Dev
+                  </div>
+                  <div className="text-[8px] xl:text-[10px] text-clouddark">
+                    TechCorp • 2020-obecnie
+                  </div>
+                </div>
+                <div
+                  className="absolute left-4 right-4 bottom-4"
+                  style={{ top: "55%" }}
+                >
+                  <div className="flex flex-col gap-1.5 h-full">
+                    <div className="h-2 xl:h-3 rounded bg-ivorymedium/50 w-3/4" />
+                    <div className="h-2 xl:h-3 rounded bg-ivorymedium/50 w-1/2" />
+                    <div className="h-2 xl:h-3 rounded bg-ivorymedium/50 w-2/3" />
+                    <div className="flex-1 rounded-lg bg-ivorylight/50 border border-kraft/10 mt-1" />
+                  </div>
+                </div>
+
+                {/* Success checkmark overlay */}
+                <div className="absolute top-2 right-2 xl:top-3 xl:right-3 w-8 h-8 xl:w-10 xl:h-10 rounded-full bg-feedbacksuccess flex items-center justify-center text-white text-sm xl:text-lg shadow-lg">
+                  ✓
                 </div>
               </div>
+              <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-3/4 h-8 bg-black/10 rounded-full blur-xl" />
             </div>
           </div>
         </SceneFrame>
       </div>
 
-      {/* drobne animacje / style pomocnicze */}
+      {/* Global styles */}
       <style>{`
-        .fade-enter { opacity: 0; transform: translateY(6px); }
-        .fade-enter-active { opacity: 1; transform: translateY(0); transition: opacity 320ms ease, transform 320ms ease; }
-        .fade-leave { opacity: 1; }
-        .fade-leave-active { opacity: 0; transition: opacity 220ms ease; }
-
-        /* line-clamp bez pluginu Tailwinda */
-        .line-clamp-4 {
-          display: -webkit-box;
-          -webkit-line-clamp: 4;
-          line-clamp: 4;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
+        @keyframes float {
+          0%, 100% { transform: translateY(0) rotate(0deg); }
+          50% { transform: translateY(-20px) rotate(3deg); }
         }
-
-        /* ładniejsze łamanie długich linii */
-        .text-balance { text-wrap: balance; }
-        .hyphens-auto { hyphens: auto; }
+        @keyframes shimmer {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+        @keyframes pulse {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.05); }
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes successGlow {
+          0%, 100% { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 4px rgba(34, 197, 94, 0.1); }
+          50% { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 30px 8px rgba(34, 197, 94, 0.2); }
+        }
+        .animate-fadeIn { animation: fadeIn 0.5s ease-out; }
+        .animate-shimmer { animation: shimmer 2s infinite; }
       `}</style>
     </div>
   );
 }
 
-/* ———————— Pomocnicze pod-komponenty ———————— */
+/* ———— Sub-components ———— */
 
-function StepDot({ active, label }) {
+function StepIndicator({ active, current, label, icon }) {
   return (
-    <li className="flex items-center gap-2">
+    <li
+      className={`flex flex-col items-center gap-2 p-3 rounded-xl transition-all duration-500 ${
+        current
+          ? "bg-gradient-to-br from-kraft/20 to-bookcloth/20 scale-105 shadow-lg"
+          : active
+            ? "bg-kraft/5"
+            : "bg-transparent"
+      }`}
+    >
       <span
-        className={`h-2.5 w-2.5 rounded-full ${
-          active ? 'bg-[var(--color-bookcloth)]' : 'bg-[rgba(0,0,0,0.15)]'
+        className={`text-2xl transition-all duration-300 ${
+          current ? "animate-bounce" : ""
+        }`}
+      >
+        {icon}
+      </span>
+      <span
+        className={`text-xs font-bold transition-colors duration-300 ${
+          active ? "text-slatedark" : "text-clouddark/50"
+        }`}
+      >
+        {label}
+      </span>
+      <span
+        className={`h-1.5 w-1.5 rounded-full transition-all duration-300 ${
+          current
+            ? "bg-bookcloth scale-150"
+            : active
+              ? "bg-kraft"
+              : "bg-clouddark/20"
         }`}
       />
-      <span className="text-[var(--color-clouddark)]">{label}</span>
     </li>
   );
 }
 
-// Scena z miękkim fade-in/out
-function SceneFrame({ children, visible, tone = 'light' }) {
+function SceneFrame({ children, visible, tone = "light" }) {
   const tones = {
-    light: 'bg-[var(--color-ivorylight)]',
-    neutral: 'bg-[var(--color-ivorymedium)]',
-    brand: 'bg-[var(--color-manilla)]/50',
-    success: 'bg-[var(--color-ivorylight)]',
+    light: "bg-ivorylight/50",
+    neutral: "bg-ivorymedium/30",
+    brand: "bg-gradient-to-br from-manilla/30 to-kraft/10",
+    success: "bg-gradient-to-br from-feedbacksuccess/5 to-ivorylight/50",
   }[tone];
 
   return (
-    <div className={`relative ${visible ? 'block' : 'hidden'}`}>
-      <div
-        className={`rounded-xl border border-[rgba(0,0,0,0.06)] p-5 lg:p-6 ${tones} fade-enter fade-enter-active`}
-      >
+    <div
+      className={`transition-all duration-500 ${
+        visible
+          ? "opacity-100 translate-y-0"
+          : "opacity-0 translate-y-4 absolute inset-0 pointer-events-none"
+      }`}
+    >
+      <div className={`rounded-2xl border border-kraft/10 p-6 lg:p-8 ${tones}`}>
         {children}
       </div>
     </div>
   );
 }
 
-function SceneHint({ children }) {
+function SceneHint({ children, icon }) {
   return (
-    <div className="text-base lg:text-lg text-[var(--color-slatedark)]/80">
-      {children}
+    <div className="flex flex-col items-center justify-center text-center p-6">
+      <span className="text-4xl mb-4 animate-pulse">{icon}</span>
+      <span className="text-lg text-slatedark/70 font-medium">{children}</span>
     </div>
   );
 }
 
-function FormField({ label, value, multiline = false }) {
+function StepBadge({ step }) {
   return (
-    <div className="mb-4">
-      <div className="text-xs uppercase tracking-wide text-[var(--color-clouddark)] mb-1">
+    <div className="inline-flex items-center gap-2 mb-4">
+      <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-kraft to-bookcloth text-white text-sm font-bold shadow-md">
+        {step}
+      </span>
+      <span className="text-xs uppercase tracking-wider text-clouddark font-semibold">
+        Krok {step}
+      </span>
+    </div>
+  );
+}
+
+function AnimatedFormField({ label, value, active, done, multiline = false }) {
+  return (
+    <div
+      className={`transition-all duration-500 ${
+        active && !done
+          ? "ring-2 ring-kraft/50 rounded-xl"
+          : done
+            ? "opacity-50"
+            : ""
+      }`}
+    >
+      <div className="text-xs uppercase tracking-wider text-clouddark mb-1 font-semibold">
         {label}
       </div>
       <div
-        className={`rounded-lg border bg-[var(--color-basewhite)] px-4 ${
-          multiline ? 'py-3 h-28' : 'h-12'
-        } flex items-center text-base lg:text-lg font-medium`}
+        className={`rounded-xl border-2 transition-colors duration-300 bg-white px-4 ${
+          multiline ? "py-3 min-h-[80px]" : "h-12"
+        } flex items-center text-sm font-medium ${
+          active && !done ? "border-kraft bg-kraft/5" : "border-kraft/20"
+        }`}
       >
-        {value}
+        <span
+          className={`transition-opacity duration-300 ${done ? "text-slatedark/50" : "text-slatedark"}`}
+        >
+          {value}
+        </span>
+        {active && !done && (
+          <span className="ml-auto">
+            <PulsingDot />
+          </span>
+        )}
+        {done && <span className="ml-auto text-feedbacksuccess">✓</span>}
       </div>
     </div>
   );
 }
 
-function Spinner() {
+function RequirementItem({ children, delay = 0 }) {
   return (
-    <span className="relative inline-flex h-4 w-4">
-      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--color-bookcloth)] opacity-30" />
-      <span className="relative inline-flex h-4 w-4 rounded-full bg-[var(--color-bookcloth)]" />
+    <div
+      className="flex items-start gap-3 animate-fadeIn"
+      style={{ animationDelay: `${delay}s` }}
+    >
+      <span className="text-kraft mt-0.5">•</span>
+      <span className="text-sm text-slatedark">{children}</span>
+    </div>
+  );
+}
+
+function TypingCursor() {
+  return <span className="inline-block w-0.5 h-5 bg-kraft animate-pulse" />;
+}
+
+function LoadingDots() {
+  return (
+    <span className="inline-flex gap-1">
+      {[0, 1, 2].map((i) => (
+        <span
+          key={i}
+          className="w-1.5 h-1.5 rounded-full bg-kraft animate-bounce"
+          style={{ animationDelay: `${i * 0.15}s` }}
+        />
+      ))}
     </span>
   );
 }
 
-function ScanLines() {
+function PulsingDot() {
   return (
-    <div className="absolute inset-0 overflow-hidden">
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0)_0%,rgba(0,0,0,0.06)_50%,rgba(0,0,0,0)_100%)] animate-[scan_1400ms_ease_infinite]"></div>
+    <span className="relative inline-flex h-3 w-3">
+      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-kraft opacity-40" />
+      <span className="relative inline-flex h-3 w-3 rounded-full bg-gradient-to-r from-kraft to-bookcloth" />
+    </span>
+  );
+}
+
+function ScanEffect() {
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <div
+        className="absolute inset-x-0 h-12 bg-gradient-to-b from-kraft/20 via-kraft/10 to-transparent"
+        style={{ animation: "scanMove 2s ease-in-out infinite" }}
+      />
       <style>{`
-        @keyframes scan {
-          0% { transform: translateY(-100%); }
-          100% { transform: translateY(100%); }
+        @keyframes scanMove {
+          0%, 100% { top: -48px; }
+          50% { top: calc(100% + 48px); }
         }
+      `}</style>
+    </div>
+  );
+}
+
+/* ———— DropChip Component ———— */
+function DropChip({
+  label,
+  to = { x: 0, y: 0, w: 160, h: 40 },
+  go = false,
+  duration = 1800,
+  stay = 500,
+  wide = false,
+  icon = "📌",
+}) {
+  const chipWidth = wide ? Math.max(to.w, 180) : Math.max(to.w, 140);
+
+  const style = {
+    left: to.x,
+    top: to.y,
+    width: chipWidth,
+    "--drop-distance": "120px",
+    animation: go
+      ? `chipDrop ${duration}ms cubic-bezier(.34,1.56,.64,1) forwards,
+         chipGlow ${duration * 0.4}ms ${duration * 0.5}ms ease-out forwards,
+         chipHold ${stay}ms ${duration}ms linear forwards,
+         chipFade 400ms ${duration + stay}ms ease-out forwards`
+      : "none",
+  };
+
+  return (
+    <div
+      className="absolute z-30 rounded-xl border-2 border-kraft/40 bg-gradient-to-br from-white via-ivorylight to-white text-slatedark shadow-2xl px-4 h-10 flex items-center gap-2 text-sm font-bold select-none backdrop-blur-sm"
+      style={style}
+    >
+      <span className="text-base">{icon}</span>
+      <span className="truncate">{label}</span>
+
+      {/* Particle effects */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-xl">
+        {go && (
+          <>
+            <span className="absolute w-1 h-1 bg-kraft rounded-full animate-particle1" />
+            <span className="absolute w-1 h-1 bg-bookcloth rounded-full animate-particle2" />
+            <span className="absolute w-1.5 h-1.5 bg-manilla rounded-full animate-particle3" />
+          </>
+        )}
+      </div>
+
+      <style>{`
+        @keyframes chipDrop {
+          0% { 
+            transform: translateY(calc(-1 * var(--drop-distance))) scale(0.8) rotate(-5deg); 
+            opacity: 0; 
+            filter: blur(4px);
+          }
+          40% { 
+            transform: translateY(10px) scale(1.08) rotate(2deg); 
+            opacity: 1; 
+            filter: blur(0);
+          }
+          60% { transform: translateY(-8px) scale(0.96) rotate(-1deg); }
+          80% { transform: translateY(4px) scale(1.02) rotate(0.5deg); }
+          100% { transform: translateY(0) scale(1) rotate(0deg); opacity: 1; }
+        }
+        @keyframes chipGlow {
+          0% { box-shadow: 0 10px 40px rgba(166, 124, 82, 0.2); }
+          50% { box-shadow: 0 10px 40px rgba(166, 124, 82, 0.4), 0 0 60px rgba(166, 124, 82, 0.3); }
+          100% { box-shadow: 0 10px 40px rgba(166, 124, 82, 0.2); }
+        }
+        @keyframes chipHold {
+          from { opacity: 1; }
+          to { opacity: 1; }
+        }
+        @keyframes chipFade {
+          0% { opacity: 1; transform: scale(1); }
+          100% { opacity: 0; transform: scale(0.9) translateY(-8px); filter: blur(2px); }
+        }
+        @keyframes particle1 {
+          0% { top: 50%; left: 20%; opacity: 1; }
+          100% { top: -20px; left: 0%; opacity: 0; transform: scale(0); }
+        }
+        @keyframes particle2 {
+          0% { top: 50%; left: 50%; opacity: 1; }
+          100% { top: -30px; left: 70%; opacity: 0; transform: scale(0); }
+        }
+        @keyframes particle3 {
+          0% { top: 50%; left: 80%; opacity: 1; }
+          100% { top: -25px; left: 100%; opacity: 0; transform: scale(0); }
+        }
+        .animate-particle1 { animation: particle1 0.8s ease-out forwards; }
+        .animate-particle2 { animation: particle2 0.9s ease-out 0.1s forwards; }
+        .animate-particle3 { animation: particle3 0.7s ease-out 0.05s forwards; }
       `}</style>
     </div>
   );

@@ -12,6 +12,8 @@ import pl.ceveme.infrastructure.external.common.HttpClient;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Component
 public class OpenStreetMapImpl implements LocationFinder {
@@ -39,17 +41,13 @@ public class OpenStreetMapImpl implements LocationFinder {
 
     }
 
-
     private LocationResponse findLocAndLat(String location) throws InterruptedException, IOException {
-        Thread.sleep(1000);
-
-        String encodedAddress = URLEncoder.encode(location, StandardCharsets.UTF_8);
-        String url = "https://nominatim.openstreetmap.org/search?q=" + encodedAddress + "&format=json&limit=1";
-
-        String response = httpClient.fetchContent(url);
-
-
+        String response = fetchContent(location);
         JsonNode root = objectMapper.readTree(response);
+
+        Pattern pattern = Pattern.compile("wojew[oó]dztwo\\s+([^,]+)",
+                Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+
         if (root.isEmpty()) return null;
         JsonNode firstResult = root.get(0);
 
@@ -58,8 +56,32 @@ public class OpenStreetMapImpl implements LocationFinder {
 
         double longitude = Double.parseDouble(lon);
         double latitude = Double.parseDouble(lat);
-        log.info("Lat: {}, Lon: {}", longitude, latitude);
 
-        return new LocationResponse(latitude, longitude);
+
+
+        String displayName = firstResult.get("display_name").asText();
+        if (displayName == null) return null;
+
+        Matcher matcher = pattern.matcher(displayName);
+
+        String voivodeship = matcher.find() ? matcher.group(1).trim() : null;
+
+        log.info("Lat: {}, Lon: {}, voivodeship: {}",  longitude, latitude,voivodeship );
+
+        return new LocationResponse(latitude, longitude,voivodeship);
+    }
+
+
+    private String fetchContent(String location) throws IOException, InterruptedException {
+        Thread.sleep(1000);
+
+        String encodedAddress = URLEncoder.encode(location, StandardCharsets.UTF_8);
+        String url = "https://nominatim.openstreetmap.org/search?q=" +
+                encodedAddress +
+                "&format=json" +
+                 "&limit=1" +
+                "&addressdetails=1";
+
+        return httpClient.fetchContent(url);
     }
 }

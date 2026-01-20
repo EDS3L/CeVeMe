@@ -43,7 +43,7 @@ const AppRoutes = () => {
                         }
                       />
                     );
-                  }
+                  },
                 )}
               </Routes>
             </Suspense>
@@ -58,8 +58,10 @@ const AppRoutes = () => {
 const ConditionalNavbar = () => {
   const location = useLocation();
   const isHomePage = location.pathname === "/";
+  const isAuthPage = location.pathname.startsWith("/auth/");
 
-  if (isHomePage) {
+  // Nie pokazuj navbara na stronie głównej i stronach auth (mają swoje navbary)
+  if (isHomePage || isAuthPage) {
     return null;
   }
 

@@ -7,9 +7,9 @@ import {
   createTextNode,
   createShapeNode,
   createImageNode,
-} from '../core/model';
-import { A4 } from '../core/mm';
-import { measureTextHeightMm } from '../services/typeset';
+} from "../core/model";
+import { A4 } from "../core/mm";
+import { measureTextHeightMm } from "../services/typeset";
 
 export function buildPixelPerfectAttachmentCV(api = {}) {
   const doc = emptyDocument(A4);
@@ -35,123 +35,123 @@ export function buildPixelPerfectAttachmentCV(api = {}) {
 
   /* ===== KOLORY / TYPO ===== */
   const COLORS = {
-    page: '#FFFFFF',
-    leftPanel: '#EEEEEE',
-    leftPill: '#2E2E2E',
-    textDark: '#222222',
-    text: '#333132',
-    muted: '#727272',
-    hr: '#CFCFCF',
-    iconDark: '#2E2E2E',
-    iconFg: '#FFFFFF',
+    page: "#FFFFFF",
+    leftPanel: "#EEEEEE",
+    leftPill: "#2E2E2E",
+    textDark: "#222222",
+    text: "#333132",
+    muted: "#727272",
+    hr: "#CFCFCF",
+    iconDark: "#2E2E2E",
+    iconFg: "#FFFFFF",
   };
 
   const FONTS = {
     lastName: {
-      fontFamily: 'Lora, Times, serif',
+      fontFamily: "Lora, Times, serif",
       fontSize: 44,
       fontWeight: 700,
       color: COLORS.textDark,
       lineHeight: 1.08,
     },
     firstName: {
-      fontFamily: 'Lora, Times, serif',
+      fontFamily: "Lora, Times, serif",
       fontSize: 30,
       fontWeight: 400,
       color: COLORS.textDark,
       lineHeight: 1.08,
     },
     subtitle: {
-      fontFamily: 'Lora, Times, serif',
+      fontFamily: "Lora, Times, serif",
       fontSize: 12.8,
       fontWeight: 400,
-      fontStyle: 'italic',
+      fontStyle: "italic",
       color: COLORS.muted,
       lineHeight: 1.25,
     },
     summary: {
-      fontFamily: 'Inter, Arial, sans-serif',
+      fontFamily: "Inter, Arial, sans-serif",
       fontSize: 9.2,
       fontWeight: 400,
       color: COLORS.text,
       lineHeight: 1.45,
     },
     section: {
-      fontFamily: 'Montserrat, Arial, sans-serif',
+      fontFamily: "Montserrat, Arial, sans-serif",
       fontSize: 11.4,
       fontWeight: 800,
       color: COLORS.textDark,
       lineHeight: 1.2,
       letterSpacing: 0.2,
-      textTransform: 'uppercase',
+      textTransform: "uppercase",
     },
     role: {
-      fontFamily: 'Poppins, Arial, sans-serif',
+      fontFamily: "Poppins, Arial, sans-serif",
       fontSize: 10.5,
       fontWeight: 700,
       color: COLORS.textDark,
       lineHeight: 1.24,
     },
     meta: {
-      fontFamily: 'Poppins, Arial, sans-serif',
+      fontFamily: "Poppins, Arial, sans-serif",
       fontSize: 9.2,
       fontWeight: 400,
       color: COLORS.textDark,
       lineHeight: 1.22,
     },
     metaRight: {
-      fontFamily: 'Poppins, Arial, sans-serif',
+      fontFamily: "Poppins, Arial, sans-serif",
       fontSize: 9.2,
       fontWeight: 400,
       color: COLORS.textDark,
       lineHeight: 1.22,
-      textAlign: 'right',
+      textAlign: "right",
     },
     body: {
-      fontFamily: 'Inter, Arial, sans-serif',
+      fontFamily: "Inter, Arial, sans-serif",
       fontSize: 9.0,
       fontWeight: 400,
       color: COLORS.text,
       lineHeight: 1.42,
     },
     bullets: {
-      fontFamily: 'Inter, Arial, sans-serif',
+      fontFamily: "Inter, Arial, sans-serif",
       fontSize: 9.0,
       fontWeight: 400,
       color: COLORS.text,
       lineHeight: 1.4,
     },
     leftPillLabel: {
-      fontFamily: 'Montserrat, Arial, sans-serif',
+      fontFamily: "Montserrat, Arial, sans-serif",
       fontSize: 9.6,
       fontWeight: 800,
-      color: '#FFFFFF',
+      color: "#FFFFFF",
       lineHeight: 1.2,
-      textTransform: 'uppercase',
+      textTransform: "uppercase",
       letterSpacing: 0.6,
-      textAlign: 'center',
+      textAlign: "center",
     },
     leftItem: {
-      fontFamily: 'Inter, Arial, sans-serif',
+      fontFamily: "Inter, Arial, sans-serif",
       fontSize: 9.0,
       fontWeight: 400,
       color: COLORS.textDark,
       lineHeight: 1.32,
     },
     leftMuted: {
-      fontFamily: 'Inter, Arial, sans-serif',
+      fontFamily: "Inter, Arial, sans-serif",
       fontSize: 8.6,
       fontWeight: 400,
       color: COLORS.muted,
       lineHeight: 1.24,
     },
     gdpr: {
-      fontFamily: 'Inter, Arial, sans-serif',
+      fontFamily: "Inter, Arial, sans-serif",
       fontSize: 8.2,
       fontWeight: 400,
       color: COLORS.muted,
       lineHeight: 1.34,
-      textAlign: 'justify',
+      textAlign: "justify",
     },
   };
 
@@ -161,7 +161,7 @@ export function buildPixelPerfectAttachmentCV(api = {}) {
       createShapeNode({
         frame: { x, y, w, h },
         style: { fill: { color }, stroke: null, cornerRadius },
-      })
+      }),
     );
 
   const line = (x, y, w, h = 0.6) =>
@@ -169,11 +169,11 @@ export function buildPixelPerfectAttachmentCV(api = {}) {
       createShapeNode({
         frame: { x, y, w, h },
         style: { fill: { color: COLORS.hr }, stroke: null },
-      })
+      }),
     );
 
   const text = (x, y, w, s, style, opts = {}) => {
-    const str = String(s ?? '');
+    const str = String(s ?? "");
     if (!str.trim()) return 0;
     const h = Math.max(3.2, measureTextHeightMm(str, w, style));
     const node = createTextNode({
@@ -189,11 +189,43 @@ export function buildPixelPerfectAttachmentCV(api = {}) {
   const bulletList = (x, y, w, arr, style = FONTS.bullets) => {
     const items = (arr || []).filter(Boolean);
     if (!items.length) return 0;
-    return text(x, y, w, items.map((t) => `• ${t}`).join('\n'), style);
+    return text(x, y, w, items.map((t) => `• ${t}`).join("\n"), style);
+  };
+
+  // --- PAGE BREAK HELPER ---
+  // Śledź które strony mają już narysowany lewy panel
+  const drawnPages = new Set([0]); // strona 0 jest rysowana na początku
+
+  const checkPageBreak = (currentY, elementHeight, bottomMargin = 35) => {
+    const currentPage = Math.floor(currentY / PAGE.H);
+    const pageBottom = (currentPage + 1) * PAGE.H - bottomMargin;
+
+    if (currentY + elementHeight > pageBottom) {
+      const nextPage = currentPage + 1;
+      const nextPageTop = nextPage * PAGE.H + TOP_Y;
+
+      // Narysuj lewy panel na nowej stronie jeśli jeszcze nie narysowany
+      if (!drawnPages.has(nextPage)) {
+        drawnPages.add(nextPage);
+        const panelY = nextPage * PAGE.H + PANEL_TOP;
+        rect(
+          LEFT_X,
+          panelY,
+          LEFT_W,
+          PAGE.H - PANEL_TOP - PAGE.M,
+          COLORS.leftPanel,
+          10,
+        );
+      }
+
+      return nextPageTop;
+    }
+
+    return currentY;
   };
 
   const svgData = (svg) =>
-    'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg.trim());
+    "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg.trim());
 
   const ICONS = {
     phone: `
@@ -250,19 +282,19 @@ export function buildPixelPerfectAttachmentCV(api = {}) {
 
   /* ===== HEADER PRAWY ===== */
   const pd = api?.personalData || {};
-  const fullName = String(pd?.name || '').trim();
-  let first = '',
-    last = '';
+  const fullName = String(pd?.name || "").trim();
+  let first = "",
+    last = "";
   if (fullName) {
     const parts = fullName.split(/\s+/);
-    last = parts.length > 1 ? parts.pop() : '';
-    first = parts.join(' ') || last;
+    last = parts.length > 1 ? parts.pop() : "";
+    first = parts.join(" ") || last;
   }
 
   let hy = TOP_Y;
   if (last) hy += text(RIGHT_X, hy, RIGHT_W, last, FONTS.lastName);
   if (first) hy += text(RIGHT_X, hy - 6, RIGHT_W, first, FONTS.firstName);
-  const subtitle = (api?.headline || '').trim();
+  const subtitle = (api?.headline || "").trim();
   if (subtitle) hy += text(RIGHT_X, hy - 8, RIGHT_W, subtitle, FONTS.subtitle);
 
   // Podsumowanie
@@ -273,13 +305,13 @@ export function buildPixelPerfectAttachmentCV(api = {}) {
 
   /* ===== SEKCJE ===== */
   const sectionHeader = (label, x, y, w) => {
-    const up = String(label || '').toUpperCase();
+    const up = String(label || "").toUpperCase();
     const hh = text(x, y, w, up, FONTS.section);
     line(x, y + hh + 2.4, w, 0.6);
     return hh + 5.2;
   };
   const sectionHeaderSize = (label, w) => {
-    const up = String(label || '').toUpperCase();
+    const up = String(label || "").toUpperCase();
     const hh = Math.max(3.2, measureTextHeightMm(up, w, FONTS.section));
     return hh + 5.2;
   };
@@ -287,24 +319,28 @@ export function buildPixelPerfectAttachmentCV(api = {}) {
   /* ===== PRAWA: DOŚWIADCZENIE + PROJEKTY ===== */
   const experiences = Array.isArray(api?.experience) ? api.experience : [];
   if (experiences.length) {
-    ry += sectionHeader('Doświadczenie zawodowe', RIGHT_X, ry - 4, RIGHT_W);
+    ry = checkPageBreak(ry, 20);
+    ry += sectionHeader("Doświadczenie zawodowe", RIGHT_X, ry, RIGHT_W);
     for (const exp of experiences) {
+      // Sprawdź czy cały blok doświadczenia zmieści się (większy margines dla bloków)
+      ry = checkPageBreak(ry, 40);
+
       const leftW = RIGHT_W * 0.62;
       const rightW = RIGHT_W - leftW;
 
-      const tH = text(RIGHT_X, ry - 4, leftW, exp?.title || '', FONTS.role);
-      text(RIGHT_X + leftW, ry - 4, rightW, exp?.period || '', FONTS.metaRight);
+      const tH = text(RIGHT_X, ry, leftW, exp?.title || "", FONTS.role);
+      text(RIGHT_X + leftW, ry, rightW, exp?.period || "", FONTS.metaRight);
       ry += Math.max(tH, 6.8);
 
-      const second = [exp?.company, exp?.location].filter(Boolean).join(' • ');
-      if (second) ry += text(RIGHT_X, ry - 4, RIGHT_W, second, FONTS.meta);
+      const second = [exp?.company, exp?.location].filter(Boolean).join(" • ");
+      if (second) ry += text(RIGHT_X, ry, RIGHT_W, second, FONTS.meta);
 
       if (exp?.jobDescription)
-        ry += text(RIGHT_X, ry - 4, RIGHT_W, exp.jobDescription, FONTS.body);
+        ry += text(RIGHT_X, ry, RIGHT_W, exp.jobDescription, FONTS.body);
 
       const ach = Array.isArray(exp?.achievements)
         ? exp.achievements
-            .map((a) => (typeof a === 'string' ? a : a?.description))
+            .map((a) => (typeof a === "string" ? a : a?.description))
             .filter(Boolean)
         : [];
       if (ach.length)
@@ -320,21 +356,21 @@ export function buildPixelPerfectAttachmentCV(api = {}) {
       if (!url) return;
       let lb = label;
       try {
-        lb ||= new URL(url).hostname.replace(/^www\./, '');
+        lb ||= new URL(url).hostname.replace(/^www\./, "");
       } catch {
         lb ||= String(url);
       }
       out.push({ url: String(url), label: lb });
     };
-    push(p.url, '');
-    push(p.homepage, 'Strona');
-    push(p.demo, 'Demo');
-    push(p.repository || p.repo || p.github, 'Repozytorium');
+    push(p.url, "");
+    push(p.homepage, "Strona");
+    push(p.demo, "Demo");
+    push(p.repository || p.repo || p.github, "Repozytorium");
     if (Array.isArray(p.links)) {
       for (const l of p.links) {
-        const u = typeof l === 'string' ? l : l?.url || l?.href || '';
+        const u = typeof l === "string" ? l : l?.url || l?.href || "";
         const lab =
-          typeof l === 'string' ? '' : l?.label || l?.name || l?.type || '';
+          typeof l === "string" ? "" : l?.label || l?.name || l?.type || "";
         push(u, lab);
       }
     }
@@ -343,13 +379,17 @@ export function buildPixelPerfectAttachmentCV(api = {}) {
 
   const projects = Array.isArray(api?.portfolio) ? api.portfolio : [];
   if (projects.length) {
-    ry += sectionHeader('Projekty', RIGHT_X, ry, RIGHT_W);
+    ry = checkPageBreak(ry, 20);
+    ry += sectionHeader("Projekty", RIGHT_X, ry, RIGHT_W);
     for (const p of projects) {
+      // Sprawdź czy cały blok projektu zmieści się (większy margines dla bloków)
+      ry = checkPageBreak(ry, 35);
+
       if (p?.name) ry += text(RIGHT_X, ry, RIGHT_W, p.name, FONTS.role);
       const tech = (p?.technologies || [])
-        .map((t) => (typeof t === 'string' ? t : t?.name))
+        .map((t) => (typeof t === "string" ? t : t?.name))
         .filter(Boolean)
-        .join(' • ');
+        .join(" • ");
       if (tech) ry += text(RIGHT_X, ry, RIGHT_W, tech, FONTS.meta);
       if (p?.description)
         ry += text(RIGHT_X, ry, RIGHT_W, p.description, FONTS.body);
@@ -360,7 +400,7 @@ export function buildPixelPerfectAttachmentCV(api = {}) {
       }
 
       const ach = (p?.achievements || [])
-        .map((a) => (typeof a === 'string' ? a : a?.description))
+        .map((a) => (typeof a === "string" ? a : a?.description))
         .filter(Boolean);
       if (ach.length)
         ry += bulletList(RIGHT_X, ry, RIGHT_W, ach, FONTS.bullets);
@@ -378,8 +418,8 @@ export function buildPixelPerfectAttachmentCV(api = {}) {
       measureTextHeightMm(
         label.toUpperCase(),
         w - padX * 2,
-        FONTS.leftPillLabel
-      )
+        FONTS.leftPillLabel,
+      ),
     );
     const h = Math.max(12.5, labelH + 4);
     rect(LEFT_X + INNER.X, y, w, h, COLORS.leftPill, 6);
@@ -388,7 +428,7 @@ export function buildPixelPerfectAttachmentCV(api = {}) {
       y + (h - labelH) / 2,
       w - padX * 2,
       label,
-      FONTS.leftPillLabel
+      FONTS.leftPillLabel,
     );
     return h + 6.5;
   };
@@ -404,7 +444,7 @@ export function buildPixelPerfectAttachmentCV(api = {}) {
       contactIconD,
       contactIconD,
       COLORS.iconDark,
-      contactIconD / 2
+      contactIconD / 2,
     );
     nodes.push(
       createImageNode({
@@ -416,7 +456,7 @@ export function buildPixelPerfectAttachmentCV(api = {}) {
         },
         src: svgData(ICONS[iconKey] || ICONS.link),
         style: { cornerRadius: 0 },
-      })
+      }),
     );
     const tx = LEFT_X + INNER.X + 3 + contactIconD + 5;
     const tw = LEFT_W - (tx - LEFT_X) - INNER.X; // ⬅ szerzej dzięki większemu LEFT_W i mniejszemu INNER.X
@@ -426,7 +466,7 @@ export function buildPixelPerfectAttachmentCV(api = {}) {
       tw,
       String(label),
       FONTS.leftItem,
-      link ? { link } : {}
+      link ? { link } : {},
     );
     const used = Math.max(contactIconD, h) + 3.8;
     return { nextY: ly + used, used };
@@ -435,27 +475,28 @@ export function buildPixelPerfectAttachmentCV(api = {}) {
   let ly = PANEL_TOP + INNER.Y;
 
   // KONTAKT
-  ly += leftPill('Kontakt', ly);
+  ly = checkPageBreak(ly, 15);
+  ly += leftPill("Kontakt", ly);
 
   const pdLinks = (raw) => {
     const out = [];
     const arr = Array.isArray(raw) ? raw : [];
     for (const l of arr) {
-      const url = typeof l === 'string' ? l : l?.url || l?.href || '';
+      const url = typeof l === "string" ? l : l?.url || l?.href || "";
       if (!url) continue;
-      let key = 'globe';
-      let label = 'Strona';
+      let key = "globe";
+      let label = "Strona";
       try {
         const u = new URL(url);
-        const h = u.hostname.replace(/^www\./, '');
-        if (h.includes('github')) {
-          key = 'github';
-          label = 'GitHub';
-        } else if (h.includes('linkedin')) {
-          key = 'link';
-          label = 'LinkedIn';
+        const h = u.hostname.replace(/^www\./, "");
+        if (h.includes("github")) {
+          key = "github";
+          label = "GitHub";
+        } else if (h.includes("linkedin")) {
+          key = "link";
+          label = "LinkedIn";
         } else {
-          key = 'globe';
+          key = "globe";
           label = h;
         }
       } catch {
@@ -469,18 +510,18 @@ export function buildPixelPerfectAttachmentCV(api = {}) {
   if (pd?.phoneNumber) {
     const r = contactRow(
       ly,
-      'phone',
+      "phone",
       pd.phoneNumber,
-      `tel:${pd.phoneNumber.replace(/\s+/g, '')}`
+      `tel:${pd.phoneNumber.replace(/\s+/g, "")}`,
     );
     ly = r.nextY;
   }
   if (pd?.email) {
-    const r = contactRow(ly, 'mail', pd.email, `mailto:${pd.email}`);
+    const r = contactRow(ly, "mail", pd.email, `mailto:${pd.email}`);
     ly = r.nextY;
   }
   if (pd?.city) {
-    const r = contactRow(ly, 'pin', pd.city, null);
+    const r = contactRow(ly, "pin", pd.city, null);
     ly = r.nextY;
   }
   for (const l of pdLinks(pd?.links)) {
@@ -495,32 +536,33 @@ export function buildPixelPerfectAttachmentCV(api = {}) {
   const pick = (cats) =>
     groups
       .filter((g) =>
-        cats.some((c) => (g?.category || '').toLowerCase() === c.toLowerCase())
+        cats.some((c) => (g?.category || "").toLowerCase() === c.toLowerCase()),
       )
       .flatMap((g) =>
         (g.items || [])
-          .map((i) => (typeof i === 'string' ? i : i?.name))
-          .filter(Boolean)
+          .map((i) => (typeof i === "string" ? i : i?.name))
+          .filter(Boolean),
       );
 
   let skillsAll = [
-    ...pick(['technical', 'technologies', 'tech', 'stack']),
-    ...pick(['tools']),
-    ...pick(['soft', 'soft skills', 'miękkie']),
+    ...pick(["technical", "technologies", "tech", "stack"]),
+    ...pick(["tools"]),
+    ...pick(["soft", "soft skills", "miękkie"]),
   ].filter(Boolean);
 
   // fallback: zbierz tech z portfolio, jeśli brak grup
   if (!skillsAll.length && Array.isArray(api?.portfolio)) {
     skillsAll = api.portfolio
       .flatMap((p) => p?.technologies || [])
-      .map((t) => (typeof t === 'string' ? t : t?.name))
+      .map((t) => (typeof t === "string" ? t : t?.name))
       .filter(Boolean);
   }
   // deduplikacja
   skillsAll = Array.from(new Set(skillsAll));
 
   if (skillsAll.length) {
-    ly += leftPill('Umiejętności', ly);
+    ly = checkPageBreak(ly, 15);
+    ly += leftPill("Umiejętności", ly);
     // szerzej (mniejsze odejmowanie marginesu)
     ly +=
       bulletList(
@@ -528,31 +570,35 @@ export function buildPixelPerfectAttachmentCV(api = {}) {
         ly,
         LEFT_W - 2 * INNER.X - 4,
         skillsAll,
-        FONTS.leftItem
+        FONTS.leftItem,
       ) + 2;
   }
 
   // WYKSZTAŁCENIE (LEWA)
   const edus = Array.isArray(api?.educations) ? api.educations : [];
   if (edus.length) {
-    ly += leftPill('Wykształcenie', ly);
+    ly = checkPageBreak(ly, 15);
+    ly += leftPill("Wykształcenie", ly);
     for (const e of edus) {
+      // Sprawdź czy cała pozycja edukacji zmieści się
+      ly = checkPageBreak(ly, 15);
+
       if (e?.institution)
         ly += text(
           LEFT_X + INNER.X + 3,
           ly,
           LEFT_W - 2 * INNER.X - 4,
           e.institution,
-          FONTS.leftItem
+          FONTS.leftItem,
         );
-      const sub = [e?.degree, e?.specialization].filter(Boolean).join(' — ');
+      const sub = [e?.degree, e?.specialization].filter(Boolean).join(" — ");
       if (sub)
         ly += text(
           LEFT_X + INNER.X + 3,
           ly,
           LEFT_W - 2 * INNER.X - 4,
           sub,
-          FONTS.leftMuted
+          FONTS.leftMuted,
         );
       if (e?.period)
         ly += text(
@@ -560,7 +606,7 @@ export function buildPixelPerfectAttachmentCV(api = {}) {
           ly,
           LEFT_W - 2 * INNER.X - 4,
           e.period,
-          FONTS.leftMuted
+          FONTS.leftMuted,
         );
       ly += 4;
     }
@@ -569,40 +615,40 @@ export function buildPixelPerfectAttachmentCV(api = {}) {
   // JĘZYKI
   const languages = Array.isArray(api?.languages)
     ? api.languages
-        .map((l) => [l?.language, l?.level].filter(Boolean).join(' — '))
+        .map((l) => [l?.language, l?.level].filter(Boolean).join(" — "))
         .filter(Boolean)
     : [];
   if (languages.length) {
-    ly += leftPill('Języki', ly);
+    ly = checkPageBreak(ly, 15);
+    ly += leftPill("Języki", ly);
     ly +=
       bulletList(
         LEFT_X + INNER.X + 3,
         ly,
         LEFT_W - 2 * INNER.X - 4,
         languages,
-        FONTS.leftItem
+        FONTS.leftItem,
       ) + 2;
   }
 
   /* ===== RODO: PRAWA KOLUMNA, DÓŁ STRONY ===== */
   if (api?.gdprClause) {
-    const headBlock = sectionHeaderSize('KLAUZULA RODO', RIGHT_W);
+    const headBlock = sectionHeaderSize("KLAUZULA RODO", RIGHT_W);
     const gdprH = Math.max(
       3.2,
-      measureTextHeightMm(api.gdprClause, RIGHT_W, FONTS.gdpr)
+      measureTextHeightMm(api.gdprClause, RIGHT_W, FONTS.gdpr),
     );
     const total = headBlock + gdprH;
 
-    const minY = ry + 8;
-    const idealY = PAGE.H - PAGE.M - total;
-    const yStart = Math.max(minY, idealY);
+    // Sprawdź czy RODO zmieści się na obecnej stronie
+    ry = checkPageBreak(ry, total + 15);
 
-    const consumed = sectionHeader('KLAUZULA RODO', RIGHT_X, yStart, RIGHT_W);
-    text(RIGHT_X, yStart + consumed, RIGHT_W, api.gdprClause, FONTS.gdpr);
+    const consumed = sectionHeader("KLAUZULA RODO", RIGHT_X, ry, RIGHT_W);
+    text(RIGHT_X, ry + consumed, RIGHT_W, api.gdprClause, FONTS.gdpr);
   }
 
   /* ===== META ===== */
   doc.nodes = nodes;
-  doc.meta = { data: api, template: 'PixelPerfectAttachmentCV' };
+  doc.meta = { data: api, template: "PixelPerfectAttachmentCV" };
   return doc;
 }

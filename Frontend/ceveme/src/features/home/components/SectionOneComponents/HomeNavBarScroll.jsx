@@ -2,25 +2,46 @@ import React, { useEffect, useState } from "react";
 
 function HomeNavBarScroll() {
   const [showNavigation, setShowNavigation] = useState(false);
-  const [activeTab, setActiveTab] = useState("Info");
+  const [activeTab, setActiveTab] = useState("about");
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
 
   const tabs = [
-    { name: "Info", id: "info" },
-    { name: "Demo", id: "demo" },
-    { name: "Contact", id: "contact" },
+    { name: "O nas", id: "about" },
+    { name: "Funkcje", id: "features" },
+    { name: "Opinie", id: "testimonials" },
+    { name: "Kontakt", id: "contact" },
   ];
 
-  const scrollToSection = (sectionId, tabName) => {
-    setActiveTab(tabName);
+  const scrollToSection = (sectionId) => {
+    setActiveTab(sectionId);
     const element = document.getElementById(sectionId);
     if (element) {
-      const offsetTop = element.offsetTop - 100; // 100px offset for navbar
+      const offsetTop = element.offsetTop - 100;
       window.scrollTo({
         top: offsetTop,
-        behavior: "smooth"
+        behavior: "smooth",
       });
+    }
+  };
+
+  // Scroll spy - aktualizuj aktywną zakładkę na podstawie pozycji scroll
+  const updateActiveSection = () => {
+    const sections = tabs
+      .map((tab) => ({
+        id: tab.id,
+        element: document.getElementById(tab.id),
+      }))
+      .filter((s) => s.element);
+
+    const scrollPos = window.scrollY + 150;
+
+    for (let i = sections.length - 1; i >= 0; i--) {
+      const section = sections[i];
+      if (section.element.offsetTop <= scrollPos) {
+        setActiveTab(section.id);
+        break;
+      }
     }
   };
 
@@ -40,6 +61,7 @@ function HomeNavBarScroll() {
       }
 
       setLastScrollY(currentScrollY);
+      updateActiveSection();
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -60,10 +82,10 @@ function HomeNavBarScroll() {
         <div className="flex bg-white/20 backdrop-blur-md rounded-full p-1.5 border border-kraft/30 shadow-lg">
           {tabs.map((tab) => (
             <button
-              key={tab.name}
-              onClick={() => scrollToSection(tab.id, tab.name)}
+              key={tab.id}
+              onClick={() => scrollToSection(tab.id)}
               className={`px-8 py-3 text-sm font-semibold rounded-full transition-all duration-300 transform cursor-pointer ${
-                activeTab === tab.name
+                activeTab === tab.id
                   ? "bg-gradient-to-r from-kraft to-bookcloth text-white shadow-lg scale-105"
                   : "text-slatedark/70 hover:text-kraft hover:bg-white/30 hover:scale-105"
               }`}

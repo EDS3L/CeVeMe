@@ -10,9 +10,9 @@ import {
   createTextNode,
   createShapeNode,
   createImageNode,
-} from '../core/model';
-import { A4 } from '../core/mm';
-import { measureTextHeightMm } from '../services/typeset';
+} from "../core/model";
+import { A4 } from "../core/mm";
+import { measureTextHeightMm } from "../services/typeset";
 
 export function buildWhiteElegantMinimalistCV(api = {}) {
   const doc = emptyDocument(A4);
@@ -28,13 +28,13 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
 
   /* ---------- Kolory ---------- */
   const COLORS = {
-    pageBg: '#F8F7F2',
-    banner: '#555D50',
-    primary: '#333132',
-    muted: '#737373',
-    line: '#636466',
-    photoPanel: '#EDE2D9',
-    white: '#FFFFFF',
+    pageBg: "#F8F7F2",
+    banner: "#555D50",
+    primary: "#333132",
+    muted: "#737373",
+    line: "#636466",
+    photoPanel: "#EDE2D9",
+    white: "#FFFFFF",
   };
 
   /* ---------- Siatka ---------- */
@@ -91,14 +91,14 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
   const STYLES = {
     // Nagłówek (mniejsze fonty)
     firstName: {
-      fontFamily: 'Open Sans, sans-serif',
+      fontFamily: "Open Sans, sans-serif",
       fontWeight: 700,
       fontSize: 40.0,
       color: COLORS.white,
       lineHeight: 1.3,
     },
     lastName: {
-      fontFamily: 'Open Sans, sans-serif',
+      fontFamily: "Open Sans, sans-serif",
       fontWeight: 400,
       fontSize: 36.0,
       color: COLORS.white,
@@ -107,55 +107,55 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
 
     // Tytuły sekcji
     section: {
-      fontFamily: 'DM Sans, sans-serif',
+      fontFamily: "DM Sans, sans-serif",
       fontWeight: 700,
       fontSize: 13.6,
       color: COLORS.primary,
       lineHeight: 1.24,
-      textTransform: 'uppercase',
+      textTransform: "uppercase",
       letterSpacing: 0.5,
     },
 
     // LEWA: Doświadczenie / Projekty
     roleTitle: {
-      fontFamily: 'DM Sans, sans-serif',
+      fontFamily: "DM Sans, sans-serif",
       fontWeight: 700,
       fontSize: 9.9,
       color: COLORS.primary,
       lineHeight: 1.22,
     },
     company: {
-      fontFamily: 'Montserrat, sans-serif',
+      fontFamily: "Montserrat, sans-serif",
       fontWeight: 500,
       fontSize: 9.9,
       color: COLORS.primary,
       lineHeight: 1.18,
     },
     description: {
-      fontFamily: 'Montserrat, sans-serif',
+      fontFamily: "Montserrat, sans-serif",
       fontWeight: 400,
       fontSize: 8.0,
       color: COLORS.muted,
       lineHeight: 1.26,
-      textAlign: 'left',
+      textAlign: "left",
     },
     dateRight: {
-      fontFamily: 'Montserrat, sans-serif',
+      fontFamily: "Montserrat, sans-serif",
       fontWeight: 400,
       fontSize: 10.2,
       color: COLORS.primary,
       lineHeight: 1.14,
-      textAlign: 'right',
+      textAlign: "right",
     },
     techMuted: {
-      fontFamily: 'Montserrat, sans-serif',
+      fontFamily: "Montserrat, sans-serif",
       fontWeight: 400,
       fontSize: 7.9,
       color: COLORS.muted,
       lineHeight: 1.2,
     },
     linkMuted: {
-      fontFamily: 'Montserrat, sans-serif',
+      fontFamily: "Montserrat, sans-serif",
       fontWeight: 600,
       fontSize: 8.0,
       color: COLORS.primary,
@@ -164,21 +164,21 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
 
     // PRAWA
     para: {
-      fontFamily: 'Montserrat, sans-serif',
+      fontFamily: "Montserrat, sans-serif",
       fontWeight: 400,
       fontSize: 8.0,
       color: COLORS.muted,
       lineHeight: 1.26,
     },
     groupTitle: {
-      fontFamily: 'DM Sans, sans-serif',
+      fontFamily: "DM Sans, sans-serif",
       fontWeight: 700,
       fontSize: 9.4,
       color: COLORS.primary,
       lineHeight: 1.14,
     },
     linkRow: {
-      fontFamily: 'Montserrat, sans-serif',
+      fontFamily: "Montserrat, sans-serif",
       fontWeight: 500,
       fontSize: 8.4,
       color: COLORS.primary,
@@ -187,41 +187,41 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
 
     // Edukacja
     eduCourse: {
-      fontFamily: 'DM Sans, sans-serif',
+      fontFamily: "DM Sans, sans-serif",
       fontWeight: 700,
       fontSize: 9.9,
       color: COLORS.primary,
       lineHeight: 1.2,
     },
     eduInst: {
-      fontFamily: 'Montserrat, sans-serif',
+      fontFamily: "Montserrat, sans-serif",
       fontWeight: 500,
       fontSize: 9.9,
       color: COLORS.primary,
       lineHeight: 1.14,
     },
     eduDate: {
-      fontFamily: 'Montserrat, sans-serif',
+      fontFamily: "Montserrat, sans-serif",
       fontWeight: 400,
       fontSize: 9.9,
       color: COLORS.primary,
       lineHeight: 1.14,
-      textAlign: 'right',
+      textAlign: "right",
     },
 
     // RODO
     gdpr: {
-      fontFamily: 'Montserrat, sans-serif',
+      fontFamily: "Montserrat, sans-serif",
       fontWeight: 400,
       fontSize: 7.3,
       color: COLORS.muted,
       lineHeight: 1.16,
-      textAlign: 'justify',
+      textAlign: "justify",
     },
 
     // Zwarta lista punktowana (skills/języki)
     skillsList: {
-      fontFamily: 'Montserrat, sans-serif',
+      fontFamily: "Montserrat, sans-serif",
       fontWeight: 400,
       fontSize: 8.3,
       color: COLORS.primary,
@@ -275,7 +275,7 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
   C22 6.48 17.52 2 12 2z"/></svg>`,
   };
   const SVG = (k) =>
-    'data:image/svg+xml;charset=utf-8,' +
+    "data:image/svg+xml;charset=utf-8," +
     encodeURIComponent((ICONS_DARK[k] || ICONS_DARK.globe).trim());
 
   /* ---------- Helpery ---------- */
@@ -284,7 +284,7 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
       createShapeNode({
         frame: { x, y, w, h },
         style: { fill: { color }, stroke: null },
-      })
+      }),
     );
 
   const hLine = (x1, y, x2, color = COLORS.line) =>
@@ -292,17 +292,17 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
       createShapeNode({
         frame: { x: x1, y, w: x2 - x1, h: DECOR.lineH },
         style: { fill: { color }, stroke: null },
-      })
+      }),
     );
 
   const textBlock = (x, y, w, text, style, opts = {}) => {
-    const t = String(text ?? '');
+    const t = String(text ?? "");
     if (!t.trim()) return 0;
     const h = Math.max(pt(3), measureTextHeightMm(t, w, style));
     let xx = x;
-    if (style?.textAlign === 'right' || style?.textAlign === 'center') {
+    if (style?.textAlign === "right" || style?.textAlign === "center") {
       const est = estimateTextWidthMm(t, style);
-      if (style.textAlign === 'right') xx = x + w - est;
+      if (style.textAlign === "right") xx = x + w - est;
       else xx = x + (w - est) / 2;
     }
     const node = createTextNode({
@@ -346,7 +346,7 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
         frame: { x, y: y - size * 0.1, w: size, h: size },
         src: SVG(iconKey),
         style: { cornerRadius: 0 },
-      })
+      }),
     );
     const h = textBlock(
       x + size + pt(gapPt),
@@ -354,7 +354,7 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
       wText - size - pt(gapPt),
       label,
       STYLES.linkRow,
-      link ? { link } : {}
+      link ? { link } : {},
     );
     return Math.max(h, size);
   };
@@ -363,26 +363,26 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
     const arr = Array.isArray(raw) ? raw : [];
     const out = [];
     for (const l of arr) {
-      const url = typeof l === 'string' ? l : l?.url || l?.href || '';
+      const url = typeof l === "string" ? l : l?.url || l?.href || "";
       if (!url) continue;
-      let label = 'Strona';
-      let icon = 'globe';
+      let label = "Strona";
+      let icon = "globe";
       try {
         const u = new URL(url);
-        const host = u.hostname.replace(/^www\./, '');
-        if (host.includes('linkedin')) {
-          label = 'LinkedIn';
-          icon = 'linkedin';
-        } else if (host.includes('github')) {
-          label = 'GitHub';
-          icon = 'github';
+        const host = u.hostname.replace(/^www\./, "");
+        if (host.includes("linkedin")) {
+          label = "LinkedIn";
+          icon = "linkedin";
+        } else if (host.includes("github")) {
+          label = "GitHub";
+          icon = "github";
         } else {
           label = host;
-          icon = 'globe';
+          icon = "globe";
         }
       } catch {
         label = url;
-        icon = 'globe';
+        icon = "globe";
       }
       out.push({ label, icon, link: url });
     }
@@ -400,7 +400,7 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
       let final = label;
       if (!final) {
         try {
-          final = new URL(u).hostname.replace(/^www\./, '');
+          final = new URL(u).hostname.replace(/^www\./, "");
         } catch {
           final = u;
         }
@@ -408,21 +408,33 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
       out.push({ label: final, url: u });
     };
     push(p.url, null);
-    push(p.homepage, 'Strona');
-    push(p.demo, 'Demo');
-    push(p.live, 'Live');
-    push(p.repository || p.repo || p.github, 'Repozytorium');
-    push(p.docs || p.documentation, 'Dokumentacja');
+    push(p.homepage, "Strona");
+    push(p.demo, "Demo");
+    push(p.live, "Live");
+    push(p.repository || p.repo || p.github, "Repozytorium");
+    push(p.docs || p.documentation, "Dokumentacja");
     if (Array.isArray(p.links)) {
       for (const l of p.links) {
         if (!l) continue;
-        const url = typeof l === 'string' ? l : l.url || l.href || '';
+        const url = typeof l === "string" ? l : l.url || l.href || "";
         const label =
-          typeof l === 'string' ? '' : l.label || l.name || l.type || '';
+          typeof l === "string" ? "" : l.label || l.name || l.type || "";
         push(url, label || null);
       }
     }
     return out;
+  };
+
+  const checkPageBreak = (currentY, elementHeight, bottomMargin = 20) => {
+    const currentPage = Math.floor(currentY / PAGE_H);
+    const pageBottom = (currentPage + 1) * PAGE_H - bottomMargin;
+
+    if (currentY + elementHeight > pageBottom) {
+      const nextPageTop = (currentPage + 1) * PAGE_H + GRID.startY;
+      return nextPageTop;
+    }
+
+    return currentY;
   };
 
   // --- NOWE: Normalizacja umiejętności (wiele możliwych formatów) ---
@@ -430,7 +442,7 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
     const groups = [];
     const addGroup = (label, items) => {
       const uniq = Array.from(new Set((items || []).map(String))).filter(
-        (s) => !!s.trim()
+        (s) => !!s.trim(),
       );
       if (uniq.length) groups.push({ label, items: uniq });
     };
@@ -438,7 +450,9 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
     const coerceItems = (arr) =>
       (arr || [])
         .map((it) =>
-          typeof it === 'string' ? it : it?.name || it?.label || it?.title || ''
+          typeof it === "string"
+            ? it
+            : it?.name || it?.label || it?.title || "",
         )
         .filter(Boolean);
 
@@ -447,33 +461,33 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
       // a) tablica stringów/obiektów
       const isFlat =
         data.skills.every(
-          (s) => typeof s === 'string' || (s && !Array.isArray(s.items))
+          (s) => typeof s === "string" || (s && !Array.isArray(s.items)),
         ) && !data.skills.some((s) => s?.category || s?.items);
       if (isFlat) {
-        addGroup('Techniczne', coerceItems(data.skills));
+        addGroup("Techniczne", coerceItems(data.skills));
       } else {
         // b) tablica grup {category, items}
-        const mapName = (cat = '') => {
+        const mapName = (cat = "") => {
           const c = String(cat).toLowerCase();
           if (
-            ['technical', 'tech', 'techniczne', 'technologies', 'stack'].some(
-              (x) => c.includes(x)
+            ["technical", "tech", "techniczne", "technologies", "stack"].some(
+              (x) => c.includes(x),
             )
           )
-            return 'Techniczne';
-          if (['tools', 'narzędzia', 'tooling'].some((x) => c.includes(x)))
-            return 'Narzędzia';
+            return "Techniczne";
+          if (["tools", "narzędzia", "tooling"].some((x) => c.includes(x)))
+            return "Narzędzia";
           if (
-            ['soft', 'miękkie', 'soft skills', 'people'].some((x) =>
-              c.includes(x)
+            ["soft", "miękkie", "soft skills", "people"].some((x) =>
+              c.includes(x),
             )
           )
-            return 'Miękkie';
-          return 'Inne';
+            return "Miękkie";
+          return "Inne";
         };
         const buckets = {};
         for (const g of data.skills) {
-          const label = mapName(g?.category || g?.name || g?.label || '');
+          const label = mapName(g?.category || g?.name || g?.label || "");
           const items = coerceItems(g?.items || g?.skills || []);
           buckets[label] = (buckets[label] || []).concat(items);
         }
@@ -487,21 +501,21 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
     if (
       !Array.isArray(data.skills) &&
       data.skills &&
-      typeof data.skills === 'object'
+      typeof data.skills === "object"
     ) {
       const obj = data.skills;
       const fromKey = (k, label) => addGroup(label, coerceItems(obj[k]));
       if (obj.technical || obj.tech || obj.techniczne)
         fromKey(
-          obj.technical ? 'technical' : obj.tech ? 'tech' : 'techniczne',
-          'Techniczne'
+          obj.technical ? "technical" : obj.tech ? "tech" : "techniczne",
+          "Techniczne",
         );
       if (obj.tools || obj.narzędzia)
-        fromKey(obj.tools ? 'tools' : 'narzędzia', 'Narzędzia');
-      if (obj.soft || obj['soft skills'] || obj['miękkie'])
+        fromKey(obj.tools ? "tools" : "narzędzia", "Narzędzia");
+      if (obj.soft || obj["soft skills"] || obj["miękkie"])
         fromKey(
-          obj.soft ? 'soft' : obj['soft skills'] ? 'soft skills' : 'miękkie',
-          'Miękkie'
+          obj.soft ? "soft" : obj["soft skills"] ? "soft skills" : "miękkie",
+          "Miękkie",
         );
     }
 
@@ -509,54 +523,54 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
     const techFromPortfolio = [];
     for (const p of Array.isArray(data.portfolio) ? data.portfolio : []) {
       for (const t of p?.technologies || []) {
-        const name = typeof t === 'string' ? t : t?.name || '';
+        const name = typeof t === "string" ? t : t?.name || "";
         if (name) techFromPortfolio.push(name);
       }
       // czasem projekty mają własne „skills”
       for (const s of p?.skills || []) {
-        const name = typeof s === 'string' ? s : s?.name || '';
+        const name = typeof s === "string" ? s : s?.name || "";
         if (name) techFromPortfolio.push(name);
       }
       // tagi
       for (const tag of p?.tags || []) {
-        const name = typeof tag === 'string' ? tag : tag?.name || '';
+        const name = typeof tag === "string" ? tag : tag?.name || "";
         if (name) techFromPortfolio.push(name);
       }
     }
     const techFromExperience = [];
     for (const e of Array.isArray(data.experience) ? data.experience : []) {
       for (const t of e?.technologies || []) {
-        const name = typeof t === 'string' ? t : t?.name || '';
+        const name = typeof t === "string" ? t : t?.name || "";
         if (name) techFromExperience.push(name);
       }
       for (const s of e?.skills || []) {
-        const name = typeof s === 'string' ? s : s?.name || '';
+        const name = typeof s === "string" ? s : s?.name || "";
         if (name) techFromExperience.push(name);
       }
       for (const tool of e?.tools || []) {
-        const name = typeof tool === 'string' ? tool : tool?.name || '';
+        const name = typeof tool === "string" ? tool : tool?.name || "";
         if (name) techFromExperience.push(name);
       }
     }
 
     if (!groups.length) {
       const combo = Array.from(
-        new Set([...techFromPortfolio, ...techFromExperience])
+        new Set([...techFromPortfolio, ...techFromExperience]),
       );
-      addGroup('Techniczne', combo);
+      addGroup("Techniczne", combo);
     } else {
       // jeżeli mamy już grupy, ale są puste w „Techniczne”, dolejemy stack z projektów
-      const hasTech = groups.find((g) => g.label === 'Techniczne');
+      const hasTech = groups.find((g) => g.label === "Techniczne");
       const extra = Array.from(
-        new Set([...techFromPortfolio, ...techFromExperience])
+        new Set([...techFromPortfolio, ...techFromExperience]),
       );
       if (extra.length) {
         if (hasTech) {
           hasTech.items = Array.from(
-            new Set([...(hasTech.items || []), ...extra])
+            new Set([...(hasTech.items || []), ...extra]),
           );
         } else {
-          addGroup('Techniczne', extra);
+          addGroup("Techniczne", extra);
         }
       }
     }
@@ -564,14 +578,14 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
     // ostatnia asekuracja: jeżeli dalej nic nie ma, pokaż pusty placeholder,
     // żeby sekcja była widoczna (użytkownik „widzi”, że jest)
     if (!groups.length) {
-      addGroup('Techniczne', ['—']);
+      addGroup("Techniczne", ["—"]);
     }
     return groups;
   };
 
   // --- EDU: Format okresu ---
   const formatEduPeriod = (e = {}) => {
-    const clean = (s) => String(s || '').trim();
+    const clean = (s) => String(s || "").trim();
     const norm = (s) => clean(s).toLowerCase();
 
     const parseMonthYear = (str) => {
@@ -580,14 +594,14 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
       const m1 = s.match(/^(\d{4})[-/.](\d{1,2})/);
       const m2 = s.match(/^(\d{1,2})[-/.](\d{4})$/);
       const y = s.match(/^(\d{4})$/);
-      if (m1) return { y: m1[1], m: String(m1[2]).padStart(2, '0') };
-      if (m2) return { y: m2[2], m: String(m2[1]).padStart(2, '0') };
-      if (y) return { y: y[1], m: '' };
+      if (m1) return { y: m1[1], m: String(m1[2]).padStart(2, "0") };
+      if (m2) return { y: m2[2], m: String(m2[1]).padStart(2, "0") };
+      if (y) return { y: y[1], m: "" };
       return null;
     };
 
     const fmt = (part) => {
-      if (!part) return 'obecnie';
+      if (!part) return "obecnie";
       return part.m ? `${part.m}.${part.y}` : `${part.y}`;
     };
 
@@ -595,7 +609,7 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
     let endRaw = e.endDate || e.to;
     let end =
       parseMonthYear(endRaw) ||
-      (norm(endRaw).includes('present') || norm(endRaw).includes('obecnie')
+      (norm(endRaw).includes("present") || norm(endRaw).includes("obecnie")
         ? null
         : null);
 
@@ -606,14 +620,14 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
       if (parts.length >= 2) {
         end =
           parseMonthYear(parts[1]) ||
-          (norm(parts[1]).includes('present') ||
-          norm(parts[1]).includes('obecnie')
+          (norm(parts[1]).includes("present") ||
+          norm(parts[1]).includes("obecnie")
             ? null
             : null);
       }
     }
 
-    if (!start && !end) return clean(e.period || '');
+    if (!start && !end) return clean(e.period || "");
     return `${fmt(start)} – ${fmt(end)}`;
   };
 
@@ -624,14 +638,14 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
     HEADER.banner.y,
     HEADER.banner.w,
     HEADER.banner.h,
-    COLORS.banner
+    COLORS.banner,
   );
   rect(
     HEADER.photoPanel.x,
     HEADER.photoPanel.y,
     HEADER.photoPanel.w,
     HEADER.photoPanel.h,
-    COLORS.photoPanel
+    COLORS.photoPanel,
   );
 
   // Zdjęcie — koło
@@ -645,30 +659,30 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
         frame: { x: cx - d / 2, y: cy - d / 2, w: d, h: d },
         src: photoSrc,
         style: { cornerRadius: d / 2 },
-      })
+      }),
     );
   }
 
   // Imię i NAZWISKO
-  const fullName = String(api?.personalData?.name || 'Mariana Anderson').trim();
+  const fullName = String(api?.personalData?.name || "Mariana Anderson").trim();
   const parts = fullName.split(/\s+/);
-  const last = parts.length > 1 ? parts.pop() : '';
-  const first = parts.join(' ') || last;
-  const spacedLast = last ? last.split('').join(' ') : '';
+  const last = parts.length > 1 ? parts.pop() : "";
+  const first = parts.join(" ") || last;
+  const spacedLast = last ? last.split("").join(" ") : "";
 
   textBlock(
     HEADER.firstNameFrame.x,
     HEADER.firstNameFrame.y,
     HEADER.firstNameFrame.w,
     first,
-    STYLES.firstName
+    STYLES.firstName,
   );
   textBlock(
     HEADER.lastNameFrame.x,
     HEADER.lastNameFrame.y,
     HEADER.lastNameFrame.w,
     spacedLast,
-    STYLES.lastName
+    STYLES.lastName,
   );
 
   // Podpis (opcjonalnie)
@@ -689,10 +703,11 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
 
   /* ---------- LEWA: DOŚWIADCZENIE ---------- */
   {
+    leftY = checkPageBreak(leftY, 15);
     let yStart = drawSectionHeader({
       xTitle: GRID.leftTextX,
       yTitle: leftY,
-      label: 'DOŚWIADCZENIE',
+      label: "DOŚWIADCZENIE",
       xLine1: GRID.leftLineX1,
       xLine2: GRID.leftLineX2,
     });
@@ -703,19 +718,20 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
 
     const experiences = Array.isArray(api?.experience) ? api.experience : [];
     for (const exp of experiences) {
+      leftY = checkPageBreak(leftY, 25);
       const tH = textBlock(
         GRID.leftTextX,
         leftY,
         leftTitleW,
-        exp?.title || '',
-        STYLES.roleTitle
+        exp?.title || "",
+        STYLES.roleTitle,
       );
       textBlock(
         GRID.leftTextRight - leftDateW,
         leftY,
         leftDateW,
-        exp?.period || '',
-        STYLES.dateRight
+        exp?.period || "",
+        STYLES.dateRight,
       );
       leftY += Math.max(tH, pt(11.0));
 
@@ -723,8 +739,8 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
         GRID.leftTextX,
         leftY,
         GRID.leftTextW,
-        exp?.company || '',
-        STYLES.company
+        exp?.company || "",
+        STYLES.company,
       );
 
       if (exp?.jobDescription)
@@ -733,7 +749,7 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
           leftY,
           GRID.leftTextW,
           exp.jobDescription,
-          STYLES.description
+          STYLES.description,
         );
 
       const ach = Array.isArray(exp?.achievements)
@@ -744,8 +760,8 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
           GRID.leftTextX,
           leftY,
           GRID.leftTextW,
-          ach.map((s) => `• ${s}`).join('\n'),
-          STYLES.description
+          ach.map((s) => `• ${s}`).join("\n"),
+          STYLES.description,
         );
 
       leftY += pt(8.2);
@@ -754,10 +770,11 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
 
   /* ---------- LEWA: PROJEKTY (z linkami) ---------- */
   {
+    leftY = checkPageBreak(leftY, 15);
     let yStart = drawSectionHeader({
       xTitle: GRID.leftTextX,
       yTitle: leftY,
-      label: 'PROJEKTY',
+      label: "PROJEKTY",
       xLine1: GRID.leftLineX1,
       xLine2: GRID.leftLineX2,
     });
@@ -767,25 +784,26 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
       ? api.portfolio.filter(Boolean)
       : [];
     for (const p of projects) {
+      leftY = checkPageBreak(leftY, 25);
       leftY += textBlock(
         GRID.leftTextX,
         leftY,
         GRID.leftTextW,
-        p?.name || 'Projekt',
-        STYLES.roleTitle
+        p?.name || "Projekt",
+        STYLES.roleTitle,
       );
 
       const tech = (p?.technologies || [])
-        .map((t) => t?.name || (typeof t === 'string' ? t : ''))
+        .map((t) => t?.name || (typeof t === "string" ? t : ""))
         .filter(Boolean)
-        .join(' • ');
+        .join(" • ");
       if (tech)
         leftY += textBlock(
           GRID.leftTextX,
           leftY,
           GRID.leftTextW,
           tech,
-          STYLES.techMuted
+          STYLES.techMuted,
         );
 
       if (p?.description)
@@ -794,7 +812,7 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
           leftY,
           GRID.leftTextW,
           p.description,
-          STYLES.description
+          STYLES.description,
         );
 
       // Linki z API (różne pola)
@@ -807,7 +825,7 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
             GRID.leftTextW,
             ln.label,
             STYLES.linkMuted,
-            { link: ln.url }
+            { link: ln.url },
           );
         }
       }
@@ -820,8 +838,8 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
           GRID.leftTextX,
           leftY,
           GRID.leftTextW,
-          ach.map((s) => `• ${s}`).join('\n'),
-          STYLES.description
+          ach.map((s) => `• ${s}`).join("\n"),
+          STYLES.description,
         );
 
       leftY += pt(7.2);
@@ -830,10 +848,11 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
 
   /* ---------- PRAWA: O MNIE + KONTAKT/LINKI ---------- */
   {
+    rightY = checkPageBreak(rightY, 15);
     let yStart = drawSectionHeader({
       xTitle: GRID.rightColX,
       yTitle: rightY,
-      label: 'O MNIE',
+      label: "O MNIE",
       xLine1: GRID.rightLineX1A,
       xLine2: GRID.rightLineX2,
     });
@@ -846,7 +865,7 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
           rightY,
           GRID.rightTextW,
           api.summary,
-          STYLES.para
+          STYLES.para,
         ) + pt(2.6);
     if (api?.summary2)
       rightY +=
@@ -855,7 +874,7 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
           rightY,
           GRID.rightTextW,
           api.summary2,
-          STYLES.para
+          STYLES.para,
         ) + pt(2.6);
 
     const pd = api?.personalData || {};
@@ -863,17 +882,17 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
 
     if (pd.phoneNumber)
       rows.push({
-        icon: 'phone',
+        icon: "phone",
         label: String(pd.phoneNumber),
-        link: `tel:${String(pd.phoneNumber).replace(/\s+/g, '')}`,
+        link: `tel:${String(pd.phoneNumber).replace(/\s+/g, "")}`,
       });
     if (pd.email)
       rows.push({
-        icon: 'mail',
+        icon: "mail",
         label: String(pd.email),
         link: `mailto:${pd.email}`,
       });
-    if (pd.city) rows.push({ icon: 'pin', label: String(pd.city) });
+    if (pd.city) rows.push({ icon: "pin", label: String(pd.city) });
 
     for (const l of normalizeLinks(pd.links))
       rows.push({ icon: l.icon, label: l.label, link: l.link });
@@ -897,10 +916,11 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
 
   /* ---------- PRAWA: UMIEJĘTNOŚCI (zawsze widoczne) ---------- */
   {
+    rightY = checkPageBreak(rightY, 15);
     let yStart = drawSectionHeader({
       xTitle: GRID.rightColX,
       yTitle: rightY,
-      label: 'UMIEJĘTNOŚCI',
+      label: "UMIEJĘTNOŚCI",
       xLine1: GRID.rightLineX1,
       xLine2: GRID.rightLineX2,
     });
@@ -918,27 +938,28 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
           rightY,
           GRID.rightTextW,
           block.label,
-          STYLES.groupTitle
+          STYLES.groupTitle,
         ) + afterTitleGap;
 
-      const listText = '• ' + block.items.map(String).join('\n• ');
+      const listText = "• " + block.items.map(String).join("\n• ");
       rightY +=
         textBlock(
           GRID.rightTextX,
           rightY,
           GRID.rightTextW,
           listText,
-          STYLES.skillsList
+          STYLES.skillsList,
         ) + groupGap;
     }
   }
 
   /* ---------- PRAWA: EDUKACJA ---------- */
   {
+    rightY = checkPageBreak(rightY, 15);
     let yStart = drawSectionHeader({
       xTitle: GRID.rightColX,
       yTitle: rightY,
-      label: 'EDUKACJA',
+      label: "EDUKACJA",
       xLine1: GRID.rightLineX1A,
       xLine2: GRID.rightLineX2,
     });
@@ -946,14 +967,15 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
 
     const edus = Array.isArray(api?.educations) ? api.educations : [];
     for (const e of edus) {
-      const course = [e?.degree, e?.specialization].filter(Boolean).join(' — ');
+      rightY = checkPageBreak(rightY, 20);
+      const course = [e?.degree, e?.specialization].filter(Boolean).join(" — ");
       if (course)
         rightY += textBlock(
           GRID.rightTextX,
           rightY,
           GRID.rightTextW,
           course,
-          STYLES.eduCourse
+          STYLES.eduCourse,
         );
 
       const leftW = GRID.rightTextW * 0.62;
@@ -963,15 +985,15 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
         GRID.rightTextX,
         rightY,
         leftW,
-        e?.institution || '',
-        STYLES.eduInst
+        e?.institution || "",
+        STYLES.eduInst,
       );
       textBlock(
         GRID.rightTextX + leftW,
         rightY,
         rightW,
         formatEduPeriod(e),
-        STYLES.eduDate
+        STYLES.eduDate,
       );
       rightY += Math.max(ih, pt(10.0));
 
@@ -981,7 +1003,7 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
           rightY,
           GRID.rightTextW,
           e.description,
-          STYLES.para
+          STYLES.para,
         );
 
       rightY += pt(5.2);
@@ -992,32 +1014,33 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
   {
     const langs = Array.isArray(api?.languages) ? api.languages : [];
     const lines = langs
-      .map((l) => [l?.language, l?.level].filter(Boolean).join(' — '))
+      .map((l) => [l?.language, l?.level].filter(Boolean).join(" — "))
       .filter(Boolean);
     if (lines.length) {
+      rightY = checkPageBreak(rightY, 15);
       let yStart = drawSectionHeader({
         xTitle: GRID.rightColX,
         yTitle: rightY,
-        label: 'JĘZYKI',
+        label: "JĘZYKI",
         xLine1: GRID.rightLineX1A,
         xLine2: GRID.rightLineX2,
       });
       rightY = yStart;
 
-      const listText = '• ' + lines.join('\n• ');
+      const listText = "• " + lines.join("\n• ");
       rightY += textBlock(
         GRID.rightTextX,
         rightY,
         GRID.rightTextW,
         listText,
-        STYLES.skillsList
+        STYLES.skillsList,
       );
     }
   }
 
   /* ---------- RODO (stopka) ---------- */
   const gdpr =
-    api?.gdprClause || api?.personalData?.gdprClause || api?.gdpr || '';
+    api?.gdprClause || api?.personalData?.gdprClause || api?.gdpr || "";
   if (gdpr) {
     const x = GRID.leftTextX;
     const w = GRID.rightLineX2 - GRID.leftTextX;
@@ -1029,6 +1052,6 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
 
   /* ---------- Finalizacja ---------- */
   doc.nodes = nodes;
-  doc.meta = { data: api, template: 'WhiteElegantMinimalistCV' };
+  doc.meta = { data: api, template: "WhiteElegantMinimalistCV" };
   return doc;
 }

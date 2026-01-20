@@ -4,9 +4,9 @@ import {
   createTextNode,
   createShapeNode,
   createImageNode,
-} from '../core/model';
-import { A4 } from '../core/mm';
-import { measureTextHeightMm } from '../services/typeset';
+} from "../core/model";
+import { A4 } from "../core/mm";
+import { measureTextHeightMm } from "../services/typeset";
 
 export function buildModernTurquoiseCV(api = {}) {
   const doc = emptyDocument(A4);
@@ -31,12 +31,12 @@ export function buildModernTurquoiseCV(api = {}) {
 
   // --- Kolory ---
   const COLORS = {
-    pageBg: '#F5F7FB',
-    sheetBg: '#FFFFFF',
-    accent: '#20BEC6',
-    textDark: '#333132',
-    textMuted: '#737373',
-    headerDark: '#323B4B',
+    pageBg: "#F5F7FB",
+    sheetBg: "#FFFFFF",
+    accent: "#20BEC6",
+    textDark: "#333132",
+    textMuted: "#737373",
+    headerDark: "#323B4B",
   };
 
   // --- Białe ikony SVG (data:) ---
@@ -104,34 +104,34 @@ export function buildModernTurquoiseCV(api = {}) {
   <path d="M7 2C4.24 2 2 4.24 2 7v10c0 2.76 2.24 5 5 5h10c2.76 0 5-2.24 5-5V7c0-2.76-2.24-5-5-5H7zm5 5a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm6.5-.9a1.1 1.1 0 1 1 0 2.2 1.1 1.1 0 0 1 0-2.2z"/></svg>`,
   };
   const SVG = (k) =>
-    'data:image/svg+xml;charset=utf-8,' +
+    "data:image/svg+xml;charset=utf-8," +
     encodeURIComponent((ICON_SVGS[k] || ICON_SVGS.link).trim());
 
   // --- Typografia ---
   const FONTS = {
     garetBold52: {
-      fontFamily: 'Garet, sans-serif',
-      fontSize: 40,
+      fontFamily: "Garet, sans-serif",
+      fontSize: 50,
       fontWeight: 700,
       color: COLORS.textDark,
       lineHeight: 1.35,
     },
     garetReg45: {
-      fontFamily: 'Garet, sans-serif',
-      fontSize: 33,
+      fontFamily: "Garet, sans-serif",
+      fontSize: 38,
       fontWeight: 400,
       color: COLORS.textDark,
       lineHeight: 1.35,
     },
     garetReg12: {
-      fontFamily: 'Garet, sans-serif',
+      fontFamily: "Garet, sans-serif",
       fontSize: 12.0,
       fontWeight: 400,
       color: COLORS.textDark,
       lineHeight: 1.3,
     },
     skillsList: {
-      fontFamily: 'Montserrat, sans-serif',
+      fontFamily: "Montserrat, sans-serif",
       fontWeight: 400,
       fontSize: 8.5,
       color: COLORS.accent, // fix: COLORS.primary → accent
@@ -139,23 +139,23 @@ export function buildModernTurquoiseCV(api = {}) {
     },
 
     section15: {
-      fontFamily: 'Garet, sans-serif',
+      fontFamily: "Garet, sans-serif",
       fontSize: 15.01,
       fontWeight: 700,
       color: COLORS.headerDark,
       lineHeight: 1.45,
-      textTransform: 'uppercase',
+      textTransform: "uppercase",
     },
 
     openSans8: {
-      fontFamily: 'Open Sans, sans-serif',
+      fontFamily: "Open Sans, sans-serif",
       fontSize: 8.0,
       fontWeight: 400,
       color: COLORS.textDark,
       lineHeight: 1.36,
     },
     openSans7_6: {
-      fontFamily: 'Open Sans, sans-serif',
+      fontFamily: "Open Sans, sans-serif",
       fontSize: 7.6,
       fontWeight: 400,
       color: COLORS.textDark,
@@ -163,49 +163,49 @@ export function buildModernTurquoiseCV(api = {}) {
     },
 
     poppins11: {
-      fontFamily: 'Poppins, sans-serif',
+      fontFamily: "Poppins, sans-serif",
       fontSize: 11.0,
       fontWeight: 400,
       color: COLORS.textDark,
       lineHeight: 1.4,
     },
     poppins10b: {
-      fontFamily: 'Poppins, sans-serif',
+      fontFamily: "Poppins, sans-serif",
       fontSize: 10.0,
       fontWeight: 700,
       color: COLORS.textDark,
       lineHeight: 1.4,
     },
     poppins10: {
-      fontFamily: 'Poppins, sans-serif',
+      fontFamily: "Poppins, sans-serif",
       fontSize: 10.0,
       fontWeight: 400,
       color: COLORS.textDark,
       lineHeight: 1.4,
     },
     poppins9b: {
-      fontFamily: 'Poppins, sans-serif',
+      fontFamily: "Poppins, sans-serif",
       fontSize: 9.0,
       fontWeight: 700,
       color: COLORS.textDark,
       lineHeight: 1.4,
     },
     poppins8: {
-      fontFamily: 'Poppins, sans-serif',
+      fontFamily: "Poppins, sans-serif",
       fontSize: 8.0,
       fontWeight: 400,
       color: COLORS.textMuted,
       lineHeight: 1.4,
     },
     poppins8b: {
-      fontFamily: 'Poppins, sans-serif',
+      fontFamily: "Poppins, sans-serif",
       fontSize: 8.0,
       fontWeight: 700,
       color: COLORS.textDark,
       lineHeight: 1.4,
     },
     poppins8_8b: {
-      fontFamily: 'Poppins, sans-serif',
+      fontFamily: "Poppins, sans-serif",
       fontSize: 8.79,
       fontWeight: 700,
       color: COLORS.textDark,
@@ -213,28 +213,28 @@ export function buildModernTurquoiseCV(api = {}) {
     },
 
     lato10b: {
-      fontFamily: 'Lato, sans-serif',
+      fontFamily: "Lato, sans-serif",
       fontSize: 10.0,
       fontWeight: 700,
       color: COLORS.textDark,
       lineHeight: 1.2,
     },
     lato11b_c: {
-      fontFamily: 'Lato, sans-serif',
+      fontFamily: "Lato, sans-serif",
       fontSize: 10.6,
       fontWeight: 700,
       color: COLORS.textDark,
       lineHeight: 1.18,
     },
     lato9b_c: {
-      fontFamily: 'Lato, sans-serif',
+      fontFamily: "Lato, sans-serif",
       fontSize: 9.1,
       fontWeight: 700,
       color: COLORS.textDark,
       lineHeight: 1.18,
     },
     lato12b: {
-      fontFamily: 'Lato, sans-serif',
+      fontFamily: "Lato, sans-serif",
       fontSize: 12.0,
       fontWeight: 700,
       color: COLORS.textDark,
@@ -243,12 +243,12 @@ export function buildModernTurquoiseCV(api = {}) {
 
     // RODO (stopka)
     gdpr: {
-      fontFamily: 'Open Sans, sans-serif',
+      fontFamily: "Open Sans, sans-serif",
       fontSize: 7.2,
       fontWeight: 400,
       color: COLORS.textMuted,
       lineHeight: 1.28,
-      textAlign: 'justify',
+      textAlign: "justify",
     },
   };
 
@@ -258,15 +258,15 @@ export function buildModernTurquoiseCV(api = {}) {
       createShapeNode({
         frame: { x, y, w, h },
         style: { fill: { color }, stroke: null },
-      })
+      }),
     );
 
   const measureH = (t, w, style) =>
-    Math.max(3.2, measureTextHeightMm(String(t ?? ''), w, style));
+    Math.max(3.2, measureTextHeightMm(String(t ?? ""), w, style));
 
   // ⬇ text() obsługuje teraz klikalne linki
   const text = (x, y, w, t, style, opts = {}) => {
-    const s = (t ?? '').toString();
+    const s = (t ?? "").toString();
     if (!s.trim()) return 0;
     const h = measureH(s, w, style);
     const node = createTextNode({
@@ -279,6 +279,19 @@ export function buildModernTurquoiseCV(api = {}) {
     return h;
   };
 
+  // --- PAGE BREAK HELPER ---
+  const checkPageBreak = (currentY, elementHeight, bottomMargin = 20) => {
+    const currentPage = Math.floor(currentY / PAGE_H);
+    const pageBottom = (currentPage + 1) * PAGE_H - bottomMargin;
+
+    if (currentY + elementHeight > pageBottom) {
+      const nextPageTop = (currentPage + 1) * PAGE_H + CONTENT.y + ACCENT.h + 4;
+      return nextPageTop;
+    }
+
+    return currentY;
+  };
+
   const imageCircle = (src, x, y, sizeMm) => {
     if (!src) return;
     nodes.push(
@@ -286,7 +299,7 @@ export function buildModernTurquoiseCV(api = {}) {
         frame: { x, y, w: sizeMm, h: sizeMm },
         src,
         style: { cornerRadius: sizeMm / 2 },
-      })
+      }),
     );
   };
 
@@ -327,7 +340,7 @@ export function buildModernTurquoiseCV(api = {}) {
           stroke: null,
           cornerRadius: CHIP.D / 2,
         },
-      })
+      }),
     );
 
     // ikona SVG (z lekkim przesunięciem w dół)
@@ -342,15 +355,15 @@ export function buildModernTurquoiseCV(api = {}) {
         },
         src: SVG(iconKey),
         style: { cornerRadius: 0 },
-      })
+      }),
     );
 
     // overlay link na kółko
     if (link) {
       const overlay = createTextNode({
         frame: { x: cx, y: circleY, w: CHIP.D, h: CHIP.D },
-        text: ' ',
-        textStyle: { fontSize: 1, color: 'transparent' },
+        text: " ",
+        textStyle: { fontSize: 1, color: "transparent" },
       });
       overlay.link = link;
       nodes.push(overlay);
@@ -375,40 +388,40 @@ export function buildModernTurquoiseCV(api = {}) {
     const out = [];
     const arr = Array.isArray(raw) ? raw : [];
     for (const l of arr) {
-      const url = typeof l === 'string' ? l : l?.url || l?.href || '';
+      const url = typeof l === "string" ? l : l?.url || l?.href || "";
       if (!url) continue;
-      let key = (typeof l === 'string' ? '' : l?.type || l?.name || '')
+      let key = (typeof l === "string" ? "" : l?.type || l?.name || "")
         .toString()
         .toLowerCase();
-      let label = 'Strona';
+      let label = "Strona";
       try {
         const u = new URL(url);
-        const host = u.hostname.replace(/^www\./, '');
-        if (host.includes('linkedin')) {
-          key ||= 'linkedin';
-          label = 'LinkedIn';
-        } else if (host.includes('github')) {
-          key ||= 'github';
-          label = 'GitHub';
-        } else if (host.includes('gitlab')) {
-          key ||= 'gitlab';
-          label = 'GitLab';
-        } else if (host.includes('twitter') || host.includes('x.com')) {
-          key ||= 'twitter';
-          label = 'Twitter';
-        } else if (host.includes('facebook')) {
-          key ||= 'facebook';
-          label = 'Facebook';
-        } else if (host.includes('instagram')) {
-          key ||= 'instagram';
-          label = 'Instagram';
+        const host = u.hostname.replace(/^www\./, "");
+        if (host.includes("linkedin")) {
+          key ||= "linkedin";
+          label = "LinkedIn";
+        } else if (host.includes("github")) {
+          key ||= "github";
+          label = "GitHub";
+        } else if (host.includes("gitlab")) {
+          key ||= "gitlab";
+          label = "GitLab";
+        } else if (host.includes("twitter") || host.includes("x.com")) {
+          key ||= "twitter";
+          label = "Twitter";
+        } else if (host.includes("facebook")) {
+          key ||= "facebook";
+          label = "Facebook";
+        } else if (host.includes("instagram")) {
+          key ||= "instagram";
+          label = "Instagram";
         } else {
-          key ||= 'globe';
-          label = 'Strona';
+          key ||= "globe";
+          label = "Strona";
         }
       } catch {
-        key ||= 'globe';
-        label = 'Strona';
+        key ||= "globe";
+        label = "Strona";
       }
       out.push({ key, label, url });
     }
@@ -427,7 +440,7 @@ export function buildModernTurquoiseCV(api = {}) {
       let final = label;
       if (!final) {
         try {
-          final = new URL(u).hostname.replace(/^www\./, '');
+          final = new URL(u).hostname.replace(/^www\./, "");
         } catch {
           final = u;
         }
@@ -436,18 +449,18 @@ export function buildModernTurquoiseCV(api = {}) {
     };
 
     push(p.url, null);
-    push(p.homepage, 'Strona');
-    push(p.demo, 'Demo');
-    push(p.live, 'Live');
-    push(p.repository || p.repo || p.github, 'GitHub');
-    push(p.docs || p.documentation, 'Dokumentacja');
+    push(p.homepage, "Strona");
+    push(p.demo, "Demo");
+    push(p.live, "Live");
+    push(p.repository || p.repo || p.github, "GitHub");
+    push(p.docs || p.documentation, "Dokumentacja");
 
     if (Array.isArray(p.links)) {
       for (const l of p.links) {
         if (!l) continue;
-        const url = typeof l === 'string' ? l : l.url || l.href || '';
+        const url = typeof l === "string" ? l : l.url || l.href || "";
         const label =
-          typeof l === 'string' ? '' : l.label || l.name || l.type || '';
+          typeof l === "string" ? "" : l.label || l.name || l.type || "";
         push(url, label || null);
       }
     }
@@ -461,13 +474,13 @@ export function buildModernTurquoiseCV(api = {}) {
 
   // --- HEADER ---
   const pd = api?.personalData || {};
-  const fullName = (pd.name || '').trim();
-  let first = '',
-    last = '';
+  const fullName = (pd.name || "").trim();
+  let first = "",
+    last = "";
   if (fullName) {
     const parts = fullName.split(/\s+/);
-    last = parts.length > 1 ? parts.pop() : '';
-    first = parts.join(' ') || last;
+    last = parts.length > 1 ? parts.pop() : "";
+    first = parts.join(" ") || last;
   }
 
   // Foto (opcjonalnie) — PODNIESIONE WYŻEJ
@@ -478,7 +491,7 @@ export function buildModernTurquoiseCV(api = {}) {
   let nameY = 5;
   if (first) nameY += text(nameX, nameY, 50, first, FONTS.garetBold52);
   if (last) nameY += text(nameX, nameY - 10, 80, last, FONTS.garetReg45);
-  const headline = (api?.headline || '').trim();
+  const headline = (api?.headline || "").trim();
   if (headline)
     // eslint-disable-next-line no-unused-vars
     nameY += text(nameX, nameY - 15, 120, headline, FONTS.garetReg12);
@@ -487,13 +500,13 @@ export function buildModernTurquoiseCV(api = {}) {
   const chips = [];
   if (pd.phoneNumber)
     chips.push({
-      icon: 'phone',
+      icon: "phone",
       label: pd.phoneNumber,
-      link: `tel:${String(pd.phoneNumber).replace(/\s+/g, '')}`,
+      link: `tel:${String(pd.phoneNumber).replace(/\s+/g, "")}`,
     });
   if (pd.email)
-    chips.push({ icon: 'mail', label: pd.email, link: `mailto:${pd.email}` });
-  if (pd.city) chips.push({ icon: 'pin', label: pd.city, link: '' });
+    chips.push({ icon: "mail", label: pd.email, link: `mailto:${pd.email}` });
+  if (pd.city) chips.push({ icon: "pin", label: pd.city, link: "" });
   for (const l of normalizeLinks(pd.links)) {
     chips.push({ icon: l.key, label: l.label, link: l.url });
   }
@@ -527,7 +540,7 @@ export function buildModernTurquoiseCV(api = {}) {
         c.icon,
         c.label,
         labelW,
-        c.link || null
+        c.link || null,
       );
       cx += used.w + CHIP.CHIP_GAP;
     }
@@ -544,32 +557,36 @@ export function buildModernTurquoiseCV(api = {}) {
     ? api.experience.filter(Boolean)
     : [];
   if (experiences.length) {
+    ly = checkPageBreak(ly, 15);
     ly +=
       text(
         LEFT_COL.x,
         ly,
         LEFT_COL.w,
-        'DOŚWIADCZENIE ZAWODOWE',
-        FONTS.section15
+        "DOŚWIADCZENIE ZAWODOWE",
+        FONTS.section15,
       ) + 1.0;
 
     for (const exp of experiences) {
-      const title = (exp?.title || '').trim();
-      const period = (exp?.period || '').trim();
+      // Sprawdź czy cały blok doświadczenia zmieści się
+      ly = checkPageBreak(ly, 25);
+
+      const title = (exp?.title || "").trim();
+      const period = (exp?.period || "").trim();
 
       const leftW = LEFT_COL.w * 0.6;
       const rightW = LEFT_COL.w - leftW;
       const tH = text(LEFT_COL.x, ly, leftW, title, FONTS.poppins10);
       const pH = text(LEFT_COL.x + leftW, ly, rightW, period, {
         ...FONTS.poppins11,
-        textAlign: 'right',
+        textAlign: "right",
       });
       ly += Math.max(tH, pH);
 
       const companyLine =
-        [exp?.company, exp?.location].filter(Boolean).join(' | ') ||
+        [exp?.company, exp?.location].filter(Boolean).join(" | ") ||
         exp?.company ||
-        '';
+        "";
       ly += text(LEFT_COL.x, ly, LEFT_COL.w, companyLine, FONTS.lato10b);
 
       if (exp?.jobDescription)
@@ -578,7 +595,7 @@ export function buildModernTurquoiseCV(api = {}) {
           ly,
           LEFT_COL.w,
           exp.jobDescription,
-          FONTS.poppins8
+          FONTS.poppins8,
         );
 
       const ach = Array.isArray(exp?.achievements)
@@ -591,8 +608,8 @@ export function buildModernTurquoiseCV(api = {}) {
           LEFT_COL.x,
           ly,
           LEFT_COL.w,
-          ach.map((s) => `• ${s}`).join('\n'),
-          FONTS.poppins8
+          ach.map((s) => `• ${s}`).join("\n"),
+          FONTS.poppins8,
         );
 
       ly += ITEM_GAP;
@@ -605,15 +622,15 @@ export function buildModernTurquoiseCV(api = {}) {
     ? api.portfolio.filter(Boolean)
     : [];
   if (projects.length) {
-    ly += text(LEFT_COL.x, ly, LEFT_COL.w, 'PROJEKTY', FONTS.section15) + 1.0;
+    ly += text(LEFT_COL.x, ly, LEFT_COL.w, "PROJEKTY", FONTS.section15) + 1.0;
     for (const p of projects) {
       if (p?.name)
         ly += text(LEFT_COL.x, ly, LEFT_COL.w, p.name, FONTS.lato10b);
 
       const techLine = (p?.technologies || [])
-        .map((t) => (typeof t === 'string' ? t : t?.name))
+        .map((t) => (typeof t === "string" ? t : t?.name))
         .filter(Boolean)
-        .join(' • ');
+        .join(" • ");
       if (techLine)
         ly += text(LEFT_COL.x, ly, LEFT_COL.w, techLine, FONTS.poppins8);
 
@@ -635,8 +652,8 @@ export function buildModernTurquoiseCV(api = {}) {
           LEFT_COL.x,
           ly,
           LEFT_COL.w,
-          ach.map((s) => `• ${s}`).join('\n'),
-          FONTS.poppins8
+          ach.map((s) => `• ${s}`).join("\n"),
+          FONTS.poppins8,
         );
 
       ly += ITEM_GAP;
@@ -649,7 +666,8 @@ export function buildModernTurquoiseCV(api = {}) {
     ? api.references.filter(Boolean)
     : [];
   if (refs.length) {
-    ly += text(LEFT_COL.x, ly, LEFT_COL.w, 'REFERENCJE', FONTS.section15) + 1.0;
+    ly = checkPageBreak(ly, 15);
+    ly += text(LEFT_COL.x, ly, LEFT_COL.w, "REFERENCJE", FONTS.section15) + 1.0;
     const gap = 6;
     const colW = (LEFT_COL.w - gap) / 2;
     let rx = LEFT_COL.x;
@@ -657,9 +675,9 @@ export function buildModernTurquoiseCV(api = {}) {
     for (let i = 0; i < Math.min(2, refs.length); i++) {
       const r = refs[i];
       let ry2 = ly + 2;
-      ry2 += text(rx, ry2, colW, r?.name || '', FONTS.lato12b);
+      ry2 += text(rx, ry2, colW, r?.name || "", FONTS.lato12b);
       const role =
-        [r?.company, r?.position].filter(Boolean).join(' / ') || r?.role || '';
+        [r?.company, r?.position].filter(Boolean).join(" / ") || r?.role || "";
       ry2 += text(rx, ry2, colW, role, FONTS.lato10b) + 1.0;
       if (r?.phone)
         ry2 += text(rx, ry2, colW, `Telefon: ${r.phone}`, FONTS.poppins8b);
@@ -674,8 +692,9 @@ export function buildModernTurquoiseCV(api = {}) {
   // PRAWA kolumna
   let ry = CONTENT.y + ACCENT.h + 4;
 
-  if ((api?.summary || '').trim()) {
-    ry += text(RIGHT_COL.x, ry, RIGHT_COL.w, 'O MNIE', FONTS.section15) + 1.0;
+  if ((api?.summary || "").trim()) {
+    ry = checkPageBreak(ry, 15);
+    ry += text(RIGHT_COL.x, ry, RIGHT_COL.w, "O MNIE", FONTS.section15) + 1.0;
     ry +=
       text(RIGHT_COL.x, ry, RIGHT_COL.w, api.summary, FONTS.poppins8) +
       SECTION_GAP;
@@ -687,9 +706,13 @@ export function buildModernTurquoiseCV(api = {}) {
     ? api.educations.filter(Boolean)
     : [];
   if (edus.length) {
-    ry += text(RIGHT_COL.x, ry, RIGHT_COL.w, 'EDUKACJA', FONTS.section15) + 1.0;
+    ry = checkPageBreak(ry, 15);
+    ry += text(RIGHT_COL.x, ry, RIGHT_COL.w, "EDUKACJA", FONTS.section15) + 1.0;
     for (const e of edus) {
-      const course = [e?.degree, e?.specialization].filter(Boolean).join(' — ');
+      // Sprawdź czy cała pozycja edukacji zmieści się
+      ry = checkPageBreak(ry, 12);
+
+      const course = [e?.degree, e?.specialization].filter(Boolean).join(" — ");
       if (course)
         ry += text(RIGHT_COL.x, ry, RIGHT_COL.w, course, FONTS.lato11b_c);
       if (e?.institution)
@@ -705,58 +728,78 @@ export function buildModernTurquoiseCV(api = {}) {
   const groups = Array.isArray(api?.skills) ? api.skills : [];
   const listBy = (name) =>
     groups
-      .find((g) => (g?.category || '').toLowerCase() === name.toLowerCase())
-      ?.items?.map((i) => (typeof i === 'string' ? i : i?.name))
+      .find((g) => (g?.category || "").toLowerCase() === name.toLowerCase())
+      ?.items?.map((i) => (typeof i === "string" ? i : i?.name))
       .filter(Boolean) || [];
   // klasyczne grupy
-  let tech = listBy('Technical'),
-    tools = listBy('Tools'),
-    soft = listBy('Soft');
+  let tech = listBy("Technical"),
+    tools = listBy("Tools"),
+    soft = listBy("Soft");
   // fallback: wyciągnij technologie z portfolio, jeśli brak
   if (!tech.length && projects.length) {
     tech = projects
       .flatMap((p) => p?.technologies || [])
-      .map((t) => (typeof t === 'string' ? t : t?.name))
+      .map((t) => (typeof t === "string" ? t : t?.name))
       .filter(Boolean);
   }
 
   if (tech.length || tools.length || soft.length) {
+    ry = checkPageBreak(ry, 15);
     ry +=
-      text(RIGHT_COL.x, ry, RIGHT_COL.w, 'UMIEJĘTNOŚCI', FONTS.section15) + 1.0;
+      text(RIGHT_COL.x, ry, RIGHT_COL.w, "UMIEJĘTNOŚCI", FONTS.section15) + 1.0;
     if (tech.length) {
-      ry += text(RIGHT_COL.x, ry, RIGHT_COL.w, 'Techniczne', FONTS.poppins9b);
+      ry += text(RIGHT_COL.x, ry, RIGHT_COL.w, "Techniczne", FONTS.poppins9b);
       ry +=
         text(
           RIGHT_COL.x,
           ry,
           RIGHT_COL.w,
-          tech.map((s) => `• ${s}`).join('\n'),
-          FONTS.poppins8
+          tech.map((s) => `• ${s}`).join("\n"),
+          FONTS.poppins8,
         ) + 1.0;
     }
     if (tools.length) {
-      ry += text(RIGHT_COL.x, ry, RIGHT_COL.w, 'Narzędzia', FONTS.poppins9b);
+      ry += text(RIGHT_COL.x, ry, RIGHT_COL.w, "Narzędzia", FONTS.poppins9b);
       ry +=
         text(
           RIGHT_COL.x,
           ry,
           RIGHT_COL.w,
-          tools.map((s) => `• ${s}`).join('\n'),
-          FONTS.poppins8
+          tools.map((s) => `• ${s}`).join("\n"),
+          FONTS.poppins8,
         ) + 1.0;
     }
     if (soft.length) {
-      ry += text(RIGHT_COL.x, ry, RIGHT_COL.w, 'Miękkie', FONTS.poppins9b);
+      ry += text(RIGHT_COL.x, ry, RIGHT_COL.w, "Miękkie", FONTS.poppins9b);
       ry +=
         text(
           RIGHT_COL.x,
           ry,
           RIGHT_COL.w,
-          soft.map((s) => `• ${s}`).join('\n'),
-          FONTS.poppins8
+          soft.map((s) => `• ${s}`).join("\n"),
+          FONTS.poppins8,
         ) + 1.0;
     }
     ry += SECTION_GAP;
+  }
+
+  // --- RODO w prawej kolumnie ---
+  const DEFAULT_GDPR_PL =
+    "Wyrażam zgodę na przetwarzanie moich danych osobowych zawartych w przesłanych dokumentach rekrutacyjnych przez administratora danych w celu prowadzenia rekrutacji. " +
+    "Jeżeli wyraziłem/wyraziłam dodatkowo zgodę na przetwarzanie danych w przyszłych rekrutacjach, moje dane będą przetwarzane również w tym celu. " +
+    "Zgoda może zostać cofnięta w dowolnym momencie.";
+  const gdprText =
+    (api?.gdprClause || api?.personalData?.gdprClause || api?.gdpr || "")
+      .toString()
+      .trim() || DEFAULT_GDPR_PL;
+
+  if (gdprText) {
+    ry = checkPageBreak(ry, 20);
+    ry +=
+      text(RIGHT_COL.x, ry, RIGHT_COL.w, "KLAUZULA RODO", FONTS.section15) +
+      1.0;
+    ry +=
+      text(RIGHT_COL.x, ry, RIGHT_COL.w, gdprText, FONTS.gdpr) + SECTION_GAP;
   }
 
   // CERTYFIKATY
@@ -764,17 +807,18 @@ export function buildModernTurquoiseCV(api = {}) {
     ? api.certificates.filter(Boolean)
     : [];
   if (certs.length) {
+    ry = checkPageBreak(ry, 15);
     ry +=
-      text(RIGHT_COL.x, ry, RIGHT_COL.w, 'CERTYFIKATY', FONTS.section15) + 1.0;
+      text(RIGHT_COL.x, ry, RIGHT_COL.w, "CERTYFIKATY", FONTS.section15) + 1.0;
     for (const c of certs) {
-      const meta = [c?.issuer, c?.data || c?.date].filter(Boolean).join(' • ');
+      const meta = [c?.issuer, c?.data || c?.date].filter(Boolean).join(" • ");
       if (c?.name)
         ry += text(
           RIGHT_COL.x,
           ry,
           RIGHT_COL.w,
           `• ${c.name}`,
-          FONTS.poppins8b
+          FONTS.poppins8b,
         );
       if (meta)
         ry += text(RIGHT_COL.x + 3, ry, RIGHT_COL.w - 3, meta, FONTS.poppins8);
@@ -782,27 +826,27 @@ export function buildModernTurquoiseCV(api = {}) {
     }
   }
 
-  // --- RODO na dole arkusza ---
-  const DEFAULT_GDPR_PL =
-    'Wyrażam zgodę na przetwarzanie moich danych osobowych zawartych w przesłanych dokumentach rekrutacyjnych przez administratora danych w celu prowadzenia rekrutacji. ' +
-    'Jeżeli wyraziłem/wyraziłam dodatkową zgodę na przetwarzanie danych w przyszłych rekrutacjach, moje dane będą przetwarzane również w tym celu. ' +
-    'Zgoda może zostać cofnięta w dowolnym momencie.';
-  const gdprText =
-    (api?.gdprClause || api?.personalData?.gdprClause || api?.gdpr || '')
-      .toString()
-      .trim() || DEFAULT_GDPR_PL;
+  // // --- RODO na dole arkusza ---
+  // const DEFAULT_GDPR_PL =
+  //   "Wyrażam zgodę na przetwarzanie moich danych osobowych zawartych w przesłanych dokumentach rekrutacyjnych przez administratora danych w celu prowadzenia rekrutacji. " +
+  //   "Jeżeli wyraziłem/wyraziłam dodatkową zgodę na przetwarzanie danych w przyszłych rekrutacjach, moje dane będą przetwarzane również w tym celu. " +
+  //   "Zgoda może zostać cofnięta w dowolnym momencie.";
+  // const gdprText =
+  //   (api?.gdprClause || api?.personalData?.gdprClause || api?.gdpr || "")
+  //     .toString()
+  //     .trim() || DEFAULT_GDPR_PL;
 
-  if (gdprText) {
-    const padX = 8;
-    const padBottom = 6;
-    const w = CONTENT.w - 2 * padX;
-    const h = measureH(gdprText, w, FONTS.gdpr);
-    const y = CONTENT.y + CONTENT.h - padBottom - h;
+  // if (gdprText) {
+  //   const padX = 8;
+  //   const padBottom = 6;
+  //   const w = CONTENT.w - 2 * padX;
+  //   const h = measureH(gdprText, w, FONTS.gdpr);
+  //   const y = CONTENT.y + CONTENT.h - padBottom - h;
 
-    // delikatny separator nad klauzulą
-    rect(CONTENT.x + padX, y - 2.0, w, 0.45, '#E6E9F0');
-    text(CONTENT.x + padX, y, w, gdprText, FONTS.gdpr);
-  }
+  //   // delikatny separator nad klauzulą
+  //   rect(CONTENT.x + padX, y - 2.0, w, 0.45, "#E6E9F0");
+  //   text(CONTENT.x + padX, y, w, gdprText, FONTS.gdpr);
+  // }
 
   doc.nodes = nodes;
   doc.meta = { data: api };

@@ -51,6 +51,9 @@ public class FindLocationUseCase {
         LocationResponse locationResponse;
         if (hasCity && hasStreet) {
             locationResponse = openStreetMapImpl.findByCityAndStreetName(city, street);
+            if (locationResponse.Voivodeship() == null) {
+                locationResponse = openStreetMapImpl.findByCityName(city);
+            }
         } else if (hasCity) {
             locationResponse = openStreetMapImpl.findByCityName(city);
         } else {
@@ -61,6 +64,7 @@ public class FindLocationUseCase {
 
         jobOffer.getLocation().setLatitude(locationResponse.latitude());
         jobOffer.getLocation().setLongitude(locationResponse.longitude());
+        jobOffer.getLocation().setVoivodeships(locationResponse.Voivodeship());
 
         jobOfferRepository.save(jobOffer);
 

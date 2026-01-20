@@ -33,7 +33,10 @@ const TestimonialsSection = () => {
   ];
 
   return (
-    <section id="contact" className="py-20 bg-gradient-to-b from-ivorylight via-cloudlight to-ivorymedium relative overflow-hidden">
+    <section
+      id="testimonials"
+      className="py-20 bg-gradient-to-b from-ivorylight via-cloudlight to-ivorymedium relative overflow-hidden"
+    >
       {/* Background Decorations */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-10 left-10 w-64 h-64 bg-kraft/10 rounded-full blur-3xl"></div>

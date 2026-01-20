@@ -3,9 +3,9 @@ import {
   createTextNode,
   createShapeNode,
   createImageNode,
-} from '../core/model';
-import { A4 } from '../core/mm';
-import { measureTextHeightMm } from '../services/typeset';
+} from "../core/model";
+import { A4 } from "../core/mm";
+import { measureTextHeightMm } from "../services/typeset";
 
 export function buildPixelPerfectTealSidebarCV(api = {}) {
   const doc = emptyDocument(A4);
@@ -23,29 +23,29 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
 
   /* ============ KOLORY I STYLE ============ */
   const COLORS = {
-    sheetBg: '#FFFFFF',
-    text: '#333132',
-    muted: '#727272',
-    divider: '#D9DEE6',
-    link: '#006666', // akcent/link
-    sidebar: '#006666', // kolor paska
-    sidebarLine: 'rgba(255,255,255,0.45)',
-    sidebarText: '#FFFFFF',
-    sidebarMuted: 'rgba(255,255,255,0.85)',
-    contactShape: 'rgba(255,255,255,0.06)',
+    sheetBg: "#FFFFFF",
+    text: "#333132",
+    muted: "#727272",
+    divider: "#D9DEE6",
+    link: "#006666", // akcent/link
+    sidebar: "#006666", // kolor paska
+    sidebarLine: "rgba(255,255,255,0.45)",
+    sidebarText: "#FFFFFF",
+    sidebarMuted: "rgba(255,255,255,0.85)",
+    contactShape: "rgba(255,255,255,0.06)",
   };
 
   const STYLES = {
     // Nagłówek (lewa)
     name: {
-      fontFamily: 'Montserrat, Inter, Arial, sans-serif',
+      fontFamily: "Montserrat, Inter, Arial, sans-serif",
       fontSize: 22.8,
       fontWeight: 800,
       color: COLORS.text,
       lineHeight: 1.16,
     },
     title: {
-      fontFamily: 'Montserrat, Inter, Arial, sans-serif',
+      fontFamily: "Montserrat, Inter, Arial, sans-serif",
       fontSize: 12.2,
       fontWeight: 600,
       color: COLORS.link,
@@ -54,7 +54,7 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
 
     // Pasek kontaktu
     contact: {
-      fontFamily: 'Open Sans, Inter, Arial, sans-serif',
+      fontFamily: "Open Sans, Inter, Arial, sans-serif",
       fontSize: 8.9,
       fontWeight: 400,
       color: COLORS.muted,
@@ -63,55 +63,55 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
 
     // Nagłówki sekcji (PL)
     section: {
-      fontFamily: 'Montserrat, Inter, Arial, sans-serif',
+      fontFamily: "Montserrat, Inter, Arial, sans-serif",
       fontSize: 10.8,
       fontWeight: 700,
       color: COLORS.muted,
       lineHeight: 1.18,
-      textTransform: 'uppercase',
+      textTransform: "uppercase",
       letterSpacing: 0.6,
     },
 
     // Treści
     summary: {
-      fontFamily: 'Open Sans, Inter, Arial, sans-serif',
+      fontFamily: "Open Sans, Inter, Arial, sans-serif",
       fontSize: 8.9,
       fontWeight: 400,
       color: COLORS.text,
       lineHeight: 1.45,
     },
     role: {
-      fontFamily: 'Poppins, Inter, Arial, sans-serif',
+      fontFamily: "Poppins, Inter, Arial, sans-serif",
       fontSize: 10.1,
       fontWeight: 700,
       color: COLORS.text,
       lineHeight: 1.25,
     },
     period: {
-      fontFamily: 'Poppins, Inter, Arial, sans-serif',
+      fontFamily: "Poppins, Inter, Arial, sans-serif",
       fontSize: 9.6,
       fontWeight: 400,
       color: COLORS.text,
       lineHeight: 1.2,
-      textAlign: 'right',
+      textAlign: "right",
     },
     companyLink: {
-      fontFamily: 'Lato, Inter, Arial, sans-serif',
+      fontFamily: "Lato, Inter, Arial, sans-serif",
       fontSize: 10.0,
       fontWeight: 700,
       color: COLORS.link,
       lineHeight: 1.2,
     },
     cityMuted: {
-      fontFamily: 'Lato, Inter, Arial, sans-serif',
+      fontFamily: "Lato, Inter, Arial, sans-serif",
       fontSize: 9.6,
       fontWeight: 400,
       color: COLORS.muted,
       lineHeight: 1.1,
-      textAlign: 'right',
+      textAlign: "right",
     },
     bullets: {
-      fontFamily: 'Open Sans, Inter, Arial, sans-serif',
+      fontFamily: "Open Sans, Inter, Arial, sans-serif",
       fontSize: 8.7,
       fontWeight: 400,
       color: COLORS.text,
@@ -120,21 +120,21 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
 
     // Portfolio
     projName: {
-      fontFamily: 'Poppins, Inter, Arial, sans-serif',
+      fontFamily: "Poppins, Inter, Arial, sans-serif",
       fontSize: 10.1,
       fontWeight: 700,
       color: COLORS.text,
       lineHeight: 1.22,
     },
     projTech: {
-      fontFamily: 'Open Sans, Inter, Arial, sans-serif',
+      fontFamily: "Open Sans, Inter, Arial, sans-serif",
       fontSize: 8.4,
       fontWeight: 400,
       color: COLORS.muted,
       lineHeight: 1.22,
     },
     linkMuted: {
-      fontFamily: 'Lato, Inter, Arial, sans-serif',
+      fontFamily: "Lato, Inter, Arial, sans-serif",
       fontSize: 8.6,
       fontWeight: 700,
       color: COLORS.link,
@@ -143,30 +143,30 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
 
     // Sidebar
     sidebarHeader: {
-      fontFamily: 'Montserrat, Inter, Arial, sans-serif',
+      fontFamily: "Montserrat, Inter, Arial, sans-serif",
       fontSize: 10.3,
       fontWeight: 700,
       color: COLORS.sidebarText,
       lineHeight: 1.22,
-      textTransform: 'uppercase',
+      textTransform: "uppercase",
       letterSpacing: 0.6,
     },
     sidebarTitle: {
-      fontFamily: 'Poppins, Inter, Arial, sans-serif',
+      fontFamily: "Poppins, Inter, Arial, sans-serif",
       fontSize: 9.7,
       fontWeight: 700,
       color: COLORS.sidebarText,
       lineHeight: 1.22,
     },
     sidebarText: {
-      fontFamily: 'Open Sans, Inter, Arial, sans-serif',
+      fontFamily: "Open Sans, Inter, Arial, sans-serif",
       fontSize: 8.3,
       fontWeight: 400,
       color: COLORS.sidebarMuted,
       lineHeight: 1.32,
     },
     sidebarList: {
-      fontFamily: 'Open Sans, Inter, Arial, sans-serif',
+      fontFamily: "Open Sans, Inter, Arial, sans-serif",
       fontSize: 8.3,
       fontWeight: 600,
       color: COLORS.sidebarText,
@@ -175,21 +175,21 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
 
     // Edukacja (sidebar)
     eduCourse: {
-      fontFamily: 'Poppins, Inter, Arial, sans-serif',
+      fontFamily: "Poppins, Inter, Arial, sans-serif",
       fontSize: 9.7,
       fontWeight: 700,
       color: COLORS.sidebarText,
       lineHeight: 1.2,
     },
     eduSchool: {
-      fontFamily: 'Lato, Inter, Arial, sans-serif',
+      fontFamily: "Lato, Inter, Arial, sans-serif",
       fontSize: 8.8,
       fontWeight: 700,
       color: COLORS.sidebarText,
       lineHeight: 1.18,
     },
     eduPeriod: {
-      fontFamily: 'Open Sans, Inter, Arial, sans-serif',
+      fontFamily: "Open Sans, Inter, Arial, sans-serif",
       fontSize: 8.2,
       fontWeight: 400,
       color: COLORS.sidebarMuted,
@@ -198,12 +198,12 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
 
     // RODO (stopka)
     gdpr: {
-      fontFamily: 'Open Sans, Inter, Arial, sans-serif',
+      fontFamily: "Open Sans, Inter, Arial, sans-serif",
       fontSize: 7.4,
       fontWeight: 400,
       color: COLORS.muted,
       lineHeight: 1.2,
-      textAlign: 'justify',
+      textAlign: "justify",
     },
   };
 
@@ -217,7 +217,7 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
       createShapeNode({
         frame: { x, y, w, h },
         style: { fill: { color, opacity: 1 }, stroke: null },
-      })
+      }),
     );
 
   const hLine = (x, y, w, h = SECTION.hLine, color = COLORS.divider) =>
@@ -225,30 +225,30 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
       createShapeNode({
         frame: { x, y, w, h },
         style: { fill: { color, opacity: 1 }, stroke: null },
-      })
+      }),
     );
 
   const tblock = (x, y, w, text, style = {}, opts = {}) => {
-    const s = String(text ?? '');
+    const s = String(text ?? "");
     if (!s.trim()) return 0;
     const h = Math.max(3.4, measureTextHeightMm(s, w, style));
 
     const textStyle = { ...(style || {}) };
     if (
-      typeof textStyle.color === 'string' &&
+      typeof textStyle.color === "string" &&
       /^rgba?\(/i.test(textStyle.color)
     ) {
       const m = textStyle.color.match(
-        /^rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})(?:\s*,\s*([0-9.]+))?\s*\)$/i
+        /^rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})(?:\s*,\s*([0-9.]+))?\s*\)$/i,
       );
       if (m) {
-        const toHex = (v) => Number(v).toString(16).padStart(2, '0');
+        const toHex = (v) => Number(v).toString(16).padStart(2, "0");
         textStyle.color = `#${toHex(m[1])}${toHex(m[2])}${toHex(m[3])}`;
       }
     }
     if (opts.link) {
-      textStyle.textDecoration = 'none';
-      textStyle.textDecorationLine = 'none';
+      textStyle.textDecoration = "none";
+      textStyle.textDecorationLine = "none";
     }
 
     const node = createTextNode({
@@ -262,7 +262,7 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
   };
 
   const svgData = (svg) =>
-    'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg.trim());
+    "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg.trim());
 
   const ICONS = {
     phone: `
@@ -296,33 +296,45 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
 </svg>`,
   };
 
-  const fmtPeriod = (raw) => String(raw || '').trim();
+  const fmtPeriod = (raw) => String(raw || "").trim();
 
   const normalizeProjectLinks = (p = {}) => {
     const out = [];
     const add = (u, lab) => {
       if (!u) return;
-      let label = lab || '';
+      let label = lab || "";
       try {
-        label ||= new URL(u).hostname.replace(/^www\./, '');
+        label ||= new URL(u).hostname.replace(/^www\./, "");
       } catch {
         label = String(u);
       }
       out.push({ url: String(u), label });
     };
-    add(p.url, '');
-    add(p.homepage, 'Strona');
-    add(p.demo, 'Demo');
-    add(p.repository || p.github || p.repo, 'Repozytorium');
+    add(p.url, "");
+    add(p.homepage, "Strona");
+    add(p.demo, "Demo");
+    add(p.repository || p.github || p.repo, "Repozytorium");
     if (Array.isArray(p.links)) {
       for (const l of p.links) {
-        const u = typeof l === 'string' ? l : l?.url || l?.href || '';
+        const u = typeof l === "string" ? l : l?.url || l?.href || "";
         const lab =
-          typeof l === 'string' ? '' : l?.label || l?.name || l?.type || '';
+          typeof l === "string" ? "" : l?.label || l?.name || l?.type || "";
         add(u, lab);
       }
     }
     return out;
+  };
+
+  const checkPageBreak = (currentY, elementHeight, bottomMargin = 20) => {
+    const currentPage = Math.floor(currentY / PAGE_H);
+    const pageBottom = (currentPage + 1) * PAGE_H - bottomMargin;
+
+    if (currentY + elementHeight > pageBottom) {
+      const nextPageTop = (currentPage + 1) * PAGE_H + 8.0;
+      return nextPageTop;
+    }
+
+    return currentY;
   };
 
   /* ============ TŁA ============ */
@@ -339,9 +351,9 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
     Array.isArray(api?.strengths) && api.strengths.length
       ? api.strengths
       : (api?.awards || []).map((a) =>
-          typeof a === 'string'
+          typeof a === "string"
             ? { title: a }
-            : { title: a?.name, description: a?.description }
+            : { title: a?.name, description: a?.description },
         );
   const pdLinks = Array.isArray(pd?.links) ? pd.links : [];
 
@@ -365,52 +377,55 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
 
   let ly = 8.0;
 
-  const fullName = String(pd?.name || 'Imię Nazwisko').trim();
-  const headline = String(api?.headline || 'Stanowisko').trim();
+  const fullName = String(pd?.name || "Imię Nazwisko").trim();
+  const headline = String(api?.headline || "Stanowisko").trim();
 
   ly += tblock(Lx, ly, Lw, fullName.toUpperCase(), STYLES.name);
   ly += tblock(Lx, ly - 1.2, Lw, headline, STYLES.title) + 2.4;
 
   // PODSUMOWANIE
-  ly += tblock(Lx, ly, Lw, 'PODSUMOWANIE', STYLES.section);
+  ly = checkPageBreak(ly, 15);
+  ly += tblock(Lx, ly, Lw, "PODSUMOWANIE", STYLES.section);
   ly += SECTION_LEFT.gapTitleToLine;
   hLine(Lx, ly, Lw);
   ly += SECTION_LEFT.gapAfterLine;
   if (api?.summary) ly += tblock(Lx, ly, Lw, api.summary, DENSE.summary) + 4.0;
 
   // DOŚWIADCZENIE ZAWODOWE
-  ly += tblock(Lx, ly, Lw, 'DOŚWIADCZENIE ZAWODOWE', STYLES.section);
+  ly = checkPageBreak(ly, 15);
+  ly += tblock(Lx, ly, Lw, "DOŚWIADCZENIE ZAWODOWE", STYLES.section);
   ly += SECTION_LEFT.gapTitleToLine;
   hLine(Lx, ly, Lw);
   ly += SECTION_LEFT.gapAfterLine + 0.6;
 
   for (const exp of experiences) {
+    ly = checkPageBreak(ly, 25);
     const leftW = Lw * 0.62;
     const rightW = Lw - leftW;
 
-    const h1 = tblock(Lx, ly, leftW, exp?.title || '', DENSE.role);
-    tblock(Lx + leftW, ly, rightW, fmtPeriod(exp?.period || ''), DENSE.period);
+    const h1 = tblock(Lx, ly, leftW, exp?.title || "", DENSE.role);
+    tblock(Lx + leftW, ly, rightW, fmtPeriod(exp?.period || ""), DENSE.period);
     ly += Math.max(h1, 6.2);
 
-    const company = String(exp?.company || '').trim();
+    const company = String(exp?.company || "").trim();
     const companyUrl =
       exp?.companyUrl ||
       exp?.url ||
-      (typeof exp?.website === 'string' ? exp.website : '');
+      (typeof exp?.website === "string" ? exp.website : "");
     const ch = tblock(
       Lx,
       ly,
       leftW,
       company,
       DENSE.companyLink,
-      companyUrl ? { link: companyUrl } : {}
+      companyUrl ? { link: companyUrl } : {},
     );
     tblock(
       Lx + leftW,
       ly,
       rightW,
-      String(exp?.location || ''),
-      DENSE.cityMuted
+      String(exp?.location || ""),
+      DENSE.cityMuted,
     );
     ly += Math.max(ch, 5.0);
 
@@ -422,7 +437,7 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
       Array.isArray(exp?.achievements) && exp.achievements.length
         ? exp.achievements
             .map((a) =>
-              typeof a === 'string' ? a : a?.description || a?.title
+              typeof a === "string" ? a : a?.description || a?.title,
             )
             .filter(Boolean)
         : [];
@@ -431,8 +446,8 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
         Lx,
         ly,
         Lw,
-        bullets.map((b) => `• ${b}`).join('\n'),
-        DENSE.bullets
+        bullets.map((b) => `• ${b}`).join("\n"),
+        DENSE.bullets,
       );
     }
     ly += 4.0;
@@ -440,27 +455,29 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
 
   // PORTFOLIO (zamiast EDUKACJI w lewej kolumnie)
   if (projects.length) {
-    ly += tblock(Lx, ly, Lw, 'PORTFOLIO', STYLES.section);
+    ly = checkPageBreak(ly, 15);
+    ly += tblock(Lx, ly, Lw, "PORTFOLIO", STYLES.section);
     ly += SECTION_LEFT.gapTitleToLine;
     hLine(Lx, ly, Lw);
     ly += SECTION_LEFT.gapAfterLine + 0.8;
 
     for (const p of projects) {
-      const nm = p?.name || 'Projekt';
-      const nmLink = p?.url || p?.homepage || '';
+      ly = checkPageBreak(ly, 25);
+      const nm = p?.name || "Projekt";
+      const nmLink = p?.url || p?.homepage || "";
       ly += tblock(
         Lx,
         ly,
         Lw,
         nm,
         DENSE.projName,
-        nmLink ? { link: nmLink } : {}
+        nmLink ? { link: nmLink } : {},
       );
 
       const tech = (p?.technologies || [])
-        .map((t) => (typeof t === 'string' ? t : t?.name))
+        .map((t) => (typeof t === "string" ? t : t?.name))
         .filter(Boolean)
-        .join(' • ');
+        .join(" • ");
       if (tech) ly += tblock(Lx, ly, Lw, tech, DENSE.projTech);
 
       if (p?.description)
@@ -476,7 +493,7 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
       const ach =
         Array.isArray(p?.achievements) && p.achievements.length
           ? p.achievements
-              .map((a) => (typeof a === 'string' ? a : a?.description))
+              .map((a) => (typeof a === "string" ? a : a?.description))
               .filter(Boolean)
           : [];
       if (ach.length)
@@ -484,8 +501,8 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
           Lx,
           ly,
           Lw,
-          ach.map((s) => `• ${s}`).join('\n'),
-          DENSE.bullets
+          ach.map((s) => `• ${s}`).join("\n"),
+          DENSE.bullets,
         );
 
       ly += 4.0;
@@ -503,11 +520,11 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
     createShapeNode({
       frame: { x: cx, y: cy, w: PHOTO.size, h: PHOTO.size },
       style: {
-        fill: { color: 'rgba(255,255,255,0.18)', opacity: 1 },
+        fill: { color: "rgba(255,255,255,0.18)", opacity: 1 },
         stroke: null,
         cornerRadius: PHOTO.size / 2,
       },
-    })
+    }),
   );
   if (photoSrc) {
     nodes.push(
@@ -515,7 +532,7 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
         frame: { x: cx, y: cy, w: PHOTO.size, h: PHOTO.size },
         src: photoSrc,
         style: { cornerRadius: PHOTO.size / 2 },
-      })
+      }),
     );
   }
 
@@ -527,7 +544,7 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
       ry,
       RIGHT_W - 12,
       label,
-      STYLES.sidebarHeader
+      STYLES.sidebarHeader,
     );
     ry += hh + 2.2;
     rect(RIGHT_X + 6, ry, RIGHT_W - 12, 0.6, COLORS.sidebarLine);
@@ -537,39 +554,39 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
   // UMIEJĘTNOŚCI
   const skillGroup = (name) =>
     (api?.skills || [])
-      .find((g) => (g?.category || '').toLowerCase() === name.toLowerCase())
-      ?.items?.map((s) => (typeof s === 'string' ? s : s?.name))
+      .find((g) => (g?.category || "").toLowerCase() === name.toLowerCase())
+      ?.items?.map((s) => (typeof s === "string" ? s : s?.name))
       .filter(Boolean) || [];
 
-  const skillsTools = skillGroup('Tools').length
-    ? skillGroup('Tools')
+  const skillsTools = skillGroup("Tools").length
+    ? skillGroup("Tools")
     : (Array.isArray(api?.portfolio) ? api.portfolio : [])
         .flatMap((p) => p?.technologies || [])
-        .map((t) => (typeof t === 'string' ? t : t?.name))
+        .map((t) => (typeof t === "string" ? t : t?.name))
         .filter(Boolean);
 
-  const skillsOS = skillGroup('Operating Systems').length
-    ? skillGroup('Operating Systems')
-    : skillGroup('OS');
+  const skillsOS = skillGroup("Operating Systems").length
+    ? skillGroup("Operating Systems")
+    : skillGroup("OS");
 
   if (skillsTools.length || skillsOS.length) {
-    sidebarHeader('UMIEJĘTNOŚCI');
+    sidebarHeader("UMIEJĘTNOŚCI");
     if (skillsTools.length) {
       ry +=
         tblock(
           RIGHT_X + 6,
           ry,
           RIGHT_W - 12,
-          'Narzędzia',
-          STYLES.sidebarTitle
+          "Narzędzia",
+          STYLES.sidebarTitle,
         ) + 1.2;
       ry +=
         tblock(
           RIGHT_X + 6,
           ry,
           RIGHT_W - 12,
-          skillsTools.join(' • '),
-          STYLES.sidebarList
+          skillsTools.join(" • "),
+          STYLES.sidebarList,
         ) + 4.8;
     }
     if (skillsOS.length) {
@@ -578,33 +595,33 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
           RIGHT_X + 6,
           ry,
           RIGHT_W - 12,
-          'Systemy operacyjne',
-          STYLES.sidebarTitle
+          "Systemy operacyjne",
+          STYLES.sidebarTitle,
         ) + 1.2;
       ry +=
         tblock(
           RIGHT_X + 6,
           ry,
           RIGHT_W - 12,
-          skillsOS.join(' • '),
-          STYLES.sidebarList
+          skillsOS.join(" • "),
+          STYLES.sidebarList,
         ) + 4.8;
     }
   }
 
   // MOCNE STRONY
   if (Array.isArray(strengths) && strengths.length) {
-    sidebarHeader('MOCNE STRONY');
+    sidebarHeader("MOCNE STRONY");
     for (const s of strengths.slice(0, 4)) {
-      const title = typeof s === 'string' ? s : s?.title || s?.name || '';
-      const desc = typeof s === 'object' ? s?.description || '' : '';
+      const title = typeof s === "string" ? s : s?.title || s?.name || "";
+      const desc = typeof s === "object" ? s?.description || "" : "";
       if (title)
         ry += tblock(
           RIGHT_X + 6,
           ry,
           RIGHT_W - 12,
           `★ ${title}`,
-          STYLES.sidebarTitle
+          STYLES.sidebarTitle,
         );
       if (desc)
         ry += tblock(RIGHT_X + 6, ry, RIGHT_W - 12, desc, STYLES.sidebarText);
@@ -614,9 +631,9 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
 
   // EDUKACJA
   if (educations.length) {
-    sidebarHeader('EDUKACJA');
+    sidebarHeader("EDUKACJA");
     for (const e of educations) {
-      const course = [e?.degree, e?.specialization].filter(Boolean).join(' — ');
+      const course = [e?.degree, e?.specialization].filter(Boolean).join(" — ");
       if (course)
         ry += tblock(RIGHT_X + 6, ry, RIGHT_W - 12, course, STYLES.eduCourse);
       if (e?.institution)
@@ -625,10 +642,10 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
           ry,
           RIGHT_W - 12,
           e.institution,
-          STYLES.eduSchool
+          STYLES.eduSchool,
         );
       const period = fmtPeriod(
-        e?.period || `${e?.startDate || ''} – ${e?.endDate || 'obecnie'}`
+        e?.period || `${e?.startDate || ""} – ${e?.endDate || "obecnie"}`,
       );
       if (period)
         ry += tblock(RIGHT_X + 6, ry, RIGHT_W - 12, period, STYLES.eduPeriod);
@@ -638,9 +655,9 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
 
   // JĘZYKI
   if (languages.length) {
-    sidebarHeader('JĘZYKI');
+    sidebarHeader("JĘZYKI");
     const lines = languages
-      .map((l) => [l?.language, l?.level].filter(Boolean).join(' — '))
+      .map((l) => [l?.language, l?.level].filter(Boolean).join(" — "))
       .filter(Boolean);
     if (lines.length) {
       ry +=
@@ -648,8 +665,8 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
           RIGHT_X + 6,
           ry,
           RIGHT_W - 12,
-          lines.join('\n'),
-          STYLES.sidebarList
+          lines.join("\n"),
+          STYLES.sidebarList,
         ) + 2.0;
     }
   }
@@ -658,39 +675,39 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
   const sidebarContacts = [];
   if (pd?.phoneNumber) {
     sidebarContacts.push({
-      icon: 'phone',
+      icon: "phone",
       label: String(pd.phoneNumber),
-      link: `tel:${String(pd.phoneNumber).replace(/\s+/g, '')}`,
+      link: `tel:${String(pd.phoneNumber).replace(/\s+/g, "")}`,
     });
   }
   if (pd?.email) {
     sidebarContacts.push({
-      icon: 'mail',
+      icon: "mail",
       label: String(pd.email),
       link: `mailto:${String(pd.email)}`,
     });
   }
   if (pd?.city) {
-    sidebarContacts.push({ icon: 'pin', label: String(pd.city) });
+    sidebarContacts.push({ icon: "pin", label: String(pd.city) });
   }
   const HOST_LABELS = {
-    'linkedin.com': 'LinkedIn',
-    'github.com': 'GitHub',
-    'gitlab.com': 'GitLab',
-    'facebook.com': 'Facebook',
-    'instagram.com': 'Instagram',
-    'twitter.com': 'Twitter',
-    'medium.com': 'Medium',
-    'youtube.com': 'YouTube',
-    'stackoverflow.com': 'StackOverflow',
+    "linkedin.com": "LinkedIn",
+    "github.com": "GitHub",
+    "gitlab.com": "GitLab",
+    "facebook.com": "Facebook",
+    "instagram.com": "Instagram",
+    "twitter.com": "Twitter",
+    "medium.com": "Medium",
+    "youtube.com": "YouTube",
+    "stackoverflow.com": "StackOverflow",
   };
   for (const l of pdLinks) {
-    const url = typeof l === 'string' ? l : l?.url || l?.href || '';
+    const url = typeof l === "string" ? l : l?.url || l?.href || "";
     if (!url) continue;
-    let label = '';
-    let hostname = '';
+    let label = "";
+    let hostname = "";
     try {
-      hostname = new URL(url).hostname.replace(/^www\./, '').toLowerCase();
+      hostname = new URL(url).hostname.replace(/^www\./, "").toLowerCase();
       for (const key of Object.keys(HOST_LABELS)) {
         if (hostname.includes(key)) {
           label = HOST_LABELS[key];
@@ -700,18 +717,18 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
     } catch {
       /* ignore */
     }
-    if (!label) label = url.replace(/^https?:\/\//, '').replace(/\/$/, '');
-    const icon = hostname.includes('github')
-      ? 'github'
-      : hostname.includes('linkedin')
-      ? 'link'
-      : hostname.includes('gitlab')
-      ? 'link'
-      : hostname.includes('facebook')
-      ? 'link'
-      : hostname.includes('instagram')
-      ? 'link'
-      : 'link';
+    if (!label) label = url.replace(/^https?:\/\//, "").replace(/\/$/, "");
+    const icon = hostname.includes("github")
+      ? "github"
+      : hostname.includes("linkedin")
+        ? "link"
+        : hostname.includes("gitlab")
+          ? "link"
+          : hostname.includes("facebook")
+            ? "link"
+            : hostname.includes("instagram")
+              ? "link"
+              : "link";
     sidebarContacts.push({ icon, label, link: url });
   }
 
@@ -719,23 +736,23 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
   const sidebarSvg = (k) =>
     svgData(
       (ICONS[k] || ICONS.link).replace(
-        new RegExp(String(COLORS.muted), 'g'),
-        COLORS.sidebarText
-      )
+        new RegExp(String(COLORS.muted), "g"),
+        COLORS.sidebarText,
+      ),
     );
 
   const parseColor = (c) => {
-    if (!c) return { color: '#000000', opacity: 1 };
+    if (!c) return { color: "#000000", opacity: 1 };
     const s = String(c).trim();
     const rgba = s.match(
-      /^rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})(?:\s*,\s*([0-9.]+))?\s*\)$/i
+      /^rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})(?:\s*,\s*([0-9.]+))?\s*\)$/i,
     );
     if (rgba) {
       const r = Number(rgba[1]),
         g = Number(rgba[2]),
         b = Number(rgba[3]);
       const a = rgba[4] !== undefined ? Number(rgba[4]) : 1;
-      const toHex = (v) => Number(v).toString(16).padStart(2, '0');
+      const toHex = (v) => Number(v).toString(16).padStart(2, "0");
       return {
         color: `#${toHex(r)}${toHex(g)}${toHex(b)}`,
         opacity: Number.isFinite(a) ? a : 1,
@@ -752,8 +769,8 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
       RIGHT_X + 6,
       ry,
       RIGHT_W - 12,
-      'KONTAKT',
-      STYLES.sidebarHeader
+      "KONTAKT",
+      STYLES.sidebarHeader,
     );
     ry += 2.2;
     rect(RIGHT_X + 6, ry, RIGHT_W - 12, 0.45, COLORS.sidebarLine);
@@ -766,11 +783,11 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
     const chipW = RIGHT_W - 12;
 
     for (const c of sidebarContacts) {
-      const label = String(c.label || '');
+      const label = String(c.label || "");
       const textW = chipW - (CHIP_PAD_X * 2 + ICON_SIZE + 4);
       const th = Math.max(
         3.6,
-        measureTextHeightMm(label, textW, STYLES.sidebarList)
+        measureTextHeightMm(label, textW, STYLES.sidebarList),
       );
       const chipH = th + CHIP_PAD_Y * 2;
 
@@ -783,7 +800,7 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
             stroke: null,
             cornerRadius: 4,
           },
-        })
+        }),
       );
 
       nodes.push(
@@ -796,7 +813,7 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
           },
           src: sidebarSvg(c.icon),
           style: { cornerRadius: 0 },
-        })
+        }),
       );
 
       const textX = RIGHT_X + 6 + CHIP_PAD_X + ICON_SIZE + 4;
@@ -807,7 +824,7 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
         textW,
         label,
         { ...STYLES.sidebarList, color: COLORS.sidebarText },
-        opts
+        opts,
       );
 
       ry += chipH + CHIP_GAP;
@@ -818,7 +835,7 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
 
   /* ============ RODO NA SAMYM DOLE (LEWA KOLUMNA) ============ */
   const gdpr =
-    api?.gdprClause || api?.personalData?.gdprClause || api?.gdpr || '';
+    api?.gdprClause || api?.personalData?.gdprClause || api?.gdpr || "";
   if (gdpr) {
     const bottomMargin = 6; // oddech od krawędzi
     const w = Lw;
@@ -831,6 +848,6 @@ export function buildPixelPerfectTealSidebarCV(api = {}) {
 
   /* ============ FINALIZACJA ============ */
   doc.nodes = nodes;
-  doc.meta = { data: api, template: 'PixelPerfectTealSidebarCV_PL' };
+  doc.meta = { data: api, template: "PixelPerfectTealSidebarCV_PL" };
   return doc;
 }

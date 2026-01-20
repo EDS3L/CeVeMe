@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import pl.ceveme.application.port.in.*;
 import pl.ceveme.domain.model.entities.JobOffer;
 
 import java.time.LocalDate;
@@ -146,4 +147,81 @@ public interface JobOfferRepository extends JpaRepository<JobOffer, Long>, JpaSp
               AND (j.location.longitude BETWEEN :minLon AND :maxLon)
             """)
     List<JobOffer> findAllOffersAround(@Param("minLat") double minLat, @Param("maxLat") double maxLat, @Param("minLon") double minLon, @Param("maxLon") double maxLon, @Param("today") LocalDate today);
+
+
+        @Query("""
+            SELECT DATE_FORMAT(jo.dateAdded, '%Y-%m') AS dateAdded,
+                   jo.experienceLevel AS experienceLevel, 
+                   COUNT(jo.experienceLevel) AS offerCount
+            FROM JobOffer jo
+            WHERE jo.dateAdded IS NOT NULL AND jo.experienceLevel IS NOT NULL
+            AND jo.experienceLevel LIKE :experienceLevel
+            GROUP BY 1, 2
+            HAVING COUNT(jo.experienceLevel) > 10
+            """)
+        List<DateAddedPerExperienceLevel> getDateAddedPerExperienceLevel(@Param("experienceLevel") String experienceLevel);
+
+        @Query("""
+            SELECT jo.location.city AS city, 
+                   jo.experienceLevel AS experienceLevel, 
+                   CAST(ROUND(AVG(jo.salaryMin), 2) AS double) AS salary, 
+                   COUNT(jo.experienceLevel) AS cityCount
+            FROM JobOffer jo
+            WHERE jo.location.city IS NOT NULL
+              AND jo.experienceLevel IS NOT NULL
+              AND jo.location.city LIKE :city
+              AND jo.experienceLevel LIKE :experienceLevel
+            GROUP BY jo.location.city, jo.experienceLevel
+            HAVING COUNT(jo.experienceLevel) > 15
+            """)
+        List<ExperiencePerCity> getExperiencePerCity(@Param("city") String city, @Param("experienceLevel") String experienceLevel);
+
+        @Query("""
+            SELECT jo.location.voivodeships AS voivodeship, 
+                   jo.experienceLevel AS experienceLevel, 
+                   COUNT(jo.experienceLevel) AS experienceCount
+            FROM JobOffer jo
+            WHERE jo.location.voivodeships IS NOT NULL
+              AND jo.experienceLevel IS NOT NULL
+              AND jo.experienceLevel LIKE :experienceLevel
+              AND jo.location.voivodeships LIKE :voivodeships
+            GROUP BY jo.location.voivodeships, jo.experienceLevel
+            """)
+        List<ExperiencePerVoivodeship> getExperiencePerVoivodeship(@Param("experienceLevel") String experienceLevel, @Param("voivodeships") String voivodeships);
+
+        @Query("""
+            SELECT jo.location.city AS city, 
+                   CAST(ROUND(AVG(jo.salaryMin), 2) AS double) AS salary, 
+                   COUNT(jo.location.city) AS cityCount
+            FROM JobOffer jo
+            WHERE jo.location.city IS NOT NULL
+              AND jo.salaryMin IS NOT NULL
+              AND jo.location.city LIKE :city
+            GROUP BY jo.location.city
+            HAVING COUNT(jo.location.city) > 20
+            """)
+        List<SalaryPerCity> getSalaryPerCity(@Param("city") String city);
+
+        @Query("""
+            SELECT jo.experienceLevel AS experienceLevel, 
+                   CAST(ROUND(AVG(jo.salaryMin), 2) AS double) AS salary
+            FROM JobOffer jo
+            WHERE jo.experienceLevel IS NOT NULL
+              AND jo.salaryMin IS NOT NULL
+              AND jo.experienceLevel LIKE :experienceLevel
+            GROUP BY jo.experienceLevel
+            """)
+        List<SalaryPerExperience> getSalaryPerExperience(@Param("experienceLevel") String experienceLevel);
+
+        @Query("""
+            SELECT jo.location.voivodeships AS voivodeship,
+                   CAST(ROUND(AVG(jo.salaryMin), 2) AS double) AS salary
+            FROM JobOffer jo
+            WHERE jo.location.voivodeships IS NOT NULL
+              AND jo.salaryMin IS NOT NULL
+              AND jo.location.voivodeships LIKE :voivodeships
+            GROUP BY jo.location.voivodeships
+            """)
+        List<SalaryPerVoivodeship> getSalaryPerVoivodeship(@Param("voivodeships") String voivodeships);
+
 }

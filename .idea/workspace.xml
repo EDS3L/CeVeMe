@@ -5,9 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3231cadf-6361-4cef-88cc-949d98c677dc" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/dto/location/VoivodeshipsResponse.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/dto/location/LocationResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/dto/location/LocationResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/schedule/JobScrapingScheduler.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/schedule/JobScrapingScheduler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/domain/model/vo/Location.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/domain/model/vo/Location.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/external/location/OpenStreetMapImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/external/location/OpenStreetMapImpl.java" afterDir="false" />
     </list>
-    <list id="6203340b-26e1-4138-9e37-bbc30d96334c" name="Changes by barte" comment="" />
+    <list id="1d53b2a2-39ea-4a48-aba6-035618760136" name="Changes by barte" comment="">
+      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/dto/location/LocationResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/dto/location/LocationResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/usecase/location/FindLocationUseCase.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/usecase/location/FindLocationUseCase.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -41,9 +49,9 @@
         <option value="package.json" />
         <option value="package-info" />
         <option value="Interface" />
+        <option value="Enum" />
         <option value="Record" />
         <option value="Class" />
-        <option value="Enum" />
       </list>
     </option>
   </component>
@@ -62,6 +70,14 @@
     &quot;accountId&quot;: &quot;c532e5da-5267-4523-9197-6d96e22869e8&quot;
   }
 }</component>
+  <component name="LineStatusTrackerManager">
+    <file path="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/dto/location/LocationResponse.java">
+      <ranges>
+        <range start1="2" end1="3" start2="2" end2="3" changelist="3231cadf-6361-4cef-88cc-949d98c677dc" />
+        <range start1="4" end1="4" start2="4" end2="5" changelist="1d53b2a2-39ea-4a48-aba6-035618760136" />
+      </ranges>
+    </file>
+  </component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
   &quot;associatedIndex&quot;: 8
@@ -163,7 +179,8 @@
       <workItem from="1767808338396" duration="3484000" />
       <workItem from="1768235656337" duration="3000" />
       <workItem from="1768651567459" duration="12783000" />
-      <workItem from="1768720445547" duration="31658000" />
+      <workItem from="1768720445547" duration="32571000" />
+      <workItem from="1768845799915" duration="6318000" />
     </task>
     <servers />
   </component>

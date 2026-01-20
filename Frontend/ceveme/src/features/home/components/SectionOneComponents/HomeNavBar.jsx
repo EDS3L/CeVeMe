@@ -1,35 +1,70 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 
 function HomeNavBar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [activeSection, setActiveSection] = useState("");
+
+  const updateActiveSection = useCallback(() => {
+    const sections = ["about", "features", "testimonials", "contact"];
+    const scrollPosition = window.scrollY + 250; // offset dla navbar
+
+    // Znajdź aktywną sekcję od dołu do góry
+    for (let i = sections.length - 1; i >= 0; i--) {
+      const element = document.getElementById(sections[i]);
+      if (element) {
+        const offsetTop = element.offsetTop;
+        if (scrollPosition >= offsetTop) {
+          setActiveSection(sections[i]);
+          return;
+        }
+      }
+    }
+    setActiveSection("");
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      if (currentScrollY > window.innerHeight && currentScrollY > lastScrollY) {
+
+      // Widoczność navbar
+      if (currentScrollY > 600 && currentScrollY > lastScrollY + 10) {
         setIsVisible(false);
-      } else if (currentScrollY < window.innerHeight) {
+      } else if (currentScrollY < lastScrollY - 10 || currentScrollY < 100) {
         setIsVisible(true);
       }
       setLastScrollY(currentScrollY);
+
+      // Scroll spy
+      updateActiveSection();
     };
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    updateActiveSection(); // inicjalna aktualizacja
+
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
+  }, [lastScrollY, updateActiveSection]);
 
   const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId);
     if (element) {
-      const offsetTop = element.offsetTop - 100; // 100px offset for navbar
+      const offsetTop = element.offsetTop - 100;
       window.scrollTo({
         top: offsetTop,
-        behavior: "smooth"
+        behavior: "smooth",
       });
     }
+  };
+
+  const getLinkClass = (sectionId) => {
+    const isActive = activeSection === sectionId;
+    return `relative transition-all duration-300 font-semibold cursor-pointer px-1 py-2 ${
+      isActive
+        ? "text-kraft after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-kraft after:rounded-full"
+        : "text-slatedark/70 hover:text-kraft"
+    }`;
   };
 
   return (
@@ -51,22 +86,28 @@ function HomeNavBar() {
 
           <div className="hidden md:flex items-center space-x-8">
             <button
-              onClick={() => scrollToSection("info")}
-              className="text-slatedark/80 hover:text-kraft transition-colors duration-200 font-semibold hover:scale-105 transform cursor-pointer"
+              onClick={() => scrollToSection("about")}
+              className={getLinkClass("about")}
             >
-              Info
+              O nas
             </button>
             <button
-              onClick={() => scrollToSection("demo")}
-              className="text-slatedark/80 hover:text-kraft transition-colors duration-200 font-semibold hover:scale-105 transform cursor-pointer"
+              onClick={() => scrollToSection("features")}
+              className={getLinkClass("features")}
             >
-              Demo
+              Funkcje
+            </button>
+            <button
+              onClick={() => scrollToSection("testimonials")}
+              className={getLinkClass("testimonials")}
+            >
+              Opinie
             </button>
             <button
               onClick={() => scrollToSection("contact")}
-              className="text-slatedark/80 hover:text-kraft transition-colors duration-200 font-semibold hover:scale-105 transform cursor-pointer"
+              className={getLinkClass("contact")}
             >
-              Contact
+              Kontakt
             </button>
           </div>
 

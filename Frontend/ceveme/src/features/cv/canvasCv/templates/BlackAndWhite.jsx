@@ -1,6 +1,6 @@
-import { emptyDocument, createTextNode, createShapeNode } from '../core/model';
-import { A4 } from '../core/mm';
-import { measureTextHeightMm } from '../services/typeset';
+import { emptyDocument, createTextNode, createShapeNode } from "../core/model";
+import { A4 } from "../core/mm";
+import { measureTextHeightMm } from "../services/typeset";
 
 export function buildBlackAndWhiteCV(api = {}) {
   const doc = emptyDocument(A4);
@@ -18,10 +18,10 @@ export function buildBlackAndWhiteCV(api = {}) {
   const RIGHT_COL_X = MARGIN + LEFT_COL_W + COL_GAP;
 
   // --- Kolory i style ---
-  const COLOR_PRIMARY = '#2d3748';
-  const COLOR_BODY = '#4a5568';
-  const COLOR_LIGHT = '#9aa4b2';
-  const COLOR_LINE = '#e6eef6';
+  const COLOR_PRIMARY = "#2d3748";
+  const COLOR_BODY = "#4a5568";
+  const COLOR_LIGHT = "#9aa4b2";
+  const COLOR_LINE = "#e6eef6";
 
   const NAME_STYLE = { fontSize: 30, fontWeight: 700, color: COLOR_PRIMARY };
   const TITLE_STYLE = {
@@ -29,20 +29,20 @@ export function buildBlackAndWhiteCV(api = {}) {
     fontWeight: 400,
     color: COLOR_BODY,
     letterSpacing: 1.2,
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
   };
   const LEFT_HEADER_STYLE = {
     fontSize: 11,
     fontWeight: 700,
     color: COLOR_PRIMARY,
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
     letterSpacing: 0.8,
   };
   const RIGHT_HEADER_STYLE = {
     fontSize: 12,
     fontWeight: 700,
     color: COLOR_PRIMARY,
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
   };
   const BODY_STYLE = {
     fontSize: 8.5,
@@ -55,7 +55,7 @@ export function buildBlackAndWhiteCV(api = {}) {
     fontWeight: 700,
     color: COLOR_PRIMARY,
   };
-  const ITALIC_STYLE = { ...BODY_STYLE, fontStyle: 'italic' };
+  const ITALIC_STYLE = { ...BODY_STYLE, fontStyle: "italic" };
   const DATE_STYLE = { ...BODY_STYLE, color: COLOR_LIGHT, fontWeight: 700 };
   const CONTACT_STYLE = { ...BODY_STYLE, lineHeight: 1.35 };
 
@@ -66,18 +66,18 @@ export function buildBlackAndWhiteCV(api = {}) {
 
   // --- Ikony linków ---
   const ICON_MAP = {
-    linkedin: '🔗',
-    github: '🐙',
-    gitlab: '🦊',
-    website: '🌐',
-    facebook: '📘',
-    instagram: '📷',
-    twitter: '🐦',
+    linkedin: "🔗",
+    github: "🐙",
+    gitlab: "🦊",
+    website: "🌐",
+    facebook: "📘",
+    instagram: "📷",
+    twitter: "🐦",
   };
 
   // --- Pomocnicze rysowanie (z obsługą linków) ---
   const addTextNode = (x, y, w, text, style = BODY_STYLE, opts = {}) => {
-    const t = text || '';
+    const t = text || "";
     const h = Math.max(3.8, measureTextHeightMm(t, w, style));
     const node = createTextNode({
       frame: { x, y, w, h },
@@ -94,7 +94,7 @@ export function buildBlackAndWhiteCV(api = {}) {
       createShapeNode({
         frame: { x, y, w, h: thickness },
         style: { fill: { color, opacity: 1 }, stroke: null },
-      })
+      }),
     );
   };
 
@@ -103,7 +103,7 @@ export function buildBlackAndWhiteCV(api = {}) {
       createShapeNode({
         frame: { x, y, w: thickness, h },
         style: { fill: { color, opacity: 1 }, stroke: null },
-      })
+      }),
     );
   };
 
@@ -119,7 +119,7 @@ export function buildBlackAndWhiteCV(api = {}) {
           stroke: null,
           cornerRadius: R,
         },
-      })
+      }),
     );
   };
 
@@ -135,7 +135,7 @@ export function buildBlackAndWhiteCV(api = {}) {
       let finalLabel = label;
       if (!finalLabel) {
         try {
-          finalLabel = new URL(u).hostname.replace(/^www\./, '');
+          finalLabel = new URL(u).hostname.replace(/^www\./, "");
         } catch {
           finalLabel = u;
         }
@@ -145,20 +145,20 @@ export function buildBlackAndWhiteCV(api = {}) {
 
     // pojedyncze, najczęściej spotykane pola
     push(p.url, null);
-    push(p.homepage, 'Strona');
-    push(p.demo, 'Demo');
-    push(p.live, 'Live');
-    push(p.repository || p.repo || p.github, 'GitHub');
-    push(p.docs || p.documentation, 'Dokumentacja');
+    push(p.homepage, "Strona");
+    push(p.demo, "Demo");
+    push(p.live, "Live");
+    push(p.repository || p.repo || p.github, "GitHub");
+    push(p.docs || p.documentation, "Dokumentacja");
 
     // tablica links: string lub obiekt {url|href, label|name|type}
     if (Array.isArray(p.links)) {
       for (const l of p.links) {
         if (!l) continue;
-        const url = typeof l === 'string' ? l : l.url || l.href || '';
+        const url = typeof l === "string" ? l : l.url || l.href || "";
         if (!url) continue;
         const label =
-          typeof l === 'string' ? '' : l.label || l.name || l.type || '';
+          typeof l === "string" ? "" : l.label || l.name || l.type || "";
         push(url, label || null);
       }
     }
@@ -166,9 +166,21 @@ export function buildBlackAndWhiteCV(api = {}) {
     return out;
   };
 
+  const checkPageBreak = (currentY, elementHeight, bottomMargin = 20) => {
+    const currentPage = Math.floor(currentY / PAGE_H);
+    const pageBottom = (currentPage + 1) * PAGE_H - bottomMargin;
+
+    if (currentY + elementHeight > pageBottom) {
+      const nextPageTop = (currentPage + 1) * PAGE_H + (MARGIN + nameH + 12);
+      return nextPageTop;
+    }
+
+    return currentY;
+  };
+
   // --- Nagłówek ---
-  const name = api?.personalData?.name || 'Imię Nazwisko';
-  const title = api?.headline || '';
+  const name = api?.personalData?.name || "Imię Nazwisko";
+  const title = api?.headline || "";
   const nameH = addTextNode(MARGIN, MARGIN, CONTENT_W, name, NAME_STYLE);
   addTextNode(MARGIN, MARGIN + nameH - 1, CONTENT_W, title, TITLE_STYLE);
   addHLine(MARGIN, MARGIN + nameH + 6, CONTENT_W, 0.5, COLOR_PRIMARY);
@@ -181,8 +193,9 @@ export function buildBlackAndWhiteCV(api = {}) {
   // ======================
 
   // Kontakt
+  leftY = checkPageBreak(leftY, 15);
   leftY +=
-    addTextNode(MARGIN, leftY, LEFT_COL_W, 'Kontakt', LEFT_HEADER_STYLE) + 0.8;
+    addTextNode(MARGIN, leftY, LEFT_COL_W, "Kontakt", LEFT_HEADER_STYLE) + 0.8;
   addHLine(MARGIN, leftY, LEFT_COL_W);
   leftY += GAP_ITEM;
 
@@ -193,28 +206,28 @@ export function buildBlackAndWhiteCV(api = {}) {
   const normalizedLinks = rawLinks
     .map((l) => {
       if (!l) return null;
-      const url = typeof l === 'string' ? l : l.url || l.href || '';
+      const url = typeof l === "string" ? l : l.url || l.href || "";
       if (!url) return null;
-      const typeRaw = (typeof l === 'string' ? '' : l.type || l.name || '')
+      const typeRaw = (typeof l === "string" ? "" : l.type || l.name || "")
         .toString()
         .toLowerCase();
 
       const label =
         typeRaw ||
-        (url.includes('linkedin.com') && 'LinkedIn') ||
-        (url.includes('github.com') && 'GitHub') ||
-        (url.includes('gitlab.com') && 'GitLab') ||
-        (url.includes('instagram.com') && 'Instagram') ||
-        (url.includes('facebook.com') && 'Facebook') ||
-        'Strona www';
+        (url.includes("linkedin.com") && "LinkedIn") ||
+        (url.includes("github.com") && "GitHub") ||
+        (url.includes("gitlab.com") && "GitLab") ||
+        (url.includes("instagram.com") && "Instagram") ||
+        (url.includes("facebook.com") && "Facebook") ||
+        "Strona www";
 
       const icon =
         ICON_MAP[typeRaw] ||
-        (label === 'LinkedIn' && ICON_MAP.linkedin) ||
-        (label === 'GitHub' && ICON_MAP.github) ||
-        (label === 'GitLab' && ICON_MAP.gitlab) ||
-        (label === 'Strona www' && ICON_MAP.website) ||
-        '🔗';
+        (label === "LinkedIn" && ICON_MAP.linkedin) ||
+        (label === "GitHub" && ICON_MAP.github) ||
+        (label === "GitLab" && ICON_MAP.gitlab) ||
+        (label === "Strona www" && ICON_MAP.website) ||
+        "🔗";
 
       return { text: `${icon} ${label}`, link: url };
     })
@@ -226,7 +239,7 @@ export function buildBlackAndWhiteCV(api = {}) {
     const tel = String(api.personalData.phoneNumber);
     contactItems.push({
       text: `☎ ${tel}`,
-      link: `tel:${tel.replace(/\s+/g, '')}`,
+      link: `tel:${tel.replace(/\s+/g, "")}`,
     });
   }
   if (api?.personalData?.email) {
@@ -251,8 +264,9 @@ export function buildBlackAndWhiteCV(api = {}) {
   }
 
   // Umiejętności — wszystkie kategorie osobno
+  leftY = checkPageBreak(leftY, 15);
   leftY +=
-    addTextNode(MARGIN, leftY, LEFT_COL_W, 'Umiejętności', LEFT_HEADER_STYLE) +
+    addTextNode(MARGIN, leftY, LEFT_COL_W, "Umiejętności", LEFT_HEADER_STYLE) +
     0.8;
   addHLine(MARGIN, leftY, LEFT_COL_W);
   leftY += GAP_ITEM;
@@ -260,13 +274,13 @@ export function buildBlackAndWhiteCV(api = {}) {
   const skills = Array.isArray(api?.skills) ? api.skills : [];
   skills.forEach((group) => {
     const catTitle =
-      group?.category === 'Technical'
-        ? 'Techniczne'
-        : group?.category === 'Tools'
-        ? 'Narzędzia'
-        : group?.category === 'Soft'
-        ? 'Kompetencje miękkie'
-        : group?.category || 'Inne';
+      group?.category === "Technical"
+        ? "Techniczne"
+        : group?.category === "Tools"
+          ? "Narzędzia"
+          : group?.category === "Soft"
+            ? "Kompetencje miękkie"
+            : group?.category || "Inne";
 
     leftY +=
       addTextNode(MARGIN, leftY, LEFT_COL_W, catTitle, {
@@ -276,7 +290,7 @@ export function buildBlackAndWhiteCV(api = {}) {
 
     const items = (group?.items || [])
       .map((s) => `• ${s?.name || s}`)
-      .join('\n');
+      .join("\n");
     if (items)
       leftY += addTextNode(MARGIN, leftY, LEFT_COL_W, items, BODY_STYLE);
     leftY += GAP_BLOCK;
@@ -284,34 +298,37 @@ export function buildBlackAndWhiteCV(api = {}) {
   leftY += GAP_SECTION;
 
   // Języki
+  leftY = checkPageBreak(leftY, 15);
   leftY +=
-    addTextNode(MARGIN, leftY, LEFT_COL_W, 'Języki', LEFT_HEADER_STYLE) + 0.8;
+    addTextNode(MARGIN, leftY, LEFT_COL_W, "Języki", LEFT_HEADER_STYLE) + 0.8;
   addHLine(MARGIN, leftY, LEFT_COL_W);
   leftY += GAP_ITEM;
 
   const languages = (api?.languages || [])
     .map((l) => `• ${l.language} (${l.level})`)
-    .join('\n');
+    .join("\n");
   if (languages)
     leftY +=
       addTextNode(MARGIN, leftY, LEFT_COL_W, languages, BODY_STYLE) +
       GAP_SECTION;
 
   // Edukacja — dane pod sobą
+  leftY = checkPageBreak(leftY, 15);
   leftY +=
-    addTextNode(MARGIN, leftY, LEFT_COL_W, 'Edukacja', LEFT_HEADER_STYLE) + 0.8;
+    addTextNode(MARGIN, leftY, LEFT_COL_W, "Edukacja", LEFT_HEADER_STYLE) + 0.8;
   addHLine(MARGIN, leftY, LEFT_COL_W);
   leftY += GAP_ITEM;
 
   const educations = Array.isArray(api?.educations) ? api.educations : [];
   educations.forEach((edu) => {
+    leftY = checkPageBreak(leftY, 20);
     if (edu?.degree)
       leftY += addTextNode(
         MARGIN,
         leftY,
         LEFT_COL_W,
         edu.degree,
-        BOLD_BODY_STYLE
+        BOLD_BODY_STYLE,
       );
     if (edu?.specialization)
       leftY += addTextNode(
@@ -319,7 +336,7 @@ export function buildBlackAndWhiteCV(api = {}) {
         leftY,
         LEFT_COL_W,
         edu.specialization,
-        BODY_STYLE
+        BODY_STYLE,
       );
     if (edu?.institution)
       leftY += addTextNode(
@@ -327,7 +344,7 @@ export function buildBlackAndWhiteCV(api = {}) {
         leftY,
         LEFT_COL_W,
         edu.institution,
-        ITALIC_STYLE
+        ITALIC_STYLE,
       );
     if (edu?.period)
       leftY += addTextNode(MARGIN, leftY, LEFT_COL_W, edu.period, DATE_STYLE);
@@ -338,15 +355,16 @@ export function buildBlackAndWhiteCV(api = {}) {
   // Certyfikaty — lewa kolumna
   const certs = Array.isArray(api?.certificates) ? api.certificates : [];
   if (certs.length) {
+    leftY = checkPageBreak(leftY, 15);
     leftY +=
-      addTextNode(MARGIN, leftY, LEFT_COL_W, 'Certyfikaty', LEFT_HEADER_STYLE) +
+      addTextNode(MARGIN, leftY, LEFT_COL_W, "Certyfikaty", LEFT_HEADER_STYLE) +
       0.8;
     addHLine(MARGIN, leftY, LEFT_COL_W);
     leftY += GAP_ITEM;
 
     certs.forEach((c) => {
       const line1 = c?.name ? `• ${c.name}` : null;
-      const meta = [c?.issuer, c?.data || c?.date].filter(Boolean).join(' • ');
+      const meta = [c?.issuer, c?.data || c?.date].filter(Boolean).join(" • ");
       if (line1)
         leftY += addTextNode(MARGIN, leftY, LEFT_COL_W, line1, BOLD_BODY_STYLE);
       if (meta)
@@ -357,7 +375,7 @@ export function buildBlackAndWhiteCV(api = {}) {
           leftY,
           LEFT_COL_W,
           c.description,
-          BODY_STYLE
+          BODY_STYLE,
         );
       leftY += GAP_BLOCK;
     });
@@ -374,34 +392,37 @@ export function buildBlackAndWhiteCV(api = {}) {
   addVLine(timelineX, rightY, PAGE_H - rightY - MARGIN - 18, 0.6, COLOR_LINE);
 
   // Profil
+  rightY = checkPageBreak(rightY, 15);
   addTimelineCircle(rightY + 5);
   rightY +=
     addTextNode(
       RIGHT_COL_X,
       rightY,
       RIGHT_COL_W,
-      'Profil',
-      RIGHT_HEADER_STYLE
+      "Profil",
+      RIGHT_HEADER_STYLE,
     ) + GAP_BLOCK;
-  const summary = api?.summary || '';
+  const summary = api?.summary || "";
   if (summary)
     rightY +=
       addTextNode(RIGHT_COL_X, rightY, RIGHT_COL_W, summary, BODY_STYLE) +
       GAP_SECTION;
 
   // Doświadczenie
+  rightY = checkPageBreak(rightY, 15);
   addTimelineCircle(rightY + 5);
   rightY +=
     addTextNode(
       RIGHT_COL_X,
       rightY,
       RIGHT_COL_W,
-      'Doświadczenie',
-      RIGHT_HEADER_STYLE
+      "Doświadczenie",
+      RIGHT_HEADER_STYLE,
     ) + GAP_BLOCK;
 
   const experiences = Array.isArray(api?.experience) ? api.experience : [];
   experiences.forEach((exp) => {
+    rightY = checkPageBreak(rightY, 25);
     addTimelineCircle(rightY + 3);
 
     const headerY = rightY;
@@ -409,13 +430,13 @@ export function buildBlackAndWhiteCV(api = {}) {
       RIGHT_COL_X,
       headerY,
       RIGHT_COL_W - 20,
-      exp?.company || '',
-      BOLD_BODY_STYLE
+      exp?.company || "",
+      BOLD_BODY_STYLE,
     );
-    const periodText = exp?.period || '';
+    const periodText = exp?.period || "";
     addTextNode(RIGHT_COL_X + RIGHT_COL_W - 20, headerY, 20, periodText, {
       ...DATE_STYLE,
-      textAlign: 'right',
+      textAlign: "right",
     });
 
     rightY += companyH;
@@ -426,7 +447,7 @@ export function buildBlackAndWhiteCV(api = {}) {
         rightY,
         RIGHT_COL_W,
         exp.title,
-        ITALIC_STYLE
+        ITALIC_STYLE,
       );
 
     // >>> ZMIANA 1: zawsze pokaż opis doświadczenia (obsługa pól: jobDescription ORAZ description)
@@ -439,23 +460,23 @@ export function buildBlackAndWhiteCV(api = {}) {
         RIGHT_COL_X,
         rightY,
         RIGHT_COL_W,
-        descParts.join('\n\n'),
-        BODY_STYLE
+        descParts.join("\n\n"),
+        BODY_STYLE,
       );
     }
 
     // Bullets (osiągnięcia) – po opisach
     if (Array.isArray(exp?.achievements) && exp.achievements.length) {
       const bullets = exp.achievements
-        .map((a) => `• ${a?.description || ''}`)
+        .map((a) => `• ${a?.description || ""}`)
         .filter(Boolean)
-        .join('\n');
+        .join("\n");
       rightY += addTextNode(
         RIGHT_COL_X,
         rightY,
         RIGHT_COL_W,
         bullets,
-        BODY_STYLE
+        BODY_STYLE,
       );
     }
 
@@ -466,17 +487,19 @@ export function buildBlackAndWhiteCV(api = {}) {
   // Projekty
   const projects = Array.isArray(api?.portfolio) ? api.portfolio : [];
   if (projects.length) {
+    rightY = checkPageBreak(rightY, 15);
     addTimelineCircle(rightY + 5);
     rightY +=
       addTextNode(
         RIGHT_COL_X,
         rightY,
         RIGHT_COL_W,
-        'Projekty',
-        RIGHT_HEADER_STYLE
+        "Projekty",
+        RIGHT_HEADER_STYLE,
       ) + GAP_BLOCK;
 
     projects.forEach((p) => {
+      rightY = checkPageBreak(rightY, 25);
       addTimelineCircle(rightY + 3);
 
       // Nazwa projektu klikalna, jeśli jest GŁÓWNY URL
@@ -484,22 +507,22 @@ export function buildBlackAndWhiteCV(api = {}) {
         RIGHT_COL_X,
         rightY,
         RIGHT_COL_W,
-        p?.name || 'Projekt',
+        p?.name || "Projekt",
         BOLD_BODY_STYLE,
-        p?.url ? { link: p.url } : {}
+        p?.url ? { link: p.url } : {},
       );
 
       const tech = (p?.technologies || [])
         .map((t) => t?.name)
         .filter(Boolean)
-        .join(' • ');
+        .join(" • ");
       if (tech)
         rightY += addTextNode(
           RIGHT_COL_X,
           rightY,
           RIGHT_COL_W,
           tech,
-          ITALIC_STYLE
+          ITALIC_STYLE,
         );
 
       // >>> ZMIANA 2: dodatkowe linki z API (p.url, p.homepage, p.demo, p.live, p.repo/repository/github, p.docs, p.links[])
@@ -512,7 +535,7 @@ export function buildBlackAndWhiteCV(api = {}) {
             RIGHT_COL_W,
             ln.label,
             DATE_STYLE,
-            { link: ln.url }
+            { link: ln.url },
           );
         }
       }
@@ -525,8 +548,8 @@ export function buildBlackAndWhiteCV(api = {}) {
           RIGHT_COL_X,
           rightY,
           RIGHT_COL_W,
-          bullets.map((b) => `• ${b}`).join('\n'),
-          BODY_STYLE
+          bullets.map((b) => `• ${b}`).join("\n"),
+          BODY_STYLE,
         );
       }
       rightY += GAP_BLOCK;
@@ -537,13 +560,13 @@ export function buildBlackAndWhiteCV(api = {}) {
 
   // Klauzula RODO przy dole prawej kolumny (pozostawiamy jak było)
   const gdpr =
-    api?.gdprClause || api?.personalData?.gdprClause || api?.gdpr || '';
+    api?.gdprClause || api?.personalData?.gdprClause || api?.gdpr || "";
   if (gdpr) {
     addTextNode(RIGHT_COL_X, PAGE_H - MARGIN - 18, RIGHT_COL_W, gdpr, {
       fontSize: 7.5,
       color: COLOR_BODY,
       lineHeight: 1.15,
-      textAlign: 'justify',
+      textAlign: "justify",
     });
   }
 

@@ -9,6 +9,7 @@ public class Location {
     private String street;
     private Double latitude;
     private Double longitude;
+    private String voivodeships;
 
     public Location() {
     }
@@ -56,5 +57,13 @@ public class Location {
 
     public void setLongitude(Double longitude) {
         this.longitude = longitude;
+    }
+
+    public String getVoivodeships() {
+        return voivodeships;
+    }
+
+    public void setVoivodeships(String voivodeships) {
+        this.voivodeships = voivodeships;
     }
 }

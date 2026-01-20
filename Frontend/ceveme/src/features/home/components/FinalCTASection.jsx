@@ -11,7 +11,10 @@ const FinalCTASection = () => {
   ];
 
   return (
-    <section className="py-24 bg-gradient-to-br from-ivorymedium via-kraft to-bookcloth relative overflow-hidden">
+    <section
+      id="contact"
+      className="py-24 bg-gradient-to-br from-ivorymedium via-kraft to-bookcloth relative overflow-hidden"
+    >
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-20 left-10 w-96 h-96 bg-white/10 rounded-full mix-blend-overlay filter blur-3xl animate-blob"></div>
