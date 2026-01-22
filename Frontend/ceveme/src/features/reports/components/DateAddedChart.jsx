@@ -28,7 +28,9 @@ const DateAddedChart = ({ data, loading, onFilterChange }) => {
     if (!data || data.length === 0) return null;
 
     const allDates = [...new Set(data.map((item) => item.dateAdded))].sort();
-    const experienceLevels = [...new Set(data.map((item) => item.experienceLevel))];
+    const experienceLevels = [
+      ...new Set(data.map((item) => item.experienceLevel)),
+    ];
 
     const dataByDateAndExp = data.reduce((acc, item) => {
       const key = `${item.dateAdded}_${item.experienceLevel}`;
@@ -56,8 +58,14 @@ const DateAddedChart = ({ data, loading, onFilterChange }) => {
           x2: 0,
           y2: 1,
           colorStops: [
-            { offset: 0, color: `${CHART_COLORS.experience[level] || CHART_COLORS.primary}40` },
-            { offset: 1, color: `${CHART_COLORS.experience[level] || CHART_COLORS.primary}05` },
+            {
+              offset: 0,
+              color: `${CHART_COLORS.experience[level] || CHART_COLORS.primary}40`,
+            },
+            {
+              offset: 1,
+              color: `${CHART_COLORS.experience[level] || CHART_COLORS.primary}05`,
+            },
           ],
         },
       },
@@ -126,7 +134,9 @@ const DateAddedChart = ({ data, loading, onFilterChange }) => {
           placeholder="Wszystkie poziomy"
         />
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium text-[var(--color-clouddark)]">Miesiąc od</label>
+          <label className="text-sm font-medium text-[var(--color-clouddark)]">
+            Miesiąc od
+          </label>
           <input
             type="month"
             value={fromDate === "%" ? "" : fromDate}
@@ -135,7 +145,9 @@ const DateAddedChart = ({ data, loading, onFilterChange }) => {
           />
         </div>
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium text-[var(--color-clouddark)]">Miesiąc do</label>
+          <label className="text-sm font-medium text-[var(--color-clouddark)]">
+            Miesiąc do
+          </label>
           <input
             type="month"
             value={toDate === "%" ? "" : toDate}
