@@ -2,9 +2,6 @@ package pl.ceveme.application.usecase.raports;
 
 import org.springframework.stereotype.Service;
 import pl.ceveme.application.dto.raports.*;
-import pl.ceveme.application.port.in.DateAddedPerExperienceLevel;
-import pl.ceveme.application.port.in.ExperiencePerCity;
-import pl.ceveme.application.port.in.ExperiencePerVoivodeship;
 import pl.ceveme.domain.repositories.JobOfferRepository;
 
 import java.util.List;
@@ -18,8 +15,8 @@ public class GetReportsUseCase {
         this.jobOfferRepository = jobOfferRepository;
     }
 
-    public List<DateAddedPerExperienceLevelResponse> executeDateAddedRaport(String experience) {
-        return jobOfferRepository.getDateAddedPerExperienceLevel(experience)
+    public List<DateAddedPerExperienceLevelResponse> executeDateAddedRaport(String experience, String fromDate, String toDate) {
+        return jobOfferRepository.getDateAddedPerExperienceLevel(experience,fromDate,toDate)
                 .stream()
                 .map(p -> new DateAddedPerExperienceLevelResponse(
                         p.getDateAdded(),
@@ -32,6 +29,7 @@ public class GetReportsUseCase {
         return jobOfferRepository.getExperiencePerCity(city, experience)
                 .stream()
                 .map(p -> new ExperiencePerCityResponse(
+                        p.getCity(),
                         p.getExperienceLevel(),
                         p.getSalary(),
                         p.getCityCount()))

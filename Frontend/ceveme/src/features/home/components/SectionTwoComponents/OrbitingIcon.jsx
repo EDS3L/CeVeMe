@@ -69,12 +69,12 @@ export default function OrbitingIcon({
         </div>
       ) : (
         <div
-          className="flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-white to-ivorylight border-2 border-kraft/20 rounded-full relative z-10 transition-all duration-300 hover:shadow-2xl hover:shadow-kraft/30 hover:scale-125 hover:cursor-pointer hover:border-kraft/50 group"
+          className="flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 md:w-20 md:h-20 bg-gradient-to-br from-white to-ivorylight border-2 border-kraft/20 rounded-full relative z-10 transition-all duration-300 hover:shadow-2xl hover:shadow-kraft/30 hover:scale-125 hover:cursor-pointer hover:border-kraft/50 group"
           onClick={() => onIconClick(iconData.id)}
         >
           <div className="absolute inset-0 rounded-full bg-gradient-to-br from-kraft/0 to-kraft/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           <span
-            className={`text-3xl md:text-4xl font-bold ${iconData.letterColor} relative z-10 group-hover:scale-110 transition-transform duration-300`}
+            className={`text-xl sm:text-2xl md:text-4xl font-bold ${iconData.letterColor} relative z-10 group-hover:scale-110 transition-transform duration-300`}
           >
             {iconData.letter}
           </span>

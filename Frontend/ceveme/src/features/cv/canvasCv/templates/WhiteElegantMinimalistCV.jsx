@@ -61,7 +61,7 @@ export function buildWhiteElegantMinimalistCV(api = {}) {
   /* ---------- Nagłówek (mniejszy) ---------- */
   const HEADER = {
     banner: { x: 0, y: pt(0.223), w: pt(595.172), h: pt(154.0) },
-    photoPanel: { x: 0, y: 0, w: pt(178.65), h: pt(158.0) },
+    photoPanel: { x: 0, y: 0, w: pt(178.65), h: pt(154.0) },
     photoCircleD: pt(132.0),
     firstNameFrame: {
       x: pt(208.993),

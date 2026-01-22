@@ -22,7 +22,7 @@ import OverflowTray from "./ui/sidebar/OverflowTray";
 import { extraBottomMm } from "./utils/overflow";
 
 import { buildBlackAndWhiteCV } from "./templates/BlackAndWhite";
-import { buildWhiteMinimalistCompactCV } from "./templates/WhiteMinimalistNodes";
+// import { buildWhiteMinimalistCompactCV } from "./templates/WhiteMinimalistNodes";
 import { buildDocFromAI } from "./templates/SidebarTemplate";
 import { buildGrayAndWhite } from "./templates/GrayAndWhiteSimple";
 
@@ -34,7 +34,7 @@ import useAuth from "../../../hooks/useAuth";
 
 import GenerateCvModal from "./ui/canva/GenerateCvModal";
 import InfoModal from "./ui/canva/InfoModal";
-import { buildModernTurquoiseCV } from "./templates/modernTurquoiseCv";
+// import { buildModernTurquoiseCV } from "./templates/modernTurquoiseCv";
 import { buildWhiteElegantMinimalistCV } from "./templates/WhiteElegantMinimalistCV";
 import { buildPixelPerfectTealSidebarCV } from "./templates/TealSidebarCV";
 import { buildBlueCreativeCV } from "./templates/BlueCreativeCV";
@@ -52,21 +52,21 @@ function readCvData() {
 export default function App() {
   const cvTemplates = useMemo(
     () => [
-      {
-        key: "Menu CV",
-        title: "Panel boczny",
-        func: buildDocFromAI,
-        description:
-          "Nowoczesny układ z bocznym panelem — świetny dla kreatywnych profesji.",
-        sections: [
-          "Profil",
-          "Doświadczenie",
-          "Umiejętności",
-          "Edukacja",
-          "Języki",
-        ],
-        style: "Minimalistyczny z wyróżnionym sidebarem",
-      },
+      // {
+      //   key: "Menu CV",
+      //   title: "Panel boczny",
+      //   func: buildDocFromAI,
+      //   description:
+      //     "Nowoczesny układ z bocznym panelem — świetny dla kreatywnych profesji.",
+      //   sections: [
+      //     "Profil",
+      //     "Doświadczenie",
+      //     "Umiejętności",
+      //     "Edukacja",
+      //     "Języki",
+      //   ],
+      //   style: "Minimalistyczny z wyróżnionym sidebarem",
+      // },
       {
         key: "black-and-white",
         title: "Nowoczesny Biznesowy",
@@ -90,30 +90,30 @@ export default function App() {
         ],
         style: "Tradycyjny, czytelny, uniwersalny",
       },
-      {
-        key: "white-minimalist",
-        title: "White Minimalist",
-        func: buildWhiteMinimalistCompactCV,
-        description: "Ultra-minimalistyczny design ze sporą ilością bieli.",
-        sections: ["Intro", "Experience", "Skills", "Education"],
-        style: "Skandynawski minimalizm",
-      },
-      {
-        key: "modern-turquoise",
-        title: "Turkusowy Dwukolumnowy",
-        func: buildModernTurquoiseCV,
-        description:
-          "Dwukolumnowy szablon z turkusowa belka akcentowa, bialym arkuszem, okraglym zdjeciem i chipami kontaktu.",
-        sections: [
-          "Naglowek",
-          "Doswiadczenie",
-          "O mnie",
-          "Edukacja",
-          "Umiejetnosci",
-          "Referencje",
-        ],
-        style: "Kreatywny, swiezy, kontrastowy",
-      },
+      // {
+      //   key: "white-minimalist",
+      //   title: "White Minimalist",
+      //   func: buildWhiteMinimalistCompactCV,
+      //   description: "Ultra-minimalistyczny design ze sporą ilością bieli.",
+      //   sections: ["Intro", "Experience", "Skills", "Education"],
+      //   style: "Skandynawski minimalizm",
+      // },
+      // {
+      //   key: "modern-turquoise",
+      //   title: "Turkusowy Dwukolumnowy",
+      //   func: buildModernTurquoiseCV,
+      //   description:
+      //     "Dwukolumnowy szablon z turkusowa belka akcentowa, bialym arkuszem, okraglym zdjeciem i chipami kontaktu.",
+      //   sections: [
+      //     "Naglowek",
+      //     "Doswiadczenie",
+      //     "O mnie",
+      //     "Edukacja",
+      //     "Umiejetnosci",
+      //     "Referencje",
+      //   ],
+      //   style: "Kreatywny, swiezy, kontrastowy",
+      // },
       {
         key: "white-elegant-minimalist",
         title: "White Elegant Minimalist",

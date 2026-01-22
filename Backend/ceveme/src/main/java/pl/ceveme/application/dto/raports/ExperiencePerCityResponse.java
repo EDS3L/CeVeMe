@@ -1,4 +1,4 @@
 package pl.ceveme.application.dto.raports;
 
-public record ExperiencePerCityResponse(String experienceLevel, Double salary, Integer experienceCount) {
+public record ExperiencePerCityResponse(String city, String experienceLevel, Double salary, Integer experienceCount) {
 }

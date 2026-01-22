@@ -351,13 +351,13 @@ export default function DemoAnimation() {
       </div>
 
       {/* Scenes */}
-      <div className="relative z-10">
+      <div className="relative z-10 min-h-[600px] sm:min-h-[650px] md:min-h-[700px] lg:min-h-[600px]">
         {/* Scene 1 — LINK */}
         <SceneFrame visible={scene === 1} tone="light">
-          <div className="flex flex-col xl:flex-row gap-6 xl:gap-8 items-center">
-            <div className="rounded-2xl border-2 border-kraft/20 bg-white/90 backdrop-blur-sm p-5 lg:p-6 shadow-xl flex-1 w-full">
+          <div className="flex flex-col xl:flex-row gap-4 sm:gap-6 xl:gap-8 items-center h-full">
+            <div className="rounded-2xl border-2 border-kraft/20 bg-white/90 backdrop-blur-sm p-4 sm:p-5 lg:p-6 shadow-xl flex-1 w-full">
               <StepBadge step={1} />
-              <h4 className="text-xl lg:text-2xl font-black text-slatedark mb-4 lg:mb-6">
+              <h4 className="text-lg sm:text-xl lg:text-2xl font-black text-slatedark mb-3 sm:mb-4 lg:mb-6">
                 Wklejasz link do oferty
               </h4>
               <div className="relative group">
@@ -385,10 +385,10 @@ export default function DemoAnimation() {
 
         {/* Scene 2 — ANALIZA */}
         <SceneFrame visible={scene === 2} tone="brand">
-          <div className="flex flex-col xl:flex-row gap-6 xl:gap-8 items-center">
-            <div className="rounded-2xl border-2 border-bookcloth/30 bg-white/90 backdrop-blur-sm p-5 lg:p-6 shadow-xl flex-1 w-full">
+          <div className="flex flex-col xl:flex-row gap-4 sm:gap-6 xl:gap-8 items-center h-full">
+            <div className="rounded-2xl border-2 border-bookcloth/30 bg-white/90 backdrop-blur-sm p-4 sm:p-5 lg:p-6 shadow-xl flex-1 w-full">
               <StepBadge step={2} />
-              <h4 className="text-xl lg:text-2xl font-black text-slatedark mb-4 lg:mb-6">
+              <h4 className="text-lg sm:text-xl lg:text-2xl font-black text-slatedark mb-3 sm:mb-4 lg:mb-6">
                 AI analizuje wymagania
               </h4>
               <div className="relative rounded-xl border-2 border-kraft/20 bg-manilla/20 p-4 overflow-hidden">
@@ -421,11 +421,11 @@ export default function DemoAnimation() {
 
         {/* Scene 3 — GENEROWANIE */}
         <SceneFrame visible={scene === 3} tone="neutral">
-          <div className="flex flex-col xl:flex-row gap-6 xl:gap-8">
+          <div className="flex flex-col xl:flex-row gap-4 sm:gap-6 xl:gap-8 h-full">
             {/* Form */}
-            <div className="rounded-2xl border-2 border-kraft/20 bg-white/90 backdrop-blur-sm p-5 lg:p-6 shadow-xl flex-shrink-0 xl:w-[340px]">
+            <div className="rounded-2xl border-2 border-kraft/20 bg-white/90 backdrop-blur-sm p-4 sm:p-5 lg:p-6 shadow-xl flex-shrink-0 w-full xl:w-[340px]">
               <StepBadge step={3} />
-              <h4 className="text-lg lg:text-xl font-black text-slatedark mb-4">
+              <h4 className="text-base sm:text-lg lg:text-xl font-black text-slatedark mb-3 sm:mb-4">
                 Tworzenie CV z Twoich danych
               </h4>
               <div className="space-y-4">
@@ -462,9 +462,9 @@ export default function DemoAnimation() {
             </div>
 
             {/* CV Preview */}
-            <div className="relative flex items-center justify-center flex-1 min-h-[400px] xl:min-h-[500px]">
+            <div className="relative flex items-center justify-center flex-1">
               <div
-                className="relative rounded-2xl border-2 border-kraft/30 bg-white shadow-2xl overflow-hidden w-full max-w-[320px] xl:max-w-[380px]"
+                className="relative rounded-2xl border-2 border-kraft/30 bg-white shadow-2xl overflow-hidden w-full max-w-[240px] sm:max-w-[280px] md:max-w-[300px] xl:max-w-[380px]"
                 style={{ aspectRatio: "210/297" }}
               >
                 {/* CV Header */}
@@ -660,27 +660,27 @@ export default function DemoAnimation() {
 
         {/* Scene 4 — GOTOWE */}
         <SceneFrame visible={scene === 4} tone="success">
-          <div className="flex flex-col xl:flex-row gap-6 xl:gap-8 items-center">
-            <div className="text-center xl:text-left flex-shrink-0 xl:w-[280px]">
-              <div className="inline-flex items-center justify-center w-16 h-16 xl:w-20 xl:h-20 rounded-full bg-gradient-to-br from-feedbacksuccess to-kraft text-white text-3xl xl:text-4xl mb-4 xl:mb-6 shadow-2xl animate-bounce">
+          <div className="flex flex-col xl:flex-row gap-3 sm:gap-4 xl:gap-8 items-center h-full">
+            <div className="text-center xl:text-left flex-shrink-0 w-full xl:w-[280px]">
+              <div className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 xl:w-20 xl:h-20 rounded-full bg-gradient-to-br from-feedbacksuccess to-kraft text-white text-xl sm:text-2xl xl:text-4xl mb-2 sm:mb-3 xl:mb-6 shadow-2xl animate-bounce">
                 ✓
               </div>
-              <h4 className="text-xl xl:text-2xl font-black text-slatedark mb-2 xl:mb-3">
+              <h4 className="text-base sm:text-lg xl:text-2xl font-black text-slatedark mb-1 sm:mb-2">
                 CV gotowe!
               </h4>
-              <p className="text-clouddark mb-4 xl:mb-6 text-sm xl:text-base">
+              <p className="text-clouddark mb-2 sm:mb-3 xl:mb-6 text-xs sm:text-sm">
                 Twoje spersonalizowane CV jest gotowe do pobrania.
               </p>
-              <button className="inline-flex items-center gap-2 px-5 py-2.5 xl:px-6 xl:py-3 rounded-xl bg-gradient-to-r from-kraft to-bookcloth text-white font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 text-sm xl:text-base">
+              <button className="inline-flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 xl:px-6 xl:py-3 rounded-xl bg-gradient-to-r from-kraft to-bookcloth text-white font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 text-xs sm:text-sm">
                 <span>📥</span>
                 Pobierz PDF
               </button>
             </div>
 
             {/* Final CV */}
-            <div className="relative flex items-center justify-center flex-1 min-h-[350px] xl:min-h-[450px]">
+            <div className="relative flex items-center justify-center flex-1">
               <div
-                className="relative rounded-2xl border-2 border-feedbacksuccess/50 bg-white shadow-2xl overflow-hidden ring-4 ring-feedbacksuccess/20 w-full max-w-[280px] xl:max-w-[350px]"
+                className="relative rounded-2xl border-2 border-feedbacksuccess/50 bg-white shadow-2xl overflow-hidden ring-4 ring-feedbacksuccess/20 w-full max-w-[240px] sm:max-w-[280px] md:max-w-[300px] xl:max-w-[350px]"
                 style={{
                   aspectRatio: "210/297",
                   animation: "successGlow 2s ease-in-out infinite",
@@ -829,13 +829,13 @@ function SceneFrame({ children, visible, tone = "light" }) {
 
   return (
     <div
-      className={`transition-all duration-500 ${
+      className={`absolute inset-0 transition-all duration-500 ${
         visible
-          ? "opacity-100 translate-y-0"
-          : "opacity-0 translate-y-4 absolute inset-0 pointer-events-none"
+          ? "opacity-100 translate-y-0 z-10"
+          : "opacity-0 translate-y-4 pointer-events-none z-0"
       }`}
     >
-      <div className={`rounded-2xl border border-kraft/10 p-6 lg:p-8 ${tones}`}>
+      <div className={`rounded-2xl border border-kraft/10 p-4 sm:p-6 lg:p-8 h-full ${tones}`}>
         {children}
       </div>
     </div>

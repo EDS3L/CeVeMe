@@ -23,29 +23,30 @@ const RoutersConfig = {
   },
   cv: {
     path: "/cv",
-    component: React.lazy(() =>
-      import("../features/cv/generativeCv/pages/CvEditorPage")
+    component: React.lazy(
+      () => import("../features/cv/generativeCv/pages/CvEditorPage"),
     ),
     requiredRole: null,
   },
   user: {
     path: "/user",
-    component: React.lazy(() =>
-      import("../features/user/pages/UserProfilePage")
+    component: React.lazy(
+      () => import("../features/user/pages/UserProfilePage"),
     ),
     requiredRole: null,
   },
   settings: {
     path: "/settings",
-    component: React.lazy(() =>
-      import("../features/settings/pages/SettingsPage")
+    component: React.lazy(
+      () => import("../features/settings/pages/SettingsPage"),
     ),
     requiredRole: null,
   },
   histories: {
     path: "/history",
-    component: React.lazy(() =>
-      import("../features/applicationHistories/pages/ApplicationHistoriesPage")
+    component: React.lazy(
+      () =>
+        import("../features/applicationHistories/pages/ApplicationHistoriesPage"),
     ),
     requiredRole: null,
   },
@@ -56,21 +57,28 @@ const RoutersConfig = {
   },
   active: {
     path: "/auth/active",
-    component: React.lazy(() =>
-      import("../features/auth/pages/ActivateAccount")
+    component: React.lazy(
+      () => import("../features/auth/pages/ActivateAccount"),
     ),
     requiredRole: null,
   },
   forgotPassword: {
     path: "/auth/forgot-password",
-    component: React.lazy(() =>
-      import("../features/auth/pages/ForgotPassword")
+    component: React.lazy(
+      () => import("../features/auth/pages/ForgotPassword"),
     ),
     requiredRole: null,
   },
   resetPassword: {
     path: "/auth/reset-password/:token",
     component: React.lazy(() => import("../features/auth/pages/ResetPassword")),
+    requiredRole: null,
+  },
+  reports: {
+    path: "/reports",
+    component: React.lazy(
+      () => import("../features/reports/pages/ReportsPage"),
+    ),
     requiredRole: null,
   },
   notFound: {

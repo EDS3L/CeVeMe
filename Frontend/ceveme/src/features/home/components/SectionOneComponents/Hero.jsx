@@ -4,7 +4,7 @@ import { Sparkles, FileText, Zap, TrendingUp } from "lucide-react";
 
 function Hero() {
   return (
-    <div className="min-h-screen pt-20 bg-gradient-to-br from-manilla via-ivorydark to-kraft flex flex-col justify-center items-center font-sans relative overflow-hidden">
+    <div className="min-h-screen pt-28 sm:pt-20 bg-gradient-to-br from-manilla via-ivorydark to-kraft flex flex-col justify-center items-center font-sans relative overflow-hidden">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-20 left-10 w-72 h-72 bg-kraft rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
@@ -30,7 +30,7 @@ function Hero() {
 
       <div className="relative z-10 text-center px-4 w-full max-w-full overflow-hidden">
         {/* Badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 bg-white/80 backdrop-blur-sm rounded-full shadow-lg border border-kraft/20">
+        <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 mt-4 sm:mt-0 bg-white/80 backdrop-blur-sm rounded-full shadow-lg border border-kraft/20">
           <Sparkles className="w-4 h-4 text-kraft" />
           <span className="text-sm font-semibold text-slatedark">
             Inteligentny Generator CV z AI

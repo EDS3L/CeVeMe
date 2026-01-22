@@ -66,12 +66,13 @@ function HomeNavBarScroll() {
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lastScrollY]);
 
   return (
     <>
       <nav
-        className={`fixed top-0 w-full z-50 bg-white/10 backdrop-blur-xl shadow-lg border-b border-white/20 h-20 flex justify-center items-center transform transition-transform duration-300 ${
+        className={`fixed top-0 w-full z-50 bg-white/10 backdrop-blur-xl shadow-lg border-b border-white/20 h-16 sm:h-20 flex justify-center items-center transform transition-transform duration-300 px-2 sm:px-4 ${
           showNavigation
             ? isVisible
               ? "translate-y-0"
@@ -79,12 +80,12 @@ function HomeNavBarScroll() {
             : "-translate-y-full"
         } `}
       >
-        <div className="flex bg-white/20 backdrop-blur-md rounded-full p-1.5 border border-kraft/30 shadow-lg">
+        <div className="flex bg-white/20 backdrop-blur-md rounded-full p-1 sm:p-1.5 border border-kraft/30 shadow-lg max-w-full overflow-x-auto">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => scrollToSection(tab.id)}
-              className={`px-8 py-3 text-sm font-semibold rounded-full transition-all duration-300 transform cursor-pointer ${
+              className={`px-3 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-semibold rounded-full transition-all duration-300 transform cursor-pointer whitespace-nowrap ${
                 activeTab === tab.id
                   ? "bg-gradient-to-r from-kraft to-bookcloth text-white shadow-lg scale-105"
                   : "text-slatedark/70 hover:text-kraft hover:bg-white/30 hover:scale-105"

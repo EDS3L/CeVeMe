@@ -5,17 +5,24 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3231cadf-6361-4cef-88cc-949d98c677dc" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/dto/location/VoivodeshipsResponse.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/dto/location/LocationResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/dto/location/LocationResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/schedule/JobScrapingScheduler.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/schedule/JobScrapingScheduler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/domain/model/vo/Location.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/domain/model/vo/Location.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/external/location/OpenStreetMapImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/external/location/OpenStreetMapImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/dto/raports/ExperiencePerCityResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/dto/raports/ExperiencePerCityResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/port/in/ExperiencePerCity.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/port/in/ExperiencePerCity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/usecase/raports/GetReportsUseCase.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/usecase/raports/GetReportsUseCase.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/domain/repositories/JobOfferRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/domain/repositories/JobOfferRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/controllers/raports/ReportsController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/controllers/raports/ReportsController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/ceveme/src/components/Navbar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/ceveme/src/components/Navbar.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/ceveme/src/features/cv/canvasCv/CvPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/ceveme/src/features/cv/canvasCv/CvPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/ceveme/src/features/cv/canvasCv/templates/WhiteElegantMinimalistCV.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/ceveme/src/features/cv/canvasCv/templates/WhiteElegantMinimalistCV.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/ceveme/src/features/cv/canvasCv/templates/modernTurquoiseCv.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/ceveme/src/features/cv/canvasCv/templates/modernTurquoiseCv.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/ceveme/src/features/home/components/DemoAnimation.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/ceveme/src/features/home/components/DemoAnimation.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/ceveme/src/features/home/components/SectionOneComponents/Hero.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/ceveme/src/features/home/components/SectionOneComponents/Hero.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/ceveme/src/features/home/components/SectionOneComponents/HomeNavBarScroll.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/ceveme/src/features/home/components/SectionOneComponents/HomeNavBarScroll.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/ceveme/src/features/home/components/SectionTwoComponents/OrbitingIcon.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/ceveme/src/features/home/components/SectionTwoComponents/OrbitingIcon.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/ceveme/src/features/home/components/SectionTwoComponents/SwiperTwo.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/ceveme/src/features/home/components/SectionTwoComponents/SwiperTwo.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/ceveme/src/routers/RoutersConfig.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/ceveme/src/routers/RoutersConfig.jsx" afterDir="false" />
     </list>
-    <list id="1d53b2a2-39ea-4a48-aba6-035618760136" name="Changes by barte" comment="">
-      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/dto/location/LocationResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/dto/location/LocationResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/usecase/location/FindLocationUseCase.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/usecase/location/FindLocationUseCase.java" afterDir="false" />
-    </list>
+    <list id="1d53b2a2-39ea-4a48-aba6-035618760136" name="Changes by barte" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -48,8 +55,8 @@
       <list>
         <option value="package.json" />
         <option value="package-info" />
-        <option value="Interface" />
         <option value="Enum" />
+        <option value="Interface" />
         <option value="Record" />
         <option value="Class" />
       </list>
@@ -70,14 +77,6 @@
     &quot;accountId&quot;: &quot;c532e5da-5267-4523-9197-6d96e22869e8&quot;
   }
 }</component>
-  <component name="LineStatusTrackerManager">
-    <file path="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/dto/location/LocationResponse.java">
-      <ranges>
-        <range start1="2" end1="3" start2="2" end2="3" changelist="3231cadf-6361-4cef-88cc-949d98c677dc" />
-        <range start1="4" end1="4" start2="4" end2="5" changelist="1d53b2a2-39ea-4a48-aba6-035618760136" />
-      </ranges>
-    </file>
-  </component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
   &quot;associatedIndex&quot;: 8
@@ -181,6 +180,8 @@
       <workItem from="1768651567459" duration="12783000" />
       <workItem from="1768720445547" duration="32571000" />
       <workItem from="1768845799915" duration="6318000" />
+      <workItem from="1768925978775" duration="5997000" />
+      <workItem from="1769097900160" duration="3365000" />
     </task>
     <servers />
   </component>

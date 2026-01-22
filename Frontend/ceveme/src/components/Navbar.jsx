@@ -78,6 +78,12 @@ function Navbar({ showShadow }) {
                   Oferty
                 </Link>
                 <Link
+                  to="/reports"
+                  className="text-[var(--color-clouddark)] hover:text-[var(--color-slatedark)] transition-colors duration-200 font-bold"
+                >
+                  Raporty
+                </Link>
+                <Link
                   to="/history"
                   className="text-[var(--color-clouddark)] hover:text-[var(--color-slatedark)] transition-colors duration-200 font-bold"
                 >
@@ -196,6 +202,13 @@ function Navbar({ showShadow }) {
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Oferty pracy
+                </Link>
+                <Link
+                  to="/reports"
+                  className="text-[var(--color-clouddark)] hover:text-[var(--color-slatedark)] transition-colors duration-200 font-bold py-2"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Raporty
                 </Link>
                 <Link
                   to="/history"

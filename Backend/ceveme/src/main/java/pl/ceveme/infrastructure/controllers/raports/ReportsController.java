@@ -22,8 +22,8 @@ public class ReportsController {
 
     @GetMapping("/date-added")
     public ResponseEntity<List<DateAddedPerExperienceLevelResponse>> getDateAddedPerExperienceLevel(
-            @RequestParam(defaultValue = "%") String experience) {
-        return ResponseEntity.ok(getReportsUseCase.executeDateAddedRaport(experience));
+            @RequestParam(defaultValue = "%") String experience,  @RequestParam(defaultValue = "%") String fromDate, @RequestParam(defaultValue = "%") String toDate) {
+        return ResponseEntity.ok(getReportsUseCase.executeDateAddedRaport(experience,fromDate,toDate));
     }
 
     @GetMapping("/experience-per-city")

@@ -111,14 +111,14 @@ export function buildModernTurquoiseCV(api = {}) {
   const FONTS = {
     garetBold52: {
       fontFamily: "Garet, sans-serif",
-      fontSize: 50,
+      fontSize: 44,
       fontWeight: 700,
       color: COLORS.textDark,
       lineHeight: 1.35,
     },
     garetReg45: {
       fontFamily: "Garet, sans-serif",
-      fontSize: 38,
+      fontSize: 30,
       fontWeight: 400,
       color: COLORS.textDark,
       lineHeight: 1.35,
@@ -489,8 +489,8 @@ export function buildModernTurquoiseCV(api = {}) {
   // Imię i nazwisko + tytuł
   const nameX = LEFT_COL.x + 57;
   let nameY = 5;
-  if (first) nameY += text(nameX, nameY, 50, first, FONTS.garetBold52);
-  if (last) nameY += text(nameX, nameY - 10, 80, last, FONTS.garetReg45);
+  if (first) nameY += text(nameX, nameY, 100, first, FONTS.garetBold52);
+  if (last) nameY += text(nameX, nameY - 10, 120, last, FONTS.garetReg45);
   const headline = (api?.headline || "").trim();
   if (headline)
     // eslint-disable-next-line no-unused-vars
