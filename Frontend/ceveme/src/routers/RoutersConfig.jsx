@@ -81,6 +81,34 @@ const RoutersConfig = {
     ),
     requiredRole: null,
   },
+  interviewModes: {
+    path: "/interview/modes/:jobOfferId",
+    component: React.lazy(
+      () => import("../features/interview/pages/InterviewModesPage"),
+    ),
+    requiredRole: null,
+  },
+  interviewSession: {
+    path: "/interview/session/:sessionId",
+    component: React.lazy(
+      () => import("../features/interview/pages/InterviewSessionPage"),
+    ),
+    requiredRole: null,
+  },
+  interviewReport: {
+    path: "/interview/report/:sessionId",
+    component: React.lazy(
+      () => import("../features/interview/pages/InterviewReportPage"),
+    ),
+    requiredRole: null,
+  },
+  interviewHistory: {
+    path: "/interview/history",
+    component: React.lazy(
+      () => import("../features/interview/pages/MyInterviewsPage"),
+    ),
+    requiredRole: null,
+  },
   notFound: {
     path: "*",
     component: React.lazy(() => import("../features/home/pages/NotFound")),

@@ -35,7 +35,17 @@ public class ChangeAppliactanionHistoriesStatus {
 
         applicationHistory.changeStatus(request.status());
         applicationHistoryRepository.save(applicationHistory);
-        return new ApplicationHistoriesResponse(request.applicationHistoriesID(), null,null,null,null,null,request.status(),null);
+        return new ApplicationHistoriesResponse(
+                request.applicationHistoriesID(),
+                applicationHistory.getJobOffer().getId(),
+                null,
+                null,
+                null,
+                null,
+                null,
+                request.status(),
+                null
+        );
 
     }
 }

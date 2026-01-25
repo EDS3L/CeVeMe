@@ -12,6 +12,7 @@ import {
   ExternalLink,
   CheckCircle2,
   Banknote,
+  Sparkles,
 } from "lucide-react";
 import Modal from "../ui/Modal";
 import JobMap from "./JobMap";
@@ -334,6 +335,38 @@ export default function JobModal({ open, onClose, job }) {
                 >
                   <ScrollText className="w-5 h-5" />
                   Wygeneruj CV w Edytorze
+                </button>
+              </aside>
+
+              {/* AI Interview Coach Section */}
+              <aside className="bg-gradient-to-r from-purple-500/5 to-indigo-500/5 p-6 rounded-xl border border-purple-200">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center">
+                    <Sparkles className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-gray-900">
+                      AI Interview Coach
+                    </h4>
+                    <p className="text-sm text-gray-600">
+                      Przygotuj się do rozmowy kwalifikacyjnej
+                    </p>
+                  </div>
+                </div>
+                <p className="text-center text-gray-700 mb-4">
+                  Przećwicz rozmowę z AI! Otrzymasz pytania dopasowane do tej
+                  oferty i feedback.
+                </p>
+                <button
+                  className="w-full cursor-pointer inline-flex font-bold items-center justify-center gap-2 px-6 py-3 rounded-lg text-white bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 transition-all shadow-lg hover:shadow-xl"
+                  onClick={() =>
+                    nav(`/interview/modes/${job.id}`, {
+                      state: { jobOffer: job },
+                    })
+                  }
+                >
+                  <Sparkles className="w-5 h-5" />
+                  Przygotuj się do rozmowy
                 </button>
               </aside>
               {showMap && (

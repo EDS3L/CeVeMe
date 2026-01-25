@@ -27,6 +27,7 @@ public class GetApplicationHistoriesUseCase {
 
         return user.getApplicationHistoryList().stream().map(ah -> new ApplicationHistoriesResponse(
                 ah.getId(),
+                ah.getJobOffer().getId(),
                 ah.getJobOffer().getCompany(),
                 ah.getJobOffer().getLink(),
                 ah.getApplicationDate(),

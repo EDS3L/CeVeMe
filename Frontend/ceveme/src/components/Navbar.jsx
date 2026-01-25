@@ -89,6 +89,12 @@ function Navbar({ showShadow }) {
                 >
                   Historia aplikacji
                 </Link>
+                <Link
+                  to="/interview/history"
+                  className="text-[var(--color-clouddark)] hover:text-[var(--color-slatedark)] transition-colors duration-200 font-bold"
+                >
+                  Rozmowy
+                </Link>
               </>
             )}
           </div>
