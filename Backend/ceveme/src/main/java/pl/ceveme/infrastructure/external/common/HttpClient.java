@@ -50,8 +50,20 @@ public class HttpClient implements AutoCloseable {
                 .build();
     }
 
+    private void waitBeforeRequest() {
+        try {
+            long timeToRequest = 5_000;
+            log.info("Waiting for request...for {}",timeToRequest);
+            Thread.sleep(timeToRequest);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Request delay interrupted", e);
+        }
+    }
+
 
     public String fetchContentWithBrowser(String url) {
+        waitBeforeRequest();
         log.info("Executing browser request for Cloudflare-protected site: {}", url);
         ensureBrowserInitialized();
 
@@ -86,6 +98,7 @@ public class HttpClient implements AutoCloseable {
 
 
     public String fetchContent(String url) throws IOException {
+        waitBeforeRequest();
         HttpGet request = createHttpGet(url);
         log.info("Executing request {}", request.getRequestUri());
         return client.execute(request, response -> {
@@ -95,6 +108,7 @@ public class HttpClient implements AutoCloseable {
     }
 
     public String fetchContentJJI(String url) throws IOException {
+        waitBeforeRequest();
         HttpGet request = createHttpGetJJI(url);
         return client.execute(request, response -> {
             validateResponse(response);
@@ -103,6 +117,7 @@ public class HttpClient implements AutoCloseable {
     }
 
     public String fetchContentSolidJobs(String url) throws IOException {
+        waitBeforeRequest();
         HttpGet request = createHttpGetSolidJobs(url);
         return client.execute(request, response -> {
             validateResponse(response);
@@ -111,6 +126,7 @@ public class HttpClient implements AutoCloseable {
     }
 
     public String fetchJobOfferFromSolidJobs(String url) throws IOException {
+        waitBeforeRequest();
         HttpGet request = createHttpGetSolidJobsOffer(url);
         return client.execute(request, response -> {
             validateResponse(response);

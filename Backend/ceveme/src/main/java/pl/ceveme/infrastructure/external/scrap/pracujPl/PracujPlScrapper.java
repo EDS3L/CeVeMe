@@ -23,7 +23,7 @@ import java.util.Random;
 @Component
 public class PracujPlScrapper extends AbstractJobScraper {
     private static final Logger log = LoggerFactory.getLogger(PracujPlScrapper.class);
-    private static final String BASE_URL = "https://www.pracuj.pl/praca?pn=";
+    private static final String BASE_URL = "https://www.pracuj.pl/praca/ostatnich%2024h;p,1?pn=";
 
     public PracujPlScrapper(HttpClient httpClient, ObjectMapper objectMapper, JobOfferRepository jobOfferRepository) {
         super(httpClient, objectMapper, jobOfferRepository);
@@ -47,9 +47,13 @@ public class PracujPlScrapper extends AbstractJobScraper {
         );
     }
 
+
+
     private List<String> extractJobUrls() {
         List<String> all = new ArrayList<>();
-        for (int p = 1; p <= 15; p++) {
+        int pageNumbers = extractPageNumber(BASE_URL + 1);
+        log.info("Extracted page numbers from URL: {}", pageNumbers);
+        for (int p = 1; p <= pageNumbers; p++) {
             String url = BASE_URL + p;
             log.info("Fetching list page: {}", url);
             try {
@@ -109,4 +113,17 @@ public class PracujPlScrapper extends AbstractJobScraper {
             return null;
         }
     }
+
+    public int extractPageNumber(String pageUrl) {
+        String content = httpClient.fetchContentWithBrowser(pageUrl);
+        Document doc = Jsoup.parse(content);
+
+        Elements btn = doc.select("button[class*=listing_n19df7xb]");
+        if (btn.isEmpty()) {
+            return 1;
+        }
+
+        return Integer.parseInt(btn.getLast().text());
+    }
+
 }

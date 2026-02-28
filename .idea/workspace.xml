@@ -6,18 +6,13 @@
   <component name="ChangeListManager">
     <list default="true" id="3231cadf-6361-4cef-88cc-949d98c677dc" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/dto/applicationHistories/ApplicationHistoriesResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/dto/applicationHistories/ApplicationHistoriesResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/usecase/applicationHistory/ChangeAppliactanionHistoriesStatus.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/usecase/applicationHistory/ChangeAppliactanionHistoriesStatus.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/usecase/applicationHistory/GetApplicationHistoriesUseCase.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/usecase/applicationHistory/GetApplicationHistoriesUseCase.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/domain/model/entities/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/domain/model/entities/User.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/config/web/WebConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/config/web/WebConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Frontend/ceveme/src/components/Navbar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/ceveme/src/components/Navbar.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Frontend/ceveme/src/features/applicationHistories/components/cardView/ApplicationHistoryCard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/ceveme/src/features/applicationHistories/components/cardView/ApplicationHistoryCard.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Frontend/ceveme/src/features/applicationHistories/components/tableView/ApplicationHistoryTable.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/ceveme/src/features/applicationHistories/components/tableView/ApplicationHistoryTable.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Frontend/ceveme/src/features/joboffers/components/jobs/JobModal.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/ceveme/src/features/joboffers/components/jobs/JobModal.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Frontend/ceveme/src/routers/RoutersConfig.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/ceveme/src/routers/RoutersConfig.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/external/common/HttpClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/external/common/HttpClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/external/scrap/pracujPl/PracujPlScrapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/external/scrap/pracujPl/PracujPlScrapper.java" afterDir="false" />
     </list>
-    <list id="1d53b2a2-39ea-4a48-aba6-035618760136" name="Changes by barte" comment="" />
+    <list id="1d53b2a2-39ea-4a48-aba6-035618760136" name="Changes by barte" comment="">
+      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/schedule/JobScrapingScheduler.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/application/schedule/JobScrapingScheduler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/external/scrap/pracujPl/PracujPlScrapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/external/scrap/pracujPl/PracujPlScrapper.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -72,6 +67,16 @@
     &quot;accountId&quot;: &quot;c532e5da-5267-4523-9197-6d96e22869e8&quot;
   }
 }</component>
+  <component name="LineStatusTrackerManager">
+    <file path="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/external/scrap/pracujPl/PracujPlScrapper.java">
+      <ranges>
+        <range start1="25" end1="26" start2="25" end2="26" changelist="3231cadf-6361-4cef-88cc-949d98c677dc" />
+        <range start1="48" end1="48" start2="48" end2="50" changelist="3231cadf-6361-4cef-88cc-949d98c677dc" />
+        <range start1="51" end1="52" start2="53" end2="56" changelist="3231cadf-6361-4cef-88cc-949d98c677dc" />
+        <range start1="111" end1="111" start2="115" end2="128" changelist="1d53b2a2-39ea-4a48-aba6-035618760136" />
+      </ranges>
+    </file>
+  </component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
   &quot;associatedIndex&quot;: 8
@@ -178,6 +183,10 @@
       <workItem from="1768925978775" duration="5997000" />
       <workItem from="1769097900160" duration="5427000" />
       <workItem from="1769279101945" duration="1431000" />
+      <workItem from="1769338844770" duration="73000" />
+      <workItem from="1769372042455" duration="1715000" />
+      <workItem from="1770844290978" duration="913000" />
+      <workItem from="1772274328633" duration="3678000" />
     </task>
     <servers />
   </component>
