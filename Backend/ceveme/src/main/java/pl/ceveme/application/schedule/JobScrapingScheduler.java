@@ -40,11 +40,11 @@ public class JobScrapingScheduler {
         log.info("Rozpoczynam cykl scrapowania ofert pracy...");
 
         executeWithLogging("BulldogJob", scrapBulldogJobUseCase::execute);
-        executeWithLogging("JustJoinIt", scrapJustJoinItUseCase::execute);
+//        executeWithLogging("JustJoinIt", scrapJustJoinItUseCase::execute);
         executeWithLogging("NoFluffJobs", scrapNoFluffJobsUseCase::execute);
         executeWithLogging("RocketJobs", scrapRocketJobsUseCase::execute);
         executeWithLogging("SolidJobs", scrapSolidJobsUseCase::execute);
-        executeWithLogging("TheProtocolIT", scrapTheProtocolITUseCase::execute);
+//        executeWithLogging("TheProtocolIT", scrapTheProtocolITUseCase::execute);
         executeWithLogging("PracujPl", scrapPracujPlUseCase::execute);
         executeWithLogging("LinkedIn", scrapLinkedInUseCase::execute);
 
