@@ -5,8 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3231cadf-6361-4cef-88cc-949d98c677dc" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/java/pl/ceveme/infrastructure/oAuthGoogle/GoogleAuthentication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/ceveme.main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/ceveme.main.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/ceveme/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/ceveme/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/ceveme/src/main/resources/application.yml" afterDir="false" />
     </list>
+    <list id="5f576ec7-bd48-4554-81cd-2068650ec0a0" name="Changes by barte" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -175,6 +181,9 @@
       <workItem from="1770844290978" duration="913000" />
       <workItem from="1772274328633" duration="4765000" />
       <workItem from="1773077570201" duration="566000" />
+      <workItem from="1774550168344" duration="2463000" />
+      <workItem from="1775833747602" duration="3572000" />
+      <workItem from="1779115480316" duration="41000" />
     </task>
     <servers />
   </component>

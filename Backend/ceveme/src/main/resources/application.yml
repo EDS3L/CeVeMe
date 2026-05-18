@@ -55,7 +55,7 @@ token:
 
 gemini:
   api-key: ${GEMINI_API_KEY}
-  model: gemini-3-flash-preview
+  model: gemini-3.1-flash-lite
 
 stripe:
   api-key: ${STRIPE_APIKEY}
@@ -67,3 +67,7 @@ cloudinary:
 linkedIn:
   li-at: ${LI_AT}
   li-rm: ${LI_RM}
+
+
+google:
+  apiKey: ${GOOGLE_API_KEY}
