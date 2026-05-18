@@ -38,7 +38,7 @@ public class EndpointUsageAspect {
         }
 
         if (!endpointUsagesService.canUseAiEndpoint(currentUser, endpointType)) {
-            throw new IllegalArgumentException( //todo: zrobić własny błąd
+            throw new IllegalArgumentException(
                     "Usage limit exceeded for " + endpointType.name()
             );
         }
