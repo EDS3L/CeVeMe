@@ -18,6 +18,7 @@ services:
     restart: unless-stopped
     environment:
       - SPRING_PROFILES_ACTIVE=prod
+      # DB_* comes from GitHub secrets (remote MariaDB on h99.seohost.pl)
       - MAIL_HOST=${MAIL_HOST}
       - MAIL_USERNAME=${MAIL_USERNAME}
       - MAIL_PASSWORD=${MAIL_PASSWORD}
